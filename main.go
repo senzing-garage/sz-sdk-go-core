@@ -8,11 +8,16 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/senzing/g2-sdk-go/g2config"
-	"github.com/senzing/g2-sdk-go/g2configmgr"
-	"github.com/senzing/g2-sdk-go/g2diagnostic"
-	"github.com/senzing/g2-sdk-go/g2engine"
-	"github.com/senzing/g2-sdk-go/g2product"
+	"github.com/senzing/g2-sdk-go-base/g2config"
+	"github.com/senzing/g2-sdk-go-base/g2configmgr"
+	"github.com/senzing/g2-sdk-go-base/g2diagnostic"
+	"github.com/senzing/g2-sdk-go-base/g2engine"
+	"github.com/senzing/g2-sdk-go-base/g2product"
+	g2configapi "github.com/senzing/g2-sdk-go/g2config"
+	g2configmgrapi "github.com/senzing/g2-sdk-go/g2configmgr"
+	g2diagnosticapi "github.com/senzing/g2-sdk-go/g2diagnostic"
+	g2engineapi "github.com/senzing/g2-sdk-go/g2engine"
+	g2productapi "github.com/senzing/g2-sdk-go/g2product"
 	"github.com/senzing/go-common/truthset"
 	"github.com/senzing/go-helpers/g2engineconfigurationjson"
 	"github.com/senzing/go-logging/messageformat"
@@ -55,8 +60,8 @@ var logger messagelogger.MessageLoggerInterface = nil
 // Internal methods
 // ----------------------------------------------------------------------------
 
-func getG2config(ctx context.Context) (g2config.G2config, error) {
-	result := g2config.G2configImpl{}
+func getG2config(ctx context.Context) (g2configapi.G2config, error) {
+	result := g2config.G2config{}
 	moduleName := "Test module name"
 	verboseLogging := 0 // 0 for no Senzing logging; 1 for logging
 	iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
@@ -67,8 +72,8 @@ func getG2config(ctx context.Context) (g2config.G2config, error) {
 	return &result, err
 }
 
-func getG2configmgr(ctx context.Context) (g2configmgr.G2configmgr, error) {
-	result := g2configmgr.G2configmgrImpl{}
+func getG2configmgr(ctx context.Context) (g2configmgrapi.G2configmgr, error) {
+	result := g2configmgr.G2configmgr{}
 	moduleName := "Test module name"
 	verboseLogging := 0 // 0 for no Senzing logging; 1 for logging
 	iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
@@ -79,8 +84,8 @@ func getG2configmgr(ctx context.Context) (g2configmgr.G2configmgr, error) {
 	return &result, err
 }
 
-func getG2diagnostic(ctx context.Context) (g2diagnostic.G2diagnostic, error) {
-	result := g2diagnostic.G2diagnosticImpl{}
+func getG2diagnostic(ctx context.Context) (g2diagnosticapi.G2diagnostic, error) {
+	result := g2diagnostic.G2diagnostic{}
 	moduleName := "Test module name"
 	verboseLogging := 0 // 0 for no Senzing logging; 1 for logging
 	iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
@@ -91,8 +96,8 @@ func getG2diagnostic(ctx context.Context) (g2diagnostic.G2diagnostic, error) {
 	return &result, err
 }
 
-func getG2engine(ctx context.Context) (g2engine.G2engine, error) {
-	result := g2engine.G2engineImpl{}
+func getG2engine(ctx context.Context) (g2engineapi.G2engine, error) {
+	result := g2engine.G2engine{}
 	moduleName := "Test module name"
 	verboseLogging := 0 // 0 for no Senzing logging; 1 for logging
 	iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
@@ -103,8 +108,8 @@ func getG2engine(ctx context.Context) (g2engine.G2engine, error) {
 	return &result, err
 }
 
-func getG2product(ctx context.Context) (g2product.G2product, error) {
-	result := g2product.G2productImpl{}
+func getG2product(ctx context.Context) (g2productapi.G2product, error) {
+	result := g2product.G2product{}
 	moduleName := "Test module name"
 	verboseLogging := 0 // 0 for no Senzing logging; 1 for logging
 	iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
@@ -132,7 +137,7 @@ func getLogger(ctx context.Context) (messagelogger.MessageLoggerInterface, error
 	return messagelogger.New(messageFormat, messageIdTemplate, messageLevel, messageStatus, messageText, messagelogger.LevelInfo)
 }
 
-func demonstrateConfigFunctions(ctx context.Context, g2Config g2config.G2config, g2Configmgr g2configmgr.G2configmgr) error {
+func demonstrateConfigFunctions(ctx context.Context, g2Config g2configapi.G2config, g2Configmgr g2configmgrapi.G2configmgr) error {
 	now := time.Now()
 
 	// Using G2Config: Create a default configuration in memory
@@ -176,7 +181,7 @@ func demonstrateConfigFunctions(ctx context.Context, g2Config g2config.G2config,
 	return err
 }
 
-func demonstrateAddRecord(ctx context.Context, g2Engine g2engine.G2engine) (string, error) {
+func demonstrateAddRecord(ctx context.Context, g2Engine g2engineapi.G2engine) (string, error) {
 	dataSourceCode := "TEST"
 	recordID := strconv.Itoa(rand.Intn(1000000000))
 	jsonData := fmt.Sprintf(
@@ -192,7 +197,7 @@ func demonstrateAddRecord(ctx context.Context, g2Engine g2engine.G2engine) (stri
 	return g2Engine.AddRecordWithInfo(ctx, dataSourceCode, recordID, jsonData, loadID, flags)
 }
 
-func demonstrateAdditionalFunctions(ctx context.Context, g2Diagnostic g2diagnostic.G2diagnostic, g2Engine g2engine.G2engine, g2Product g2product.G2product) error {
+func demonstrateAdditionalFunctions(ctx context.Context, g2Diagnostic g2diagnosticapi.G2diagnostic, g2Engine g2engineapi.G2engine, g2Product g2productapi.G2product) error {
 	// Using G2Diagnostic: Check physical cores.
 
 	actual, err := g2Diagnostic.GetPhysicalCores(ctx)
@@ -234,7 +239,7 @@ func demonstrateAdditionalFunctions(ctx context.Context, g2Diagnostic g2diagnost
 	return err
 }
 
-func destroyObjects(ctx context.Context, g2Config g2config.G2config, g2Configmgr g2configmgr.G2configmgr, g2Diagnostic g2diagnostic.G2diagnostic, g2Engine g2engine.G2engine, g2Product g2product.G2product) error {
+func destroyObjects(ctx context.Context, g2Config g2configapi.G2config, g2Configmgr g2configmgrapi.G2configmgr, g2Diagnostic g2diagnosticapi.G2diagnostic, g2Engine g2engineapi.G2engine, g2Product g2productapi.G2product) error {
 	err := g2Config.Destroy(ctx)
 	if err != nil {
 		logger.Log(5401, err)

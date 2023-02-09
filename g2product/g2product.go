@@ -19,6 +19,7 @@ import (
 	"time"
 	"unsafe"
 
+	g2productapi "github.com/senzing/g2-sdk-go/g2product"
 	"github.com/senzing/go-logging/logger"
 	"github.com/senzing/go-logging/messagelogger"
 	"github.com/senzing/go-observing/observer"
@@ -30,7 +31,7 @@ import (
 // ----------------------------------------------------------------------------
 
 // G2productImpl is the default implementation of the G2product interface.
-type G2productImpl struct {
+type G2product struct {
 	isTrace   bool
 	logger    messagelogger.MessageLoggerInterface
 	observers subject.Subject
@@ -47,20 +48,20 @@ const initialByteArraySize = 65535
 // ----------------------------------------------------------------------------
 
 // Get space for an array of bytes of a given size.
-func (g2product *G2productImpl) getByteArrayC(size int) *C.char {
+func (client *G2product) getByteArrayC(size int) *C.char {
 	bytes := C.malloc(C.size_t(size))
 	return (*C.char)(bytes)
 }
 
 // Make a byte array.
-func (g2product *G2productImpl) getByteArray(size int) []byte {
+func (client *G2product) getByteArray(size int) []byte {
 	return make([]byte, size)
 }
 
 // Create a new error.
-func (g2product *G2productImpl) newError(ctx context.Context, errorNumber int, details ...interface{}) error {
-	lastException, err := g2product.getLastException(ctx)
-	defer g2product.clearLastException(ctx)
+func (client *G2product) newError(ctx context.Context, errorNumber int, details ...interface{}) error {
+	lastException, err := client.getLastException(ctx)
+	defer client.clearLastException(ctx)
 	message := lastException
 	if err != nil {
 		message = err.Error()
@@ -69,7 +70,7 @@ func (g2product *G2productImpl) newError(ctx context.Context, errorNumber int, d
 	var newDetails []interface{}
 	newDetails = append(newDetails, details...)
 	newDetails = append(newDetails, errors.New(message))
-	errorMessage, err := g2product.getLogger().Message(errorNumber, newDetails...)
+	errorMessage, err := client.getLogger().Message(errorNumber, newDetails...)
 	if err != nil {
 		errorMessage = err.Error()
 	}
@@ -78,14 +79,14 @@ func (g2product *G2productImpl) newError(ctx context.Context, errorNumber int, d
 }
 
 // Get the Logger singleton.
-func (g2product *G2productImpl) getLogger() messagelogger.MessageLoggerInterface {
-	if g2product.logger == nil {
-		g2product.logger, _ = messagelogger.NewSenzingApiLogger(ProductId, IdMessages, IdStatuses, messagelogger.LevelInfo)
+func (client *G2product) getLogger() messagelogger.MessageLoggerInterface {
+	if client.logger == nil {
+		client.logger, _ = messagelogger.NewSenzingApiLogger(ProductId, g2productapi.IdMessages, g2productapi.IdStatuses, messagelogger.LevelInfo)
 	}
-	return g2product.logger
+	return client.logger
 }
 
-func (g2product *G2productImpl) notify(ctx context.Context, messageId int, err error, details map[string]string) {
+func (client *G2product) notify(ctx context.Context, messageId int, err error, details map[string]string) {
 	now := time.Now()
 	details["subjectId"] = strconv.Itoa(ProductId)
 	details["messageId"] = strconv.Itoa(messageId)
@@ -97,42 +98,42 @@ func (g2product *G2productImpl) notify(ctx context.Context, messageId int, err e
 	if err != nil {
 		fmt.Printf("Error: %s", err.Error())
 	} else {
-		g2product.observers.NotifyObservers(ctx, string(message))
+		client.observers.NotifyObservers(ctx, string(message))
 	}
 }
 
 // Trace method entry.
-func (g2product *G2productImpl) traceEntry(errorNumber int, details ...interface{}) {
-	g2product.getLogger().Log(errorNumber, details...)
+func (client *G2product) traceEntry(errorNumber int, details ...interface{}) {
+	client.getLogger().Log(errorNumber, details...)
 }
 
 // Trace method exit.
-func (g2product *G2productImpl) traceExit(errorNumber int, details ...interface{}) {
-	g2product.getLogger().Log(errorNumber, details...)
+func (client *G2product) traceExit(errorNumber int, details ...interface{}) {
+	client.getLogger().Log(errorNumber, details...)
 }
 
 /*
-The clearLastException method erases the last exception message held by the Senzing G2Config object.
+The clearLastException method erases the last exception message held by the Senzing G2Product object.
 
 Input
   - ctx: A context to control lifecycle.
 */
-func (g2product *G2productImpl) clearLastException(ctx context.Context) error {
+func (client *G2product) clearLastException(ctx context.Context) error {
 	// _DLEXPORT void G2Config_clearLastException();
-	if g2product.isTrace {
-		g2product.traceEntry(1)
+	if client.isTrace {
+		client.traceEntry(1)
 	}
 	entryTime := time.Now()
 	var err error = nil
 	C.G2Product_clearLastException()
-	if g2product.isTrace {
-		defer g2product.traceExit(2, err, time.Since(entryTime))
+	if client.isTrace {
+		defer client.traceExit(2, err, time.Since(entryTime))
 	}
 	return err
 }
 
 /*
-The getLastException method retrieves the last exception thrown in Senzing's G2Product.
+The getLastException method retrieves the last exception thrown in Senzing's client.
 
 Input
   - ctx: A context to control lifecycle.
@@ -140,21 +141,21 @@ Input
 Output
   - A string containing the error received from Senzing's G2Product.
 */
-func (g2product *G2productImpl) getLastException(ctx context.Context) (string, error) {
+func (client *G2product) getLastException(ctx context.Context) (string, error) {
 	// _DLEXPORT int G2Config_getLastException(char *buffer, const size_t bufSize);
-	if g2product.isTrace {
-		g2product.traceEntry(5)
+	if client.isTrace {
+		client.traceEntry(5)
 	}
 	entryTime := time.Now()
 	var err error = nil
-	stringBuffer := g2product.getByteArray(initialByteArraySize)
+	stringBuffer := client.getByteArray(initialByteArraySize)
 	C.G2Product_getLastException((*C.char)(unsafe.Pointer(&stringBuffer[0])), C.ulong(len(stringBuffer)))
 	// if result == 0 { // "result" is length of exception message.
-	// 	err = g2product.getLogger().Error(4002, result, time.Since(entryTime))
+	// 	err = client.getLogger().Error(4002, result, time.Since(entryTime))
 	// }
 	stringBuffer = bytes.Trim(stringBuffer, "\x00")
-	if g2product.isTrace {
-		defer g2product.traceExit(6, string(stringBuffer), err, time.Since(entryTime))
+	if client.isTrace {
+		defer client.traceExit(6, string(stringBuffer), err, time.Since(entryTime))
 	}
 	return string(stringBuffer), err
 }
@@ -168,16 +169,16 @@ Input:
 Output:
   - An int containing the error received from Senzing's G2Product.
 */
-func (g2product *G2productImpl) getLastExceptionCode(ctx context.Context) (int, error) {
+func (client *G2product) getLastExceptionCode(ctx context.Context) (int, error) {
 	//  _DLEXPORT int G2Config_getLastExceptionCode();
-	if g2product.isTrace {
-		g2product.traceEntry(7)
+	if client.isTrace {
+		client.traceEntry(7)
 	}
 	entryTime := time.Now()
 	var err error = nil
 	result := int(C.G2Product_getLastExceptionCode())
-	if g2product.isTrace {
-		defer g2product.traceExit(8, result, err, time.Since(entryTime))
+	if client.isTrace {
+		defer client.traceExit(8, result, err, time.Since(entryTime))
 	}
 	return result, err
 }
@@ -193,27 +194,27 @@ It should be called after all other calls are complete.
 Input
   - ctx: A context to control lifecycle.
 */
-func (g2product *G2productImpl) Destroy(ctx context.Context) error {
+func (client *G2product) Destroy(ctx context.Context) error {
 	// _DLEXPORT int G2Config_destroy();
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	if g2product.isTrace {
-		g2product.traceEntry(3)
+	if client.isTrace {
+		client.traceEntry(3)
 	}
 	entryTime := time.Now()
 	var err error = nil
 	result := C.G2Product_destroy()
 	if result != 0 {
-		err = g2product.newError(ctx, 4001, result, time.Since(entryTime))
+		err = client.newError(ctx, 4001, result, time.Since(entryTime))
 	}
-	if g2product.observers != nil {
+	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			g2product.notify(ctx, 8001, err, details)
+			client.notify(ctx, 8001, err, details)
 		}()
 	}
-	if g2product.isTrace {
-		defer g2product.traceExit(4, err, time.Since(entryTime))
+	if client.isTrace {
+		defer client.traceExit(4, err, time.Since(entryTime))
 	}
 	return err
 }
@@ -228,12 +229,12 @@ Input
   - iniParams: A JSON string containing configuration parameters.
   - verboseLogging: A flag to enable deeper logging of the G2 processing. 0 for no Senzing logging; 1 for logging.
 */
-func (g2product *G2productImpl) Init(ctx context.Context, moduleName string, iniParams string, verboseLogging int) error {
+func (client *G2product) Init(ctx context.Context, moduleName string, iniParams string, verboseLogging int) error {
 	// _DLEXPORT int G2Config_init(const char *moduleName, const char *iniParams, const int verboseLogging);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	if g2product.isTrace {
-		g2product.traceEntry(9, moduleName, iniParams, verboseLogging)
+	if client.isTrace {
+		client.traceEntry(9, moduleName, iniParams, verboseLogging)
 	}
 	entryTime := time.Now()
 	var err error = nil
@@ -243,20 +244,20 @@ func (g2product *G2productImpl) Init(ctx context.Context, moduleName string, ini
 	defer C.free(unsafe.Pointer(iniParamsForC))
 	result := C.G2Product_init(moduleNameForC, iniParamsForC, C.int(verboseLogging))
 	if result != 0 {
-		err = g2product.newError(ctx, 4003, moduleName, iniParams, verboseLogging, result, time.Since(entryTime))
+		err = client.newError(ctx, 4003, moduleName, iniParams, verboseLogging, result, time.Since(entryTime))
 	}
-	if g2product.observers != nil {
+	if client.observers != nil {
 		go func() {
 			details := map[string]string{
 				"iniParams":      iniParams,
 				"moduleName":     moduleName,
 				"verboseLogging": strconv.Itoa(verboseLogging),
 			}
-			g2product.notify(ctx, 8002, err, details)
+			client.notify(ctx, 8002, err, details)
 		}()
 	}
-	if g2product.isTrace {
-		defer g2product.traceExit(10, moduleName, iniParams, verboseLogging, err, time.Since(entryTime))
+	if client.isTrace {
+		defer client.traceExit(10, moduleName, iniParams, verboseLogging, err, time.Since(entryTime))
 	}
 	return err
 }
@@ -271,24 +272,24 @@ Output
   - A JSON document containing Senzing license metadata.
     See the example output.
 */
-func (g2product *G2productImpl) License(ctx context.Context) (string, error) {
+func (client *G2product) License(ctx context.Context) (string, error) {
 	// _DLEXPORT char* G2Product_license();
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	if g2product.isTrace {
-		g2product.traceEntry(11)
+	if client.isTrace {
+		client.traceEntry(11)
 	}
 	entryTime := time.Now()
 	var err error = nil
 	result := C.G2Product_license()
-	if g2product.observers != nil {
+	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			g2product.notify(ctx, 8003, err, details)
+			client.notify(ctx, 8003, err, details)
 		}()
 	}
-	if g2product.isTrace {
-		defer g2product.traceExit(12, C.GoString(result), err, time.Since(entryTime))
+	if client.isTrace {
+		defer client.traceExit(12, C.GoString(result), err, time.Since(entryTime))
 	}
 	return C.GoString(result), err
 }
@@ -300,11 +301,11 @@ Input
   - ctx: A context to control lifecycle.
   - observer: The observer to be added.
 */
-func (g2product *G2productImpl) RegisterObserver(ctx context.Context, observer observer.Observer) error {
-	if g2product.observers == nil {
-		g2product.observers = &subject.SubjectImpl{}
+func (client *G2product) RegisterObserver(ctx context.Context, observer observer.Observer) error {
+	if client.observers == nil {
+		client.observers = &subject.SubjectImpl{}
 	}
-	return g2product.observers.RegisterObserver(ctx, observer)
+	return client.observers.RegisterObserver(ctx, observer)
 }
 
 /*
@@ -314,18 +315,18 @@ Input
   - ctx: A context to control lifecycle.
   - logLevel: The desired log level. TRACE, DEBUG, INFO, WARN, ERROR, FATAL or PANIC.
 */
-func (g2product *G2productImpl) SetLogLevel(ctx context.Context, logLevel logger.Level) error {
+func (client *G2product) SetLogLevel(ctx context.Context, logLevel logger.Level) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	if g2product.isTrace {
-		g2product.traceEntry(13, logLevel)
+	if client.isTrace {
+		client.traceEntry(13, logLevel)
 	}
 	entryTime := time.Now()
 	var err error = nil
-	g2product.getLogger().SetLogLevel(messagelogger.Level(logLevel))
-	g2product.isTrace = (g2product.getLogger().GetLogLevel() == messagelogger.LevelTrace)
-	if g2product.isTrace {
-		defer g2product.traceExit(14, logLevel, err, time.Since(entryTime))
+	client.getLogger().SetLogLevel(messagelogger.Level(logLevel))
+	client.isTrace = (client.getLogger().GetLogLevel() == messagelogger.LevelTrace)
+	if client.isTrace {
+		defer client.traceExit(14, logLevel, err, time.Since(entryTime))
 	}
 	return err
 }
@@ -337,13 +338,13 @@ Input
   - ctx: A context to control lifecycle.
   - observer: The observer to be added.
 */
-func (g2product *G2productImpl) UnregisterObserver(ctx context.Context, observer observer.Observer) error {
-	err := g2product.observers.UnregisterObserver(ctx, observer)
+func (client *G2product) UnregisterObserver(ctx context.Context, observer observer.Observer) error {
+	err := client.observers.UnregisterObserver(ctx, observer)
 	if err != nil {
 		return err
 	}
-	if !g2product.observers.HasObservers(ctx) {
-		g2product.observers = nil
+	if !client.observers.HasObservers(ctx) {
+		client.observers = nil
 	}
 	return err
 }
@@ -360,12 +361,12 @@ Output
   - If error not nil, license is not valid.
   - The returned string has additional information.
 */
-func (g2product *G2productImpl) ValidateLicenseFile(ctx context.Context, licenseFilePath string) (string, error) {
+func (client *G2product) ValidateLicenseFile(ctx context.Context, licenseFilePath string) (string, error) {
 	// _DLEXPORT int G2Product_validateLicenseFile(const char* licenseFilePath, char **errorBuf, size_t *errorBufSize, void *(*resizeFunc)(void *ptr,size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	if g2product.isTrace {
-		g2product.traceEntry(15, licenseFilePath)
+	if client.isTrace {
+		client.traceEntry(15, licenseFilePath)
 	}
 	entryTime := time.Now()
 	var err error = nil
@@ -373,16 +374,16 @@ func (g2product *G2productImpl) ValidateLicenseFile(ctx context.Context, license
 	defer C.free(unsafe.Pointer(licenseFilePathForC))
 	result := C.G2Product_validateLicenseFile_helper(licenseFilePathForC)
 	if result.returnCode != 0 {
-		err = g2product.newError(ctx, 4004, licenseFilePath, result.returnCode, result, time.Since(entryTime))
+		err = client.newError(ctx, 4004, licenseFilePath, result.returnCode, result, time.Since(entryTime))
 	}
-	if g2product.observers != nil {
+	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			g2product.notify(ctx, 8004, err, details)
+			client.notify(ctx, 8004, err, details)
 		}()
 	}
-	if g2product.isTrace {
-		defer g2product.traceExit(16, licenseFilePath, C.GoString(result.response), err, time.Since(entryTime))
+	if client.isTrace {
+		defer client.traceExit(16, licenseFilePath, C.GoString(result.response), err, time.Since(entryTime))
 	}
 	return C.GoString(result.response), err
 }
@@ -400,12 +401,12 @@ Output
   - The returned string has additional information.
     See the example output.
 */
-func (g2product *G2productImpl) ValidateLicenseStringBase64(ctx context.Context, licenseString string) (string, error) {
+func (client *G2product) ValidateLicenseStringBase64(ctx context.Context, licenseString string) (string, error) {
 	// _DLEXPORT int G2Product_validateLicenseStringBase64(const char* licenseString, char **errorBuf, size_t *errorBufSize, void *(*resizeFunc)(void *ptr,size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	if g2product.isTrace {
-		g2product.traceEntry(17, licenseString)
+	if client.isTrace {
+		client.traceEntry(17, licenseString)
 	}
 	entryTime := time.Now()
 	var err error = nil
@@ -413,16 +414,16 @@ func (g2product *G2productImpl) ValidateLicenseStringBase64(ctx context.Context,
 	defer C.free(unsafe.Pointer(licenseStringForC))
 	result := C.G2Product_validateLicenseStringBase64_helper(licenseStringForC)
 	if result.returnCode != 0 {
-		err = g2product.newError(ctx, 4005, licenseString, result.returnCode, result, time.Since(entryTime))
+		err = client.newError(ctx, 4005, licenseString, result.returnCode, result, time.Since(entryTime))
 	}
-	if g2product.observers != nil {
+	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			g2product.notify(ctx, 8005, err, details)
+			client.notify(ctx, 8005, err, details)
 		}()
 	}
-	if g2product.isTrace {
-		defer g2product.traceExit(18, licenseString, C.GoString(result.response), err, time.Since(entryTime))
+	if client.isTrace {
+		defer client.traceExit(18, licenseString, C.GoString(result.response), err, time.Since(entryTime))
 	}
 	return C.GoString(result.response), err
 }
@@ -437,24 +438,24 @@ Output
   - A JSON document containing metadata about the Senzing Engine version being used.
     See the example output.
 */
-func (g2product *G2productImpl) Version(ctx context.Context) (string, error) {
+func (client *G2product) Version(ctx context.Context) (string, error) {
 	// _DLEXPORT char* G2Product_license();
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	if g2product.isTrace {
-		g2product.traceEntry(19)
+	if client.isTrace {
+		client.traceEntry(19)
 	}
 	entryTime := time.Now()
 	var err error = nil
 	result := C.G2Product_version()
-	if g2product.observers != nil {
+	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			g2product.notify(ctx, 8006, err, details)
+			client.notify(ctx, 8006, err, details)
 		}()
 	}
-	if g2product.isTrace {
-		defer g2product.traceExit(20, C.GoString(result), err, time.Since(entryTime))
+	if client.isTrace {
+		defer client.traceExit(20, C.GoString(result), err, time.Since(entryTime))
 	}
 	return C.GoString(result), err
 }

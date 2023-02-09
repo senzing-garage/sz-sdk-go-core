@@ -1,5 +1,5 @@
 /*
-The G2configmgrImpl implementation is a wrapper over the Senzing libg2configmgr library.
+The G2configmgr implementation is a wrapper over the Senzing libg2configmgr library.
 */
 package g2configmgr
 
@@ -32,8 +32,8 @@ import (
 // Types
 // ----------------------------------------------------------------------------
 
-// G2configmgrImpl is the default implementation of the G2configmgr interface.
-type G2configmgrImpl struct {
+// G2configmgr is the default implementation of the G2configmgr interface.
+type G2configmgr struct {
 	isTrace   bool
 	logger    messagelogger.MessageLoggerInterface
 	observers subject.Subject
@@ -50,20 +50,20 @@ const initialByteArraySize = 65535
 // ----------------------------------------------------------------------------
 
 // Get space for an array of bytes of a given size.
-func (g2configmgr *G2configmgrImpl) getByteArrayC(size int) *C.char {
+func (client *G2configmgr) getByteArrayC(size int) *C.char {
 	bytes := C.malloc(C.size_t(size))
 	return (*C.char)(bytes)
 }
 
 // Make a byte array.
-func (g2configmgr *G2configmgrImpl) getByteArray(size int) []byte {
+func (client *G2configmgr) getByteArray(size int) []byte {
 	return make([]byte, size)
 }
 
 // Create a new error.
-func (g2configmgr *G2configmgrImpl) newError(ctx context.Context, errorNumber int, details ...interface{}) error {
-	lastException, err := g2configmgr.getLastException(ctx)
-	defer g2configmgr.clearLastException(ctx)
+func (client *G2configmgr) newError(ctx context.Context, errorNumber int, details ...interface{}) error {
+	lastException, err := client.getLastException(ctx)
+	defer client.clearLastException(ctx)
 	message := lastException
 	if err != nil {
 		message = err.Error()
@@ -72,7 +72,7 @@ func (g2configmgr *G2configmgrImpl) newError(ctx context.Context, errorNumber in
 	var newDetails []interface{}
 	newDetails = append(newDetails, details...)
 	newDetails = append(newDetails, errors.New(message))
-	errorMessage, err := g2configmgr.getLogger().Message(errorNumber, newDetails...)
+	errorMessage, err := client.getLogger().Message(errorNumber, newDetails...)
 	if err != nil {
 		errorMessage = err.Error()
 	}
@@ -81,14 +81,14 @@ func (g2configmgr *G2configmgrImpl) newError(ctx context.Context, errorNumber in
 }
 
 // Get the Logger singleton.
-func (g2configmgr *G2configmgrImpl) getLogger() messagelogger.MessageLoggerInterface {
-	if g2configmgr.logger == nil {
-		g2configmgr.logger, _ = messagelogger.NewSenzingApiLogger(ProductId, g2configmgrapi.IdMessages, g2configmgrapi.IdStatuses, messagelogger.LevelInfo)
+func (client *G2configmgr) getLogger() messagelogger.MessageLoggerInterface {
+	if client.logger == nil {
+		client.logger, _ = messagelogger.NewSenzingApiLogger(ProductId, g2configmgrapi.IdMessages, g2configmgrapi.IdStatuses, messagelogger.LevelInfo)
 	}
-	return g2configmgr.logger
+	return client.logger
 }
 
-func (g2configmgr *G2configmgrImpl) notify(ctx context.Context, messageId int, err error, details map[string]string) {
+func (client *G2configmgr) notify(ctx context.Context, messageId int, err error, details map[string]string) {
 	now := time.Now()
 	details["subjectId"] = strconv.Itoa(ProductId)
 	details["messageId"] = strconv.Itoa(messageId)
@@ -100,18 +100,18 @@ func (g2configmgr *G2configmgrImpl) notify(ctx context.Context, messageId int, e
 	if err != nil {
 		fmt.Printf("Error: %s", err.Error())
 	} else {
-		g2configmgr.observers.NotifyObservers(ctx, string(message))
+		client.observers.NotifyObservers(ctx, string(message))
 	}
 }
 
 // Trace method entry.
-func (g2configmgr *G2configmgrImpl) traceEntry(errorNumber int, details ...interface{}) {
-	g2configmgr.getLogger().Log(errorNumber, details...)
+func (client *G2configmgr) traceEntry(errorNumber int, details ...interface{}) {
+	client.getLogger().Log(errorNumber, details...)
 }
 
 // Trace method exit.
-func (g2configmgr *G2configmgrImpl) traceExit(errorNumber int, details ...interface{}) {
-	g2configmgr.getLogger().Log(errorNumber, details...)
+func (client *G2configmgr) traceExit(errorNumber int, details ...interface{}) {
+	client.getLogger().Log(errorNumber, details...)
 }
 
 /*
@@ -120,16 +120,16 @@ The clearLastException method erases the last exception message held by the Senz
 Input
   - ctx: A context to control lifecycle.
 */
-func (g2configmgr *G2configmgrImpl) clearLastException(ctx context.Context) error {
+func (client *G2configmgr) clearLastException(ctx context.Context) error {
 	// _DLEXPORT void G2Config_clearLastException()
-	if g2configmgr.isTrace {
-		g2configmgr.traceEntry(3)
+	if client.isTrace {
+		client.traceEntry(3)
 	}
 	entryTime := time.Now()
 	var err error = nil
 	C.G2ConfigMgr_clearLastException()
-	if g2configmgr.isTrace {
-		defer g2configmgr.traceExit(4, err, time.Since(entryTime))
+	if client.isTrace {
+		defer client.traceExit(4, err, time.Since(entryTime))
 	}
 	return err
 }
@@ -143,21 +143,21 @@ Input
 Output
   - A string containing the error received from Senzing's G2ConfigMgr.
 */
-func (g2configmgr *G2configmgrImpl) getLastException(ctx context.Context) (string, error) {
+func (client *G2configmgr) getLastException(ctx context.Context) (string, error) {
 	// _DLEXPORT int G2Config_getLastException(char *buffer, const size_t bufSize);
-	if g2configmgr.isTrace {
-		g2configmgr.traceEntry(13)
+	if client.isTrace {
+		client.traceEntry(13)
 	}
 	entryTime := time.Now()
 	var err error = nil
-	stringBuffer := g2configmgr.getByteArray(initialByteArraySize)
+	stringBuffer := client.getByteArray(initialByteArraySize)
 	C.G2ConfigMgr_getLastException((*C.char)(unsafe.Pointer(&stringBuffer[0])), C.ulong(len(stringBuffer)))
 	// if result == 0 { // "result" is length of exception message.
-	// 	err = g2configmgr.getLogger().Error(4006, result, time.Since(entryTime))
+	// 	err = client.getLogger().Error(4006, result, time.Since(entryTime))
 	// }
 	stringBuffer = bytes.Trim(stringBuffer, "\x00")
-	if g2configmgr.isTrace {
-		defer g2configmgr.traceExit(14, string(stringBuffer), err, time.Since(entryTime))
+	if client.isTrace {
+		defer client.traceExit(14, string(stringBuffer), err, time.Since(entryTime))
 	}
 	return string(stringBuffer), err
 }
@@ -171,16 +171,16 @@ Input:
 Output:
   - An int containing the error received from Senzing's G2ConfigMgr.
 */
-func (g2configmgr *G2configmgrImpl) getLastExceptionCode(ctx context.Context) (int, error) {
+func (client *G2configmgr) getLastExceptionCode(ctx context.Context) (int, error) {
 	//  _DLEXPORT int G2Config_getLastExceptionCode();
-	if g2configmgr.isTrace {
-		g2configmgr.traceEntry(15)
+	if client.isTrace {
+		client.traceEntry(15)
 	}
 	entryTime := time.Now()
 	var err error = nil
 	result := int(C.G2ConfigMgr_getLastExceptionCode())
-	if g2configmgr.isTrace {
-		defer g2configmgr.traceExit(16, result, err, time.Since(entryTime))
+	if client.isTrace {
+		defer client.traceExit(16, result, err, time.Since(entryTime))
 	}
 	return result, err
 }
@@ -200,12 +200,12 @@ Input
 Output
   - A configuration identifier.
 */
-func (g2configmgr *G2configmgrImpl) AddConfig(ctx context.Context, configStr string, configComments string) (int64, error) {
+func (client *G2configmgr) AddConfig(ctx context.Context, configStr string, configComments string) (int64, error) {
 	// _DLEXPORT int G2ConfigMgr_addConfig(const char* configStr, const char* configComments, long long* configID);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	if g2configmgr.isTrace {
-		g2configmgr.traceEntry(1, configStr, configComments)
+	if client.isTrace {
+		client.traceEntry(1, configStr, configComments)
 	}
 	entryTime := time.Now()
 	var err error = nil
@@ -215,18 +215,18 @@ func (g2configmgr *G2configmgrImpl) AddConfig(ctx context.Context, configStr str
 	defer C.free(unsafe.Pointer(configCommentsForC))
 	result := C.G2ConfigMgr_addConfig_helper(configStrForC, configCommentsForC)
 	if result.returnCode != 0 {
-		err = g2configmgr.newError(ctx, 4001, configStr, configComments, result.returnCode, result, time.Since(entryTime))
+		err = client.newError(ctx, 4001, configStr, configComments, result.returnCode, result, time.Since(entryTime))
 	}
-	if g2configmgr.observers != nil {
+	if client.observers != nil {
 		go func() {
 			details := map[string]string{
 				"configComments": configComments,
 			}
-			g2configmgr.notify(ctx, 8001, err, details)
+			client.notify(ctx, 8001, err, details)
 		}()
 	}
-	if g2configmgr.isTrace {
-		defer g2configmgr.traceExit(2, configStr, configComments, int64(C.longlong(result.configID)), err, time.Since(entryTime))
+	if client.isTrace {
+		defer client.traceExit(2, configStr, configComments, int64(C.longlong(result.configID)), err, time.Since(entryTime))
 	}
 	return int64(C.longlong(result.configID)), err
 }
@@ -238,27 +238,27 @@ It should be called after all other calls are complete.
 Input
   - ctx: A context to control lifecycle.
 */
-func (g2configmgr *G2configmgrImpl) Destroy(ctx context.Context) error {
+func (client *G2configmgr) Destroy(ctx context.Context) error {
 	// _DLEXPORT int G2Config_destroy();
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	if g2configmgr.isTrace {
-		g2configmgr.traceEntry(5)
+	if client.isTrace {
+		client.traceEntry(5)
 	}
 	entryTime := time.Now()
 	var err error = nil
 	result := C.G2ConfigMgr_destroy()
 	if result != 0 {
-		err = g2configmgr.newError(ctx, 4002, result, time.Since(entryTime))
+		err = client.newError(ctx, 4002, result, time.Since(entryTime))
 	}
-	if g2configmgr.observers != nil {
+	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			g2configmgr.notify(ctx, 8002, err, details)
+			client.notify(ctx, 8002, err, details)
 		}()
 	}
-	if g2configmgr.isTrace {
-		defer g2configmgr.traceExit(6, err, time.Since(entryTime))
+	if client.isTrace {
+		defer client.traceExit(6, err, time.Since(entryTime))
 	}
 	return err
 }
@@ -274,27 +274,27 @@ Output
   - A JSON document containing the Senzing configuration.
     See the example output.
 */
-func (g2configmgr *G2configmgrImpl) GetConfig(ctx context.Context, configID int64) (string, error) {
+func (client *G2configmgr) GetConfig(ctx context.Context, configID int64) (string, error) {
 	// _DLEXPORT int G2ConfigMgr_getConfig(const long long configID, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	if g2configmgr.isTrace {
-		g2configmgr.traceEntry(7, configID)
+	if client.isTrace {
+		client.traceEntry(7, configID)
 	}
 	entryTime := time.Now()
 	var err error = nil
 	result := C.G2ConfigMgr_getConfig_helper(C.longlong(configID))
 	if result.returnCode != 0 {
-		err = g2configmgr.newError(ctx, 4003, configID, result.returnCode, result, time.Since(entryTime))
+		err = client.newError(ctx, 4003, configID, result.returnCode, result, time.Since(entryTime))
 	}
-	if g2configmgr.observers != nil {
+	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			g2configmgr.notify(ctx, 8003, err, details)
+			client.notify(ctx, 8003, err, details)
 		}()
 	}
-	if g2configmgr.isTrace {
-		defer g2configmgr.traceExit(8, configID, C.GoString(result.config), err, time.Since(entryTime))
+	if client.isTrace {
+		defer client.traceExit(8, configID, C.GoString(result.config), err, time.Since(entryTime))
 	}
 	return C.GoString(result.config), err
 }
@@ -309,27 +309,27 @@ Output
   - A JSON document containing Senzing configurations.
     See the example output.
 */
-func (g2configmgr *G2configmgrImpl) GetConfigList(ctx context.Context) (string, error) {
+func (client *G2configmgr) GetConfigList(ctx context.Context) (string, error) {
 	// _DLEXPORT int G2ConfigMgr_getConfigList(char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	if g2configmgr.isTrace {
-		g2configmgr.traceEntry(9)
+	if client.isTrace {
+		client.traceEntry(9)
 	}
 	entryTime := time.Now()
 	var err error = nil
 	result := C.G2ConfigMgr_getConfigList_helper()
 	if result.returnCode != 0 {
-		err = g2configmgr.newError(ctx, 4004, result.returnCode, result, time.Since(entryTime))
+		err = client.newError(ctx, 4004, result.returnCode, result, time.Since(entryTime))
 	}
-	if g2configmgr.observers != nil {
+	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			g2configmgr.notify(ctx, 8004, err, details)
+			client.notify(ctx, 8004, err, details)
 		}()
 	}
-	if g2configmgr.isTrace {
-		defer g2configmgr.traceExit(10, C.GoString(result.configList), err, time.Since(entryTime))
+	if client.isTrace {
+		defer client.traceExit(10, C.GoString(result.configList), err, time.Since(entryTime))
 	}
 	return C.GoString(result.configList), err
 }
@@ -343,27 +343,27 @@ Input
 Output
   - A configuration identifier which identifies the current configuration in use.
 */
-func (g2configmgr *G2configmgrImpl) GetDefaultConfigID(ctx context.Context) (int64, error) {
+func (client *G2configmgr) GetDefaultConfigID(ctx context.Context) (int64, error) {
 	//  _DLEXPORT int G2ConfigMgr_getDefaultConfigID(long long* configID);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	if g2configmgr.isTrace {
-		g2configmgr.traceEntry(11)
+	if client.isTrace {
+		client.traceEntry(11)
 	}
 	entryTime := time.Now()
 	var err error = nil
 	result := C.G2ConfigMgr_getDefaultConfigID_helper()
 	if result.returnCode != 0 {
-		err = g2configmgr.newError(ctx, 4005, result.returnCode, result, time.Since(entryTime))
+		err = client.newError(ctx, 4005, result.returnCode, result, time.Since(entryTime))
 	}
-	if g2configmgr.observers != nil {
+	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			g2configmgr.notify(ctx, 8005, err, details)
+			client.notify(ctx, 8005, err, details)
 		}()
 	}
-	if g2configmgr.isTrace {
-		defer g2configmgr.traceExit(12, int64(C.longlong(result.configID)), err, time.Since(entryTime))
+	if client.isTrace {
+		defer client.traceExit(12, int64(C.longlong(result.configID)), err, time.Since(entryTime))
 	}
 	return int64(C.longlong(result.configID)), err
 }
@@ -378,12 +378,12 @@ Input
   - iniParams: A JSON string containing configuration parameters.
   - verboseLogging: A flag to enable deeper logging of the G2 processing. 0 for no Senzing logging; 1 for logging.
 */
-func (g2configmgr *G2configmgrImpl) Init(ctx context.Context, moduleName string, iniParams string, verboseLogging int) error {
+func (client *G2configmgr) Init(ctx context.Context, moduleName string, iniParams string, verboseLogging int) error {
 	// _DLEXPORT int G2Config_init(const char *moduleName, const char *iniParams, const int verboseLogging);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	if g2configmgr.isTrace {
-		g2configmgr.traceEntry(17, moduleName, iniParams, verboseLogging)
+	if client.isTrace {
+		client.traceEntry(17, moduleName, iniParams, verboseLogging)
 	}
 	entryTime := time.Now()
 	var err error = nil
@@ -393,20 +393,20 @@ func (g2configmgr *G2configmgrImpl) Init(ctx context.Context, moduleName string,
 	defer C.free(unsafe.Pointer(iniParamsForC))
 	result := C.G2ConfigMgr_init(moduleNameForC, iniParamsForC, C.int(verboseLogging))
 	if result != 0 {
-		err = g2configmgr.newError(ctx, 4007, moduleName, iniParams, verboseLogging, result, time.Since(entryTime))
+		err = client.newError(ctx, 4007, moduleName, iniParams, verboseLogging, result, time.Since(entryTime))
 	}
-	if g2configmgr.observers != nil {
+	if client.observers != nil {
 		go func() {
 			details := map[string]string{
 				"iniParams":      iniParams,
 				"moduleName":     moduleName,
 				"verboseLogging": strconv.Itoa(verboseLogging),
 			}
-			g2configmgr.notify(ctx, 8006, err, details)
+			client.notify(ctx, 8006, err, details)
 		}()
 	}
-	if g2configmgr.isTrace {
-		defer g2configmgr.traceExit(18, moduleName, iniParams, verboseLogging, err, time.Since(entryTime))
+	if client.isTrace {
+		defer client.traceExit(18, moduleName, iniParams, verboseLogging, err, time.Since(entryTime))
 	}
 	return err
 }
@@ -418,11 +418,11 @@ Input
   - ctx: A context to control lifecycle.
   - observer: The observer to be added.
 */
-func (g2configmgr *G2configmgrImpl) RegisterObserver(ctx context.Context, observer observer.Observer) error {
-	if g2configmgr.observers == nil {
-		g2configmgr.observers = &subject.SubjectImpl{}
+func (client *G2configmgr) RegisterObserver(ctx context.Context, observer observer.Observer) error {
+	if client.observers == nil {
+		client.observers = &subject.SubjectImpl{}
 	}
-	return g2configmgr.observers.RegisterObserver(ctx, observer)
+	return client.observers.RegisterObserver(ctx, observer)
 }
 
 /*
@@ -436,29 +436,29 @@ Input
   - oldConfigID: The configuration identifier to replace.
   - newConfigID: The configuration identifier to use as the default.
 */
-func (g2configmgr *G2configmgrImpl) ReplaceDefaultConfigID(ctx context.Context, oldConfigID int64, newConfigID int64) error {
+func (client *G2configmgr) ReplaceDefaultConfigID(ctx context.Context, oldConfigID int64, newConfigID int64) error {
 	// _DLEXPORT int G2ConfigMgr_replaceDefaultConfigID(const long long oldConfigID, const long long newConfigID);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	if g2configmgr.isTrace {
-		g2configmgr.traceEntry(19, oldConfigID, newConfigID)
+	if client.isTrace {
+		client.traceEntry(19, oldConfigID, newConfigID)
 	}
 	entryTime := time.Now()
 	var err error = nil
 	result := C.G2ConfigMgr_replaceDefaultConfigID(C.longlong(oldConfigID), C.longlong(newConfigID))
 	if result != 0 {
-		err = g2configmgr.newError(ctx, 4008, oldConfigID, newConfigID, result, time.Since(entryTime))
+		err = client.newError(ctx, 4008, oldConfigID, newConfigID, result, time.Since(entryTime))
 	}
-	if g2configmgr.observers != nil {
+	if client.observers != nil {
 		go func() {
 			details := map[string]string{
 				"newConfigID": strconv.FormatInt(newConfigID, 10),
 			}
-			g2configmgr.notify(ctx, 8007, err, details)
+			client.notify(ctx, 8007, err, details)
 		}()
 	}
-	if g2configmgr.isTrace {
-		defer g2configmgr.traceExit(20, oldConfigID, newConfigID, err, time.Since(entryTime))
+	if client.isTrace {
+		defer client.traceExit(20, oldConfigID, newConfigID, err, time.Since(entryTime))
 	}
 	return err
 }
@@ -471,29 +471,29 @@ Input
   - ctx: A context to control lifecycle.
   - configID: The configuration identifier of the Senzing Engine configuration to use as the default.
 */
-func (g2configmgr *G2configmgrImpl) SetDefaultConfigID(ctx context.Context, configID int64) error {
+func (client *G2configmgr) SetDefaultConfigID(ctx context.Context, configID int64) error {
 	// _DLEXPORT int G2ConfigMgr_setDefaultConfigID(const long long configID);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	if g2configmgr.isTrace {
-		g2configmgr.traceEntry(21, configID)
+	if client.isTrace {
+		client.traceEntry(21, configID)
 	}
 	entryTime := time.Now()
 	var err error = nil
 	result := C.G2ConfigMgr_setDefaultConfigID(C.longlong(configID))
 	if result != 0 {
-		err = g2configmgr.newError(ctx, 4009, configID, result, time.Since(entryTime))
+		err = client.newError(ctx, 4009, configID, result, time.Since(entryTime))
 	}
-	if g2configmgr.observers != nil {
+	if client.observers != nil {
 		go func() {
 			details := map[string]string{
 				"configID": strconv.FormatInt(configID, 10),
 			}
-			g2configmgr.notify(ctx, 8008, err, details)
+			client.notify(ctx, 8008, err, details)
 		}()
 	}
-	if g2configmgr.isTrace {
-		defer g2configmgr.traceExit(22, configID, err, time.Since(entryTime))
+	if client.isTrace {
+		defer client.traceExit(22, configID, err, time.Since(entryTime))
 	}
 	return err
 }
@@ -505,18 +505,18 @@ Input
   - ctx: A context to control lifecycle.
   - logLevel: The desired log level. TRACE, DEBUG, INFO, WARN, ERROR, FATAL or PANIC.
 */
-func (g2configmgr *G2configmgrImpl) SetLogLevel(ctx context.Context, logLevel logger.Level) error {
+func (client *G2configmgr) SetLogLevel(ctx context.Context, logLevel logger.Level) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	if g2configmgr.isTrace {
-		g2configmgr.traceEntry(23, logLevel)
+	if client.isTrace {
+		client.traceEntry(23, logLevel)
 	}
 	entryTime := time.Now()
 	var err error = nil
-	g2configmgr.getLogger().SetLogLevel(messagelogger.Level(logLevel))
-	g2configmgr.isTrace = (g2configmgr.getLogger().GetLogLevel() == messagelogger.LevelTrace)
-	if g2configmgr.isTrace {
-		defer g2configmgr.traceExit(24, logLevel, err, time.Since(entryTime))
+	client.getLogger().SetLogLevel(messagelogger.Level(logLevel))
+	client.isTrace = (client.getLogger().GetLogLevel() == messagelogger.LevelTrace)
+	if client.isTrace {
+		defer client.traceExit(24, logLevel, err, time.Since(entryTime))
 	}
 	return err
 }
@@ -528,13 +528,13 @@ Input
   - ctx: A context to control lifecycle.
   - observer: The observer to be added.
 */
-func (g2configmgr *G2configmgrImpl) UnregisterObserver(ctx context.Context, observer observer.Observer) error {
-	err := g2configmgr.observers.UnregisterObserver(ctx, observer)
+func (client *G2configmgr) UnregisterObserver(ctx context.Context, observer observer.Observer) error {
+	err := client.observers.UnregisterObserver(ctx, observer)
 	if err != nil {
 		return err
 	}
-	if !g2configmgr.observers.HasObservers(ctx) {
-		g2configmgr.observers = nil
+	if !client.observers.HasObservers(ctx) {
+		client.observers = nil
 	}
 	return err
 }

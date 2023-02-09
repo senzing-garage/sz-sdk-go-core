@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	truncator "github.com/aquilax/truncate"
+	g2productapi "github.com/senzing/g2-sdk-go/g2product"
 	"github.com/senzing/go-helpers/g2engineconfigurationjson"
 	"github.com/senzing/go-logging/logger"
 	"github.com/stretchr/testify/assert"
@@ -19,16 +20,16 @@ const (
 )
 
 var (
-	g2productSingleton G2product
+	g2productSingleton g2productapi.G2product
 )
 
 // ----------------------------------------------------------------------------
 // Internal functions
 // ----------------------------------------------------------------------------
 
-func getTestObject(ctx context.Context, test *testing.T) G2product {
+func getTestObject(ctx context.Context, test *testing.T) g2productapi.G2product {
 	if g2productSingleton == nil {
-		g2productSingleton = &G2productImpl{}
+		g2productSingleton = &G2product{}
 		// g2productSingleton.SetLogLevel(ctx, logger.LevelTrace)
 		log.SetFlags(0)
 		moduleName := "Test module name"
@@ -45,9 +46,9 @@ func getTestObject(ctx context.Context, test *testing.T) G2product {
 	return g2productSingleton
 }
 
-func getG2Product(ctx context.Context) G2product {
+func getG2Product(ctx context.Context) g2productapi.G2product {
 	if g2productSingleton == nil {
-		g2productSingleton = &G2productImpl{}
+		g2productSingleton = &G2product{}
 		moduleName := "Test module name"
 		verboseLogging := 0
 		iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
@@ -76,14 +77,14 @@ func printActual(test *testing.T, actual interface{}) {
 	printResult(test, "Actual", actual)
 }
 
-func testError(test *testing.T, ctx context.Context, g2product G2product, err error) {
+func testError(test *testing.T, ctx context.Context, g2product g2productapi.G2product, err error) {
 	if err != nil {
 		test.Log("Error:", err.Error())
 		assert.FailNow(test, err.Error())
 	}
 }
 
-func testErrorNoFail(test *testing.T, ctx context.Context, g2product G2product, err error) {
+func testErrorNoFail(test *testing.T, ctx context.Context, g2product g2productapi.G2product, err error) {
 	if err != nil {
 		test.Log("Error:", err.Error())
 	}
@@ -132,7 +133,7 @@ func TestBuildSimpleSystemConfigurationJson(test *testing.T) {
 
 func TestG2productImpl_Init(test *testing.T) {
 	ctx := context.TODO()
-	g2product := &G2productImpl{}
+	g2product := &G2product{}
 	moduleName := "Test module name"
 	verboseLogging := 0
 	iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
