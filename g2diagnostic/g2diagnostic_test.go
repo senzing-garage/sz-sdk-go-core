@@ -12,6 +12,7 @@ import (
 	"github.com/senzing/g2-sdk-go-base/g2config"
 	"github.com/senzing/g2-sdk-go-base/g2configmgr"
 	"github.com/senzing/g2-sdk-go-base/g2engine"
+	g2configmgrapi "github.com/senzing/g2-sdk-go/g2configmgr"
 	"github.com/senzing/go-common/truthset"
 	"github.com/senzing/go-helpers/g2engineconfigurationjson"
 	"github.com/senzing/go-logging/logger"
@@ -26,7 +27,7 @@ const (
 
 var (
 	g2diagnosticSingleton G2diagnostic
-	g2configmgrSingleton  g2configmgr.G2configmgr
+	g2configmgrSingleton  g2configmgrapi.G2configmgr
 	localLogger           messagelogger.MessageLoggerInterface
 )
 
@@ -72,7 +73,7 @@ func getG2Diagnostic(ctx context.Context) G2diagnostic {
 	return g2diagnosticSingleton
 }
 
-func getG2Configmgr(ctx context.Context) g2configmgr.G2configmgr {
+func getG2Configmgr(ctx context.Context) g2configmgrapi.G2configmgr {
 	if g2configmgrSingleton == nil {
 		g2configmgrSingleton = &g2configmgr.G2configmgrImpl{}
 		moduleName := "Test module name"

@@ -8,11 +8,11 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/senzing/g2-sdk-go-base/g2config"
-	"github.com/senzing/g2-sdk-go-base/g2configmgr"
-	"github.com/senzing/g2-sdk-go-base/g2diagnostic"
-	"github.com/senzing/g2-sdk-go-base/g2engine"
-	"github.com/senzing/g2-sdk-go-base/g2product"
+	"github.com/senzing/g2-sdk-go/g2config"
+	"github.com/senzing/g2-sdk-go/g2configmgr"
+	"github.com/senzing/g2-sdk-go/g2diagnostic"
+	"github.com/senzing/g2-sdk-go/g2engine"
+	"github.com/senzing/g2-sdk-go/g2product"
 	"github.com/senzing/go-common/truthset"
 	"github.com/senzing/go-helpers/g2engineconfigurationjson"
 	"github.com/senzing/go-logging/messageformat"
@@ -270,10 +270,6 @@ func destroyObjects(ctx context.Context, g2Config g2config.G2config, g2Configmgr
 func main() {
 	var err error = nil
 	ctx := context.TODO()
-
-	// Randomize random number generator.
-
-	rand.Seed(time.Now().UnixNano())
 
 	// Configure the "log" standard library.
 

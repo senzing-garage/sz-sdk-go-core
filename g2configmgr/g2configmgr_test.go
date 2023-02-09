@@ -10,8 +10,9 @@ import (
 	"time"
 
 	truncator "github.com/aquilax/truncate"
-	"github.com/senzing/g2-sdk-go-base/g2config"
-	"github.com/senzing/g2-sdk-go-base/g2engine"
+	"github.com/senzing/g2-sdk-go/g2config"
+	g2configmgrapi "github.com/senzing/g2-sdk-go/g2configmgr"
+	"github.com/senzing/g2-sdk-go/g2engine"
 	"github.com/senzing/go-common/truthset"
 	"github.com/senzing/go-helpers/g2engineconfigurationjson"
 	"github.com/senzing/go-logging/logger"
@@ -25,7 +26,7 @@ const (
 )
 
 var (
-	g2configmgrSingleton G2configmgr
+	g2configmgrSingleton g2configmgrapi.G2configmgr
 	g2configSingleton    g2config.G2config
 	localLogger          messagelogger.MessageLoggerInterface
 )
@@ -34,7 +35,7 @@ var (
 // Internal functions
 // ----------------------------------------------------------------------------
 
-func getTestObject(ctx context.Context, test *testing.T) G2configmgr {
+func getTestObject(ctx context.Context, test *testing.T) g2configmgrapi.G2configmgr {
 	if g2configmgrSingleton == nil {
 		g2configmgrSingleton = &G2configmgrImpl{}
 		// g2configmgrSingleton.SetLogLevel(ctx, logger.LevelTrace)
@@ -53,7 +54,7 @@ func getTestObject(ctx context.Context, test *testing.T) G2configmgr {
 	return g2configmgrSingleton
 }
 
-func getG2Configmgr(ctx context.Context) G2configmgr {
+func getG2Configmgr(ctx context.Context) g2configmgrapi.G2configmgr {
 	if g2configmgrSingleton == nil {
 		g2configmgrSingleton := &G2configmgrImpl{}
 		moduleName := "Test module name"
@@ -98,7 +99,7 @@ func printActual(test *testing.T, actual interface{}) {
 	printResult(test, "Actual", actual)
 }
 
-func testError(test *testing.T, ctx context.Context, g2configmgr G2configmgr, err error) {
+func testError(test *testing.T, ctx context.Context, g2configmgr g2configmgrapi.G2configmgr, err error) {
 	if err != nil {
 		test.Log("Error:", err.Error())
 		assert.FailNow(test, err.Error())
@@ -210,7 +211,7 @@ func setup() error {
 	ctx := context.TODO()
 	moduleName := "Test module name"
 	verboseLogging := 0
-	localLogger, err := messagelogger.NewSenzingApiLogger(ProductId, IdMessages, IdStatuses, messagelogger.LevelInfo)
+	localLogger, err := messagelogger.NewSenzingApiLogger(ProductId, g2configmgrapi.IdMessages, g2configmgrapi.IdStatuses, messagelogger.LevelInfo)
 	if err != nil {
 		return localLogger.Error(5901, err)
 	}

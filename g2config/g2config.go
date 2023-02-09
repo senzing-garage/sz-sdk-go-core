@@ -19,6 +19,7 @@ import (
 	"time"
 	"unsafe"
 
+	g2configapi "github.com/senzing/g2-sdk-go/g2config"
 	"github.com/senzing/go-logging/logger"
 	"github.com/senzing/go-logging/messagelogger"
 	"github.com/senzing/go-observing/observer"
@@ -80,7 +81,7 @@ func (g2config *G2configImpl) newError(ctx context.Context, errorNumber int, det
 // Get the Logger singleton.
 func (g2config *G2configImpl) getLogger() messagelogger.MessageLoggerInterface {
 	if g2config.logger == nil {
-		g2config.logger, _ = messagelogger.NewSenzingApiLogger(ProductId, IdMessages, IdStatuses, messagelogger.LevelInfo)
+		g2config.logger, _ = messagelogger.NewSenzingApiLogger(ProductId, g2configapi.IdMessages, g2configapi.IdStatuses, messagelogger.LevelInfo)
 	}
 	return g2config.logger
 }
