@@ -371,7 +371,7 @@ func (client *G2configmgr) GetDefaultConfigID(ctx context.Context) (int64, error
 /*
 The GetSdkId method returns the identifier of this particular Software Development Kit (SDK).
 It is handy when working with multiple implementations of the same G2configmgrInterface.
-It returns "base".
+For this implementation, "base" is returned.
 
 Input
   - ctx: A context to control lifecycle.
