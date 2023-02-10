@@ -869,6 +869,18 @@ func (client *G2diagnostic) GetResolutionStatistics(ctx context.Context) (string
 }
 
 /*
+The GetSdkId method returns the identifier of this particular Software Development Kit (SDK).
+It is handy when working with multiple implementations of the same G2diagnosticInterface.
+For this implementation, "base" is returned.
+
+Input
+  - ctx: A context to control lifecycle.
+*/
+func (client *G2diagnostic) GetSdkId(ctx context.Context) (string, error) {
+	return "base", nil
+}
+
+/*
 The GetTotalSystemMemory method returns the total memory, in bytes, on the host system.
 
 Input

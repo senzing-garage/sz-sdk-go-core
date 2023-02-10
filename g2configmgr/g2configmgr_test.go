@@ -12,7 +12,7 @@ import (
 	truncator "github.com/aquilax/truncate"
 	"github.com/senzing/g2-sdk-go-base/g2config"
 	"github.com/senzing/g2-sdk-go-base/g2engine"
-	g2configapi "github.com/senzing/g2-sdk-go/g2config"
+	"github.com/senzing/g2-sdk-go/g2api"
 	g2configmgrapi "github.com/senzing/g2-sdk-go/g2configmgr"
 	"github.com/senzing/go-common/g2engineconfigurationjson"
 	"github.com/senzing/go-common/truthset"
@@ -27,8 +27,8 @@ const (
 )
 
 var (
-	g2configmgrSingleton g2configmgrapi.G2configmgr
-	g2configSingleton    g2configapi.G2config
+	g2configmgrSingleton g2api.G2configmgrInterface
+	g2configSingleton    g2api.G2configInterface
 	localLogger          messagelogger.MessageLoggerInterface
 )
 
@@ -36,7 +36,7 @@ var (
 // Internal functions
 // ----------------------------------------------------------------------------
 
-func getTestObject(ctx context.Context, test *testing.T) g2configmgrapi.G2configmgr {
+func getTestObject(ctx context.Context, test *testing.T) g2api.G2configmgrInterface {
 	if g2configmgrSingleton == nil {
 		g2configmgrSingleton = &G2configmgr{}
 		// g2configmgrSingleton.SetLogLevel(ctx, logger.LevelTrace)
@@ -55,7 +55,7 @@ func getTestObject(ctx context.Context, test *testing.T) g2configmgrapi.G2config
 	return g2configmgrSingleton
 }
 
-func getG2Configmgr(ctx context.Context) g2configmgrapi.G2configmgr {
+func getG2Configmgr(ctx context.Context) g2api.G2configmgrInterface {
 	if g2configmgrSingleton == nil {
 		g2configmgrSingleton := &G2configmgr{}
 		moduleName := "Test module name"
@@ -69,7 +69,7 @@ func getG2Configmgr(ctx context.Context) g2configmgrapi.G2configmgr {
 	return g2configmgrSingleton
 }
 
-func getG2Config(ctx context.Context) g2configapi.G2config {
+func getG2Config(ctx context.Context) g2api.G2configInterface {
 	if g2configSingleton == nil {
 		g2configSingleton = &g2config.G2config{}
 		moduleName := "Test module name"
@@ -100,7 +100,7 @@ func printActual(test *testing.T, actual interface{}) {
 	printResult(test, "Actual", actual)
 }
 
-func testError(test *testing.T, ctx context.Context, g2configmgr g2configmgrapi.G2configmgr, err error) {
+func testError(test *testing.T, ctx context.Context, g2configmgr g2api.G2configmgrInterface, err error) {
 	if err != nil {
 		test.Log("Error:", err.Error())
 		assert.FailNow(test, err.Error())

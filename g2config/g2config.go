@@ -372,6 +372,18 @@ func (client *G2config) Destroy(ctx context.Context) error {
 }
 
 /*
+The GetSdkId method returns the identifier of this particular Software Development Kit (SDK).
+It is handy when working with multiple implementations of the same G2configInterface.
+It returns "base".
+
+Input
+  - ctx: A context to control lifecycle.
+*/
+func (client *G2config) GetSdkId(ctx context.Context) (string, error) {
+	return "base", nil
+}
+
+/*
 The Init method initializes the Senzing G2Config object.
 It must be called prior to any other calls.
 

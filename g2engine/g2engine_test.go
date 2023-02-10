@@ -13,6 +13,7 @@ import (
 	truncator "github.com/aquilax/truncate"
 	"github.com/senzing/g2-sdk-go-base/g2config"
 	"github.com/senzing/g2-sdk-go-base/g2configmgr"
+	"github.com/senzing/g2-sdk-go/g2api"
 	g2engineapi "github.com/senzing/g2-sdk-go/g2engine"
 	"github.com/senzing/go-common/g2engineconfigurationjson"
 	"github.com/senzing/go-common/record"
@@ -35,7 +36,7 @@ type GetEntityByRecordIDResponse struct {
 }
 
 var (
-	g2engineSingleton g2engineapi.G2engine
+	g2engineSingleton g2api.G2engineInterface
 	localLogger       messagelogger.MessageLoggerInterface
 )
 
@@ -43,7 +44,7 @@ var (
 // Internal functions
 // ----------------------------------------------------------------------------
 
-func getTestObject(ctx context.Context, test *testing.T) g2engineapi.G2engine {
+func getTestObject(ctx context.Context, test *testing.T) g2api.G2engineInterface {
 	if g2engineSingleton == nil {
 		g2engineSingleton = &G2engine{}
 		// g2engineSingleton.SetLogLevel(ctx, logger.LevelTrace)
@@ -62,7 +63,7 @@ func getTestObject(ctx context.Context, test *testing.T) g2engineapi.G2engine {
 	return g2engineSingleton
 }
 
-func getG2Engine(ctx context.Context) g2engineapi.G2engine {
+func getG2Engine(ctx context.Context) g2api.G2engineInterface {
 	if g2engineSingleton == nil {
 		g2engineSingleton = &G2engine{}
 		// g2engineSingleton.SetLogLevel(ctx, logger.LevelTrace)
@@ -122,14 +123,14 @@ func printActual(test *testing.T, actual interface{}) {
 	printResult(test, "Actual", actual)
 }
 
-func testError(test *testing.T, ctx context.Context, g2engine g2engineapi.G2engine, err error) {
+func testError(test *testing.T, ctx context.Context, g2engine g2api.G2engineInterface, err error) {
 	if err != nil {
 		test.Log("Error:", err.Error())
 		assert.FailNow(test, err.Error())
 	}
 }
 
-func testErrorNoFail(test *testing.T, ctx context.Context, g2engine g2engineapi.G2engine, err error) {
+func testErrorNoFail(test *testing.T, ctx context.Context, g2engine g2api.G2engineInterface, err error) {
 	if err != nil {
 		test.Log("Error:", err.Error())
 	}

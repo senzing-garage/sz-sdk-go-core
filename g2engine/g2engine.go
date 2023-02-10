@@ -2102,6 +2102,18 @@ func (client *G2engine) GetRepositoryLastModifiedTime(ctx context.Context) (int6
 }
 
 /*
+The GetSdkId method returns the identifier of this particular Software Development Kit (SDK).
+It is handy when working with multiple implementations of the same G2engineInterface.
+For this implementation, "base" is returned.
+
+Input
+  - ctx: A context to control lifecycle.
+*/
+func (client *G2engine) GetSdkId(ctx context.Context) (string, error) {
+	return "base", nil
+}
+
+/*
 The GetVirtualEntityByRecordID method FIXME:
 To control output, use GetVirtualEntityByRecordID_V2() instead.
 

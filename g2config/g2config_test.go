@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	truncator "github.com/aquilax/truncate"
-	g2configapi "github.com/senzing/g2-sdk-go/g2config"
+	"github.com/senzing/g2-sdk-go/g2api"
 	"github.com/senzing/go-common/g2engineconfigurationjson"
 	"github.com/senzing/go-logging/logger"
 	"github.com/stretchr/testify/assert"
@@ -20,14 +20,14 @@ const (
 )
 
 var (
-	g2configSingleton g2configapi.G2config
+	g2configSingleton g2api.G2configInterface
 )
 
 // ----------------------------------------------------------------------------
 // Internal functions
 // ----------------------------------------------------------------------------
 
-func getTestObject(ctx context.Context, test *testing.T) g2configapi.G2config {
+func getTestObject(ctx context.Context, test *testing.T) g2api.G2configInterface {
 	if g2configSingleton == nil {
 		g2configSingleton = &G2config{}
 		// g2configSingleton.SetLogLevel(ctx, logger.LevelTrace)
@@ -46,7 +46,7 @@ func getTestObject(ctx context.Context, test *testing.T) g2configapi.G2config {
 	return g2configSingleton
 }
 
-func getG2Config(ctx context.Context) g2configapi.G2config {
+func getG2Config(ctx context.Context) g2api.G2configInterface {
 	if g2configSingleton == nil {
 		g2configSingleton := &G2config{}
 		moduleName := "Test module name"
@@ -77,14 +77,14 @@ func printActual(test *testing.T, actual interface{}) {
 	printResult(test, "Actual", actual)
 }
 
-func testError(test *testing.T, ctx context.Context, g2config g2configapi.G2config, err error) {
+func testError(test *testing.T, ctx context.Context, g2config g2api.G2configInterface, err error) {
 	if err != nil {
 		test.Log("Error:", err.Error())
 		assert.FailNow(test, err.Error())
 	}
 }
 
-func testErrorNoFail(test *testing.T, ctx context.Context, g2config g2configapi.G2config, err error) {
+func testErrorNoFail(test *testing.T, ctx context.Context, g2config g2api.G2configInterface, err error) {
 	if err != nil {
 		test.Log("Error:", err.Error())
 	}

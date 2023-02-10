@@ -369,6 +369,18 @@ func (client *G2configmgr) GetDefaultConfigID(ctx context.Context) (int64, error
 }
 
 /*
+The GetSdkId method returns the identifier of this particular Software Development Kit (SDK).
+It is handy when working with multiple implementations of the same G2configmgrInterface.
+It returns "base".
+
+Input
+  - ctx: A context to control lifecycle.
+*/
+func (client *G2configmgr) GetSdkId(ctx context.Context) (string, error) {
+	return "base", nil
+}
+
+/*
 The Init method initializes the Senzing G2ConfigMgr object.
 It must be called prior to any other calls.
 
