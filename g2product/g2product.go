@@ -44,7 +44,7 @@ type G2product struct {
 const initialByteArraySize = 65535
 
 // ----------------------------------------------------------------------------
-// Internal methods - names begin with lower case
+// Internal methods
 // ----------------------------------------------------------------------------
 
 // Get space for an array of bytes of a given size.
