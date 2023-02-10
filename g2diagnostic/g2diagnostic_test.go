@@ -14,8 +14,8 @@ import (
 	"github.com/senzing/g2-sdk-go-base/g2engine"
 	g2configmgrapi "github.com/senzing/g2-sdk-go/g2configmgr"
 	g2diagnosticapi "github.com/senzing/g2-sdk-go/g2diagnostic"
+	"github.com/senzing/go-common/g2engineconfigurationjson"
 	"github.com/senzing/go-common/truthset"
-	"github.com/senzing/go-helpers/g2engineconfigurationjson"
 	"github.com/senzing/go-logging/logger"
 	"github.com/senzing/go-logging/messagelogger"
 	"github.com/stretchr/testify/assert"
@@ -767,7 +767,7 @@ func ExampleG2diagnostic_Init() {
 	ctx := context.TODO()
 	g2diagnostic := &G2diagnostic{}
 	moduleName := "Test module name"
-	iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("") // See https://pkg.go.dev/github.com/senzing/go-helpers
+	iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("") // See https://pkg.go.dev/github.com/senzing/go-common
 	if err != nil {
 		fmt.Println(err)
 	}
