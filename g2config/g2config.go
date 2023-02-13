@@ -379,7 +379,22 @@ For this implementation, "base" is returned.
 Input
   - ctx: A context to control lifecycle.
 */
+
 func (client *G2config) GetSdkId(ctx context.Context) (string, error) {
+	if client.isTrace {
+		client.traceEntry(31)
+	}
+	entryTime := time.Now()
+	var err error = nil
+	if client.observers != nil {
+		go func() {
+			details := map[string]string{}
+			client.notify(ctx, 8010, err, details)
+		}()
+	}
+	if client.isTrace {
+		defer client.traceExit(32, err, time.Since(entryTime))
+	}
 	return "base", nil
 }
 
@@ -507,10 +522,26 @@ Input
   - observer: The observer to be added.
 */
 func (client *G2config) RegisterObserver(ctx context.Context, observer observer.Observer) error {
+	if client.isTrace {
+		client.traceEntry(27, observer.GetObserverId(ctx))
+	}
+	entryTime := time.Now()
 	if client.observers == nil {
 		client.observers = &subject.SubjectImpl{}
 	}
-	return client.observers.RegisterObserver(ctx, observer)
+	err := client.observers.RegisterObserver(ctx, observer)
+	if client.observers != nil {
+		go func() {
+			details := map[string]string{
+				"observerID": observer.GetObserverId(ctx),
+			}
+			client.notify(ctx, 8011, err, details)
+		}()
+	}
+	if client.isTrace {
+		defer client.traceExit(28, observer.GetObserverId(ctx), err, time.Since(entryTime))
+	}
+	return err
 }
 
 /*
@@ -567,6 +598,14 @@ func (client *G2config) SetLogLevel(ctx context.Context, logLevel logger.Level) 
 	var err error = nil
 	client.getLogger().SetLogLevel(messagelogger.Level(logLevel))
 	client.isTrace = (client.getLogger().GetLogLevel() == messagelogger.LevelTrace)
+	if client.observers != nil {
+		go func() {
+			details := map[string]string{
+				"logLevel": logger.LevelToTextMap[logLevel],
+			}
+			client.notify(ctx, 8012, err, details)
+		}()
+	}
 	if client.isTrace {
 		defer client.traceExit(26, logLevel, err, time.Since(entryTime))
 	}
@@ -581,12 +620,27 @@ Input
   - observer: The observer to be added.
 */
 func (client *G2config) UnregisterObserver(ctx context.Context, observer observer.Observer) error {
-	err := client.observers.UnregisterObserver(ctx, observer)
-	if err != nil {
-		return err
+	if client.isTrace {
+		client.traceEntry(29, observer.GetObserverId(ctx))
 	}
+	entryTime := time.Now()
+	var err error = nil
+	if client.observers != nil {
+		// Tricky code:
+		// client.notify is called synchronously before client.observers is set to nil.
+		// In client.notify, each observer will get notified in a goroutine.
+		// Then client.observers may be set to nil, but observer goroutines will be OK.
+		details := map[string]string{
+			"observerID": observer.GetObserverId(ctx),
+		}
+		client.notify(ctx, 8013, err, details)
+	}
+	err = client.observers.UnregisterObserver(ctx, observer)
 	if !client.observers.HasObservers(ctx) {
 		client.observers = nil
+	}
+	if client.isTrace {
+		defer client.traceExit(30, observer.GetObserverId(ctx), err, time.Since(entryTime))
 	}
 	return err
 }
