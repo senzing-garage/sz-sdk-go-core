@@ -379,7 +379,6 @@ For this implementation, "base" is returned.
 Input
   - ctx: A context to control lifecycle.
 */
-
 func (client *G2config) GetSdkId(ctx context.Context) (string, error) {
 	if client.isTrace {
 		client.traceEntry(31)
