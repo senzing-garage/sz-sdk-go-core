@@ -86,6 +86,7 @@ func (client *G2config) getLogger() messagelogger.MessageLoggerInterface {
 	return client.logger
 }
 
+// Notify registered observers.
 func (client *G2config) notify(ctx context.Context, messageId int, err error, details map[string]string) {
 	now := time.Now()
 	details["subjectId"] = strconv.Itoa(ProductId)

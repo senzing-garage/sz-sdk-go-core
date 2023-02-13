@@ -88,6 +88,7 @@ func (client *G2configmgr) getLogger() messagelogger.MessageLoggerInterface {
 	return client.logger
 }
 
+// Notify registered observers.
 func (client *G2configmgr) notify(ctx context.Context, messageId int, err error, details map[string]string) {
 	now := time.Now()
 	details["subjectId"] = strconv.Itoa(ProductId)
@@ -376,7 +377,6 @@ For this implementation, "base" is returned.
 Input
   - ctx: A context to control lifecycle.
 */
-
 func (client *G2configmgr) GetSdkId(ctx context.Context) (string, error) {
 	if client.isTrace {
 		client.traceEntry(29)

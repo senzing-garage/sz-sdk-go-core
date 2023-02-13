@@ -88,6 +88,7 @@ func (client *G2diagnostic) getLogger() messagelogger.MessageLoggerInterface {
 	return client.logger
 }
 
+// Notify registered observers.
 func (client *G2diagnostic) notify(ctx context.Context, messageId int, err error, details map[string]string) {
 	now := time.Now()
 	details["subjectId"] = strconv.Itoa(ProductId)
@@ -1011,13 +1012,6 @@ func (client *G2diagnostic) InitWithConfigID(ctx context.Context, moduleName str
 		defer client.traceExit(50, moduleName, iniParams, initConfigID, verboseLogging, err, time.Since(entryTime))
 	}
 	return err
-}
-
-// Null shows how to report a BUG inline.
-func (client *G2diagnostic) Null(ctx context.Context) (int64, error) {
-	// BUG(mjd): Just an example of how to show bugs in GoDoc.
-	var err error = nil
-	return 1, err
 }
 
 /*

@@ -88,6 +88,7 @@ func (client *G2engine) getLogger() messagelogger.MessageLoggerInterface {
 	return client.logger
 }
 
+// Notify registered observers.
 func (client *G2engine) notify(ctx context.Context, messageId int, err error, details map[string]string) {
 	now := time.Now()
 	details["subjectId"] = strconv.Itoa(ProductId)
@@ -2063,7 +2064,6 @@ func (client *G2engine) GetRedoRecord(ctx context.Context) (string, error) {
 		defer client.traceExit(88, C.GoString(result.response), err, time.Since(entryTime))
 	}
 	return C.GoString(result.response), err
-
 }
 
 /*
