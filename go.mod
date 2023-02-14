@@ -1,6 +1,6 @@
 module github.com/senzing/g2-sdk-go-base
 
-go 1.19
+go 1.20
 
 require (
 	github.com/aquilax/truncate v1.0.0
