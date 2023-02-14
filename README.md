@@ -159,46 +159,45 @@ This is important as the compiling of the code expects Senzing to be in `/opt/se
 The following instructions show how to bring up a test stack to be used
 in testing the `g2-sdk-go-base` packages.
 
-1. Bring up Senzing stack:
+1. Identify a directory to place docker-compose artifacts.
+   The directory specified will be deleted and re-created.
+   Example:
 
     ```console
-    export DOCKER_COMPOSE_DIR=~/my-senzing-stack
-    export SENZING_DOCKER_COMPOSE_YAML=postgresql/docker-compose-rabbitmq-postgresql-minimal.yaml
+    export SENZING_DEMO_DIR=~/my-senzing-demo
 
-    rm -rf ${DOCKER_COMPOSE_DIR:-/tmp/nowhere/for/safety}
-    mkdir -p ${DOCKER_COMPOSE_DIR}
+    ```
+
+1. Bring up the docker-compose stack.
+   Example:
+
+    ```console
+    export PGADMIN_DIR=${SENZING_DEMO_DIR}/pgadmin
+    export POSTGRES_DIR=${SENZING_DEMO_DIR}/postgres
+    export RABBITMQ_DIR=${SENZING_DEMO_DIR}/rabbitmq
+    export SENZING_VAR_DIR=${SENZING_DEMO_DIR}/var
+    export SENZING_UID=$(id -u)
+    export SENZING_GID=$(id -g)
+
+    rm -rf ${SENZING_DEMO_DIR:-/tmp/nowhere/for/safety}
+    mkdir ${SENZING_DEMO_DIR}
+    mkdir -p ${PGADMIN_DIR} ${POSTGRES_DIR} ${RABBITMQ_DIR} ${SENZING_VAR_DIR}
+    chmod -R 777 ${SENZING_DEMO_DIR}
 
     curl -X GET \
-        --output ${DOCKER_COMPOSE_DIR}/docker-compose.yaml \
-        "https://raw.githubusercontent.com/Senzing/docker-compose-demo/main/resources/${SENZING_DOCKER_COMPOSE_YAML}"
-
+        --output ${SENZING_DEMO_DIR}/docker-versions-stable.sh \
+        <https://raw.githubusercontent.com/Senzing/knowledge-base/main/lists/docker-versions-stable.sh>
+    source ${SENZING_DEMO_DIR}/docker-versions-stable.sh
     curl -X GET \
-        --output ${DOCKER_COMPOSE_DIR}/docker-versions-stable.sh \
-        https://raw.githubusercontent.com/Senzing/knowledge-base/main/lists/docker-versions-stable.sh
-    source ${DOCKER_COMPOSE_DIR}/docker-versions-stable.sh
+        --output ${SENZING_DEMO_DIR}/docker-compose.yaml \
+        "https://raw.githubusercontent.com/Senzing/docker-compose-demo/main/resources/postgresql/docker-compose-postgresql.yaml"
 
-    export SENZING_DATA_VERSION_DIR=/opt/senzing/data
-    export SENZING_ETC_DIR=/etc/opt/senzing
-    export SENZING_G2_DIR=/opt/senzing/g2
-    export SENZING_VAR_DIR=/var/opt/senzing
-
-    export PGADMIN_DIR=${DOCKER_COMPOSE_DIR}/pgadmin
-    export POSTGRES_DIR=${DOCKER_COMPOSE_DIR}/postgres
-    export RABBITMQ_DIR=${DOCKER_COMPOSE_DIR}/rabbitmq
-
-    sudo mkdir -p ${PGADMIN_DIR} ${POSTGRES_DIR} ${RABBITMQ_DIR}
-    sudo chown $(id -u):$(id -g) -R ${DOCKER_COMPOSE_DIR}
-    sudo chmod -R 770 ${DOCKER_COMPOSE_DIR}
-    sudo chmod -R 777 ${PGADMIN_DIR}
-
-    cd ${DOCKER_COMPOSE_DIR}
+    cd ${SENZING_DEMO_DIR}
     sudo --preserve-env docker-compose up
 
     ```
 
-### Run test cases
-
-1. Identify git repository.
+1. In a separate terminal window, identify git repository.
 
     ```console
     export GIT_ACCOUNT=senzing
@@ -225,7 +224,7 @@ in testing the `g2-sdk-go-base` packages.
 
     ```console
     cd ${GIT_REPOSITORY_DIR}
-    make test
+    make clean test
 
     ```
 
@@ -245,5 +244,3 @@ Prefixes:
 1. `6005` - g2hasher
 1. `6006` - g2product
 1. `6007` - g2ssadm
-1. `6008` - test
-1. `6009` - testhelpers
