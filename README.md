@@ -19,7 +19,7 @@ Senzing C SDK APIs.
 
 ## Overview
 
-The Senzing g2-sdk-go-base packages enable Go programs to call Senzing library functions.
+The Senzing `g2-sdk-go-base` packages enable Go programs to call Senzing library functions.
 Under the covers, Golang's CGO is used by the g2-sdk-go-base packages to make calls
 to the functions in the Senzing C libraries.
 The `g2-sdk-go-base` implementation of the
@@ -38,7 +38,27 @@ interface include:
   [abstract factory pattern](https://en.wikipedia.org/wiki/Abstract_factory_pattern)
   for switching among implementations
 
-## Developing with g2-sdk-go-base
+## Use
+
+(TODO:)
+
+## Development
+
+### Install Go
+
+1. See Go's [Download and install](https://go.dev/doc/install)
+
+### Install Senzing C library
+
+Since the Senzing library is a prerequisite, it must be installed first.
+
+1. Verify Senzing C shared objects, configuration, and SDK header files are installed.
+    1. `/opt/senzing/g2/lib`
+    1. `/opt/senzing/g2/sdk/c`
+    1. `/etc/opt/senzing`
+
+I. If not installed, see
+   [How to Install Senzing for Go Development](https://github.com/Senzing/knowledge-base/blob/main/HOWTO/install-senzing-for-go-development.md).
 
 ### Install Git repository
 
@@ -54,101 +74,6 @@ interface include:
 
 1. Using the environment variables values just set, follow steps in
    [clone-repository](https://github.com/Senzing/knowledge-base/blob/main/HOWTO/clone-repository.md) to install the Git repository.
-
-### Install Go
-
-1. See Go's [Download and install](https://go.dev/doc/install)
-
-### Install Senzing C library
-
-Since the Senzing library is a prerequisite, it must be installed first.
-This can be done by installing the Senzing package using `apt`, `yum`,
-or a technique using Docker containers.
-Once complete, the Senzing library will be installed in the `/opt/senzing` directory.
-This is important as the compiling of the code expects Senzing to be in `/opt/senzing`.
-
-- Using `apt`:
-
-    ```console
-    wget https://senzing-production-apt.s3.amazonaws.com/senzingrepo_1.0.0-1_amd64.deb
-    sudo apt install ./senzingrepo_1.0.0-1_amd64.deb
-    sudo apt update
-    sudo apt install senzingapi
-
-    ```
-
-- Using `yum`:
-
-    ```console
-    sudo yum install https://senzing-production-yum.s3.amazonaws.com/senzingrepo-1.0.0-1.x86_64.rpm
-    sudo yum install senzingapi
-
-    ```
-
-- Using Docker:
-
-  This technique can be handy if you are using MacOS or Windows and cross-compiling.
-
-    1. Build Senzing installer.
-
-        ```console
-        curl -X GET \
-            --output /tmp/senzing-versions-stable.sh \
-            https://raw.githubusercontent.com/Senzing/knowledge-base/main/lists/senzing-versions-stable.sh
-        source /tmp/senzing-versions-stable.sh
-
-        sudo docker build \
-            --build-arg SENZING_ACCEPT_EULA=I_ACCEPT_THE_SENZING_EULA \
-            --build-arg SENZING_APT_INSTALL_PACKAGE=senzingapi=${SENZING_VERSION_SENZINGAPI_BUILD} \
-            --build-arg SENZING_DATA_VERSION=${SENZING_VERSION_SENZINGDATA} \
-            --no-cache \
-            --tag senzing/installer:${SENZING_VERSION_SENZINGAPI} \
-            https://github.com/senzing/docker-installer.git#main
-
-        ```
-
-    1. Install Senzing.
-
-        ```console
-            curl -X GET \
-                --output /tmp/senzing-versions-stable.sh \
-                https://raw.githubusercontent.com/Senzing/knowledge-base/main/lists/senzing-versions-stable.sh
-            source /tmp/senzing-versions-stable.sh
-
-            sudo rm -rf /opt/senzing
-            sudo mkdir -p /opt/senzing
-
-            sudo docker run \
-                --rm \
-                --user 0 \
-                --volume /opt/senzing:/opt/senzing \
-                senzing/installer:${SENZING_VERSION_SENZINGAPI}
-
-        ```
-
-### Configure Senzing
-
-1. Move the "versioned" Senzing data to the system location.
-   Example:
-
-    ```console
-      sudo mv /opt/senzing/data/3.0.0/* /opt/senzing/data/
-
-    ```
-
-1. Create initial configuration.
-   Example:
-
-    ```console
-      sudo mkdir /etc/opt/senzing
-      sudo cp /opt/senzing/g2/resources/templates/cfgVariant.json     /etc/opt/senzing
-      sudo cp /opt/senzing/g2/resources/templates/customGn.txt        /etc/opt/senzing
-      sudo cp /opt/senzing/g2/resources/templates/customOn.txt        /etc/opt/senzing
-      sudo cp /opt/senzing/g2/resources/templates/customSn.txt        /etc/opt/senzing
-      sudo cp /opt/senzing/g2/resources/templates/defaultGNRCP.config /etc/opt/senzing
-      sudo cp /opt/senzing/g2/resources/templates/stb.config          /etc/opt/senzing
-
-    ```
 
 ### Test using SQLite database
 
