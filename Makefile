@@ -1,4 +1,4 @@
-# Makefile that builds g2-sdk-go-base, a "go" program.
+# Makefile for g2-sdk-go-base.
 
 # "Simple expanded" variables (':=')
 
@@ -21,29 +21,20 @@ GO_PACKAGE_NAME := $(shell echo $(GIT_REMOTE_URL) | sed -e 's|^git@github.com:|g
 CC = gcc
 
 # Conditional assignment. ('?=')
+# Can be overridden with "export"
+# Example: "export LD_LIBRARY_PATH=/path/to/my/senzing/g2/lib"
 
-SENZING_G2_DIR ?= /opt/senzing/g2
+LD_LIBRARY_PATH ?= /opt/senzing/g2/lib
+SENZING_TOOLS_DATABASE_URL ?= sqlite3://na:na@/tmp/sqlite/G2C.db
 
-# Exports
+# Export environment variables.
 
-export SENZING_TOOLS_DATABASE_URL=sqlite3://na:na@/tmp/sqlite/G2C.db
+.EXPORT_ALL_VARIABLES:
 
 # The first "make" target runs as default.
 
 .PHONY: default
 default: help
-
-# -----------------------------------------------------------------------------
-# Export environment variables.
-# -----------------------------------------------------------------------------
-
-.EXPORT_ALL_VARIABLES:
-
-# Flags for the C compiler.
-# Can be overridden with "export"
-# Example: "export LD_LIBRARY_PATH=/path/to/my/senzing/g2/lib"
-
-LD_LIBRARY_PATH ?= ${SENZING_G2_DIR}/lib
 
 # -----------------------------------------------------------------------------
 # Build
@@ -61,9 +52,6 @@ dependencies:
 
 .PHONY: test
 test:
-	@rm -rf /tmp/sqlite
-	@mkdir  /tmp/sqlite
-	@cp testdata/sqlite/G2C.db /tmp/sqlite/G2C.db
 	@go test -v -p 1 ./...
 #	@go test -v ./.
 #	@go test -v ./g2config
@@ -71,7 +59,6 @@ test:
 #	@go test -v ./g2diagnostic
 #	@go test -v ./g2engine
 #	@go test -v ./g2product
-
 
 # -----------------------------------------------------------------------------
 # Run
@@ -87,8 +74,9 @@ run:
 
 .PHONY: update-pkg-cache
 update-pkg-cache:
-	GOPROXY=https://proxy.golang.org GO111MODULE=on \
-	go get $(GO_PACKAGE_NAME)@$(BUILD_TAG)
+	@GOPROXY=https://proxy.golang.org GO111MODULE=on \
+		go get $(GO_PACKAGE_NAME)@$(BUILD_TAG)
+
 
 .PHONY: clean
 clean:
@@ -98,6 +86,9 @@ clean:
 	@docker rmi --force $(DOCKER_IMAGE_NAME) $(DOCKER_BUILD_IMAGE_NAME) 2> /dev/null || true
 	@rm -rf $(TARGET_DIRECTORY) || true
 	@rm -f $(GOPATH)/bin/$(PROGRAM_NAME) || true
+	@rm -rf /tmp/sqlite
+	@mkdir  /tmp/sqlite
+	@cp testdata/sqlite/G2C.db /tmp/sqlite/G2C.db
 
 
 .PHONY: print-make-variables
