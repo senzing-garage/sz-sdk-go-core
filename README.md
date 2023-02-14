@@ -55,11 +55,11 @@ interface include:
 1. Using the environment variables values just set, follow steps in
    [clone-repository](https://github.com/Senzing/knowledge-base/blob/main/HOWTO/clone-repository.md) to install the Git repository.
 
-### Install go
+### Install Go
 
 1. See Go's [Download and install](https://go.dev/doc/install)
 
-### Install Senzing library
+### Install Senzing C library
 
 Since the Senzing library is a prerequisite, it must be installed first.
 This can be done by installing the Senzing package using `apt`, `yum`,
