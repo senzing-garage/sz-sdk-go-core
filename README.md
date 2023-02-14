@@ -57,7 +57,7 @@ Since the Senzing library is a prerequisite, it must be installed first.
     1. `/opt/senzing/g2/sdk/c`
     1. `/etc/opt/senzing`
 
-I. If not installed, see
+1. If not installed, see
    [How to Install Senzing for Go Development](https://github.com/Senzing/knowledge-base/blob/main/HOWTO/install-senzing-for-go-development.md).
 
 ### Install Git repository
