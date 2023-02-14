@@ -243,6 +243,14 @@ in testing the `g2-sdk-go-base` packages.
    For database password information, see the `POSTGRESQL_POSTGRES_PASSWORD` value in `${SENZING_DEMO_DIR}/docker-compose.yaml`.
    Usually, it's "postgres".
 
+1. Cleanup.
+
+    ```console
+    cd ${SENZING_DEMO_DIR}
+    sudo --preserve-env docker-compose down
+
+    ```
+
 ## Error prefixes
 
 Error identifiers are in the format `senzing-PPPPnnnn` where:
