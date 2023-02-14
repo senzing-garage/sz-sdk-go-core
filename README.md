@@ -133,7 +133,7 @@ This is important as the compiling of the code expects Senzing to be in `/opt/se
 
     ```console
     cd ${GIT_REPOSITORY_DIR}
-    make test
+    make clean test
 
     ```
 
