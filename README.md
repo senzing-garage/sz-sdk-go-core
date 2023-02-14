@@ -238,6 +238,9 @@ in testing the `g2-sdk-go-base` packages.
 
     ```
 
+1. **Optional:** View the PostgreSQL database.
+   Visit [localhost:9171](http://localhost:9171).
+
 ## Error prefixes
 
 Error identifiers are in the format `senzing-PPPPnnnn` where:
