@@ -36,9 +36,28 @@ interface include:
   calling Senzing SDK APIs over [gRPC](https://grpc.io/)
 - [go-sdk-abstract-factory](https://github.com/Senzing/go-sdk-abstract-factory) - An
   [abstract factory pattern](https://en.wikipedia.org/wiki/Abstract_factory_pattern)
-  for switching among implementations.
+  for switching among implementations
 
 ## Developing with g2-sdk-go-base
+
+### Install Git repository
+
+1. Identify git repository.
+
+    ```console
+    export GIT_ACCOUNT=senzing
+    export GIT_REPOSITORY=g2-sdk-go-base
+    export GIT_ACCOUNT_DIR=~/${GIT_ACCOUNT}.git
+    export GIT_REPOSITORY_DIR="${GIT_ACCOUNT_DIR}/${GIT_REPOSITORY}"
+
+    ```
+
+1. Using the environment variables values just set, follow steps in
+   [clone-repository](https://github.com/Senzing/knowledge-base/blob/main/HOWTO/clone-repository.md) to install the Git repository.
+
+### Install go
+
+1. See Go's [Download and install](https://go.dev/doc/install)
 
 ### Install Senzing library
 
@@ -133,19 +152,6 @@ This is important as the compiling of the code expects Senzing to be in `/opt/se
 
 ### Test using SQLite database
 
-1. Identify git repository.
-
-    ```console
-    export GIT_ACCOUNT=senzing
-    export GIT_REPOSITORY=g2-sdk-go-base
-    export GIT_ACCOUNT_DIR=~/${GIT_ACCOUNT}.git
-    export GIT_REPOSITORY_DIR="${GIT_ACCOUNT_DIR}/${GIT_REPOSITORY}"
-
-    ```
-
-1. Using the environment variables values just set, follow steps in
-   [clone-repository](https://github.com/Senzing/knowledge-base/blob/main/HOWTO/clone-repository.md) to install the Git repository.
-
 1. Run tests.
 
     ```console
@@ -213,19 +219,6 @@ in testing the `g2-sdk-go-base` packages.
     sudo --preserve-env docker-compose up
 
     ```
-
-1. In a separate terminal window, identify git repository.
-
-    ```console
-    export GIT_ACCOUNT=senzing
-    export GIT_REPOSITORY=g2-sdk-go-base
-    export GIT_ACCOUNT_DIR=~/${GIT_ACCOUNT}.git
-    export GIT_REPOSITORY_DIR="${GIT_ACCOUNT_DIR}/${GIT_REPOSITORY}"
-
-    ```
-
-1. Using the environment variables values just set, follow steps in
-   [clone-repository](https://github.com/Senzing/knowledge-base/blob/main/HOWTO/clone-repository.md) to install the Git repository.
 
 1. Set environment variables.
    Identify Database URL of database in docker-compose stack.
