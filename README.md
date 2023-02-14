@@ -220,7 +220,7 @@ in testing the `g2-sdk-go-base` packages.
 
     ```
 
-1. Set environment variables.
+1. In a separate terminal window, set environment variables.
    Identify Database URL of database in docker-compose stack.
    Example:
 
