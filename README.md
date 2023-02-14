@@ -209,7 +209,7 @@ in testing the `g2-sdk-go-base` packages.
 
     curl -X GET \
         --output ${SENZING_DEMO_DIR}/docker-versions-stable.sh \
-        <https://raw.githubusercontent.com/Senzing/knowledge-base/main/lists/docker-versions-stable.sh>
+        https://raw.githubusercontent.com/Senzing/knowledge-base/main/lists/docker-versions-stable.sh
     source ${SENZING_DEMO_DIR}/docker-versions-stable.sh
     curl -X GET \
         --output ${SENZING_DEMO_DIR}/docker-compose.yaml \
