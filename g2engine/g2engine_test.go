@@ -36,7 +36,7 @@ type GetEntityByRecordIDResponse struct {
 }
 
 var (
-	g2engineSingleton g2api.G2engineInterface
+	g2engineSingleton g2api.G2engine
 	localLogger       messagelogger.MessageLoggerInterface
 )
 
@@ -44,7 +44,7 @@ var (
 // Internal functions
 // ----------------------------------------------------------------------------
 
-func getTestObject(ctx context.Context, test *testing.T) g2api.G2engineInterface {
+func getTestObject(ctx context.Context, test *testing.T) g2api.G2engine {
 	if g2engineSingleton == nil {
 		g2engineSingleton = &G2engine{}
 		// g2engineSingleton.SetLogLevel(ctx, logger.LevelTrace)
@@ -63,7 +63,7 @@ func getTestObject(ctx context.Context, test *testing.T) g2api.G2engineInterface
 	return g2engineSingleton
 }
 
-func getG2Engine(ctx context.Context) g2api.G2engineInterface {
+func getG2Engine(ctx context.Context) g2api.G2engine {
 	if g2engineSingleton == nil {
 		g2engineSingleton = &G2engine{}
 		// g2engineSingleton.SetLogLevel(ctx, logger.LevelTrace)
@@ -123,14 +123,14 @@ func printActual(test *testing.T, actual interface{}) {
 	printResult(test, "Actual", actual)
 }
 
-func testError(test *testing.T, ctx context.Context, g2engine g2api.G2engineInterface, err error) {
+func testError(test *testing.T, ctx context.Context, g2engine g2api.G2engine, err error) {
 	if err != nil {
 		test.Log("Error:", err.Error())
 		assert.FailNow(test, err.Error())
 	}
 }
 
-func testErrorNoFail(test *testing.T, ctx context.Context, g2engine g2api.G2engineInterface, err error) {
+func testErrorNoFail(test *testing.T, ctx context.Context, g2engine g2api.G2engine, err error) {
 	if err != nil {
 		test.Log("Error:", err.Error())
 	}

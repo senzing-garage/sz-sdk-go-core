@@ -20,14 +20,14 @@ const (
 )
 
 var (
-	g2productSingleton g2api.G2productInterface
+	g2productSingleton g2api.G2product
 )
 
 // ----------------------------------------------------------------------------
 // Internal functions
 // ----------------------------------------------------------------------------
 
-func getTestObject(ctx context.Context, test *testing.T) g2api.G2productInterface {
+func getTestObject(ctx context.Context, test *testing.T) g2api.G2product {
 	if g2productSingleton == nil {
 		g2productSingleton = &G2product{}
 		// g2productSingleton.SetLogLevel(ctx, logger.LevelTrace)
@@ -46,7 +46,7 @@ func getTestObject(ctx context.Context, test *testing.T) g2api.G2productInterfac
 	return g2productSingleton
 }
 
-func getG2Product(ctx context.Context) g2api.G2productInterface {
+func getG2Product(ctx context.Context) g2api.G2product {
 	if g2productSingleton == nil {
 		g2productSingleton = &G2product{}
 		moduleName := "Test module name"
@@ -77,14 +77,14 @@ func printActual(test *testing.T, actual interface{}) {
 	printResult(test, "Actual", actual)
 }
 
-func testError(test *testing.T, ctx context.Context, g2product g2api.G2productInterface, err error) {
+func testError(test *testing.T, ctx context.Context, g2product g2api.G2product, err error) {
 	if err != nil {
 		test.Log("Error:", err.Error())
 		assert.FailNow(test, err.Error())
 	}
 }
 
-func testErrorNoFail(test *testing.T, ctx context.Context, g2product g2api.G2productInterface, err error) {
+func testErrorNoFail(test *testing.T, ctx context.Context, g2product g2api.G2product, err error) {
 	if err != nil {
 		test.Log("Error:", err.Error())
 	}

@@ -27,8 +27,8 @@ const (
 )
 
 var (
-	g2diagnosticSingleton g2api.G2diagnosticInterface
-	g2configmgrSingleton  g2api.G2configmgrInterface
+	g2diagnosticSingleton g2api.G2diagnostic
+	g2configmgrSingleton  g2api.G2configmgr
 	localLogger           messagelogger.MessageLoggerInterface
 )
 
@@ -36,7 +36,7 @@ var (
 // Internal functions
 // ----------------------------------------------------------------------------
 
-func getTestObject(ctx context.Context, test *testing.T) g2api.G2diagnosticInterface {
+func getTestObject(ctx context.Context, test *testing.T) g2api.G2diagnostic {
 	if g2diagnosticSingleton == nil {
 		g2diagnosticSingleton = &G2diagnostic{}
 		// g2diagnosticSingleton.SetLogLevel(ctx, logger.LevelTrace)
@@ -55,7 +55,7 @@ func getTestObject(ctx context.Context, test *testing.T) g2api.G2diagnosticInter
 	return g2diagnosticSingleton
 }
 
-func getG2Diagnostic(ctx context.Context) g2api.G2diagnosticInterface {
+func getG2Diagnostic(ctx context.Context) g2api.G2diagnostic {
 	if g2diagnosticSingleton == nil {
 		g2diagnosticSingleton = &G2diagnostic{}
 		// g2diagnosticSingleton.SetLogLevel(ctx, logger.LevelTrace)
@@ -74,7 +74,7 @@ func getG2Diagnostic(ctx context.Context) g2api.G2diagnosticInterface {
 	return g2diagnosticSingleton
 }
 
-func getG2Configmgr(ctx context.Context) g2api.G2configmgrInterface {
+func getG2Configmgr(ctx context.Context) g2api.G2configmgr {
 	if g2configmgrSingleton == nil {
 		g2configmgrSingleton = &g2configmgr.G2configmgr{}
 		moduleName := "Test module name"
@@ -105,14 +105,14 @@ func printActual(test *testing.T, actual interface{}) {
 	printResult(test, "Actual", actual)
 }
 
-func testError(test *testing.T, ctx context.Context, g2diagnostic g2api.G2diagnosticInterface, err error) {
+func testError(test *testing.T, ctx context.Context, g2diagnostic g2api.G2diagnostic, err error) {
 	if err != nil {
 		test.Log("Error:", err.Error())
 		assert.FailNow(test, err.Error())
 	}
 }
 
-func testErrorNoFail(test *testing.T, ctx context.Context, g2diagnostic g2api.G2diagnosticInterface, err error) {
+func testErrorNoFail(test *testing.T, ctx context.Context, g2diagnostic g2api.G2diagnostic, err error) {
 	if err != nil {
 		test.Log("Error:", err.Error())
 	}

@@ -20,14 +20,14 @@ const (
 )
 
 var (
-	g2configSingleton g2api.G2configInterface
+	g2configSingleton g2api.G2config
 )
 
 // ----------------------------------------------------------------------------
 // Internal functions
 // ----------------------------------------------------------------------------
 
-func getTestObject(ctx context.Context, test *testing.T) g2api.G2configInterface {
+func getTestObject(ctx context.Context, test *testing.T) g2api.G2config {
 	if g2configSingleton == nil {
 		g2configSingleton = &G2config{}
 		// g2configSingleton.SetLogLevel(ctx, logger.LevelTrace)
@@ -46,7 +46,7 @@ func getTestObject(ctx context.Context, test *testing.T) g2api.G2configInterface
 	return g2configSingleton
 }
 
-func getG2Config(ctx context.Context) g2api.G2configInterface {
+func getG2Config(ctx context.Context) g2api.G2config {
 	if g2configSingleton == nil {
 		g2configSingleton := &G2config{}
 		moduleName := "Test module name"
@@ -77,14 +77,14 @@ func printActual(test *testing.T, actual interface{}) {
 	printResult(test, "Actual", actual)
 }
 
-func testError(test *testing.T, ctx context.Context, g2config g2api.G2configInterface, err error) {
+func testError(test *testing.T, ctx context.Context, g2config g2api.G2config, err error) {
 	if err != nil {
 		test.Log("Error:", err.Error())
 		assert.FailNow(test, err.Error())
 	}
 }
 
-func testErrorNoFail(test *testing.T, ctx context.Context, g2config g2api.G2configInterface, err error) {
+func testErrorNoFail(test *testing.T, ctx context.Context, g2config g2api.G2config, err error) {
 	if err != nil {
 		test.Log("Error:", err.Error())
 	}

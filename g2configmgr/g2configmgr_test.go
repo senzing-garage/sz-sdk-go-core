@@ -27,8 +27,8 @@ const (
 )
 
 var (
-	g2configmgrSingleton g2api.G2configmgrInterface
-	g2configSingleton    g2api.G2configInterface
+	g2configmgrSingleton g2api.G2configmgr
+	g2configSingleton    g2api.G2config
 	localLogger          messagelogger.MessageLoggerInterface
 )
 
@@ -36,7 +36,7 @@ var (
 // Internal functions
 // ----------------------------------------------------------------------------
 
-func getTestObject(ctx context.Context, test *testing.T) g2api.G2configmgrInterface {
+func getTestObject(ctx context.Context, test *testing.T) g2api.G2configmgr {
 	if g2configmgrSingleton == nil {
 		g2configmgrSingleton = &G2configmgr{}
 		// g2configmgrSingleton.SetLogLevel(ctx, logger.LevelTrace)
@@ -55,7 +55,7 @@ func getTestObject(ctx context.Context, test *testing.T) g2api.G2configmgrInterf
 	return g2configmgrSingleton
 }
 
-func getG2Configmgr(ctx context.Context) g2api.G2configmgrInterface {
+func getG2Configmgr(ctx context.Context) g2api.G2configmgr {
 	if g2configmgrSingleton == nil {
 		g2configmgrSingleton := &G2configmgr{}
 		moduleName := "Test module name"
@@ -69,7 +69,7 @@ func getG2Configmgr(ctx context.Context) g2api.G2configmgrInterface {
 	return g2configmgrSingleton
 }
 
-func getG2Config(ctx context.Context) g2api.G2configInterface {
+func getG2Config(ctx context.Context) g2api.G2config {
 	if g2configSingleton == nil {
 		g2configSingleton = &g2config.G2config{}
 		moduleName := "Test module name"
@@ -100,7 +100,7 @@ func printActual(test *testing.T, actual interface{}) {
 	printResult(test, "Actual", actual)
 }
 
-func testError(test *testing.T, ctx context.Context, g2configmgr g2api.G2configmgrInterface, err error) {
+func testError(test *testing.T, ctx context.Context, g2configmgr g2api.G2configmgr, err error) {
 	if err != nil {
 		test.Log("Error:", err.Error())
 		assert.FailNow(test, err.Error())
