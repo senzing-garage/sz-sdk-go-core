@@ -22,16 +22,21 @@ Senzing C SDK APIs.
 The Senzing g2-sdk-go-base packages enable Go programs to call Senzing library functions.
 Under the covers, Golang's CGO is used by the g2-sdk-go-base packages to make calls
 to the functions in the Senzing C libraries.
-This implementation of the
+The `g2-sdk-go-base` implementation of the
 [g2-sdk-go](https://github.com/Senzing/g2-sdk-go)
 interface is used to call the Senzing C SDK APIs directly using Go's CGO.
 
-Other implementatios of the
+Other implementations of the
 [g2-sdk-go](https://github.com/Senzing/g2-sdk-go)
 interface include:
 
-- [g2-sdk-go-mock](https://github.com/Senzing/g2-sdk-go-mock) - for unit testing calls to the Senzing Go SDK
-- [g2-sdk-go-grpc](https://github.com/Senzing/g2-sdk-go-grpc) - for calling Senzing SDK APIs over [gRPC](https://grpc.io/)
+- [g2-sdk-go-mock](https://github.com/Senzing/g2-sdk-go-mock) - for
+  unit testing calls to the Senzing Go SDK
+- [g2-sdk-go-grpc](https://github.com/Senzing/g2-sdk-go-grpc) - for
+  calling Senzing SDK APIs over [gRPC](https://grpc.io/)
+- [go-sdk-abstract-factory](https://github.com/Senzing/go-sdk-abstract-factory) - An
+  [abstract factory pattern](https://en.wikipedia.org/wiki/Abstract_factory_pattern)
+  for switching among implementations.
 
 ## Developing with g2-sdk-go-base
 
