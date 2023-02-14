@@ -8,7 +8,9 @@ the recommendation is not to use it yet.
 
 ## Synopsis
 
-The Senzing g2-sdk-go-base packages provide a Software Development Kit that wraps the
+The Senzing g2-sdk-go-base packages provide a
+[Go](https://go.dev/)
+language Software Development Kit that wraps the
 Senzing C SDK APIs.
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/senzing/g2-sdk-go-base.svg)](https://pkg.go.dev/github.com/senzing/g2-sdk-go-base)
@@ -18,8 +20,8 @@ Senzing C SDK APIs.
 ## Overview
 
 The Senzing g2-sdk-go-base packages enable Go programs to call Senzing library functions.
-Under the covers, Golang's CGO is used by the g2-sdk-go-base packages to make the calls
-to the Senzing functions.
+Under the covers, Golang's CGO is used by the g2-sdk-go-base packages to make calls
+to the functions in the Senzing C libraries.
 
 ## Developing with g2-sdk-go-base
 
