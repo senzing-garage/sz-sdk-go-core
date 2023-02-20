@@ -1738,7 +1738,7 @@ func ExampleG2engine_SearchByAttributes_V2() {
 }
 
 func ExampleG2engine_SetLogLevel() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2config/g2config_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	err := g2engine.SetLogLevel(ctx, logger.LevelInfo)
