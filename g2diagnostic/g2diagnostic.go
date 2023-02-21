@@ -877,7 +877,7 @@ For this implementation, "base" is returned.
 Input
   - ctx: A context to control lifecycle.
 */
-func (client *G2diagnostic) GetSdkId(ctx context.Context) (string, error) {
+func (client *G2diagnostic) GetSdkId(ctx context.Context) string {
 	if client.isTrace {
 		client.traceEntry(59)
 	}
@@ -892,7 +892,7 @@ func (client *G2diagnostic) GetSdkId(ctx context.Context) (string, error) {
 	if client.isTrace {
 		defer client.traceExit(60, err, time.Since(entryTime))
 	}
-	return "base", nil
+	return "base"
 }
 
 /*
