@@ -11,8 +11,8 @@ github.com/senzing/go-common v0.1.1 h1:JRKS3ZfChXa1XjesBIHYxTeISwcu0ksFMULaVQfZ+
 github.com/senzing/go-common v0.1.1/go.mod h1:hjYQNbBxwbnGYOFRUyFBEt6hx9X0ypffwAzqE1Olndc=
 github.com/senzing/go-logging v1.1.3 h1:eTWuEgI+4bwyS0gSpYKNbz8gL8ATAqByA3q1sbRJCu4=
 github.com/senzing/go-logging v1.1.3/go.mod h1:FarStyY/kYd7+ymtawOXvOk48j/6fHRZ8unSwpi4FzI=
-github.com/senzing/go-observing v0.1.1 h1:nTvzLS+LOEcW+YWXvGeGn5Zayhg6h3SVCC37xF4vHEg=
-github.com/senzing/go-observing v0.1.1/go.mod h1:S7ejdiEwbWj7sVsheJR9G4cTfSqr2goenR/6tyQt5OI=
+github.com/senzing/go-observing v0.1.2 h1:C7p7pwhbi3k/VKF4WN1lpIeceWZq8cb5Ks2hIBe798g=
+github.com/senzing/go-observing v0.1.2/go.mod h1:S7ejdiEwbWj7sVsheJR9G4cTfSqr2goenR/6tyQt5OI=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
 github.com/stretchr/objx v0.4.0/go.mod h1:YvHI0jy2hoMjB+UWwv71VJQ9isScKT/TqJzVSSt89Yw=
 github.com/stretchr/objx v0.5.0/go.mod h1:Yh+to48EsGEfYuaHDzXPcE3xhTkx73EhmCGUpEOglKo=
