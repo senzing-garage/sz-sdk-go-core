@@ -7,8 +7,8 @@ github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZb
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/senzing/g2-sdk-go v0.4.1 h1:McZVlNweYtp4rh1AKdOeu0p4J5cPUdBv/z09W6WHRqE=
 github.com/senzing/g2-sdk-go v0.4.1/go.mod h1:tz+pX1kT4S5ooDb0DwO8gkSAYZcpPn/jFB0oZfssd84=
-github.com/senzing/go-common v0.1.1 h1:JRKS3ZfChXa1XjesBIHYxTeISwcu0ksFMULaVQfZ+LA=
-github.com/senzing/go-common v0.1.1/go.mod h1:hjYQNbBxwbnGYOFRUyFBEt6hx9X0ypffwAzqE1Olndc=
+github.com/senzing/go-common v0.1.2 h1:d4E4cyKAqBvHvexLvj51WwoU78jTbLlBXmE67o41CM8=
+github.com/senzing/go-common v0.1.2/go.mod h1:rDosNB5AHPIQvtwxvKvWKlF+dkzI+2WjeOfPWE7Bh2I=
 github.com/senzing/go-logging v1.1.3 h1:eTWuEgI+4bwyS0gSpYKNbz8gL8ATAqByA3q1sbRJCu4=
 github.com/senzing/go-logging v1.1.3/go.mod h1:FarStyY/kYd7+ymtawOXvOk48j/6fHRZ8unSwpi4FzI=
 github.com/senzing/go-observing v0.1.2 h1:C7p7pwhbi3k/VKF4WN1lpIeceWZq8cb5Ks2hIBe798g=
