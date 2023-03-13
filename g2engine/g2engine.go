@@ -794,7 +794,7 @@ func (client *G2engine) FetchNext(ctx context.Context, responseHandle uintptr) (
 	entryTime := time.Now()
 	var err error = nil
 	result := C.G2_fetchNext_helper(C.uintptr_t(responseHandle))
-	if result.returnCode != 0 {
+	if result.returnCode < 0 {
 		err = client.newError(ctx, 4014, responseHandle, result.returnCode, result, time.Since(entryTime))
 	}
 	if client.observers != nil {
