@@ -19,6 +19,7 @@ import (
 	"time"
 	"unsafe"
 
+	"github.com/senzing/g2-sdk-go/g2error"
 	g2productapi "github.com/senzing/g2-sdk-go/g2product"
 	"github.com/senzing/go-logging/logger"
 	"github.com/senzing/go-logging/messagelogger"
@@ -75,7 +76,7 @@ func (client *G2product) newError(ctx context.Context, errorNumber int, details 
 		errorMessage = err.Error()
 	}
 
-	return errors.New(errorMessage)
+	return g2error.G2Error(g2error.G2ErrorCode(message), (errorMessage))
 }
 
 // Get the Logger singleton.
