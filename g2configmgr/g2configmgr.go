@@ -78,7 +78,7 @@ func (client *G2configmgr) newError(ctx context.Context, errorNumber int, detail
 		errorMessage = err.Error()
 	}
 
-	return g2error.G2Error(errorNumber, (errorMessage))
+	return g2error.G2Error(g2error.G2ErrorCode(message), (errorMessage))
 }
 
 // Get the Logger singleton.
@@ -333,6 +333,11 @@ func (client *G2configmgr) GetConfigList(ctx context.Context) (string, error) {
 	if client.isTrace {
 		defer client.traceExit(10, C.GoString(result.configList), err, time.Since(entryTime))
 	}
+
+	// FIXME: debug MJD
+
+	err = client.newError(ctx, 4004, result.returnCode, result, time.Since(entryTime))
+
 	return C.GoString(result.configList), err
 }
 

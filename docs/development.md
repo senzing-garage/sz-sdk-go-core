@@ -31,34 +31,6 @@ Since the Senzing library is a prerequisite, it must be installed first.
 1. Using the environment variables values just set, follow steps in
    [clone-repository](https://github.com/Senzing/knowledge-base/blob/main/HOWTO/clone-repository.md) to install the Git repository.
 
-## Build
-
-1. Build the binaries.
-   Example:
-
-    ```console
-    cd ${GIT_REPOSITORY_DIR}
-    make clean build
-
-    ```
-
-1. The binaries will be found in the `${GIT_REPOSITORY_DIR}/target` directory.
-   Example:
-
-    ```console
-    tree ${GIT_REPOSITORY_DIR}/target
-
-    ```
-
-1. Clean up.
-   Example:
-
-    ```console
-    cd ${GIT_REPOSITORY_DIR}
-    make clean
-
-    ```
-
 ## Test using SQLite database
 
 1. Run tests.

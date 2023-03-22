@@ -78,7 +78,7 @@ func (client *G2diagnostic) newError(ctx context.Context, errorNumber int, detai
 		errorMessage = err.Error()
 	}
 
-	return g2error.G2Error(errorNumber, (errorMessage))
+	return g2error.G2Error(g2error.G2ErrorCode(message), (errorMessage))
 }
 
 // Get the Logger singleton.
