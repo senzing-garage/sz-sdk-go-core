@@ -22,6 +22,7 @@ import (
 	"unsafe"
 
 	g2configmgrapi "github.com/senzing/g2-sdk-go/g2configmgr"
+	"github.com/senzing/g2-sdk-go/g2error"
 	"github.com/senzing/go-logging/logger"
 	"github.com/senzing/go-logging/messagelogger"
 	"github.com/senzing/go-observing/observer"
@@ -77,7 +78,7 @@ func (client *G2configmgr) newError(ctx context.Context, errorNumber int, detail
 		errorMessage = err.Error()
 	}
 
-	return errors.New(errorMessage)
+	return g2error.G2Error(errorNumber, (errorMessage))
 }
 
 // Get the Logger singleton.

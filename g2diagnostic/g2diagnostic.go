@@ -22,6 +22,7 @@ import (
 	"unsafe"
 
 	g2diagnosticapi "github.com/senzing/g2-sdk-go/g2diagnostic"
+	"github.com/senzing/g2-sdk-go/g2error"
 	"github.com/senzing/go-logging/logger"
 	"github.com/senzing/go-logging/messagelogger"
 	"github.com/senzing/go-observing/observer"
@@ -77,7 +78,7 @@ func (client *G2diagnostic) newError(ctx context.Context, errorNumber int, detai
 		errorMessage = err.Error()
 	}
 
-	return errors.New(errorMessage)
+	return g2error.G2Error(errorNumber, (errorMessage))
 }
 
 // Get the Logger singleton.
