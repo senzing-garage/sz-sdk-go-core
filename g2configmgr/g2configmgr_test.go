@@ -250,7 +250,6 @@ func setup() error {
 	if err != nil {
 		return createError(5921, err)
 	}
-
 	return err
 }
 
@@ -317,9 +316,6 @@ func TestG2configmgr_GetConfigList(test *testing.T) {
 	g2configmgr := getTestObject(ctx, test)
 	actual, err := g2configmgr.GetConfigList(ctx)
 	testError(test, ctx, g2configmgr, err)
-
-	// FIXME: debug
-
 	printActual(test, actual)
 }
 
