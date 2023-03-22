@@ -10,6 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 -
 
+## [0.1.2] - 2023-03-22
+
+### Added to 0.1.2
+
+- Modified `GetSdkId()` signature
+
 ## [0.1.1] - 2023-02-21
 
 ### Added to 0.1.1
