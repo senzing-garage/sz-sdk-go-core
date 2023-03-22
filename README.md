@@ -44,7 +44,6 @@ interface include:
 
 ## References
 
-- [Command reference](https://hub.senzing.com/senzing-tools/senzing-tools_initdatabase.html)
 - [Development](docs/development.md)
 - [Errors](docs/errors.md)
 - [Examples](docs/examples.md)
