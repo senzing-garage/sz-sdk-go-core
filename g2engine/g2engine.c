@@ -436,7 +436,7 @@ struct G2_getRedoRecord_result G2_getRedoRecord_helper()
 struct G2_getRepositoryLastModifiedTime_result G2_getRepositoryLastModifiedTime_helper()
 {
     long long repositoryLastModifiedTime;
-    int returnCode = G2_getActiveConfigID(&repositoryLastModifiedTime);
+    int returnCode = G2_getRepositoryLastModifiedTime(&repositoryLastModifiedTime);
     struct G2_getRepositoryLastModifiedTime_result result;
     result.time = repositoryLastModifiedTime;
     result.returnCode = returnCode;
