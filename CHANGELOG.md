@@ -10,6 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 -
 
+## [0.1.4] - 2023-03-27
+
+### Changed in 0.1.4
+
+- Fix copy/paste error in getRepositoryLastModifiedTime
+
 ## [0.1.3] - 2023-03-22
 
 ### Changed in 0.1.3
