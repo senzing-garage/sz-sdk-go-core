@@ -11,37 +11,52 @@ void *G2_resizeStringBuffer(void *ptr, size_t size)
 
 struct G2_addRecordWithInfo_result G2_addRecordWithInfo_helper(const char *dataSourceCode, const char *recordID, const char *jsonData, const char *loadID, const long long flags)
 {
-    size_t charBufferSize = 1;
-    char *charBuffer = (char *)malloc(charBufferSize);
+    size_t charBufferSize = 0;
+    char *charBuffer = NULL;
+    char **charBufferPtr = &charBuffer;
     resize_buffer_type resizeFuncPointer = &G2_resizeStringBuffer;
-    int returnCode = G2_addRecordWithInfo(dataSourceCode, recordID, jsonData, loadID, flags, &charBuffer, &charBufferSize, resizeFuncPointer);
+    int returnCode = G2_addRecordWithInfo(dataSourceCode, recordID, jsonData, loadID, flags, charBufferPtr, &charBufferSize, resizeFuncPointer);
     struct G2_addRecordWithInfo_result result;
-    result.response = charBuffer;
+    result.response = *charBufferPtr;
     result.returnCode = returnCode;
     return result;
 }
 
+struct G2_addRecordWithReturnedRecordID_result G2_addRecordWithReturnedRecordID_helper(const char *dataSourceCode, const char *jsonData, const char *loadID)
+{
+    size_t recordIDBufSize = 41;
+    char *recordIDBuf = (char *)malloc(recordIDBufSize);
+    int returnCode = G2_addRecordWithReturnedRecordID(dataSourceCode, jsonData, loadID, recordIDBuf, recordIDBufSize);
+    struct G2_addRecordWithReturnedRecordID_result result;
+    result.recordID = recordIDBuf;
+    result.returnCode = returnCode;
+    return result;
+}
+
+
 struct G2_addRecordWithInfoWithReturnedRecordID_result G2_addRecordWithInfoWithReturnedRecordID_helper(const char *dataSourceCode, const char *jsonData, const char *loadID, const long long flags)
 {
-    size_t charBufferSize = 1;
-    size_t recordIDBufSize = 256;
-    char recordIDBuf[recordIDBufSize];
-    char *charBuffer = (char *)malloc(charBufferSize);
+    size_t charBufferSize = 0;
+    size_t recordIDBufSize = 41;
+    char *recordIDBuf = (char *)malloc(recordIDBufSize);
+    char *charBuffer = NULL;
+    char **charBufferPtr = &charBuffer;
     resize_buffer_type resizeFuncPointer = &G2_resizeStringBuffer;
-    int returnCode = G2_addRecordWithInfoWithReturnedRecordID(dataSourceCode, jsonData, loadID, flags, recordIDBuf, recordIDBufSize, &charBuffer, &charBufferSize, resizeFuncPointer);
+    int returnCode = G2_addRecordWithInfoWithReturnedRecordID(dataSourceCode, jsonData, loadID, flags, recordIDBuf, recordIDBufSize, charBufferPtr, &charBufferSize, resizeFuncPointer);
     struct G2_addRecordWithInfoWithReturnedRecordID_result result;
     result.recordID = recordIDBuf;
-    result.withInfo = charBuffer;
+    result.withInfo = *charBufferPtr;
     result.returnCode = returnCode;
     return result;
 }
 
 struct G2_checkRecord_result G2_checkRecord_helper(const char *record, const char *recordQueryList)
 {
-    size_t charBufferSize = 1;
-    char *charBuffer = (char *)malloc(charBufferSize);
+    size_t charBufferSize = 0;
+    char *charBuffer = NULL;
+    char **charBufferPtr = &charBuffer;
     resize_buffer_type resizeFuncPointer = &G2_resizeStringBuffer;
-    int returnCode = G2_checkRecord(record, recordQueryList, &charBuffer, &charBufferSize, resizeFuncPointer);
+    int returnCode = G2_checkRecord(record, recordQueryList, charBufferPtr, &charBufferSize, resizeFuncPointer);
     struct G2_checkRecord_result result;
     result.response = charBuffer;
     result.returnCode = returnCode;
@@ -50,10 +65,11 @@ struct G2_checkRecord_result G2_checkRecord_helper(const char *record, const cha
 
 struct G2_deleteRecordWithInfo_result G2_deleteRecordWithInfo_helper(const char *dataSourceCode, const char *recordID, const char *loadID, const long long flags)
 {
-    size_t charBufferSize = 1;
-    char *charBuffer = (char *)malloc(charBufferSize);
+    size_t charBufferSize = 0;
+    char *charBuffer = NULL;
+    char **charBufferPtr = &charBuffer;
     resize_buffer_type resizeFuncPointer = &G2_resizeStringBuffer;
-    int returnCode = G2_deleteRecordWithInfo(dataSourceCode, recordID, loadID, flags, &charBuffer, &charBufferSize, resizeFuncPointer);
+    int returnCode = G2_deleteRecordWithInfo(dataSourceCode, recordID, loadID, flags, charBufferPtr, &charBufferSize, resizeFuncPointer);
     struct G2_deleteRecordWithInfo_result result;
     result.response = charBuffer;
     result.returnCode = returnCode;
@@ -68,11 +84,12 @@ int G2_closeExport_helper(uintptr_t responseHandle)
 
 struct G2_exportConfigAndConfigID_result G2_exportConfigAndConfigID_helper()
 {
-    size_t charBufferSize = 1;
-    char *charBuffer = (char *)malloc(charBufferSize);
+    size_t charBufferSize = 0;
+    char *charBuffer = NULL;
+    char **charBufferPtr = &charBuffer;
     resize_buffer_type resizeFuncPointer = &G2_resizeStringBuffer;
     long long configID;
-    int returnCode = G2_exportConfigAndConfigID(&charBuffer, &charBufferSize, resizeFuncPointer, &configID);
+    int returnCode = G2_exportConfigAndConfigID(charBufferPtr, &charBufferSize, resizeFuncPointer, &configID);
     struct G2_exportConfigAndConfigID_result result;
     result.configID = configID;
     result.config = charBuffer;
@@ -82,10 +99,11 @@ struct G2_exportConfigAndConfigID_result G2_exportConfigAndConfigID_helper()
 
 struct G2_exportConfig_result G2_exportConfig_helper()
 {
-    size_t charBufferSize = 1;
-    char *charBuffer = (char *)malloc(charBufferSize);
+    size_t charBufferSize = 0;
+    char *charBuffer = NULL;
+    char **charBufferPtr = &charBuffer;
     resize_buffer_type resizeFuncPointer = &G2_resizeStringBuffer;
-    int returnCode = G2_exportConfig(&charBuffer, &charBufferSize, resizeFuncPointer);
+    int returnCode = G2_exportConfig(charBufferPtr, &charBufferSize, resizeFuncPointer);
     struct G2_exportConfig_result result;
     result.response = charBuffer;
     result.returnCode = returnCode;
@@ -114,24 +132,26 @@ struct G2_exportJSONEntityReport_result G2_exportJSONEntityReport_helper(const l
 
 struct G2_findInterestingEntitiesByEntityID_result G2_findInterestingEntitiesByEntityID_helper(long long entityID, long long flags)
 {
-    size_t charBufferSize = 1;
-    char *charBuffer = (char *)malloc(charBufferSize);
+    size_t charBufferSize = 0;
+    char *charBuffer = NULL;
+    char **charBufferPtr = &charBuffer;
     resize_buffer_type resizeFuncPointer = &G2_resizeStringBuffer;
-    int returnCode = G2_findInterestingEntitiesByEntityID(entityID, flags, &charBuffer, &charBufferSize, resizeFuncPointer);
+    int returnCode = G2_findInterestingEntitiesByEntityID(entityID, flags, charBufferPtr, &charBufferSize, resizeFuncPointer);
     struct G2_findInterestingEntitiesByEntityID_result result;
-    result.response = charBuffer;
+    result.response = *charBufferPtr;
     result.returnCode = returnCode;
     return result;
 }
 
 struct G2_findInterestingEntitiesByRecordID_result G2_findInterestingEntitiesByRecordID_helper(const char *dataSourceCode, const char *recordID, long long flags)
 {
-    size_t charBufferSize = 1;
-    char *charBuffer = (char *)malloc(charBufferSize);
+    size_t charBufferSize = 0;
+    char *charBuffer = NULL;
+    char **charBufferPtr = &charBuffer;
     resize_buffer_type resizeFuncPointer = &G2_resizeStringBuffer;
-    int returnCode = G2_findInterestingEntitiesByRecordID(dataSourceCode, recordID, flags, &charBuffer, &charBufferSize, resizeFuncPointer);
+    int returnCode = G2_findInterestingEntitiesByRecordID(dataSourceCode, recordID, flags, charBufferPtr, &charBufferSize, resizeFuncPointer);
     struct G2_findInterestingEntitiesByRecordID_result result;
-    result.response = charBuffer;
+    result.response = *charBufferPtr;
     result.returnCode = returnCode;
     return result;
 }
