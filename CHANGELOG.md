@@ -10,6 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 -
 
+## [0.1.5] - 2023-04-14
+
+### Changed in 0.1.5
+
+- Improved underlying CGO for g2engine
+
 ## [0.1.4] - 2023-03-27
 
 ### Changed in 0.1.4
