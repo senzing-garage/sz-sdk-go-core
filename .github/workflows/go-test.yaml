@@ -28,7 +28,7 @@ jobs:
       - run: sudo apt-get -y install /tmp/senzingrepo_1.0.1-1_amd64.deb
       - run: sudo apt-get update
       - run: sudo --preserve-env apt-get -y install senzingapi
-      - run: sudo mv /opt/senzing/data/3.0.0/* /opt/senzing/data/
+      - run: sudo mv /opt/senzing/data/4.0.0/* /opt/senzing/data/
       - run: sudo mkdir /etc/opt/senzing
       - run: sudo cp /opt/senzing/g2/resources/templates/cfgVariant.json     /etc/opt/senzing
       - run: sudo cp /opt/senzing/g2/resources/templates/customGn.txt        /etc/opt/senzing
