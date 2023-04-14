@@ -11,6 +11,12 @@ struct G2_addRecordWithInfo_result
     int returnCode;
 };
 
+struct G2_addRecordWithReturnedRecordID_result
+{
+    char *recordID;
+    int returnCode;
+};
+
 struct G2_addRecordWithInfoWithReturnedRecordID_result
 {
     char *recordID;
@@ -362,6 +368,7 @@ struct G2_whyRecords_V2_result
 
 void *G2_resizeStringBuffer(void *ptr, size_t size);
 struct G2_addRecordWithInfo_result G2_addRecordWithInfo_helper(const char *dataSourceCode, const char *recordID, const char *jsonData, const char *loadID, const long long flags);
+struct G2_addRecordWithReturnedRecordID_result G2_addRecordWithReturnedRecordID_helper(const char *dataSourceCode, const char *jsonData, const char *loadID);
 struct G2_addRecordWithInfoWithReturnedRecordID_result G2_addRecordWithInfoWithReturnedRecordID_helper(const char *dataSourceCode, const char *jsonData, const char *loadID, const long long flags);
 struct G2_checkRecord_result G2_checkRecord_helper(const char *record, const char *recordQueryList);
 int G2_closeExport_helper(uintptr_t responseHandle);
