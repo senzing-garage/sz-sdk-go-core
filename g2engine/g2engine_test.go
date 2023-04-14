@@ -1771,7 +1771,7 @@ func ExampleG2engine_Stats() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println(truncate(response.GetResult(), 16))
+	fmt.Println(truncate(result, 16))
 	// Output: { "workload":...
 }
 
