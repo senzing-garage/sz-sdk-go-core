@@ -100,7 +100,9 @@ func (client *G2product) notify(ctx context.Context, messageId int, err error, d
 	if err != nil {
 		fmt.Printf("Error: %s", err.Error())
 	} else {
-		client.observers.NotifyObservers(ctx, string(message))
+		if client.observers != nil {
+			client.observers.NotifyObservers(ctx, string(message))
+		}
 	}
 }
 

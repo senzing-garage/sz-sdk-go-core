@@ -102,7 +102,9 @@ func (client *G2engine) notify(ctx context.Context, messageId int, err error, de
 	if err != nil {
 		fmt.Printf("Error: %s", err.Error())
 	} else {
-		client.observers.NotifyObservers(ctx, string(message))
+		if client.observers != nil {
+			client.observers.NotifyObservers(ctx, string(message))
+		}
 	}
 }
 
