@@ -10,6 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 -
 
+## [0.1.6] - 2023-04-18
+
+### Fixed in 0.1.6
+
+- Fixed concurrency issue with unregistering observer
+
 ## [0.1.5] - 2023-04-14
 
 ### Changed in 0.1.5
