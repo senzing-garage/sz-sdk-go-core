@@ -19,7 +19,7 @@ import (
 	"github.com/senzing/go-common/g2engineconfigurationjson"
 	"github.com/senzing/go-common/record"
 	"github.com/senzing/go-common/truthset"
-	"github.com/senzing/go-logging/logger"
+	"github.com/senzing/go-logging/logging"
 	"github.com/senzing/go-logging/messagelogger"
 	"github.com/stretchr/testify/assert"
 )
@@ -1759,7 +1759,7 @@ func ExampleG2engine_SetLogLevel() {
 	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
-	err := g2engine.SetLogLevel(ctx, logger.LevelInfo)
+	err := g2engine.SetLogLevel(ctx, logging.LevelInfoName)
 	if err != nil {
 		fmt.Println(err)
 	}
