@@ -237,7 +237,7 @@ func (client *G2config) AddDataSource(ctx context.Context, configHandle uintptr,
 				"inputJson": inputJson,
 				"return":    string(C.GoString(result.response)),
 			}
-			client.notify(ctx, 8001, err, details)
+			notifier.Notify(ctx, client.observers, ProductId, 8001, err, details)
 		}()
 	}
 	if client.isTrace {
@@ -270,7 +270,7 @@ func (client *G2config) Close(ctx context.Context, configHandle uintptr) error {
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			client.notify(ctx, 8002, err, details)
+			notifier.Notify(ctx, client.observers, ProductId, 8002, err, details)
 		}()
 	}
 	if client.isTrace {
@@ -308,7 +308,7 @@ func (client *G2config) Create(ctx context.Context) (uintptr, error) {
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			client.notify(ctx, 8003, err, details)
+			notifier.Notify(ctx, client.observers, ProductId, 8003, err, details)
 		}()
 	}
 	if client.isTrace {
@@ -346,7 +346,7 @@ func (client *G2config) DeleteDataSource(ctx context.Context, configHandle uintp
 			details := map[string]string{
 				"inputJson": inputJson,
 			}
-			client.notify(ctx, 8004, err, details)
+			notifier.Notify(ctx, client.observers, ProductId, 8004, err, details)
 		}()
 	}
 	if client.isTrace {
@@ -378,7 +378,7 @@ func (client *G2config) Destroy(ctx context.Context) error {
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			client.notify(ctx, 8005, err, details)
+			notifier.Notify(ctx, client.observers, ProductId, 8005, err, details)
 		}()
 	}
 	if client.isTrace {
@@ -404,7 +404,7 @@ func (client *G2config) GetSdkId(ctx context.Context) string {
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			client.notify(ctx, 8010, err, details)
+			notifier.Notify(ctx, client.observers, ProductId, 8010, err, details)
 		}()
 	}
 	if client.isTrace {
@@ -447,7 +447,7 @@ func (client *G2config) Init(ctx context.Context, moduleName string, iniParams s
 				"moduleName":     moduleName,
 				"verboseLogging": strconv.Itoa(verboseLogging),
 			}
-			client.notify(ctx, 8006, err, details)
+			notifier.Notify(ctx, client.observers, ProductId, 8006, err, details)
 		}()
 	}
 	if client.isTrace {
@@ -484,7 +484,7 @@ func (client *G2config) ListDataSources(ctx context.Context, configHandle uintpt
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			client.notify(ctx, 8007, err, details)
+			notifier.Notify(ctx, client.observers, ProductId, 8007, err, details)
 		}()
 	}
 	if client.isTrace {
@@ -520,7 +520,7 @@ func (client *G2config) Load(ctx context.Context, configHandle uintptr, jsonConf
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			client.notify(ctx, 8008, err, details)
+			notifier.Notify(ctx, client.observers, ProductId, 8008, err, details)
 		}()
 	}
 	if client.isTrace {
@@ -550,7 +550,7 @@ func (client *G2config) RegisterObserver(ctx context.Context, observer observer.
 			details := map[string]string{
 				"observerID": observer.GetObserverId(ctx),
 			}
-			client.notify(ctx, 8011, err, details)
+			notifier.Notify(ctx, client.observers, ProductId, 8011, err, details)
 		}()
 	}
 	if client.isTrace {
@@ -587,7 +587,7 @@ func (client *G2config) Save(ctx context.Context, configHandle uintptr) (string,
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			client.notify(ctx, 8009, err, details)
+			notifier.Notify(ctx, client.observers, ProductId, 8009, err, details)
 		}()
 	}
 	if client.isTrace {
@@ -649,7 +649,7 @@ func (client *G2config) UnregisterObserver(ctx context.Context, observer observe
 		details := map[string]string{
 			"observerID": observer.GetObserverId(ctx),
 		}
-		client.notify(ctx, 8013, err, details)
+		notifier.Notify(ctx, client.observers, ProductId, 8013, err, details)
 	}
 	err = client.observers.UnregisterObserver(ctx, observer)
 	if !client.observers.HasObservers(ctx) {

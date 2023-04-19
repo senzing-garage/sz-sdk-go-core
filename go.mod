@@ -7,11 +7,9 @@ require (
 	github.com/senzing/g2-sdk-go v0.5.1
 	github.com/senzing/go-common v0.1.2
 	github.com/senzing/go-logging v1.2.0
-	github.com/senzing/go-observing v0.2.0
+	github.com/senzing/go-observing v0.2.1
 	github.com/stretchr/testify v1.8.2
 )
-
-replace github.com/senzing/g2-sdk-go => /home/senzing/senzing.git/g2-sdk-go
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect

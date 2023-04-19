@@ -236,7 +236,7 @@ func (client *G2configmgr) AddConfig(ctx context.Context, configStr string, conf
 			details := map[string]string{
 				"configComments": configComments,
 			}
-			client.notify(ctx, 8001, err, details)
+			notifier.Notify(ctx, client.observers, ProductId, 8001, err, details)
 		}()
 	}
 	if client.isTrace {
@@ -268,7 +268,7 @@ func (client *G2configmgr) Destroy(ctx context.Context) error {
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			client.notify(ctx, 8002, err, details)
+			notifier.Notify(ctx, client.observers, ProductId, 8002, err, details)
 		}()
 	}
 	if client.isTrace {
@@ -304,7 +304,7 @@ func (client *G2configmgr) GetConfig(ctx context.Context, configID int64) (strin
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			client.notify(ctx, 8003, err, details)
+			notifier.Notify(ctx, client.observers, ProductId, 8003, err, details)
 		}()
 	}
 	if client.isTrace {
@@ -339,7 +339,7 @@ func (client *G2configmgr) GetConfigList(ctx context.Context) (string, error) {
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			client.notify(ctx, 8004, err, details)
+			notifier.Notify(ctx, client.observers, ProductId, 8004, err, details)
 		}()
 	}
 	if client.isTrace {
@@ -373,7 +373,7 @@ func (client *G2configmgr) GetDefaultConfigID(ctx context.Context) (int64, error
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			client.notify(ctx, 8005, err, details)
+			notifier.Notify(ctx, client.observers, ProductId, 8005, err, details)
 		}()
 	}
 	if client.isTrace {
@@ -399,7 +399,7 @@ func (client *G2configmgr) GetSdkId(ctx context.Context) string {
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			client.notify(ctx, 8010, err, details)
+			notifier.Notify(ctx, client.observers, ProductId, 8010, err, details)
 		}()
 	}
 	if client.isTrace {
@@ -442,7 +442,7 @@ func (client *G2configmgr) Init(ctx context.Context, moduleName string, iniParam
 				"moduleName":     moduleName,
 				"verboseLogging": strconv.Itoa(verboseLogging),
 			}
-			client.notify(ctx, 8006, err, details)
+			notifier.Notify(ctx, client.observers, ProductId, 8006, err, details)
 		}()
 	}
 	if client.isTrace {
@@ -472,7 +472,7 @@ func (client *G2configmgr) RegisterObserver(ctx context.Context, observer observ
 			details := map[string]string{
 				"observerID": observer.GetObserverId(ctx),
 			}
-			client.notify(ctx, 8010, err, details)
+			notifier.Notify(ctx, client.observers, ProductId, 8010, err, details)
 		}()
 	}
 	if client.isTrace {
@@ -510,7 +510,7 @@ func (client *G2configmgr) ReplaceDefaultConfigID(ctx context.Context, oldConfig
 			details := map[string]string{
 				"newConfigID": strconv.FormatInt(newConfigID, 10),
 			}
-			client.notify(ctx, 8007, err, details)
+			notifier.Notify(ctx, client.observers, ProductId, 8007, err, details)
 		}()
 	}
 	if client.isTrace {
@@ -545,7 +545,7 @@ func (client *G2configmgr) SetDefaultConfigID(ctx context.Context, configID int6
 			details := map[string]string{
 				"configID": strconv.FormatInt(configID, 10),
 			}
-			client.notify(ctx, 8008, err, details)
+			notifier.Notify(ctx, client.observers, ProductId, 8008, err, details)
 		}()
 	}
 	if client.isTrace {
@@ -607,7 +607,7 @@ func (client *G2configmgr) UnregisterObserver(ctx context.Context, observer obse
 		details := map[string]string{
 			"observerID": observer.GetObserverId(ctx),
 		}
-		client.notify(ctx, 8012, err, details)
+		notifier.Notify(ctx, client.observers, ProductId, 8012, err, details)
 	}
 	err = client.observers.UnregisterObserver(ctx, observer)
 	if !client.observers.HasObservers(ctx) {
