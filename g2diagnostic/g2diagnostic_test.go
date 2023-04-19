@@ -44,7 +44,7 @@ func createError(errorId int, err error) error {
 func getTestObject(ctx context.Context, test *testing.T) g2api.G2diagnostic {
 	if g2diagnosticSingleton == nil {
 		g2diagnosticSingleton = &G2diagnostic{}
-		// g2diagnosticSingleton.SetLogLevel(ctx, logger.LevelTrace)
+		g2diagnosticSingleton.SetLogLevel(ctx, logging.LevelTraceName)
 		log.SetFlags(0)
 		moduleName := "Test module name"
 		verboseLogging := 0

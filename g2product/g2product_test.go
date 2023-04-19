@@ -30,7 +30,7 @@ var (
 func getTestObject(ctx context.Context, test *testing.T) g2api.G2product {
 	if g2productSingleton == nil {
 		g2productSingleton = &G2product{}
-		// g2productSingleton.SetLogLevel(ctx, logger.LevelTrace)
+		g2productSingleton.SetLogLevel(ctx, logging.LevelTraceName)
 		log.SetFlags(0)
 		moduleName := "Test module name"
 		verboseLogging := 0
