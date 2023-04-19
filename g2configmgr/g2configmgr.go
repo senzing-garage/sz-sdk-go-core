@@ -234,11 +234,12 @@ func (client *G2configmgr) Destroy(ctx context.Context) error {
 	// _DLEXPORT int G2Config_destroy();
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+	var err error = nil
+	entryTime := time.Now()
 	if client.isTrace {
 		client.traceEntry(5)
+		defer func() { client.traceExit(6, err, time.Since(entryTime)) }()
 	}
-	entryTime := time.Now()
-	var err error = nil
 	result := C.G2ConfigMgr_destroy()
 	if result != 0 {
 		err = client.newError(ctx, 4002, result, time.Since(entryTime))
@@ -248,9 +249,6 @@ func (client *G2configmgr) Destroy(ctx context.Context) error {
 			details := map[string]string{}
 			notifier.Notify(ctx, client.observers, ProductId, 8002, err, details)
 		}()
-	}
-	if client.isTrace {
-		defer client.traceExit(6, err, time.Since(entryTime))
 	}
 	return err
 }
@@ -369,19 +367,17 @@ Input
   - ctx: A context to control lifecycle.
 */
 func (client *G2configmgr) GetSdkId(ctx context.Context) string {
-	if client.isTrace {
-		client.traceEntry(29)
-	}
-	entryTime := time.Now()
 	var err error = nil
+	if client.isTrace {
+		entryTime := time.Now()
+		client.traceEntry(29)
+		defer func() { client.traceExit(30, err, time.Since(entryTime)) }()
+	}
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
 			notifier.Notify(ctx, client.observers, ProductId, 8010, err, details)
 		}()
-	}
-	if client.isTrace {
-		defer client.traceExit(30, err, time.Since(entryTime))
 	}
 	return "base"
 }
@@ -400,11 +396,12 @@ func (client *G2configmgr) Init(ctx context.Context, moduleName string, iniParam
 	// _DLEXPORT int G2Config_init(const char *moduleName, const char *iniParams, const int verboseLogging);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+	var err error = nil
+	entryTime := time.Now()
 	if client.isTrace {
 		client.traceEntry(17, moduleName, iniParams, verboseLogging)
+		defer func() { client.traceExit(18, moduleName, iniParams, verboseLogging, err, time.Since(entryTime)) }()
 	}
-	entryTime := time.Now()
-	var err error = nil
 	moduleNameForC := C.CString(moduleName)
 	defer C.free(unsafe.Pointer(moduleNameForC))
 	iniParamsForC := C.CString(iniParams)
@@ -423,9 +420,6 @@ func (client *G2configmgr) Init(ctx context.Context, moduleName string, iniParam
 			notifier.Notify(ctx, client.observers, ProductId, 8006, err, details)
 		}()
 	}
-	if client.isTrace {
-		defer client.traceExit(18, moduleName, iniParams, verboseLogging, err, time.Since(entryTime))
-	}
 	return err
 }
 
@@ -437,14 +431,16 @@ Input
   - observer: The observer to be added.
 */
 func (client *G2configmgr) RegisterObserver(ctx context.Context, observer observer.Observer) error {
+	var err error = nil
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(25, observer.GetObserverId(ctx))
+		defer func() { client.traceExit(26, observer.GetObserverId(ctx), err, time.Since(entryTime)) }()
 	}
-	entryTime := time.Now()
 	if client.observers == nil {
 		client.observers = &subject.SubjectImpl{}
 	}
-	err := client.observers.RegisterObserver(ctx, observer)
+	err = client.observers.RegisterObserver(ctx, observer)
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -452,9 +448,6 @@ func (client *G2configmgr) RegisterObserver(ctx context.Context, observer observ
 			}
 			notifier.Notify(ctx, client.observers, ProductId, 8010, err, details)
 		}()
-	}
-	if client.isTrace {
-		defer client.traceExit(26, observer.GetObserverId(ctx), err, time.Since(entryTime))
 	}
 	return err
 }
@@ -474,11 +467,12 @@ func (client *G2configmgr) ReplaceDefaultConfigID(ctx context.Context, oldConfig
 	// _DLEXPORT int G2ConfigMgr_replaceDefaultConfigID(const long long oldConfigID, const long long newConfigID);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+	var err error = nil
+	entryTime := time.Now()
 	if client.isTrace {
 		client.traceEntry(19, oldConfigID, newConfigID)
+		defer func() { client.traceExit(20, oldConfigID, newConfigID, err, time.Since(entryTime)) }()
 	}
-	entryTime := time.Now()
-	var err error = nil
 	result := C.G2ConfigMgr_replaceDefaultConfigID(C.longlong(oldConfigID), C.longlong(newConfigID))
 	if result != 0 {
 		err = client.newError(ctx, 4008, oldConfigID, newConfigID, result, time.Since(entryTime))
@@ -490,9 +484,6 @@ func (client *G2configmgr) ReplaceDefaultConfigID(ctx context.Context, oldConfig
 			}
 			notifier.Notify(ctx, client.observers, ProductId, 8007, err, details)
 		}()
-	}
-	if client.isTrace {
-		defer client.traceExit(20, oldConfigID, newConfigID, err, time.Since(entryTime))
 	}
 	return err
 }
@@ -509,11 +500,12 @@ func (client *G2configmgr) SetDefaultConfigID(ctx context.Context, configID int6
 	// _DLEXPORT int G2ConfigMgr_setDefaultConfigID(const long long configID);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+	var err error = nil
+	entryTime := time.Now()
 	if client.isTrace {
 		client.traceEntry(21, configID)
+		defer func() { client.traceExit(22, configID, err, time.Since(entryTime)) }()
 	}
-	entryTime := time.Now()
-	var err error = nil
 	result := C.G2ConfigMgr_setDefaultConfigID(C.longlong(configID))
 	if result != 0 {
 		err = client.newError(ctx, 4009, configID, result, time.Since(entryTime))
@@ -525,9 +517,6 @@ func (client *G2configmgr) SetDefaultConfigID(ctx context.Context, configID int6
 			}
 			notifier.Notify(ctx, client.observers, ProductId, 8008, err, details)
 		}()
-	}
-	if client.isTrace {
-		defer client.traceExit(22, configID, err, time.Since(entryTime))
 	}
 	return err
 }
@@ -572,11 +561,12 @@ Input
   - observer: The observer to be added.
 */
 func (client *G2configmgr) UnregisterObserver(ctx context.Context, observer observer.Observer) error {
-	if client.isTrace {
-		client.traceEntry(27, observer.GetObserverId(ctx))
-	}
-	entryTime := time.Now()
 	var err error = nil
+	if client.isTrace {
+		entryTime := time.Now()
+		client.traceEntry(27, observer.GetObserverId(ctx))
+		defer func() { client.traceExit(28, observer.GetObserverId(ctx), err, time.Since(entryTime)) }()
+	}
 	if client.observers != nil {
 		// Tricky code:
 		// client.notify is called synchronously before client.observers is set to nil.
@@ -590,9 +580,6 @@ func (client *G2configmgr) UnregisterObserver(ctx context.Context, observer obse
 	err = client.observers.UnregisterObserver(ctx, observer)
 	if !client.observers.HasObservers(ctx) {
 		client.observers = nil
-	}
-	if client.isTrace {
-		defer client.traceExit(28, observer.GetObserverId(ctx), err, time.Since(entryTime))
 	}
 	return err
 }

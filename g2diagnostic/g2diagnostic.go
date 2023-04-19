@@ -232,11 +232,12 @@ func (client *G2diagnostic) CloseEntityListBySize(ctx context.Context, entityLis
 	//  _DLEXPORT int G2Diagnostic_closeEntityListBySize(EntityListBySizeHandle entityListBySizeHandle);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+	var err error = nil
+	entryTime := time.Now()
 	if client.isTrace {
 		client.traceEntry(5)
+		defer func() { client.traceExit(6, err, time.Since(entryTime)) }()
 	}
-	entryTime := time.Now()
-	var err error = nil
 	result := C.G2Diagnostic_closeEntityListBySize_helper(C.uintptr_t(entityListBySizeHandle))
 	if result != 0 {
 		err = client.newError(ctx, 4002, result, time.Since(entryTime))
@@ -246,9 +247,6 @@ func (client *G2diagnostic) CloseEntityListBySize(ctx context.Context, entityLis
 			details := map[string]string{}
 			notifier.Notify(ctx, client.observers, ProductId, 8002, err, details)
 		}()
-	}
-	if client.isTrace {
-		defer client.traceExit(6, err, time.Since(entryTime))
 	}
 	return err
 }
@@ -264,11 +262,12 @@ func (client *G2diagnostic) Destroy(ctx context.Context) error {
 	//  _DLEXPORT int G2Diagnostic_destroy();
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+	var err error = nil
+	entryTime := time.Now()
 	if client.isTrace {
 		client.traceEntry(7)
+		defer func() { client.traceExit(8, err, time.Since(entryTime)) }()
 	}
-	entryTime := time.Now()
-	var err error = nil
 	result := C.G2Diagnostic_destroy()
 	if result != 0 {
 		err = client.newError(ctx, 4003, result, time.Since(entryTime))
@@ -278,9 +277,6 @@ func (client *G2diagnostic) Destroy(ctx context.Context) error {
 			details := map[string]string{}
 			notifier.Notify(ctx, client.observers, ProductId, 8003, err, details)
 		}()
-	}
-	if client.isTrace {
-		defer client.traceExit(8, err, time.Since(entryTime))
 	}
 	return err
 }
@@ -869,19 +865,17 @@ Input
   - ctx: A context to control lifecycle.
 */
 func (client *G2diagnostic) GetSdkId(ctx context.Context) string {
-	if client.isTrace {
-		client.traceEntry(59)
-	}
-	entryTime := time.Now()
 	var err error = nil
+	if client.isTrace {
+		entryTime := time.Now()
+		client.traceEntry(59)
+		defer func() { client.traceExit(60, err, time.Since(entryTime)) }()
+	}
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
 			notifier.Notify(ctx, client.observers, ProductId, 8024, err, details)
 		}()
-	}
-	if client.isTrace {
-		defer client.traceExit(60, err, time.Since(entryTime))
 	}
 	return "base"
 }
@@ -931,11 +925,12 @@ func (client *G2diagnostic) Init(ctx context.Context, moduleName string, iniPara
 	// _DLEXPORT int G2Diagnostic_init(const char *moduleName, const char *iniParams, const int verboseLogging);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+	var err error = nil
+	entryTime := time.Now()
 	if client.isTrace {
 		client.traceEntry(47, moduleName, iniParams, verboseLogging)
+		defer func() { client.traceExit(48, moduleName, iniParams, verboseLogging, err, time.Since(entryTime)) }()
 	}
-	entryTime := time.Now()
-	var err error = nil
 	moduleNameForC := C.CString(moduleName)
 	defer C.free(unsafe.Pointer(moduleNameForC))
 	iniParamsForC := C.CString(iniParams)
@@ -953,9 +948,6 @@ func (client *G2diagnostic) Init(ctx context.Context, moduleName string, iniPara
 			}
 			notifier.Notify(ctx, client.observers, ProductId, 8021, err, details)
 		}()
-	}
-	if client.isTrace {
-		defer client.traceExit(48, moduleName, iniParams, verboseLogging, err, time.Since(entryTime))
 	}
 	return err
 }
@@ -975,11 +967,14 @@ func (client *G2diagnostic) InitWithConfigID(ctx context.Context, moduleName str
 	//  _DLEXPORT int G2Diagnostic_initWithConfigID(const char *moduleName, const char *iniParams, const long long initConfigID, const int verboseLogging);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+	var err error = nil
+	entryTime := time.Now()
 	if client.isTrace {
 		client.traceEntry(49, moduleName, iniParams, initConfigID, verboseLogging)
+		defer func() {
+			client.traceExit(50, moduleName, iniParams, initConfigID, verboseLogging, err, time.Since(entryTime))
+		}()
 	}
-	entryTime := time.Now()
-	var err error = nil
 	moduleNameForC := C.CString(moduleName)
 	defer C.free(unsafe.Pointer(moduleNameForC))
 	iniParamsForC := C.CString(iniParams)
@@ -999,9 +994,6 @@ func (client *G2diagnostic) InitWithConfigID(ctx context.Context, moduleName str
 			notifier.Notify(ctx, client.observers, ProductId, 8022, err, details)
 		}()
 	}
-	if client.isTrace {
-		defer client.traceExit(50, moduleName, iniParams, initConfigID, verboseLogging, err, time.Since(entryTime))
-	}
 	return err
 }
 
@@ -1013,14 +1005,16 @@ Input
   - observer: The observer to be added.
 */
 func (client *G2diagnostic) RegisterObserver(ctx context.Context, observer observer.Observer) error {
+	var err error = nil
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(55, observer.GetObserverId(ctx))
+		defer func() { client.traceExit(56, observer.GetObserverId(ctx), err, time.Since(entryTime)) }()
 	}
-	entryTime := time.Now()
 	if client.observers == nil {
 		client.observers = &subject.SubjectImpl{}
 	}
-	err := client.observers.RegisterObserver(ctx, observer)
+	err = client.observers.RegisterObserver(ctx, observer)
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -1028,9 +1022,6 @@ func (client *G2diagnostic) RegisterObserver(ctx context.Context, observer obser
 			}
 			notifier.Notify(ctx, client.observers, ProductId, 8025, err, details)
 		}()
-	}
-	if client.isTrace {
-		defer client.traceExit(56, observer.GetObserverId(ctx), err, time.Since(entryTime))
 	}
 	return err
 }
@@ -1046,11 +1037,12 @@ func (client *G2diagnostic) Reinit(ctx context.Context, initConfigID int64) erro
 	//  _DLEXPORT int G2Diagnostic_reinit(const long long initConfigID);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+	var err error = nil
+	entryTime := time.Now()
 	if client.isTrace {
 		client.traceEntry(51, initConfigID)
+		defer func() { client.traceExit(52, initConfigID, err, time.Since(entryTime)) }()
 	}
-	entryTime := time.Now()
-	var err error = nil
 	result := C.G2Diagnostic_reinit(C.longlong(initConfigID))
 	if result != 0 {
 		err = client.newError(ctx, 4020, initConfigID, result, time.Since(entryTime))
@@ -1062,9 +1054,6 @@ func (client *G2diagnostic) Reinit(ctx context.Context, initConfigID int64) erro
 			}
 			notifier.Notify(ctx, client.observers, ProductId, 8023, err, details)
 		}()
-	}
-	if client.isTrace {
-		defer client.traceExit(52, initConfigID, err, time.Since(entryTime))
 	}
 	return err
 }
@@ -1109,11 +1098,12 @@ Input
   - observer: The observer to be added.
 */
 func (client *G2diagnostic) UnregisterObserver(ctx context.Context, observer observer.Observer) error {
-	if client.isTrace {
-		client.traceEntry(57, observer.GetObserverId(ctx))
-	}
-	entryTime := time.Now()
 	var err error = nil
+	if client.isTrace {
+		entryTime := time.Now()
+		client.traceEntry(57, observer.GetObserverId(ctx))
+		defer func() { client.traceExit(58, observer.GetObserverId(ctx), err, time.Since(entryTime)) }()
+	}
 	if client.observers != nil {
 		// Tricky code:
 		// client.notify is called synchronously before client.observers is set to nil.
@@ -1127,9 +1117,6 @@ func (client *G2diagnostic) UnregisterObserver(ctx context.Context, observer obs
 	err = client.observers.UnregisterObserver(ctx, observer)
 	if !client.observers.HasObservers(ctx) {
 		client.observers = nil
-	}
-	if client.isTrace {
-		defer client.traceExit(58, observer.GetObserverId(ctx), err, time.Since(entryTime))
 	}
 	return err
 }
