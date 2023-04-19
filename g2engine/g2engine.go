@@ -1,5 +1,5 @@
 /*
-// The G2engineImpl implementation is a wrapper over the Senzing libg2 library.
+The G2engineImpl implementation is a wrapper over the Senzing libg2 library.
 */
 package g2engine
 
@@ -91,6 +91,27 @@ func (client *G2engine) newError(ctx context.Context, errorNumber int, details .
 	return g2error.G2Error(g2error.G2ErrorCode(message), (errorMessage))
 }
 
+// --- Observing --------------------------------------------------------------
+
+// Notify registered observers.
+func (client *G2engine) notify(ctx context.Context, messageId int, err error, details map[string]string) {
+	now := time.Now()
+	details["subjectId"] = strconv.Itoa(ProductId)
+	details["messageId"] = strconv.Itoa(messageId)
+	details["messageTime"] = strconv.FormatInt(now.UnixNano(), 10)
+	if err != nil {
+		details["error"] = err.Error()
+	}
+	message, err := json.Marshal(details)
+	if err != nil {
+		fmt.Printf("Error: %s", err.Error())
+	} else {
+		if client.observers != nil {
+			client.observers.NotifyObservers(ctx, string(message))
+		}
+	}
+}
+
 // --- G2 exception handling --------------------------------------------------
 
 /*
@@ -123,7 +144,7 @@ Output
   - A string containing the error received from Senzing's G2Product.
 */
 func (client *G2engine) getLastException(ctx context.Context) (string, error) {
-	//  _DLEXPORT int G2_getLastException(char *buffer, const size_t bufSize);
+	// _DLEXPORT int G2_getLastException(char *buffer, const size_t bufSize);
 	if client.isTrace {
 		client.traceEntry(79)
 	}
@@ -175,25 +196,6 @@ func (client *G2engine) getByteArrayC(size int) *C.char {
 // Make a byte array.
 func (client *G2engine) getByteArray(size int) []byte {
 	return make([]byte, size)
-}
-
-// Notify registered observers.
-func (client *G2engine) notify(ctx context.Context, messageId int, err error, details map[string]string) {
-	now := time.Now()
-	details["subjectId"] = strconv.Itoa(ProductId)
-	details["messageId"] = strconv.Itoa(messageId)
-	details["messageTime"] = strconv.FormatInt(now.UnixNano(), 10)
-	if err != nil {
-		details["error"] = err.Error()
-	}
-	message, err := json.Marshal(details)
-	if err != nil {
-		fmt.Printf("Error: %s", err.Error())
-	} else {
-		if client.observers != nil {
-			client.observers.NotifyObservers(ctx, string(message))
-		}
-	}
 }
 
 // ----------------------------------------------------------------------------

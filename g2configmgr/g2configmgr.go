@@ -92,6 +92,27 @@ func (client *G2configmgr) newError(ctx context.Context, errorNumber int, detail
 	return g2error.G2Error(g2error.G2ErrorCode(message), (errorMessage))
 }
 
+// --- Observing --------------------------------------------------------------
+
+// Notify registered observers.
+func (client *G2configmgr) notify(ctx context.Context, messageId int, err error, details map[string]string) {
+	now := time.Now()
+	details["subjectId"] = strconv.Itoa(ProductId)
+	details["messageId"] = strconv.Itoa(messageId)
+	details["messageTime"] = strconv.FormatInt(now.UnixNano(), 10)
+	if err != nil {
+		details["error"] = err.Error()
+	}
+	message, err := json.Marshal(details)
+	if err != nil {
+		fmt.Printf("Error: %s", err.Error())
+	} else {
+		if client.observers != nil {
+			client.observers.NotifyObservers(ctx, string(message))
+		}
+	}
+}
+
 // --- G2 exception handling --------------------------------------------------
 
 /*
@@ -176,25 +197,6 @@ func (client *G2configmgr) getByteArrayC(size int) *C.char {
 // Make a byte array.
 func (client *G2configmgr) getByteArray(size int) []byte {
 	return make([]byte, size)
-}
-
-// Notify registered observers.
-func (client *G2configmgr) notify(ctx context.Context, messageId int, err error, details map[string]string) {
-	now := time.Now()
-	details["subjectId"] = strconv.Itoa(ProductId)
-	details["messageId"] = strconv.Itoa(messageId)
-	details["messageTime"] = strconv.FormatInt(now.UnixNano(), 10)
-	if err != nil {
-		details["error"] = err.Error()
-	}
-	message, err := json.Marshal(details)
-	if err != nil {
-		fmt.Printf("Error: %s", err.Error())
-	} else {
-		if client.observers != nil {
-			client.observers.NotifyObservers(ctx, string(message))
-		}
-	}
 }
 
 // ----------------------------------------------------------------------------

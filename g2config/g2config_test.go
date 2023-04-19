@@ -84,12 +84,6 @@ func testError(test *testing.T, ctx context.Context, g2config g2api.G2config, er
 	}
 }
 
-func testErrorNoFail(test *testing.T, ctx context.Context, g2config g2api.G2config, err error) {
-	if err != nil {
-		test.Log("Error:", err.Error())
-	}
-}
-
 // ----------------------------------------------------------------------------
 // Test harness
 // ----------------------------------------------------------------------------
