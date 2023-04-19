@@ -13,7 +13,6 @@ import "C"
 import (
 	"bytes"
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"runtime"
@@ -90,27 +89,6 @@ func (client *G2product) newError(ctx context.Context, errorNumber int, details 
 	details = append(details, errors.New(message))
 	errorMessage := client.getLogger().Json(errorNumber, details...)
 	return g2error.G2Error(g2error.G2ErrorCode(message), (errorMessage))
-}
-
-// --- Observing --------------------------------------------------------------
-
-// Notify registered observers.
-func (client *G2product) notify(ctx context.Context, messageId int, err error, details map[string]string) {
-	now := time.Now()
-	details["subjectId"] = strconv.Itoa(ProductId)
-	details["messageId"] = strconv.Itoa(messageId)
-	details["messageTime"] = strconv.FormatInt(now.UnixNano(), 10)
-	if err != nil {
-		details["error"] = err.Error()
-	}
-	message, err := json.Marshal(details)
-	if err != nil {
-		fmt.Printf("Error: %s", err.Error())
-	} else {
-		if client.observers != nil {
-			client.observers.NotifyObservers(ctx, string(message))
-		}
-	}
 }
 
 // --- G2 exception handling --------------------------------------------------
