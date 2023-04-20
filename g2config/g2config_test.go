@@ -10,7 +10,7 @@ import (
 	truncator "github.com/aquilax/truncate"
 	"github.com/senzing/g2-sdk-go/g2api"
 	"github.com/senzing/go-common/g2engineconfigurationjson"
-	"github.com/senzing/go-logging/logger"
+	"github.com/senzing/go-logging/logging"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -30,7 +30,7 @@ var (
 func getTestObject(ctx context.Context, test *testing.T) g2api.G2config {
 	if g2configSingleton == nil {
 		g2configSingleton = &G2config{}
-		// g2configSingleton.SetLogLevel(ctx, logger.LevelTrace)
+		g2configSingleton.SetLogLevel(ctx, logging.LevelTraceName)
 		log.SetFlags(0)
 		moduleName := "Test module name"
 		verboseLogging := 0
@@ -81,12 +81,6 @@ func testError(test *testing.T, ctx context.Context, g2config g2api.G2config, er
 	if err != nil {
 		test.Log("Error:", err.Error())
 		assert.FailNow(test, err.Error())
-	}
-}
-
-func testErrorNoFail(test *testing.T, ctx context.Context, g2config g2api.G2config, err error) {
-	if err != nil {
-		test.Log("Error:", err.Error())
 	}
 }
 
@@ -354,7 +348,7 @@ func ExampleG2config_SetLogLevel() {
 	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2config/g2config_test.go
 	ctx := context.TODO()
 	g2config := getG2Config(ctx)
-	err := g2config.SetLogLevel(ctx, logger.LevelInfo)
+	err := g2config.SetLogLevel(ctx, logging.LevelInfoName)
 	if err != nil {
 		fmt.Println(err)
 	}

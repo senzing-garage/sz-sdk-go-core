@@ -17,7 +17,7 @@ import (
 	"github.com/senzing/g2-sdk-go/g2error"
 	"github.com/senzing/go-common/g2engineconfigurationjson"
 	"github.com/senzing/go-common/truthset"
-	"github.com/senzing/go-logging/logger"
+	"github.com/senzing/go-logging/logging"
 	"github.com/senzing/go-logging/messagelogger"
 	"github.com/stretchr/testify/assert"
 )
@@ -44,7 +44,7 @@ func createError(errorId int, err error) error {
 func getTestObject(ctx context.Context, test *testing.T) g2api.G2diagnostic {
 	if g2diagnosticSingleton == nil {
 		g2diagnosticSingleton = &G2diagnostic{}
-		// g2diagnosticSingleton.SetLogLevel(ctx, logger.LevelTrace)
+		g2diagnosticSingleton.SetLogLevel(ctx, logging.LevelTraceName)
 		log.SetFlags(0)
 		moduleName := "Test module name"
 		verboseLogging := 0
@@ -770,7 +770,7 @@ func ExampleG2diagnostic_SetLogLevel() {
 	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2diagnostic/g2diagnostic_test.go
 	ctx := context.TODO()
 	g2diagnostic := &G2diagnostic{}
-	err := g2diagnostic.SetLogLevel(ctx, logger.LevelInfo)
+	err := g2diagnostic.SetLogLevel(ctx, logging.LevelInfoName)
 	if err != nil {
 		fmt.Println(err)
 	}

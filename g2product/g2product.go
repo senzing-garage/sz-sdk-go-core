@@ -1,4 +1,6 @@
-// The G2productImpl implementation is a wrapper over the Senzing libg2product library.
+/*
+The G2productImpl implementation is a wrapper over the Senzing libg2product library.
+*/
 package g2product
 
 /*
@@ -11,7 +13,6 @@ import "C"
 import (
 	"bytes"
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"runtime"
@@ -21,8 +22,8 @@ import (
 
 	"github.com/senzing/g2-sdk-go/g2error"
 	g2productapi "github.com/senzing/g2-sdk-go/g2product"
-	"github.com/senzing/go-logging/logger"
-	"github.com/senzing/go-logging/messagelogger"
+	"github.com/senzing/go-logging/logging"
+	"github.com/senzing/go-observing/notifier"
 	"github.com/senzing/go-observing/observer"
 	"github.com/senzing/go-observing/subject"
 )
@@ -34,7 +35,7 @@ import (
 // G2productImpl is the default implementation of the G2product interface.
 type G2product struct {
 	isTrace   bool
-	logger    messagelogger.MessageLoggerInterface
+	logger    logging.LoggingInterface
 	observers subject.Subject
 }
 
@@ -48,62 +49,21 @@ const initialByteArraySize = 65535
 // Internal methods
 // ----------------------------------------------------------------------------
 
-// Get space for an array of bytes of a given size.
-func (client *G2product) getByteArrayC(size int) *C.char {
-	bytes := C.malloc(C.size_t(size))
-	return (*C.char)(bytes)
-}
-
-// Make a byte array.
-func (client *G2product) getByteArray(size int) []byte {
-	return make([]byte, size)
-}
-
-// Create a new error.
-func (client *G2product) newError(ctx context.Context, errorNumber int, details ...interface{}) error {
-	lastException, err := client.getLastException(ctx)
-	defer client.clearLastException(ctx)
-	message := lastException
-	if err != nil {
-		message = err.Error()
-	}
-
-	var newDetails []interface{}
-	newDetails = append(newDetails, details...)
-	newDetails = append(newDetails, errors.New(message))
-	errorMessage, err := client.getLogger().Message(errorNumber, newDetails...)
-	if err != nil {
-		errorMessage = err.Error()
-	}
-
-	return g2error.G2Error(g2error.G2ErrorCode(message), (errorMessage))
-}
+// --- Logging ----------------------------------------------------------------
 
 // Get the Logger singleton.
-func (client *G2product) getLogger() messagelogger.MessageLoggerInterface {
+func (client *G2product) getLogger() logging.LoggingInterface {
+	var err error = nil
 	if client.logger == nil {
-		client.logger, _ = messagelogger.NewSenzingApiLogger(ProductId, g2productapi.IdMessages, g2productapi.IdStatuses, messagelogger.LevelInfo)
-	}
-	return client.logger
-}
-
-// Notify registered observers.
-func (client *G2product) notify(ctx context.Context, messageId int, err error, details map[string]string) {
-	now := time.Now()
-	details["subjectId"] = strconv.Itoa(ProductId)
-	details["messageId"] = strconv.Itoa(messageId)
-	details["messageTime"] = strconv.FormatInt(now.UnixNano(), 10)
-	if err != nil {
-		details["error"] = err.Error()
-	}
-	message, err := json.Marshal(details)
-	if err != nil {
-		fmt.Printf("Error: %s", err.Error())
-	} else {
-		if client.observers != nil {
-			client.observers.NotifyObservers(ctx, string(message))
+		options := []interface{}{
+			&logging.OptionCallerSkip{Value: 4},
+		}
+		client.logger, err = logging.NewSenzingSdkLogger(ProductId, g2productapi.IdMessages, options...)
+		if err != nil {
+			panic(err)
 		}
 	}
+	return client.logger
 }
 
 // Trace method entry.
@@ -116,6 +76,23 @@ func (client *G2product) traceExit(errorNumber int, details ...interface{}) {
 	client.getLogger().Log(errorNumber, details...)
 }
 
+// --- Errors -----------------------------------------------------------------
+
+// Create a new error.
+func (client *G2product) newError(ctx context.Context, errorNumber int, details ...interface{}) error {
+	lastException, err := client.getLastException(ctx)
+	defer client.clearLastException(ctx)
+	message := lastException
+	if err != nil {
+		message = err.Error()
+	}
+	details = append(details, errors.New(message))
+	errorMessage := client.getLogger().Json(errorNumber, details...)
+	return g2error.G2Error(g2error.G2ErrorCode(message), (errorMessage))
+}
+
+// --- G2 exception handling --------------------------------------------------
+
 /*
 The clearLastException method erases the last exception message held by the Senzing G2Product object.
 
@@ -124,15 +101,13 @@ Input
 */
 func (client *G2product) clearLastException(ctx context.Context) error {
 	// _DLEXPORT void G2Config_clearLastException();
-	if client.isTrace {
-		client.traceEntry(1)
-	}
-	entryTime := time.Now()
 	var err error = nil
-	C.G2Product_clearLastException()
 	if client.isTrace {
-		defer client.traceExit(2, err, time.Since(entryTime))
+		entryTime := time.Now()
+		client.traceEntry(1)
+		defer func() { client.traceExit(2, err, time.Since(entryTime)) }()
 	}
+	C.G2Product_clearLastException()
 	return err
 }
 
@@ -147,21 +122,20 @@ Output
 */
 func (client *G2product) getLastException(ctx context.Context) (string, error) {
 	// _DLEXPORT int G2Config_getLastException(char *buffer, const size_t bufSize);
-	if client.isTrace {
-		client.traceEntry(5)
-	}
-	entryTime := time.Now()
 	var err error = nil
+	var result string
+	if client.isTrace {
+		entryTime := time.Now()
+		client.traceEntry(5)
+		defer func() { client.traceExit(6, result, err, time.Since(entryTime)) }()
+	}
 	stringBuffer := client.getByteArray(initialByteArraySize)
 	C.G2Product_getLastException((*C.char)(unsafe.Pointer(&stringBuffer[0])), C.ulong(len(stringBuffer)))
 	// if result == 0 { // "result" is length of exception message.
 	// 	err = client.getLogger().Error(4002, result, time.Since(entryTime))
 	// }
-	stringBuffer = bytes.Trim(stringBuffer, "\x00")
-	if client.isTrace {
-		defer client.traceExit(6, string(stringBuffer), err, time.Since(entryTime))
-	}
-	return string(stringBuffer), err
+	result = string(bytes.Trim(stringBuffer, "\x00"))
+	return result, err
 }
 
 /*
@@ -175,16 +149,28 @@ Output:
 */
 func (client *G2product) getLastExceptionCode(ctx context.Context) (int, error) {
 	//  _DLEXPORT int G2Config_getLastExceptionCode();
-	if client.isTrace {
-		client.traceEntry(7)
-	}
-	entryTime := time.Now()
 	var err error = nil
-	result := int(C.G2Product_getLastExceptionCode())
+	var result int
 	if client.isTrace {
-		defer client.traceExit(8, result, err, time.Since(entryTime))
+		entryTime := time.Now()
+		client.traceEntry(7)
+		defer func() { client.traceExit(8, result, err, time.Since(entryTime)) }()
 	}
+	result = int(C.G2Product_getLastExceptionCode())
 	return result, err
+}
+
+// --- Misc -------------------------------------------------------------------
+
+// Get space for an array of bytes of a given size.
+func (client *G2product) getByteArrayC(size int) *C.char {
+	bytes := C.malloc(C.size_t(size))
+	return (*C.char)(bytes)
+}
+
+// Make a byte array.
+func (client *G2product) getByteArray(size int) []byte {
+	return make([]byte, size)
 }
 
 // ----------------------------------------------------------------------------
@@ -202,11 +188,12 @@ func (client *G2product) Destroy(ctx context.Context) error {
 	// _DLEXPORT int G2Config_destroy();
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+	var err error = nil
+	entryTime := time.Now()
 	if client.isTrace {
 		client.traceEntry(3)
+		defer func() { client.traceExit(4, err, time.Since(entryTime)) }()
 	}
-	entryTime := time.Now()
-	var err error = nil
 	result := C.G2Product_destroy()
 	if result != 0 {
 		err = client.newError(ctx, 4001, result, time.Since(entryTime))
@@ -214,11 +201,8 @@ func (client *G2product) Destroy(ctx context.Context) error {
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			client.notify(ctx, 8001, err, details)
+			notifier.Notify(ctx, client.observers, ProductId, 8001, err, details)
 		}()
-	}
-	if client.isTrace {
-		defer client.traceExit(4, err, time.Since(entryTime))
 	}
 	return err
 }
@@ -232,19 +216,17 @@ Input
   - ctx: A context to control lifecycle.
 */
 func (client *G2product) GetSdkId(ctx context.Context) string {
-	if client.isTrace {
-		client.traceEntry(25)
-	}
-	entryTime := time.Now()
 	var err error = nil
+	if client.isTrace {
+		entryTime := time.Now()
+		client.traceEntry(25)
+		defer func() { client.traceExit(26, err, time.Since(entryTime)) }()
+	}
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			client.notify(ctx, 8007, err, details)
+			notifier.Notify(ctx, client.observers, ProductId, 8007, err, details)
 		}()
-	}
-	if client.isTrace {
-		defer client.traceExit(26, err, time.Since(entryTime))
 	}
 	return "base"
 }
@@ -263,11 +245,12 @@ func (client *G2product) Init(ctx context.Context, moduleName string, iniParams 
 	// _DLEXPORT int G2Config_init(const char *moduleName, const char *iniParams, const int verboseLogging);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+	var err error = nil
+	entryTime := time.Now()
 	if client.isTrace {
 		client.traceEntry(9, moduleName, iniParams, verboseLogging)
+		defer func() { client.traceExit(10, moduleName, iniParams, verboseLogging, err, time.Since(entryTime)) }()
 	}
-	entryTime := time.Now()
-	var err error = nil
 	moduleNameForC := C.CString(moduleName)
 	defer C.free(unsafe.Pointer(moduleNameForC))
 	iniParamsForC := C.CString(iniParams)
@@ -283,11 +266,8 @@ func (client *G2product) Init(ctx context.Context, moduleName string, iniParams 
 				"moduleName":     moduleName,
 				"verboseLogging": strconv.Itoa(verboseLogging),
 			}
-			client.notify(ctx, 8002, err, details)
+			notifier.Notify(ctx, client.observers, ProductId, 8002, err, details)
 		}()
-	}
-	if client.isTrace {
-		defer client.traceExit(10, moduleName, iniParams, verboseLogging, err, time.Since(entryTime))
 	}
 	return err
 }
@@ -315,7 +295,7 @@ func (client *G2product) License(ctx context.Context) (string, error) {
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			client.notify(ctx, 8003, err, details)
+			notifier.Notify(ctx, client.observers, ProductId, 8003, err, details)
 		}()
 	}
 	if client.isTrace {
@@ -332,24 +312,23 @@ Input
   - observer: The observer to be added.
 */
 func (client *G2product) RegisterObserver(ctx context.Context, observer observer.Observer) error {
+	var err error = nil
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(21, observer.GetObserverId(ctx))
+		defer func() { client.traceExit(22, observer.GetObserverId(ctx), err, time.Since(entryTime)) }()
 	}
-	entryTime := time.Now()
 	if client.observers == nil {
 		client.observers = &subject.SubjectImpl{}
 	}
-	err := client.observers.RegisterObserver(ctx, observer)
+	err = client.observers.RegisterObserver(ctx, observer)
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
 				"observerID": observer.GetObserverId(ctx),
 			}
-			client.notify(ctx, 8008, err, details)
+			notifier.Notify(ctx, client.observers, ProductId, 8008, err, details)
 		}()
-	}
-	if client.isTrace {
-		defer client.traceExit(22, observer.GetObserverId(ctx), err, time.Since(entryTime))
 	}
 	return err
 }
@@ -361,26 +340,27 @@ Input
   - ctx: A context to control lifecycle.
   - logLevel: The desired log level. TRACE, DEBUG, INFO, WARN, ERROR, FATAL or PANIC.
 */
-func (client *G2product) SetLogLevel(ctx context.Context, logLevel logger.Level) error {
+func (client *G2product) SetLogLevel(ctx context.Context, logLevelName string) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	if client.isTrace {
-		client.traceEntry(13, logLevel)
-	}
-	entryTime := time.Now()
 	var err error = nil
-	client.getLogger().SetLogLevel(messagelogger.Level(logLevel))
-	client.isTrace = (client.getLogger().GetLogLevel() == messagelogger.LevelTrace)
+	if client.isTrace {
+		entryTime := time.Now()
+		client.traceEntry(13, logLevelName)
+		defer func() { client.traceExit(14, logLevelName, err, time.Since(entryTime)) }()
+	}
+	if !logging.IsValidLogLevelName(logLevelName) {
+		return fmt.Errorf("invalid error level: %s", logLevelName)
+	}
+	client.getLogger().SetLogLevel(logLevelName)
+	client.isTrace = (logLevelName == logging.LevelTraceName)
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
-				"logLevel": logger.LevelToTextMap[logLevel],
+				"logLevel": logLevelName,
 			}
-			client.notify(ctx, 8009, err, details)
+			notifier.Notify(ctx, client.observers, ProductId, 8009, err, details)
 		}()
-	}
-	if client.isTrace {
-		defer client.traceExit(14, logLevel, err, time.Since(entryTime))
 	}
 	return err
 }
@@ -393,11 +373,12 @@ Input
   - observer: The observer to be added.
 */
 func (client *G2product) UnregisterObserver(ctx context.Context, observer observer.Observer) error {
-	if client.isTrace {
-		client.traceEntry(23, observer.GetObserverId(ctx))
-	}
-	entryTime := time.Now()
 	var err error = nil
+	if client.isTrace {
+		entryTime := time.Now()
+		client.traceEntry(23, observer.GetObserverId(ctx))
+		defer func() { client.traceExit(24, observer.GetObserverId(ctx), err, time.Since(entryTime)) }()
+	}
 	if client.observers != nil {
 		// Tricky code:
 		// client.notify is called synchronously before client.observers is set to nil.
@@ -406,14 +387,11 @@ func (client *G2product) UnregisterObserver(ctx context.Context, observer observ
 		details := map[string]string{
 			"observerID": observer.GetObserverId(ctx),
 		}
-		client.notify(ctx, 8010, err, details)
+		notifier.Notify(ctx, client.observers, ProductId, 8010, err, details)
 	}
 	err = client.observers.UnregisterObserver(ctx, observer)
 	if !client.observers.HasObservers(ctx) {
 		client.observers = nil
-	}
-	if client.isTrace {
-		defer client.traceExit(24, observer.GetObserverId(ctx), err, time.Since(entryTime))
 	}
 	return err
 }
@@ -448,7 +426,7 @@ func (client *G2product) ValidateLicenseFile(ctx context.Context, licenseFilePat
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			client.notify(ctx, 8004, err, details)
+			notifier.Notify(ctx, client.observers, ProductId, 8004, err, details)
 		}()
 	}
 	if client.isTrace {
@@ -488,7 +466,7 @@ func (client *G2product) ValidateLicenseStringBase64(ctx context.Context, licens
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			client.notify(ctx, 8005, err, details)
+			notifier.Notify(ctx, client.observers, ProductId, 8005, err, details)
 		}()
 	}
 	if client.isTrace {
@@ -520,7 +498,7 @@ func (client *G2product) Version(ctx context.Context) (string, error) {
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			client.notify(ctx, 8006, err, details)
+			notifier.Notify(ctx, client.observers, ProductId, 8006, err, details)
 		}()
 	}
 	if client.isTrace {
