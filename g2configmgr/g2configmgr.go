@@ -101,15 +101,13 @@ Input
 */
 func (client *G2configmgr) clearLastException(ctx context.Context) error {
 	// _DLEXPORT void G2Config_clearLastException()
-	if client.isTrace {
-		client.traceEntry(3)
-	}
-	entryTime := time.Now()
 	var err error = nil
-	C.G2ConfigMgr_clearLastException()
 	if client.isTrace {
-		defer client.traceExit(4, err, time.Since(entryTime))
+		entryTime := time.Now()
+		client.traceEntry(3)
+		defer func() { client.traceExit(4, err, time.Since(entryTime)) }()
 	}
+	C.G2ConfigMgr_clearLastException()
 	return err
 }
 
@@ -124,21 +122,20 @@ Output
 */
 func (client *G2configmgr) getLastException(ctx context.Context) (string, error) {
 	// _DLEXPORT int G2Config_getLastException(char *buffer, const size_t bufSize);
-	if client.isTrace {
-		client.traceEntry(13)
-	}
-	entryTime := time.Now()
 	var err error = nil
+	var result string
+	if client.isTrace {
+		entryTime := time.Now()
+		client.traceEntry(13)
+		defer func() { client.traceExit(14, result, err, time.Since(entryTime)) }()
+	}
 	stringBuffer := client.getByteArray(initialByteArraySize)
 	C.G2ConfigMgr_getLastException((*C.char)(unsafe.Pointer(&stringBuffer[0])), C.ulong(len(stringBuffer)))
 	// if result == 0 { // "result" is length of exception message.
 	// 	err = client.getLogger().Error(4006, result, time.Since(entryTime))
 	// }
-	stringBuffer = bytes.Trim(stringBuffer, "\x00")
-	if client.isTrace {
-		defer client.traceExit(14, string(stringBuffer), err, time.Since(entryTime))
-	}
-	return string(stringBuffer), err
+	result = string(bytes.Trim(stringBuffer, "\x00"))
+	return result, err
 }
 
 /*
@@ -152,15 +149,14 @@ Output:
 */
 func (client *G2configmgr) getLastExceptionCode(ctx context.Context) (int, error) {
 	//  _DLEXPORT int G2Config_getLastExceptionCode();
-	if client.isTrace {
-		client.traceEntry(15)
-	}
-	entryTime := time.Now()
 	var err error = nil
-	result := int(C.G2ConfigMgr_getLastExceptionCode())
+	var result int
 	if client.isTrace {
-		defer client.traceExit(16, result, err, time.Since(entryTime))
+		entryTime := time.Now()
+		client.traceEntry(15)
+		defer func() { client.traceExit(16, result, err, time.Since(entryTime)) }()
 	}
+	result = int(C.G2ConfigMgr_getLastExceptionCode())
 	return result, err
 }
 
@@ -196,11 +192,13 @@ func (client *G2configmgr) AddConfig(ctx context.Context, configStr string, conf
 	// _DLEXPORT int G2ConfigMgr_addConfig(const char* configStr, const char* configComments, long long* configID);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+	var err error = nil
+	entryTime := time.Now()
+	var configID int64
 	if client.isTrace {
 		client.traceEntry(1, configStr, configComments)
+		defer client.traceExit(2, configStr, configComments, configID, err, time.Since(entryTime))
 	}
-	entryTime := time.Now()
-	var err error = nil
 	configStrForC := C.CString(configStr)
 	defer C.free(unsafe.Pointer(configStrForC))
 	configCommentsForC := C.CString(configComments)
@@ -209,6 +207,7 @@ func (client *G2configmgr) AddConfig(ctx context.Context, configStr string, conf
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4001, configStr, configComments, result.returnCode, result, time.Since(entryTime))
 	}
+	configID = int64(C.longlong(result.configID))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -217,10 +216,7 @@ func (client *G2configmgr) AddConfig(ctx context.Context, configStr string, conf
 			notifier.Notify(ctx, client.observers, ProductId, 8001, err, details)
 		}()
 	}
-	if client.isTrace {
-		defer client.traceExit(2, configStr, configComments, int64(C.longlong(result.configID)), err, time.Since(entryTime))
-	}
-	return int64(C.longlong(result.configID)), err
+	return configID, err
 }
 
 /*
@@ -337,25 +333,25 @@ func (client *G2configmgr) GetDefaultConfigID(ctx context.Context) (int64, error
 	//  _DLEXPORT int G2ConfigMgr_getDefaultConfigID(long long* configID);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+	var err error = nil
+	entryTime := time.Now()
+	var configID int64
 	if client.isTrace {
 		client.traceEntry(11)
+		defer func() { client.traceExit(12, configID, err, time.Since(entryTime)) }()
 	}
-	entryTime := time.Now()
-	var err error = nil
 	result := C.G2ConfigMgr_getDefaultConfigID_helper()
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4005, result.returnCode, result, time.Since(entryTime))
 	}
+	configID = int64(C.longlong(result.configID))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
 			notifier.Notify(ctx, client.observers, ProductId, 8005, err, details)
 		}()
 	}
-	if client.isTrace {
-		defer client.traceExit(12, int64(C.longlong(result.configID)), err, time.Since(entryTime))
-	}
-	return int64(C.longlong(result.configID)), err
+	return configID, err
 }
 
 /*

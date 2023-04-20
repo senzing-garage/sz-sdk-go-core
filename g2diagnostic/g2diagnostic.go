@@ -101,15 +101,13 @@ Input
 */
 func (client *G2diagnostic) clearLastException(ctx context.Context) error {
 	// _DLEXPORT void G2Diagnostic_clearLastException();
-	if client.isTrace {
-		client.traceEntry(3)
-	}
-	entryTime := time.Now()
 	var err error = nil
-	C.G2Diagnostic_clearLastException()
 	if client.isTrace {
-		defer client.traceExit(4, err, time.Since(entryTime))
+		entryTime := time.Now()
+		client.traceEntry(3)
+		defer func() { client.traceExit(4, err, time.Since(entryTime)) }()
 	}
+	C.G2Diagnostic_clearLastException()
 	return err
 }
 
@@ -124,21 +122,20 @@ Output
 */
 func (client *G2diagnostic) getLastException(ctx context.Context) (string, error) {
 	// _DLEXPORT int G2Config_getLastException(char *buffer, const size_t bufSize);
-	if client.isTrace {
-		client.traceEntry(31)
-	}
-	entryTime := time.Now()
 	var err error = nil
+	var result string
+	if client.isTrace {
+		entryTime := time.Now()
+		client.traceEntry(31)
+		defer func() { client.traceExit(32, result, err, time.Since(entryTime)) }()
+	}
 	stringBuffer := client.getByteArray(initialByteArraySize)
 	C.G2Diagnostic_getLastException((*C.char)(unsafe.Pointer(&stringBuffer[0])), C.ulong(len(stringBuffer)))
 	// if result == 0 { // "result" is length of exception message.
 	// 	err = client.getLogger().Error(4014, result, time.Since(entryTime))
 	// }
-	stringBuffer = bytes.Trim(stringBuffer, "\x00")
-	if client.isTrace {
-		defer client.traceExit(32, string(stringBuffer), err, time.Since(entryTime))
-	}
-	return string(stringBuffer), err
+	result = string(bytes.Trim(stringBuffer, "\x00"))
+	return result, err
 }
 
 /*
@@ -152,15 +149,14 @@ Output:
 */
 func (client *G2diagnostic) getLastExceptionCode(ctx context.Context) (int, error) {
 	//  _DLEXPORT int G2Diagnostic_getLastExceptionCode();
-	if client.isTrace {
-		client.traceEntry(33)
-	}
-	entryTime := time.Now()
 	var err error = nil
-	result := int(C.G2Diagnostic_getLastExceptionCode())
+	var result int
 	if client.isTrace {
-		defer client.traceExit(34, result, err, time.Since(entryTime))
+		entryTime := time.Now()
+		client.traceEntry(33)
+		defer func() { client.traceExit(34, result, err, time.Since(entryTime)) }()
 	}
+	result = int(C.G2Diagnostic_getLastExceptionCode())
 	return result, err
 }
 
@@ -375,20 +371,19 @@ func (client *G2diagnostic) GetAvailableMemory(ctx context.Context) (int64, erro
 	// _DLEXPORT long long G2Diagnostic_getAvailableMemory();
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	if client.isTrace {
-		client.traceEntry(13)
-	}
-	entryTime := time.Now()
 	var err error = nil
-	result := int64(C.G2Diagnostic_getAvailableMemory())
+	var result int64
+	if client.isTrace {
+		entryTime := time.Now()
+		client.traceEntry(13)
+		defer func() { client.traceExit(14, result, err, time.Since(entryTime)) }()
+	}
+	result = int64(C.G2Diagnostic_getAvailableMemory())
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
 			notifier.Notify(ctx, client.observers, ProductId, 8006, err, details)
 		}()
-	}
-	if client.isTrace {
-		defer client.traceExit(14, result, err, time.Since(entryTime))
 	}
 	return result, err
 }
@@ -699,20 +694,19 @@ func (client *G2diagnostic) GetLogicalCores(ctx context.Context) (int, error) {
 	// _DLEXPORT int G2Diagnostic_getLogicalCores();
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+	var err error = nil
+	var result int
 	if client.isTrace {
 		client.traceEntry(35)
+		entryTime := time.Now()
+		defer client.traceExit(36, result, err, time.Since(entryTime))
 	}
-	entryTime := time.Now()
-	var err error = nil
-	result := int(C.G2Diagnostic_getLogicalCores())
+	result = int(C.G2Diagnostic_getLogicalCores())
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
 			notifier.Notify(ctx, client.observers, ProductId, 8015, err, details)
 		}()
-	}
-	if client.isTrace {
-		defer client.traceExit(36, result, err, time.Since(entryTime))
 	}
 	return result, err
 }
@@ -766,20 +760,19 @@ func (client *G2diagnostic) GetPhysicalCores(ctx context.Context) (int, error) {
 	// _DLEXPORT int G2Diagnostic_getPhysicalCores();
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	if client.isTrace {
-		client.traceEntry(39)
-	}
-	entryTime := time.Now()
 	var err error = nil
-	result := int(C.G2Diagnostic_getPhysicalCores())
+	var result int
+	if client.isTrace {
+		entryTime := time.Now()
+		client.traceEntry(39)
+		defer func() { client.traceExit(40, result, err, time.Since(entryTime)) }()
+	}
+	result = int(C.G2Diagnostic_getPhysicalCores())
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
 			notifier.Notify(ctx, client.observers, ProductId, 8017, err, details)
 		}()
-	}
-	if client.isTrace {
-		defer client.traceExit(40, result, err, time.Since(entryTime))
 	}
 	return result, err
 }
@@ -893,20 +886,19 @@ func (client *G2diagnostic) GetTotalSystemMemory(ctx context.Context) (int64, er
 	// _DLEXPORT long long G2Diagnostic_getTotalSystemMemory();
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	if client.isTrace {
-		client.traceEntry(57)
-	}
-	entryTime := time.Now()
 	var err error = nil
-	result := int64(C.G2Diagnostic_getTotalSystemMemory())
+	var result int64
+	if client.isTrace {
+		entryTime := time.Now()
+		client.traceEntry(57)
+		defer func() { client.traceExit(46, result, err, time.Since(entryTime)) }()
+	}
+	result = int64(C.G2Diagnostic_getTotalSystemMemory())
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
 			notifier.Notify(ctx, client.observers, ProductId, 8020, err, details)
 		}()
-	}
-	if client.isTrace {
-		defer client.traceExit(46, result, err, time.Since(entryTime))
 	}
 	return result, err
 }

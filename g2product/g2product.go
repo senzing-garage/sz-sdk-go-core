@@ -101,15 +101,13 @@ Input
 */
 func (client *G2product) clearLastException(ctx context.Context) error {
 	// _DLEXPORT void G2Config_clearLastException();
-	if client.isTrace {
-		client.traceEntry(1)
-	}
-	entryTime := time.Now()
 	var err error = nil
-	C.G2Product_clearLastException()
 	if client.isTrace {
-		defer client.traceExit(2, err, time.Since(entryTime))
+		entryTime := time.Now()
+		client.traceEntry(1)
+		defer func() { client.traceExit(2, err, time.Since(entryTime)) }()
 	}
+	C.G2Product_clearLastException()
 	return err
 }
 
@@ -124,21 +122,20 @@ Output
 */
 func (client *G2product) getLastException(ctx context.Context) (string, error) {
 	// _DLEXPORT int G2Config_getLastException(char *buffer, const size_t bufSize);
-	if client.isTrace {
-		client.traceEntry(5)
-	}
-	entryTime := time.Now()
 	var err error = nil
+	var result string
+	if client.isTrace {
+		entryTime := time.Now()
+		client.traceEntry(5)
+		defer func() { client.traceExit(6, result, err, time.Since(entryTime)) }()
+	}
 	stringBuffer := client.getByteArray(initialByteArraySize)
 	C.G2Product_getLastException((*C.char)(unsafe.Pointer(&stringBuffer[0])), C.ulong(len(stringBuffer)))
 	// if result == 0 { // "result" is length of exception message.
 	// 	err = client.getLogger().Error(4002, result, time.Since(entryTime))
 	// }
-	stringBuffer = bytes.Trim(stringBuffer, "\x00")
-	if client.isTrace {
-		defer client.traceExit(6, string(stringBuffer), err, time.Since(entryTime))
-	}
-	return string(stringBuffer), err
+	result = string(bytes.Trim(stringBuffer, "\x00"))
+	return result, err
 }
 
 /*
@@ -152,15 +149,14 @@ Output:
 */
 func (client *G2product) getLastExceptionCode(ctx context.Context) (int, error) {
 	//  _DLEXPORT int G2Config_getLastExceptionCode();
-	if client.isTrace {
-		client.traceEntry(7)
-	}
-	entryTime := time.Now()
 	var err error = nil
-	result := int(C.G2Product_getLastExceptionCode())
+	var result int
 	if client.isTrace {
-		defer client.traceExit(8, result, err, time.Since(entryTime))
+		entryTime := time.Now()
+		client.traceEntry(7)
+		defer func() { client.traceExit(8, result, err, time.Since(entryTime)) }()
 	}
+	result = int(C.G2Product_getLastExceptionCode())
 	return result, err
 }
 

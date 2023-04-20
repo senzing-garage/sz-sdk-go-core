@@ -105,7 +105,7 @@ func (client *G2config) clearLastException(ctx context.Context) error {
 	if client.isTrace {
 		entryTime := time.Now()
 		client.traceEntry(3)
-		defer client.traceExit(4, err, time.Since(entryTime))
+		defer func() { client.traceExit(4, err, time.Since(entryTime)) }()
 	}
 	C.G2Config_clearLastException()
 	return err
@@ -123,20 +123,19 @@ Output
 func (client *G2config) getLastException(ctx context.Context) (string, error) {
 	// _DLEXPORT int G2Config_getLastException(char *buffer, const size_t bufSize);
 	var err error = nil
-	entryTime := time.Now()
+	var result string
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(13)
+		defer func() { client.traceExit(14, result, err, time.Since(entryTime)) }()
 	}
 	stringBuffer := client.getByteArray(initialByteArraySize)
 	C.G2Config_getLastException((*C.char)(unsafe.Pointer(&stringBuffer[0])), C.ulong(len(stringBuffer)))
 	// if result == 0 { // "result" is length of exception message.
 	// 	err = client.getLogger().Error(4005, result, time.Since(entryTime))
 	// }
-	stringBuffer = bytes.Trim(stringBuffer, "\x00")
-	if client.isTrace {
-		defer client.traceExit(14, string(stringBuffer), err, time.Since(entryTime))
-	}
-	return string(stringBuffer), err
+	result = string(bytes.Trim(stringBuffer, "\x00"))
+	return result, err
 }
 
 /*
@@ -150,15 +149,14 @@ Output:
 */
 func (client *G2config) getLastExceptionCode(ctx context.Context) (int, error) {
 	//  _DLEXPORT int G2Config_getLastExceptionCode();
-	if client.isTrace {
-		client.traceEntry(15)
-	}
-	entryTime := time.Now()
 	var err error = nil
-	result := int(C.G2Config_getLastExceptionCode())
+	var result int
 	if client.isTrace {
-		defer client.traceExit(16, result, err, time.Since(entryTime))
+		entryTime := time.Now()
+		client.traceEntry(15)
+		defer func() { client.traceExit(16, result, err, time.Since(entryTime)) }()
 	}
+	result = int(C.G2Config_getLastExceptionCode())
 	return result, err
 }
 
