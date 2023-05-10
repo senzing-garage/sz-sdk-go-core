@@ -300,7 +300,7 @@ func main() {
 	fmt.Printf("\n-------------------------------------------------------------------------------\n\n")
 	logger.Log(2001, "Just a test of logging", programmMetadataMap)
 
-	// Create 2 observers.
+	// Create observers.
 
 	observer1 := &observer.ObserverNull{
 		Id: "Observer 1",
