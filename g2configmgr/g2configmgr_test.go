@@ -227,7 +227,7 @@ func setup() error {
 	ctx := context.TODO()
 	moduleName := "Test module name"
 	verboseLogging := 0
-	localLogger, err = messagelogger.NewSenzingApiLogger(ProductId, g2configmgrapi.IdMessages, g2configmgrapi.IdStatuses, messagelogger.LevelInfo)
+	localLogger, err = messagelogger.NewSenzingApiLogger(ComponentId, g2configmgrapi.IdMessages, g2configmgrapi.IdStatuses, messagelogger.LevelInfo)
 	if err != nil {
 		return createError(5901, err)
 	}
@@ -270,6 +270,13 @@ func TestBuildSimpleSystemConfigurationJson(test *testing.T) {
 // ----------------------------------------------------------------------------
 // Test interface functions
 // ----------------------------------------------------------------------------
+
+func TestG2configmgr_ObserverOrigin(test *testing.T) {
+	ctx := context.TODO()
+	g2configmgr := getTestObject(ctx, test)
+	origin := "Machine: nn; Task: UnitTest"
+	g2configmgr.ObserverOrigin(ctx, origin)
+}
 
 func TestG2configmgr_AddConfig(test *testing.T) {
 	ctx := context.TODO()
@@ -383,6 +390,15 @@ func TestG2configmgr_Destroy(test *testing.T) {
 // ----------------------------------------------------------------------------
 // Examples for godoc documentation
 // ----------------------------------------------------------------------------
+
+func ExampleG2configmgr_ObserverOrigin() {
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2configmgr/g2configmgr_test.go
+	ctx := context.TODO()
+	g2configmgr := getG2Configmgr(ctx)
+	origin := "Machine: nn; Task: UnitTest"
+	g2configmgr.ObserverOrigin(ctx, origin)
+	// Output:
+}
 
 func ExampleG2configmgr_AddConfig() {
 	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2configmgr/g2configmgr_test.go

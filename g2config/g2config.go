@@ -34,9 +34,10 @@ import (
 
 // G2config is the default implementation of the G2config interface.
 type G2config struct {
-	isTrace   bool
-	logger    logging.LoggingInterface
-	observers subject.Subject
+	isTrace        bool
+	logger         logging.LoggingInterface
+	observerOrigin string
+	observers      subject.Subject
 }
 
 // ----------------------------------------------------------------------------
@@ -58,7 +59,7 @@ func (client *G2config) getLogger() logging.LoggingInterface {
 		options := []interface{}{
 			&logging.OptionCallerSkip{Value: 4},
 		}
-		client.logger, err = logging.NewSenzingSdkLogger(ProductId, g2configapi.IdMessages, options...)
+		client.logger, err = logging.NewSenzingSdkLogger(ComponentId, g2configapi.IdMessages, options...)
 		if err != nil {
 			panic(err)
 		}
@@ -211,7 +212,7 @@ func (client *G2config) AddDataSource(ctx context.Context, configHandle uintptr,
 				"inputJson": inputJson,
 				"return":    string(C.GoString(result.response)),
 			}
-			notifier.Notify(ctx, client.observers, ProductId, 8001, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8001, err, details)
 		}()
 	}
 	if client.isTrace {
@@ -245,7 +246,7 @@ func (client *G2config) Close(ctx context.Context, configHandle uintptr) error {
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, ProductId, 8002, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8002, err, details)
 		}()
 	}
 	return err
@@ -280,7 +281,7 @@ func (client *G2config) Create(ctx context.Context) (uintptr, error) {
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, ProductId, 8003, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8003, err, details)
 		}()
 	}
 	if client.isTrace {
@@ -319,7 +320,7 @@ func (client *G2config) DeleteDataSource(ctx context.Context, configHandle uintp
 			details := map[string]string{
 				"inputJson": inputJson,
 			}
-			notifier.Notify(ctx, client.observers, ProductId, 8004, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8004, err, details)
 		}()
 	}
 	return err
@@ -349,7 +350,7 @@ func (client *G2config) Destroy(ctx context.Context) error {
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, ProductId, 8005, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8005, err, details)
 		}()
 	}
 	return err
@@ -373,7 +374,7 @@ func (client *G2config) GetSdkId(ctx context.Context) string {
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, ProductId, 8010, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8010, err, details)
 		}()
 	}
 	return "base"
@@ -414,7 +415,7 @@ func (client *G2config) Init(ctx context.Context, moduleName string, iniParams s
 				"moduleName":     moduleName,
 				"verboseLogging": strconv.Itoa(verboseLogging),
 			}
-			notifier.Notify(ctx, client.observers, ProductId, 8006, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8006, err, details)
 		}()
 	}
 	return err
@@ -448,7 +449,7 @@ func (client *G2config) ListDataSources(ctx context.Context, configHandle uintpt
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, ProductId, 8007, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8007, err, details)
 		}()
 	}
 	if client.isTrace {
@@ -485,10 +486,21 @@ func (client *G2config) Load(ctx context.Context, configHandle uintptr, jsonConf
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, ProductId, 8008, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8008, err, details)
 		}()
 	}
 	return err
+}
+
+/*
+The ObserverOrigin method sets the "origin" value in future Observer messages.
+
+Input
+  - ctx: A context to control lifecycle.
+  - origin: The value sent in the Observer's "origin" key/value pair.
+*/
+func (client *G2config) ObserverOrigin(ctx context.Context, origin string) {
+	client.observerOrigin = origin
 }
 
 /*
@@ -514,7 +526,7 @@ func (client *G2config) RegisterObserver(ctx context.Context, observer observer.
 			details := map[string]string{
 				"observerID": observer.GetObserverId(ctx),
 			}
-			notifier.Notify(ctx, client.observers, ProductId, 8011, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8011, err, details)
 		}()
 	}
 	return err
@@ -548,7 +560,7 @@ func (client *G2config) Save(ctx context.Context, configHandle uintptr) (string,
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, ProductId, 8009, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8009, err, details)
 		}()
 	}
 	if client.isTrace {
@@ -583,7 +595,7 @@ func (client *G2config) SetLogLevel(ctx context.Context, logLevelName string) er
 			details := map[string]string{
 				"logLevel": logLevelName,
 			}
-			notifier.Notify(ctx, client.observers, ProductId, 8012, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8012, err, details)
 		}()
 	}
 	return err
@@ -611,7 +623,7 @@ func (client *G2config) UnregisterObserver(ctx context.Context, observer observe
 		details := map[string]string{
 			"observerID": observer.GetObserverId(ctx),
 		}
-		notifier.Notify(ctx, client.observers, ProductId, 8013, err, details)
+		notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8013, err, details)
 	}
 	err = client.observers.UnregisterObserver(ctx, observer)
 	if !client.observers.HasObservers(ctx) {

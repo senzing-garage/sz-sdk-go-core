@@ -256,7 +256,7 @@ func setup() error {
 	ctx := context.TODO()
 	moduleName := "Test module name"
 	verboseLogging := 0
-	localLogger, err = messagelogger.NewSenzingApiLogger(ProductId, g2engineapi.IdMessages, g2engineapi.IdStatuses, messagelogger.LevelInfo)
+	localLogger, err = messagelogger.NewSenzingApiLogger(ComponentId, g2engineapi.IdMessages, g2engineapi.IdStatuses, messagelogger.LevelInfo)
 	if err != nil {
 		return createError(5901, err)
 	}
@@ -299,6 +299,13 @@ func TestBuildSimpleSystemConfigurationJson(test *testing.T) {
 // ----------------------------------------------------------------------------
 // Test interface functions
 // ----------------------------------------------------------------------------
+
+func TestG2engine_ObserverOrigin(test *testing.T) {
+	ctx := context.TODO()
+	g2engine := getTestObject(ctx, test)
+	origin := "Machine: nn; Task: UnitTest"
+	g2engine.ObserverOrigin(ctx, origin)
+}
 
 func TestG2engine_AddRecord(test *testing.T) {
 	ctx := context.TODO()
@@ -1054,6 +1061,15 @@ func TestG2engine_Destroy(test *testing.T) {
 // ----------------------------------------------------------------------------
 // Examples for godoc documentation
 // ----------------------------------------------------------------------------
+
+func ExampleG2engine_ObserverOrigin() {
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	ctx := context.TODO()
+	g2engine := getG2Engine(ctx)
+	origin := "Machine: nn; Task: UnitTest"
+	g2engine.ObserverOrigin(ctx, origin)
+	// Output:
+}
 
 func ExampleG2engine_AddRecord() {
 	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
