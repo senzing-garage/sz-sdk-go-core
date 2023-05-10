@@ -45,7 +45,7 @@ interface include:
 
 ## References
 
-- [Development](docs/development.md)
-- [Errors](docs/errors.md)
-- [Examples](docs/examples.md)
-- [Package reference](https://pkg.go.dev/github.com/senzing/g2-sdk-go-base)
+1. [Development](docs/development.md)
+1. [Errors](docs/errors.md)
+1. [Examples](docs/examples.md)
+1. [Package reference](https://pkg.go.dev/github.com/senzing/g2-sdk-go-base)
