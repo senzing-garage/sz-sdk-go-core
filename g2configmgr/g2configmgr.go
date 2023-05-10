@@ -356,6 +356,19 @@ func (client *G2configmgr) GetDefaultConfigID(ctx context.Context) (int64, error
 }
 
 /*
+The GetObserverOrigin method returns the "origin" value of past Observer messages.
+
+Input
+  - ctx: A context to control lifecycle.
+
+Output
+  - The value sent in the Observer's "origin" key/value pair.
+*/
+func (client *G2configmgr) GetObserverOrigin(ctx context.Context) string {
+	return client.observerOrigin
+}
+
+/*
 The GetSdkId method returns the identifier of this particular Software Development Kit (SDK).
 It is handy when working with multiple implementations of the same G2configmgrInterface.
 For this implementation, "base" is returned.
@@ -418,17 +431,6 @@ func (client *G2configmgr) Init(ctx context.Context, moduleName string, iniParam
 		}()
 	}
 	return err
-}
-
-/*
-The ObserverOrigin method sets the "origin" value in future Observer messages.
-
-Input
-  - ctx: A context to control lifecycle.
-  - origin: The value sent in the Observer's "origin" key/value pair.
-*/
-func (client *G2configmgr) ObserverOrigin(ctx context.Context, origin string) {
-	client.observerOrigin = origin
 }
 
 /*
@@ -559,6 +561,17 @@ func (client *G2configmgr) SetLogLevel(ctx context.Context, logLevelName string)
 		}()
 	}
 	return err
+}
+
+/*
+The SetObserverOrigin method sets the "origin" value in future Observer messages.
+
+Input
+  - ctx: A context to control lifecycle.
+  - origin: The value sent in the Observer's "origin" key/value pair.
+*/
+func (client *G2configmgr) SetObserverOrigin(ctx context.Context, origin string) {
+	client.observerOrigin = origin
 }
 
 /*

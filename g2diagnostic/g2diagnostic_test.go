@@ -314,11 +314,11 @@ func TestBuildSimpleSystemConfigurationJson(test *testing.T) {
 // Test interface functions
 // ----------------------------------------------------------------------------
 
-func TestG2diagnostic_ObserverOrigin(test *testing.T) {
+func TestG2diagnostic_SetObserverOrigin(test *testing.T) {
 	ctx := context.TODO()
 	g2diagnostic := getTestObject(ctx, test)
 	origin := "Machine: nn; Task: UnitTest"
-	g2diagnostic.ObserverOrigin(ctx, origin)
+	g2diagnostic.SetObserverOrigin(ctx, origin)
 }
 
 func TestG2diagnostic_CheckDBPerf(test *testing.T) {
@@ -524,12 +524,12 @@ func TestG2diagnostic_Destroy(test *testing.T) {
 // Examples for godoc documentation
 // ----------------------------------------------------------------------------
 
-func ExampleG2diagnostic_ObserverOrigin() {
+func ExampleG2diagnostic_SetObserverOrigin() {
 	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2diagnostic/g2diagnostic_test.go
 	ctx := context.TODO()
 	g2diagnostic := getG2Diagnostic(ctx)
 	origin := "Machine: nn; Task: UnitTest"
-	g2diagnostic.ObserverOrigin(ctx, origin)
+	g2diagnostic.SetObserverOrigin(ctx, origin)
 	// Output:
 }
 

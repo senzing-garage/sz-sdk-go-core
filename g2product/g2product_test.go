@@ -131,11 +131,11 @@ func TestBuildSimpleSystemConfigurationJson(test *testing.T) {
 // Test interface functions
 // ----------------------------------------------------------------------------
 
-func TestG2product_ObserverOrigin(test *testing.T) {
+func TestG2product_SetObserverOrigin(test *testing.T) {
 	ctx := context.TODO()
 	g2product := getTestObject(ctx, test)
 	origin := "Machine: nn; Task: UnitTest"
-	g2product.ObserverOrigin(ctx, origin)
+	g2product.SetObserverOrigin(ctx, origin)
 }
 
 func TestG2product_Init(test *testing.T) {
@@ -195,12 +195,12 @@ func TestG2product_Destroy(test *testing.T) {
 // Examples for godoc documentation
 // ----------------------------------------------------------------------------
 
-func ExampleG2product_ObserverOrigin() {
+func ExampleG2product_SetObserverOrigin() {
 	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2product/g2product_test.go
 	ctx := context.TODO()
 	g2product := getG2Product(ctx)
 	origin := "Machine: nn; Task: UnitTest"
-	g2product.ObserverOrigin(ctx, origin)
+	g2product.SetObserverOrigin(ctx, origin)
 	// Output:
 }
 

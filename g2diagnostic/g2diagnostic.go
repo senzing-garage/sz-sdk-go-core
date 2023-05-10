@@ -749,6 +749,19 @@ func (client *G2diagnostic) GetMappingStatistics(ctx context.Context, includeInt
 }
 
 /*
+The GetObserverOrigin method returns the "origin" value of past Observer messages.
+
+Input
+  - ctx: A context to control lifecycle.
+
+Output
+  - The value sent in the Observer's "origin" key/value pair.
+*/
+func (client *G2diagnostic) GetObserverOrigin(ctx context.Context) string {
+	return client.observerOrigin
+}
+
+/*
 The GetPhysicalCores method returns the number of physical cores on the host system.
 
 Input
@@ -991,17 +1004,6 @@ func (client *G2diagnostic) InitWithConfigID(ctx context.Context, moduleName str
 }
 
 /*
-The ObserverOrigin method sets the "origin" value in future Observer messages.
-
-Input
-  - ctx: A context to control lifecycle.
-  - origin: The value sent in the Observer's "origin" key/value pair.
-*/
-func (client *G2diagnostic) ObserverOrigin(ctx context.Context, origin string) {
-	client.observerOrigin = origin
-}
-
-/*
 The RegisterObserver method adds the observer to the list of observers notified.
 
 Input
@@ -1092,6 +1094,17 @@ func (client *G2diagnostic) SetLogLevel(ctx context.Context, logLevelName string
 		}()
 	}
 	return err
+}
+
+/*
+The SetObserverOrigin method sets the "origin" value in future Observer messages.
+
+Input
+  - ctx: A context to control lifecycle.
+  - origin: The value sent in the Observer's "origin" key/value pair.
+*/
+func (client *G2diagnostic) SetObserverOrigin(ctx context.Context, origin string) {
+	client.observerOrigin = origin
 }
 
 /*

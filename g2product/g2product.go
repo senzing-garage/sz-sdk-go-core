@@ -209,6 +209,19 @@ func (client *G2product) Destroy(ctx context.Context) error {
 }
 
 /*
+The GetObserverOrigin method returns the "origin" value of past Observer messages.
+
+Input
+  - ctx: A context to control lifecycle.
+
+Output
+  - The value sent in the Observer's "origin" key/value pair.
+*/
+func (client *G2product) GetObserverOrigin(ctx context.Context) string {
+	return client.observerOrigin
+}
+
+/*
 The GetSdkId method returns the identifier of this particular Software Development Kit (SDK).
 It is handy when working with multiple implementations of the same G2productInterface.
 For this implementation, "base" is returned.
@@ -306,17 +319,6 @@ func (client *G2product) License(ctx context.Context) (string, error) {
 }
 
 /*
-The ObserverOrigin method sets the "origin" value in future Observer messages.
-
-Input
-  - ctx: A context to control lifecycle.
-  - origin: The value sent in the Observer's "origin" key/value pair.
-*/
-func (client *G2product) ObserverOrigin(ctx context.Context, origin string) {
-	client.observerOrigin = origin
-}
-
-/*
 The RegisterObserver method adds the observer to the list of observers notified.
 
 Input
@@ -375,6 +377,17 @@ func (client *G2product) SetLogLevel(ctx context.Context, logLevelName string) e
 		}()
 	}
 	return err
+}
+
+/*
+The SetObserverOrigin method sets the "origin" value in future Observer messages.
+
+Input
+  - ctx: A context to control lifecycle.
+  - origin: The value sent in the Observer's "origin" key/value pair.
+*/
+func (client *G2product) SetObserverOrigin(ctx context.Context, origin string) {
+	client.observerOrigin = origin
 }
 
 /*

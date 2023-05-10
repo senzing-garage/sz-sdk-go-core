@@ -328,7 +328,7 @@ func main() {
 	g2Config.RegisterObserver(ctx, observer1)
 	g2Config.RegisterObserver(ctx, observer2)
 	g2Config.RegisterObserver(ctx, observer3)
-	g2Config.ObserverOrigin(ctx, "g2-sdk-go-base main.go")
+	g2Config.SetObserverOrigin(ctx, "g2-sdk-go-base main.go")
 
 	g2Configmgr, err := getG2configmgr(ctx)
 	if err != nil {

@@ -1989,6 +1989,19 @@ func (client *G2engine) GetEntityByRecordID_V2(ctx context.Context, dataSourceCo
 }
 
 /*
+The GetObserverOrigin method returns the "origin" value of past Observer messages.
+
+Input
+  - ctx: A context to control lifecycle.
+
+Output
+  - The value sent in the Observer's "origin" key/value pair.
+*/
+func (client *G2engine) GetObserverOrigin(ctx context.Context) string {
+	return client.observerOrigin
+}
+
+/*
 The GetRecord method returns a JSON document of a single record from the Senzing repository.
 To control output, use GetRecord_V2() instead.
 
@@ -2428,17 +2441,6 @@ func (client *G2engine) InitWithConfigID(ctx context.Context, moduleName string,
 		}()
 	}
 	return err
-}
-
-/*
-The ObserverOrigin method sets the "origin" value in future Observer messages.
-
-Input
-  - ctx: A context to control lifecycle.
-  - origin: The value sent in the Observer's "origin" key/value pair.
-*/
-func (client *G2engine) ObserverOrigin(ctx context.Context, origin string) {
-	client.observerOrigin = origin
 }
 
 /*
@@ -3166,6 +3168,17 @@ func (client *G2engine) SetLogLevel(ctx context.Context, logLevelName string) er
 		}()
 	}
 	return err
+}
+
+/*
+The SetObserverOrigin method sets the "origin" value in future Observer messages.
+
+Input
+  - ctx: A context to control lifecycle.
+  - origin: The value sent in the Observer's "origin" key/value pair.
+*/
+func (client *G2engine) SetObserverOrigin(ctx context.Context, origin string) {
+	client.observerOrigin = origin
 }
 
 /*
