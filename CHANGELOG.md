@@ -10,6 +10,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 -
 
+## [0.1.9] - 2023-05-10
+
+### Changed in 0.1.9
+
+- Added ObserverOrigin() to g2* packages
+- Update dependencies
+  - github.com/senzing/g2-sdk-go v0.6.2
+
 ## [0.1.8] - 2023-04-21
 
 ### Changed in 0.1.8
