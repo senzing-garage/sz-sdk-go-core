@@ -262,7 +262,7 @@ func setup() error {
 	ctx := context.TODO()
 	moduleName := "Test module name"
 	verboseLogging := 0
-	localLogger, err = messagelogger.NewSenzingApiLogger(ProductId, g2diagnosticapi.IdMessages, g2diagnosticapi.IdStatuses, messagelogger.LevelInfo)
+	localLogger, err = messagelogger.NewSenzingApiLogger(ComponentId, g2diagnosticapi.IdMessages, g2diagnosticapi.IdStatuses, messagelogger.LevelInfo)
 	if err != nil {
 		return createError(5901, err)
 	}
@@ -313,6 +313,22 @@ func TestBuildSimpleSystemConfigurationJson(test *testing.T) {
 // ----------------------------------------------------------------------------
 // Test interface functions
 // ----------------------------------------------------------------------------
+
+func TestG2diagnostic_SetObserverOrigin(test *testing.T) {
+	ctx := context.TODO()
+	g2diagnostic := getTestObject(ctx, test)
+	origin := "Machine: nn; Task: UnitTest"
+	g2diagnostic.SetObserverOrigin(ctx, origin)
+}
+
+func TestG2diagnostic_GetObserverOrigin(test *testing.T) {
+	ctx := context.TODO()
+	g2diagnostic := getTestObject(ctx, test)
+	origin := "Machine: nn; Task: UnitTest"
+	g2diagnostic.SetObserverOrigin(ctx, origin)
+	actual := g2diagnostic.GetObserverOrigin(ctx)
+	assert.Equal(test, origin, actual)
+}
 
 func TestG2diagnostic_CheckDBPerf(test *testing.T) {
 	ctx := context.TODO()
@@ -516,6 +532,26 @@ func TestG2diagnostic_Destroy(test *testing.T) {
 // ----------------------------------------------------------------------------
 // Examples for godoc documentation
 // ----------------------------------------------------------------------------
+
+func ExampleG2diagnostic_SetObserverOrigin() {
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2diagnostic/g2diagnostic_test.go
+	ctx := context.TODO()
+	g2diagnostic := getG2Diagnostic(ctx)
+	origin := "Machine: nn; Task: UnitTest"
+	g2diagnostic.SetObserverOrigin(ctx, origin)
+	// Output:
+}
+
+func ExampleG2diagnostic_GetObserverOrigin() {
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2config/g2diagnostic_test.go
+	ctx := context.TODO()
+	g2diagnostic := getG2Diagnostic(ctx)
+	origin := "Machine: nn; Task: UnitTest"
+	g2diagnostic.SetObserverOrigin(ctx, origin)
+	result := g2diagnostic.GetObserverOrigin(ctx)
+	fmt.Println(result)
+	// Output: Machine: nn; Task: UnitTest
+}
 
 func ExampleG2diagnostic_CheckDBPerf() {
 	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2diagnostic/g2diagnostic_test.go
