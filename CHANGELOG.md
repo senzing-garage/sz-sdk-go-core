@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed in 0.1.1
 
 - Update dependencies
+  - github.com/senzing/go-common v0.1.3
+  - github.com/senzing/go-logging v1.2.3
 
 ## [0.1.9] - 2023-05-10
 
