@@ -195,30 +195,31 @@ func (client *G2config) AddDataSource(ctx context.Context, configHandle uintptr,
 	// _DLEXPORT int G2Config_addDataSource(ConfigHandle configHandle, const char *inputJson, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+	var err error = nil
+	entryTime := time.Now()
+	var resultResponse string
 	if client.isTrace {
 		client.traceEntry(1, configHandle, inputJson)
+		defer client.traceExit(2, configHandle, inputJson, resultResponse, err, time.Since(entryTime))
 	}
-	entryTime := time.Now()
-	var err error = nil
 	inputJsonForC := C.CString(inputJson)
 	defer C.free(unsafe.Pointer(inputJsonForC))
 	result := C.G2Config_addDataSource_helper(C.uintptr_t(configHandle), inputJsonForC)
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4001, configHandle, inputJson, result.returnCode, result, time.Since(entryTime))
 	}
+	resultResponse = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
 				"inputJson": inputJson,
-				"return":    string(C.GoString(result.response)),
+				"return":    resultResponse,
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8001, err, details)
 		}()
 	}
-	if client.isTrace {
-		defer client.traceExit(2, configHandle, inputJson, C.GoString(result.response), err, time.Since(entryTime))
-	}
-	return C.GoString(result.response), err
+	return resultResponse, err
 }
 
 /*
@@ -450,11 +451,13 @@ func (client *G2config) ListDataSources(ctx context.Context, configHandle uintpt
 	// _DLEXPORT int G2Config_listDataSources(ConfigHandle configHandle, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+	var err error = nil
+	entryTime := time.Now()
+	var resultResponse string
 	if client.isTrace {
 		client.traceEntry(19, configHandle)
+		defer client.traceExit(20, configHandle, resultResponse, err, time.Since(entryTime))
 	}
-	entryTime := time.Now()
-	var err error = nil
 	result := C.G2Config_listDataSources_helper(C.uintptr_t(configHandle))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4008, result.returnCode, result, time.Since(entryTime))
@@ -465,10 +468,9 @@ func (client *G2config) ListDataSources(ctx context.Context, configHandle uintpt
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8007, err, details)
 		}()
 	}
-	if client.isTrace {
-		defer client.traceExit(20, configHandle, C.GoString(result.response), err, time.Since(entryTime))
-	}
-	return C.GoString(result.response), err
+	resultResponse = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
+	return resultResponse, err
 }
 
 /*
@@ -550,11 +552,13 @@ func (client *G2config) Save(ctx context.Context, configHandle uintptr) (string,
 	// _DLEXPORT int G2Config_save(ConfigHandle configHandle, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize) );
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+	var err error = nil
+	entryTime := time.Now()
+	var resultResponse string
 	if client.isTrace {
 		client.traceEntry(23, configHandle)
+		defer client.traceExit(24, configHandle, resultResponse, err, time.Since(entryTime))
 	}
-	entryTime := time.Now()
-	var err error = nil
 	result := C.G2Config_save_helper(C.uintptr_t(configHandle))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4010, configHandle, result.returnCode, result, time.Since(entryTime))
@@ -565,10 +569,9 @@ func (client *G2config) Save(ctx context.Context, configHandle uintptr) (string,
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8009, err, details)
 		}()
 	}
-	if client.isTrace {
-		defer client.traceExit(24, configHandle, C.GoString(result.response), err, time.Since(entryTime))
-	}
-	return C.GoString(result.response), err
+	resultResponse = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
+	return resultResponse, err
 }
 
 /*
