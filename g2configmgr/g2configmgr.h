@@ -13,12 +13,12 @@ struct G2ConfigMgr_addConfig_result
 
 struct G2ConfigMgr_getConfig_result
 {
-    char *config;
+    char *response;
     int returnCode;
 };
 struct G2ConfigMgr_getConfigList_result
 {
-    char *configList;
+    char *response;
     int returnCode;
 };
 

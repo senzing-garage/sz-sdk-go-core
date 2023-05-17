@@ -22,24 +22,26 @@ struct G2ConfigMgr_addConfig_result G2ConfigMgr_addConfig_helper(const char *con
 
 struct G2ConfigMgr_getConfig_result G2ConfigMgr_getConfig_helper(const long long configID)
 {
-    size_t charBufferSize = 1;
-    char *charBuffer = (char *)malloc(charBufferSize);
+    size_t charBufferSize = 0;
+    char *charBuffer = NULL;
+    char **charBufferPtr = &charBuffer;
     resize_buffer_type resizeFuncPointer = &G2ConfigMgr_resizeStringBuffer;
-    int returnCode = G2ConfigMgr_getConfig(configID, &charBuffer, &charBufferSize, resizeFuncPointer);
+    int returnCode = G2ConfigMgr_getConfig(configID, charBufferPtr, &charBufferSize, resizeFuncPointer);
     struct G2ConfigMgr_getConfig_result result;
-    result.config = charBuffer;
+    result.response = *charBufferPtr;
     result.returnCode = returnCode;
     return result;
 }
 
 struct G2ConfigMgr_getConfigList_result G2ConfigMgr_getConfigList_helper()
 {
-    size_t charBufferSize = 1;
-    char *charBuffer = (char *)malloc(charBufferSize);
+    size_t charBufferSize = 0;
+    char *charBuffer = NULL;
+    char **charBufferPtr = &charBuffer;
     resize_buffer_type resizeFuncPointer = &G2ConfigMgr_resizeStringBuffer;
-    int returnCode = G2ConfigMgr_getConfigList(&charBuffer, &charBufferSize, resizeFuncPointer);
+    int returnCode = G2ConfigMgr_getConfigList(charBufferPtr, &charBufferSize, resizeFuncPointer);
     struct G2ConfigMgr_getConfigList_result result;
-    result.configList = charBuffer;
+    result.response = *charBufferPtr;
     result.returnCode = returnCode;
     return result;
 }

@@ -462,14 +462,14 @@ func (client *G2config) ListDataSources(ctx context.Context, configHandle uintpt
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4008, result.returnCode, result, time.Since(entryTime))
 	}
+	resultResponse = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8007, err, details)
 		}()
 	}
-	resultResponse = C.GoString(result.response)
-	C.free(unsafe.Pointer(result.response))
 	return resultResponse, err
 }
 
@@ -563,14 +563,14 @@ func (client *G2config) Save(ctx context.Context, configHandle uintptr) (string,
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4010, configHandle, result.returnCode, result, time.Since(entryTime))
 	}
+	resultResponse = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8009, err, details)
 		}()
 	}
-	resultResponse = C.GoString(result.response)
-	C.free(unsafe.Pointer(result.response))
 	return resultResponse, err
 }
 

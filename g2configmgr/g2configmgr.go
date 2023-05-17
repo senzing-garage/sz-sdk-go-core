@@ -265,25 +265,26 @@ func (client *G2configmgr) GetConfig(ctx context.Context, configID int64) (strin
 	// _DLEXPORT int G2ConfigMgr_getConfig(const long long configID, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+	var err error = nil
+	entryTime := time.Now()
+	var resultResponse string
 	if client.isTrace {
 		client.traceEntry(7, configID)
+		defer client.traceExit(8, configID, resultResponse, err, time.Since(entryTime))
 	}
-	entryTime := time.Now()
-	var err error = nil
 	result := C.G2ConfigMgr_getConfig_helper(C.longlong(configID))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4003, configID, result.returnCode, result, time.Since(entryTime))
 	}
+	resultResponse = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8003, err, details)
 		}()
 	}
-	if client.isTrace {
-		defer client.traceExit(8, configID, C.GoString(result.config), err, time.Since(entryTime))
-	}
-	return C.GoString(result.config), err
+	return resultResponse, err
 }
 
 /*
@@ -300,25 +301,26 @@ func (client *G2configmgr) GetConfigList(ctx context.Context) (string, error) {
 	// _DLEXPORT int G2ConfigMgr_getConfigList(char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+	var err error = nil
+	entryTime := time.Now()
+	var resultResponse string
 	if client.isTrace {
 		client.traceEntry(9)
+		defer client.traceExit(10, resultResponse, err, time.Since(entryTime))
 	}
-	entryTime := time.Now()
-	var err error = nil
 	result := C.G2ConfigMgr_getConfigList_helper()
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4004, result.returnCode, result, time.Since(entryTime))
 	}
+	resultResponse = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8004, err, details)
 		}()
 	}
-	if client.isTrace {
-		defer client.traceExit(10, C.GoString(result.configList), err, time.Since(entryTime))
-	}
-	return C.GoString(result.configList), err
+	return resultResponse, err
 }
 
 /*
