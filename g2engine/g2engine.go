@@ -1837,16 +1837,16 @@ func (client *G2engine) GetEntityByEntityID(ctx context.Context, entityID int64)
 	defer runtime.UnlockOSThread()
 	var err error = nil
 	entryTime := time.Now()
-	var response string
+	var resultResponse string
 	if client.isTrace {
 		client.traceEntry(71, entityID)
-		defer func() { client.traceExit(72, entityID, response, err, time.Since(entryTime)) }()
+		defer func() { client.traceExit(72, entityID, resultResponse, err, time.Since(entryTime)) }()
 	}
 	result := C.G2_getEntityByEntityID_helper(C.longlong(entityID))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4034, entityID, result.returnCode, time.Since(entryTime))
 	}
-	response = C.GoString(result.response)
+	resultResponse = C.GoString(result.response)
 	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
@@ -1856,7 +1856,7 @@ func (client *G2engine) GetEntityByEntityID(ctx context.Context, entityID int64)
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8035, err, details)
 		}()
 	}
-	return response, err
+	return resultResponse, err
 }
 
 /*
@@ -1878,16 +1878,16 @@ func (client *G2engine) GetEntityByEntityID_V2(ctx context.Context, entityID int
 	defer runtime.UnlockOSThread()
 	var err error = nil
 	entryTime := time.Now()
-	var response string
+	var resultResponse string
 	if client.isTrace {
 		client.traceEntry(73, entityID, flags)
-		defer func() { client.traceExit(74, entityID, flags, response, err, time.Since(entryTime)) }()
+		defer func() { client.traceExit(74, entityID, flags, resultResponse, err, time.Since(entryTime)) }()
 	}
 	result := C.G2_getEntityByEntityID_V2_helper(C.longlong(entityID), C.longlong(flags))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4035, entityID, flags, result.returnCode, time.Since(entryTime))
 	}
-	response = C.GoString(result.response)
+	resultResponse = C.GoString(result.response)
 	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
@@ -1897,7 +1897,7 @@ func (client *G2engine) GetEntityByEntityID_V2(ctx context.Context, entityID int
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8036, err, details)
 		}()
 	}
-	return response, err
+	return resultResponse, err
 }
 
 /*
@@ -1919,10 +1919,10 @@ func (client *G2engine) GetEntityByRecordID(ctx context.Context, dataSourceCode 
 	defer runtime.UnlockOSThread()
 	var err error = nil
 	entryTime := time.Now()
-	var response string
+	var resultResponse string
 	if client.isTrace {
 		client.traceEntry(75, dataSourceCode, recordID)
-		defer func() { client.traceExit(76, dataSourceCode, recordID, response, err, time.Since(entryTime)) }()
+		defer func() { client.traceExit(76, dataSourceCode, recordID, resultResponse, err, time.Since(entryTime)) }()
 	}
 	dataSourceCodeForC := C.CString(dataSourceCode)
 	defer C.free(unsafe.Pointer(dataSourceCodeForC))
@@ -1932,7 +1932,7 @@ func (client *G2engine) GetEntityByRecordID(ctx context.Context, dataSourceCode 
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4036, dataSourceCode, recordID, result.returnCode, time.Since(entryTime))
 	}
-	response = C.GoString(result.response)
+	resultResponse = C.GoString(result.response)
 	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
@@ -1943,7 +1943,7 @@ func (client *G2engine) GetEntityByRecordID(ctx context.Context, dataSourceCode 
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8037, err, details)
 		}()
 	}
-	return response, err
+	return resultResponse, err
 }
 
 /*
@@ -1966,10 +1966,12 @@ func (client *G2engine) GetEntityByRecordID_V2(ctx context.Context, dataSourceCo
 	defer runtime.UnlockOSThread()
 	var err error = nil
 	entryTime := time.Now()
-	var response string
+	var resultResponse string
 	if client.isTrace {
 		client.traceEntry(77, dataSourceCode, recordID, flags)
-		defer func() { client.traceExit(78, dataSourceCode, recordID, flags, response, err, time.Since(entryTime)) }()
+		defer func() {
+			client.traceExit(78, dataSourceCode, recordID, flags, resultResponse, err, time.Since(entryTime))
+		}()
 	}
 	dataSourceCodeForC := C.CString(dataSourceCode)
 	defer C.free(unsafe.Pointer(dataSourceCodeForC))
@@ -1979,7 +1981,7 @@ func (client *G2engine) GetEntityByRecordID_V2(ctx context.Context, dataSourceCo
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4037, dataSourceCode, recordID, flags, result.returnCode, time.Since(entryTime))
 	}
-	response = C.GoString(result.response)
+	resultResponse = C.GoString(result.response)
 	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
@@ -1990,7 +1992,7 @@ func (client *G2engine) GetEntityByRecordID_V2(ctx context.Context, dataSourceCo
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8038, err, details)
 		}()
 	}
-	return response, err
+	return resultResponse, err
 }
 
 /*
@@ -2025,10 +2027,10 @@ func (client *G2engine) GetRecord(ctx context.Context, dataSourceCode string, re
 	defer runtime.UnlockOSThread()
 	var err error = nil
 	entryTime := time.Now()
-	var response string
+	var resultResponse string
 	if client.isTrace {
 		client.traceEntry(83, dataSourceCode, recordID)
-		defer func() { client.traceExit(84, dataSourceCode, recordID, response, err, time.Since(entryTime)) }()
+		defer func() { client.traceExit(84, dataSourceCode, recordID, resultResponse, err, time.Since(entryTime)) }()
 	}
 	dataSourceCodeForC := C.CString(dataSourceCode)
 	defer C.free(unsafe.Pointer(dataSourceCodeForC))
@@ -2038,7 +2040,7 @@ func (client *G2engine) GetRecord(ctx context.Context, dataSourceCode string, re
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4039, dataSourceCode, recordID, result.returnCode, time.Since(entryTime))
 	}
-	response = C.GoString(result.response)
+	resultResponse = C.GoString(result.response)
 	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
@@ -2049,7 +2051,7 @@ func (client *G2engine) GetRecord(ctx context.Context, dataSourceCode string, re
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8039, err, details)
 		}()
 	}
-	return response, err
+	return resultResponse, err
 }
 
 /*
@@ -2072,10 +2074,12 @@ func (client *G2engine) GetRecord_V2(ctx context.Context, dataSourceCode string,
 	defer runtime.UnlockOSThread()
 	var err error = nil
 	entryTime := time.Now()
-	var response string
+	var resultResponse string
 	if client.isTrace {
 		client.traceEntry(85, dataSourceCode, recordID, flags)
-		defer func() { client.traceExit(86, dataSourceCode, recordID, flags, response, err, time.Since(entryTime)) }()
+		defer func() {
+			client.traceExit(86, dataSourceCode, recordID, flags, resultResponse, err, time.Since(entryTime))
+		}()
 	}
 	dataSourceCodeForC := C.CString(dataSourceCode)
 	defer C.free(unsafe.Pointer(dataSourceCodeForC))
@@ -2085,7 +2089,7 @@ func (client *G2engine) GetRecord_V2(ctx context.Context, dataSourceCode string,
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4040, dataSourceCode, recordID, flags, result.returnCode, time.Since(entryTime))
 	}
-	response = C.GoString(result.response)
+	resultResponse = C.GoString(result.response)
 	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
@@ -2096,7 +2100,7 @@ func (client *G2engine) GetRecord_V2(ctx context.Context, dataSourceCode string,
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8040, err, details)
 		}()
 	}
-	return response, err
+	return resultResponse, err
 }
 
 /*
@@ -2116,16 +2120,16 @@ func (client *G2engine) GetRedoRecord(ctx context.Context) (string, error) {
 	defer runtime.UnlockOSThread()
 	var err error = nil
 	entryTime := time.Now()
-	var response string
+	var resultResponse string
 	if client.isTrace {
 		client.traceEntry(87)
-		defer func() { client.traceExit(88, response, err, time.Since(entryTime)) }()
+		defer func() { client.traceExit(88, resultResponse, err, time.Since(entryTime)) }()
 	}
 	result := C.G2_getRedoRecord_helper()
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4041, result.returnCode, result, time.Since(entryTime))
 	}
-	response = C.GoString(result.response)
+	resultResponse = C.GoString(result.response)
 	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
@@ -2133,7 +2137,7 @@ func (client *G2engine) GetRedoRecord(ctx context.Context) (string, error) {
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8041, err, details)
 		}()
 	}
-	return response, err
+	return resultResponse, err
 }
 
 /*
@@ -2213,10 +2217,10 @@ func (client *G2engine) GetVirtualEntityByRecordID(ctx context.Context, recordLi
 	defer runtime.UnlockOSThread()
 	var err error = nil
 	entryTime := time.Now()
-	var response string
+	var resultResponse string
 	if client.isTrace {
 		client.traceEntry(91, recordList)
-		defer func() { client.traceExit(92, recordList, response, err, time.Since(entryTime)) }()
+		defer func() { client.traceExit(92, recordList, resultResponse, err, time.Since(entryTime)) }()
 	}
 	recordListForC := C.CString(recordList)
 	defer C.free(unsafe.Pointer(recordListForC))
@@ -2224,7 +2228,7 @@ func (client *G2engine) GetVirtualEntityByRecordID(ctx context.Context, recordLi
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4043, recordList, result.returnCode, time.Since(entryTime))
 	}
-	response = C.GoString(result.response)
+	resultResponse = C.GoString(result.response)
 	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
@@ -2234,7 +2238,7 @@ func (client *G2engine) GetVirtualEntityByRecordID(ctx context.Context, recordLi
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8043, err, details)
 		}()
 	}
-	return response, err
+	return resultResponse, err
 }
 
 /*
@@ -2257,10 +2261,10 @@ func (client *G2engine) GetVirtualEntityByRecordID_V2(ctx context.Context, recor
 	defer runtime.UnlockOSThread()
 	var err error = nil
 	entryTime := time.Now()
-	var response string
+	var resultResponse string
 	if client.isTrace {
 		client.traceEntry(93, recordList, flags)
-		defer func() { client.traceExit(94, recordList, flags, response, err, time.Since(entryTime)) }()
+		defer func() { client.traceExit(94, recordList, flags, resultResponse, err, time.Since(entryTime)) }()
 	}
 	recordListForC := C.CString(recordList)
 	defer C.free(unsafe.Pointer(recordListForC))
@@ -2268,7 +2272,7 @@ func (client *G2engine) GetVirtualEntityByRecordID_V2(ctx context.Context, recor
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4044, recordList, flags, result.returnCode, time.Since(entryTime))
 	}
-	response = C.GoString(result.response)
+	resultResponse = C.GoString(result.response)
 	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
@@ -2278,7 +2282,7 @@ func (client *G2engine) GetVirtualEntityByRecordID_V2(ctx context.Context, recor
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8044, err, details)
 		}()
 	}
-	return response, err
+	return resultResponse, err
 }
 
 /*
@@ -2299,16 +2303,16 @@ func (client *G2engine) HowEntityByEntityID(ctx context.Context, entityID int64)
 	defer runtime.UnlockOSThread()
 	var err error = nil
 	entryTime := time.Now()
-	var response string
+	var resultResponse string
 	if client.isTrace {
 		client.traceEntry(95, entityID)
-		defer func() { client.traceExit(96, entityID, response, err, time.Since(entryTime)) }()
+		defer func() { client.traceExit(96, entityID, resultResponse, err, time.Since(entryTime)) }()
 	}
 	result := C.G2_howEntityByEntityID_helper(C.longlong(entityID))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4045, entityID, result.returnCode, time.Since(entryTime))
 	}
-	response = C.GoString(result.response)
+	resultResponse = C.GoString(result.response)
 	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
@@ -2318,7 +2322,7 @@ func (client *G2engine) HowEntityByEntityID(ctx context.Context, entityID int64)
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8045, err, details)
 		}()
 	}
-	return response, err
+	return resultResponse, err
 }
 
 /*
@@ -2340,16 +2344,16 @@ func (client *G2engine) HowEntityByEntityID_V2(ctx context.Context, entityID int
 	defer runtime.UnlockOSThread()
 	var err error = nil
 	entryTime := time.Now()
-	var response string
+	var resultResponse string
 	if client.isTrace {
 		client.traceEntry(97, entityID, flags)
-		defer func() { client.traceExit(98, entityID, flags, response, err, time.Since(entryTime)) }()
+		defer func() { client.traceExit(98, entityID, flags, resultResponse, err, time.Since(entryTime)) }()
 	}
 	result := C.G2_howEntityByEntityID_V2_helper(C.longlong(entityID), C.longlong(flags))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4046, entityID, flags, result.returnCode, time.Since(entryTime))
 	}
-	response = C.GoString(result.response)
+	resultResponse = C.GoString(result.response)
 	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
@@ -2359,7 +2363,7 @@ func (client *G2engine) HowEntityByEntityID_V2(ctx context.Context, entityID int
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8046, err, details)
 		}()
 	}
-	return response, err
+	return resultResponse, err
 }
 
 /*
@@ -2527,16 +2531,16 @@ func (client *G2engine) ProcessRedoRecord(ctx context.Context) (string, error) {
 	defer runtime.UnlockOSThread()
 	var err error = nil
 	entryTime := time.Now()
-	var response string
+	var resultResponse string
 	if client.isTrace {
 		client.traceEntry(107)
-		defer func() { client.traceExit(108, response, err, time.Since(entryTime)) }()
+		defer func() { client.traceExit(108, resultResponse, err, time.Since(entryTime)) }()
 	}
 	result := C.G2_processRedoRecord_helper()
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4051, result.returnCode, result, time.Since(entryTime))
 	}
-	response = C.GoString(result.response)
+	resultResponse = C.GoString(result.response)
 	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
@@ -2544,7 +2548,7 @@ func (client *G2engine) ProcessRedoRecord(ctx context.Context) (string, error) {
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8051, err, details)
 		}()
 	}
-	return response, err
+	return resultResponse, err
 }
 
 /*
@@ -2565,18 +2569,18 @@ func (client *G2engine) ProcessRedoRecordWithInfo(ctx context.Context, flags int
 	defer runtime.UnlockOSThread()
 	var err error = nil
 	entryTime := time.Now()
-	var response string
-	var withInfo string
+	var resultResponse string
+	var resultWithInfo string
 	if client.isTrace {
 		client.traceEntry(109, flags)
-		defer func() { client.traceExit(110, flags, response, withInfo, err, time.Since(entryTime)) }()
+		defer func() { client.traceExit(110, flags, resultResponse, resultWithInfo, err, time.Since(entryTime)) }()
 	}
 	result := C.G2_processRedoRecordWithInfo_helper(C.longlong(flags))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4052, flags, result.returnCode, result, time.Since(entryTime))
 	}
-	response = C.GoString(result.response)
-	withInfo = C.GoString(result.withInfo)
+	resultResponse = C.GoString(result.response)
+	resultWithInfo = C.GoString(result.withInfo)
 	C.free(unsafe.Pointer(result.response))
 	C.free(unsafe.Pointer(result.withInfo))
 	if client.observers != nil {
@@ -2585,7 +2589,7 @@ func (client *G2engine) ProcessRedoRecordWithInfo(ctx context.Context, flags int
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8052, err, details)
 		}()
 	}
-	return response, withInfo, err
+	return resultResponse, resultWithInfo, err
 }
 
 /*
@@ -2606,10 +2610,10 @@ func (client *G2engine) ProcessWithInfo(ctx context.Context, record string, flag
 	defer runtime.UnlockOSThread()
 	var err error = nil
 	entryTime := time.Now()
-	var response string
+	var resultResponse string
 	if client.isTrace {
 		client.traceEntry(111, record, flags)
-		defer func() { client.traceExit(112, record, flags, response, err, time.Since(entryTime)) }()
+		defer func() { client.traceExit(112, record, flags, resultResponse, err, time.Since(entryTime)) }()
 	}
 	recordForC := C.CString(record)
 	defer C.free(unsafe.Pointer(recordForC))
@@ -2617,7 +2621,7 @@ func (client *G2engine) ProcessWithInfo(ctx context.Context, record string, flag
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4053, record, flags, result.returnCode, time.Since(entryTime))
 	}
-	response = C.GoString(result.response)
+	resultResponse = C.GoString(result.response)
 	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
@@ -2625,7 +2629,7 @@ func (client *G2engine) ProcessWithInfo(ctx context.Context, record string, flag
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8053, err, details)
 		}()
 	}
-	return response, err
+	return resultResponse, err
 }
 
 /*
@@ -2645,10 +2649,10 @@ func (client *G2engine) ProcessWithResponse(ctx context.Context, record string) 
 	defer runtime.UnlockOSThread()
 	var err error = nil
 	entryTime := time.Now()
-	var response string
+	var resultResponse string
 	if client.isTrace {
 		client.traceEntry(113, record)
-		defer func() { client.traceExit(114, record, response, err, time.Since(entryTime)) }()
+		defer func() { client.traceExit(114, record, resultResponse, err, time.Since(entryTime)) }()
 	}
 	recordForC := C.CString(record)
 	defer C.free(unsafe.Pointer(recordForC))
@@ -2656,7 +2660,7 @@ func (client *G2engine) ProcessWithResponse(ctx context.Context, record string) 
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4054, record, result.returnCode, time.Since(entryTime))
 	}
-	response = C.GoString(result.response)
+	resultResponse = C.GoString(result.response)
 	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
@@ -2664,7 +2668,7 @@ func (client *G2engine) ProcessWithResponse(ctx context.Context, record string) 
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8054, err, details)
 		}()
 	}
-	return response, err
+	return resultResponse, err
 }
 
 /*
@@ -2684,10 +2688,10 @@ func (client *G2engine) ProcessWithResponseResize(ctx context.Context, record st
 	defer runtime.UnlockOSThread()
 	var err error = nil
 	entryTime := time.Now()
-	var response string
+	var resultResponse string
 	if client.isTrace {
 		client.traceEntry(115, record)
-		defer func() { client.traceExit(116, record, response, err, time.Since(entryTime)) }()
+		defer func() { client.traceExit(116, record, resultResponse, err, time.Since(entryTime)) }()
 	}
 	recordForC := C.CString(record)
 	defer C.free(unsafe.Pointer(recordForC))
@@ -2695,7 +2699,7 @@ func (client *G2engine) ProcessWithResponseResize(ctx context.Context, record st
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4055, record, result.returnCode, time.Since(entryTime))
 	}
-	response = C.GoString(result.response)
+	resultResponse = C.GoString(result.response)
 	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
@@ -2703,7 +2707,7 @@ func (client *G2engine) ProcessWithResponseResize(ctx context.Context, record st
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8055, err, details)
 		}()
 	}
-	return response, err
+	return resultResponse, err
 }
 
 /*
@@ -2791,16 +2795,16 @@ func (client *G2engine) ReevaluateEntityWithInfo(ctx context.Context, entityID i
 	defer runtime.UnlockOSThread()
 	var err error = nil
 	entryTime := time.Now()
-	var response string
+	var resultResponse string
 	if client.isTrace {
 		client.traceEntry(121, entityID, flags)
-		defer func() { client.traceExit(122, entityID, flags, response, err, time.Since(entryTime)) }()
+		defer func() { client.traceExit(122, entityID, flags, resultResponse, err, time.Since(entryTime)) }()
 	}
 	result := C.G2_reevaluateEntityWithInfo_helper(C.longlong(entityID), C.longlong(flags))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4058, entityID, flags, result.returnCode, time.Since(entryTime))
 	}
-	response = C.GoString(result.response)
+	resultResponse = C.GoString(result.response)
 	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
@@ -2810,7 +2814,7 @@ func (client *G2engine) ReevaluateEntityWithInfo(ctx context.Context, entityID i
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8058, err, details)
 		}()
 	}
-	return response, err
+	return resultResponse, err
 }
 
 /*
@@ -2872,10 +2876,12 @@ func (client *G2engine) ReevaluateRecordWithInfo(ctx context.Context, dataSource
 	defer runtime.UnlockOSThread()
 	var err error = nil
 	entryTime := time.Now()
-	var response string
+	var resultResponse string
 	if client.isTrace {
 		client.traceEntry(125, dataSourceCode, recordID, flags)
-		defer func() { client.traceExit(126, dataSourceCode, recordID, flags, response, err, time.Since(entryTime)) }()
+		defer func() {
+			client.traceExit(126, dataSourceCode, recordID, flags, resultResponse, err, time.Since(entryTime))
+		}()
 	}
 	dataSourceCodeForC := C.CString(dataSourceCode)
 	defer C.free(unsafe.Pointer(dataSourceCodeForC))
@@ -2885,7 +2891,7 @@ func (client *G2engine) ReevaluateRecordWithInfo(ctx context.Context, dataSource
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4060, dataSourceCode, recordID, flags, result.returnCode, time.Since(entryTime))
 	}
-	response = C.GoString(result.response)
+	resultResponse = C.GoString(result.response)
 	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
@@ -2896,7 +2902,7 @@ func (client *G2engine) ReevaluateRecordWithInfo(ctx context.Context, dataSource
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8060, err, details)
 		}()
 	}
-	return response, err
+	return resultResponse, err
 }
 
 /*
@@ -2908,8 +2914,8 @@ Input
 */
 func (client *G2engine) RegisterObserver(ctx context.Context, observer observer.Observer) error {
 	var err error = nil
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(157, observer.GetObserverId(ctx))
 		defer func() { client.traceExit(158, observer.GetObserverId(ctx), err, time.Since(entryTime)) }()
 	}
@@ -3028,11 +3034,11 @@ func (client *G2engine) ReplaceRecordWithInfo(ctx context.Context, dataSourceCod
 	defer runtime.UnlockOSThread()
 	var err error = nil
 	entryTime := time.Now()
-	var response string
+	var resultResponse string
 	if client.isTrace {
 		client.traceEntry(131, dataSourceCode, recordID, jsonData, loadID, flags)
 		defer func() {
-			client.traceExit(132, dataSourceCode, recordID, jsonData, loadID, flags, response, err, time.Since(entryTime))
+			client.traceExit(132, dataSourceCode, recordID, jsonData, loadID, flags, resultResponse, err, time.Since(entryTime))
 		}()
 	}
 	dataSourceCodeForC := C.CString(dataSourceCode)
@@ -3047,7 +3053,7 @@ func (client *G2engine) ReplaceRecordWithInfo(ctx context.Context, dataSourceCod
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4063, dataSourceCode, recordID, jsonData, loadID, flags, result.returnCode, time.Since(entryTime))
 	}
-	response = C.GoString(result.response)
+	resultResponse = C.GoString(result.response)
 	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
@@ -3059,7 +3065,7 @@ func (client *G2engine) ReplaceRecordWithInfo(ctx context.Context, dataSourceCod
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8063, err, details)
 		}()
 	}
-	return response, err
+	return resultResponse, err
 }
 
 /*
@@ -3080,10 +3086,10 @@ func (client *G2engine) SearchByAttributes(ctx context.Context, jsonData string)
 	defer runtime.UnlockOSThread()
 	var err error = nil
 	entryTime := time.Now()
-	var response string
+	var resultResponse string
 	if client.isTrace {
 		client.traceEntry(133, jsonData)
-		defer func() { client.traceExit(134, jsonData, response, err, time.Since(entryTime)) }()
+		defer func() { client.traceExit(134, jsonData, resultResponse, err, time.Since(entryTime)) }()
 	}
 	jsonDataForC := C.CString(jsonData)
 	defer C.free(unsafe.Pointer(jsonDataForC))
@@ -3091,7 +3097,7 @@ func (client *G2engine) SearchByAttributes(ctx context.Context, jsonData string)
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4064, jsonData, result.returnCode, time.Since(entryTime))
 	}
-	response = C.GoString(result.response)
+	resultResponse = C.GoString(result.response)
 	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
@@ -3099,7 +3105,7 @@ func (client *G2engine) SearchByAttributes(ctx context.Context, jsonData string)
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8064, err, details)
 		}()
 	}
-	return response, err
+	return resultResponse, err
 }
 
 /*
@@ -3121,10 +3127,10 @@ func (client *G2engine) SearchByAttributes_V2(ctx context.Context, jsonData stri
 	defer runtime.UnlockOSThread()
 	var err error = nil
 	entryTime := time.Now()
-	var response string
+	var resultResponse string
 	if client.isTrace {
 		client.traceEntry(135, jsonData, flags)
-		defer func() { client.traceExit(136, jsonData, flags, response, err, time.Since(entryTime)) }()
+		defer func() { client.traceExit(136, jsonData, flags, resultResponse, err, time.Since(entryTime)) }()
 	}
 	jsonDataForC := C.CString(jsonData)
 	defer C.free(unsafe.Pointer(jsonDataForC))
@@ -3132,7 +3138,7 @@ func (client *G2engine) SearchByAttributes_V2(ctx context.Context, jsonData stri
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4065, jsonData, flags, result.returnCode, time.Since(entryTime))
 	}
-	response = C.GoString(result.response)
+	resultResponse = C.GoString(result.response)
 	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
@@ -3140,7 +3146,7 @@ func (client *G2engine) SearchByAttributes_V2(ctx context.Context, jsonData stri
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8065, err, details)
 		}()
 	}
-	return response, err
+	return resultResponse, err
 }
 
 /*
@@ -3203,16 +3209,16 @@ func (client *G2engine) Stats(ctx context.Context) (string, error) {
 	defer runtime.UnlockOSThread()
 	var err error = nil
 	entryTime := time.Now()
-	var response string
+	var resultResponse string
 	if client.isTrace {
 		client.traceEntry(139)
-		defer func() { client.traceExit(140, response, err, time.Since(entryTime)) }()
+		defer func() { client.traceExit(140, resultResponse, err, time.Since(entryTime)) }()
 	}
 	result := C.G2_stats_helper()
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4066, result.returnCode, time.Since(entryTime))
 	}
-	response = C.GoString(result.response)
+	resultResponse = C.GoString(result.response)
 	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
@@ -3220,7 +3226,7 @@ func (client *G2engine) Stats(ctx context.Context) (string, error) {
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8066, err, details)
 		}()
 	}
-	return response, err
+	return resultResponse, err
 }
 
 /*
@@ -3276,16 +3282,16 @@ func (client *G2engine) WhyEntities(ctx context.Context, entityID1 int64, entity
 	defer runtime.UnlockOSThread()
 	var err error = nil
 	entryTime := time.Now()
-	var response string
+	var resultResponse string
 	if client.isTrace {
 		client.traceEntry(141, entityID1, entityID2)
-		defer func() { client.traceExit(142, entityID1, entityID2, response, err, time.Since(entryTime)) }()
+		defer func() { client.traceExit(142, entityID1, entityID2, resultResponse, err, time.Since(entryTime)) }()
 	}
 	result := C.G2_whyEntities_helper(C.longlong(entityID1), C.longlong(entityID2))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4067, entityID1, entityID2, result.returnCode, time.Since(entryTime))
 	}
-	response = C.GoString(result.response)
+	resultResponse = C.GoString(result.response)
 	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
@@ -3296,7 +3302,7 @@ func (client *G2engine) WhyEntities(ctx context.Context, entityID1 int64, entity
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8067, err, details)
 		}()
 	}
-	return response, err
+	return resultResponse, err
 }
 
 /*
@@ -3322,16 +3328,16 @@ func (client *G2engine) WhyEntities_V2(ctx context.Context, entityID1 int64, ent
 	defer runtime.UnlockOSThread()
 	var err error = nil
 	entryTime := time.Now()
-	var response string
+	var resultResponse string
 	if client.isTrace {
 		client.traceEntry(143, entityID1, entityID2, flags)
-		defer func() { client.traceExit(144, entityID1, entityID2, flags, response, err, time.Since(entryTime)) }()
+		defer func() { client.traceExit(144, entityID1, entityID2, flags, resultResponse, err, time.Since(entryTime)) }()
 	}
 	result := C.G2_whyEntities_V2_helper(C.longlong(entityID1), C.longlong(entityID2), C.longlong(flags))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4068, entityID1, entityID2, flags, result.returnCode, time.Since(entryTime))
 	}
-	response = C.GoString(result.response)
+	resultResponse = C.GoString(result.response)
 	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
@@ -3342,7 +3348,7 @@ func (client *G2engine) WhyEntities_V2(ctx context.Context, entityID1 int64, ent
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8068, err, details)
 		}()
 	}
-	return response, err
+	return resultResponse, err
 }
 
 /*
@@ -3364,16 +3370,16 @@ func (client *G2engine) WhyEntityByEntityID(ctx context.Context, entityID int64)
 	defer runtime.UnlockOSThread()
 	var err error = nil
 	entryTime := time.Now()
-	var response string
+	var resultResponse string
 	if client.isTrace {
 		client.traceEntry(145, entityID)
-		defer func() { client.traceExit(146, entityID, response, err, time.Since(entryTime)) }()
+		defer func() { client.traceExit(146, entityID, resultResponse, err, time.Since(entryTime)) }()
 	}
 	result := C.G2_whyEntityByEntityID_helper(C.longlong(entityID))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4069, entityID, result.returnCode, time.Since(entryTime))
 	}
-	response = C.GoString(result.response)
+	resultResponse = C.GoString(result.response)
 	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
@@ -3383,7 +3389,7 @@ func (client *G2engine) WhyEntityByEntityID(ctx context.Context, entityID int64)
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8069, err, details)
 		}()
 	}
-	return response, err
+	return resultResponse, err
 }
 
 /*
@@ -3405,16 +3411,16 @@ func (client *G2engine) WhyEntityByEntityID_V2(ctx context.Context, entityID int
 	defer runtime.UnlockOSThread()
 	var err error = nil
 	entryTime := time.Now()
-	var response string
+	var resultResponse string
 	if client.isTrace {
 		client.traceEntry(147, entityID, flags)
-		defer func() { client.traceExit(148, entityID, flags, response, err, time.Since(entryTime)) }()
+		defer func() { client.traceExit(148, entityID, flags, resultResponse, err, time.Since(entryTime)) }()
 	}
 	result := C.G2_whyEntityByEntityID_V2_helper(C.longlong(entityID), C.longlong(flags))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4070, entityID, flags, result.returnCode, time.Since(entryTime))
 	}
-	response = C.GoString(result.response)
+	resultResponse = C.GoString(result.response)
 	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
@@ -3424,7 +3430,7 @@ func (client *G2engine) WhyEntityByEntityID_V2(ctx context.Context, entityID int
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8070, err, details)
 		}()
 	}
-	return response, err
+	return resultResponse, err
 }
 
 /*
@@ -3446,10 +3452,10 @@ func (client *G2engine) WhyEntityByRecordID(ctx context.Context, dataSourceCode 
 	defer runtime.UnlockOSThread()
 	var err error = nil
 	entryTime := time.Now()
-	var response string
+	var resultResponse string
 	if client.isTrace {
 		client.traceEntry(149, dataSourceCode, recordID)
-		defer func() { client.traceExit(150, dataSourceCode, recordID, response, err, time.Since(entryTime)) }()
+		defer func() { client.traceExit(150, dataSourceCode, recordID, resultResponse, err, time.Since(entryTime)) }()
 	}
 	dataSourceCodeForC := C.CString(dataSourceCode)
 	defer C.free(unsafe.Pointer(dataSourceCodeForC))
@@ -3459,7 +3465,7 @@ func (client *G2engine) WhyEntityByRecordID(ctx context.Context, dataSourceCode 
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4071, dataSourceCode, recordID, result.returnCode, time.Since(entryTime))
 	}
-	response = C.GoString(result.response)
+	resultResponse = C.GoString(result.response)
 	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
@@ -3470,7 +3476,7 @@ func (client *G2engine) WhyEntityByRecordID(ctx context.Context, dataSourceCode 
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8071, err, details)
 		}()
 	}
-	return response, err
+	return resultResponse, err
 }
 
 /*
@@ -3493,10 +3499,12 @@ func (client *G2engine) WhyEntityByRecordID_V2(ctx context.Context, dataSourceCo
 	defer runtime.UnlockOSThread()
 	var err error = nil
 	entryTime := time.Now()
-	var response string
+	var resultResponse string
 	if client.isTrace {
 		client.traceEntry(151, dataSourceCode, recordID, flags)
-		defer func() { client.traceExit(152, dataSourceCode, recordID, flags, response, err, time.Since(entryTime)) }()
+		defer func() {
+			client.traceExit(152, dataSourceCode, recordID, flags, resultResponse, err, time.Since(entryTime))
+		}()
 	}
 	dataSourceCodeForC := C.CString(dataSourceCode)
 	defer C.free(unsafe.Pointer(dataSourceCodeForC))
@@ -3506,7 +3514,7 @@ func (client *G2engine) WhyEntityByRecordID_V2(ctx context.Context, dataSourceCo
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4072, dataSourceCode, recordID, flags, result.returnCode, time.Since(entryTime))
 	}
-	response = C.GoString(result.response)
+	resultResponse = C.GoString(result.response)
 	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
@@ -3517,7 +3525,7 @@ func (client *G2engine) WhyEntityByRecordID_V2(ctx context.Context, dataSourceCo
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8072, err, details)
 		}()
 	}
-	return response, err
+	return resultResponse, err
 }
 
 /*
@@ -3542,11 +3550,11 @@ func (client *G2engine) WhyRecords(ctx context.Context, dataSourceCode1 string, 
 	defer runtime.UnlockOSThread()
 	var err error = nil
 	entryTime := time.Now()
-	var response string
+	var resultResponse string
 	if client.isTrace {
 		client.traceEntry(153, dataSourceCode1, recordID1, dataSourceCode2, recordID2)
 		defer func() {
-			client.traceExit(154, dataSourceCode1, recordID1, dataSourceCode2, recordID2, response, err, time.Since(entryTime))
+			client.traceExit(154, dataSourceCode1, recordID1, dataSourceCode2, recordID2, resultResponse, err, time.Since(entryTime))
 		}()
 	}
 	dataSource1CodeForC := C.CString(dataSourceCode1)
@@ -3561,7 +3569,7 @@ func (client *G2engine) WhyRecords(ctx context.Context, dataSourceCode1 string, 
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4073, dataSourceCode1, recordID1, dataSourceCode2, recordID2, result.returnCode, time.Since(entryTime))
 	}
-	response = C.GoString(result.response)
+	resultResponse = C.GoString(result.response)
 	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
@@ -3574,7 +3582,7 @@ func (client *G2engine) WhyRecords(ctx context.Context, dataSourceCode1 string, 
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8073, err, details)
 		}()
 	}
-	return response, err
+	return resultResponse, err
 }
 
 /*
@@ -3599,11 +3607,11 @@ func (client *G2engine) WhyRecords_V2(ctx context.Context, dataSourceCode1 strin
 	defer runtime.UnlockOSThread()
 	var err error = nil
 	entryTime := time.Now()
-	var response string
+	var resultResponse string
 	if client.isTrace {
 		client.traceEntry(155, dataSourceCode1, recordID1, dataSourceCode2, recordID2, flags)
 		defer func() {
-			client.traceExit(156, dataSourceCode1, recordID1, dataSourceCode2, recordID2, flags, response, err, time.Since(entryTime))
+			client.traceExit(156, dataSourceCode1, recordID1, dataSourceCode2, recordID2, flags, resultResponse, err, time.Since(entryTime))
 		}()
 	}
 	dataSource1CodeForC := C.CString(dataSourceCode1)
@@ -3618,7 +3626,7 @@ func (client *G2engine) WhyRecords_V2(ctx context.Context, dataSourceCode1 strin
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4074, dataSourceCode1, recordID1, dataSourceCode2, recordID2, flags, result.returnCode, time.Since(entryTime))
 	}
-	response = C.GoString(result.response)
+	resultResponse = C.GoString(result.response)
 	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
@@ -3631,5 +3639,5 @@ func (client *G2engine) WhyRecords_V2(ctx context.Context, dataSourceCode1 strin
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8074, err, details)
 		}()
 	}
-	return response, err
+	return resultResponse, err
 }
