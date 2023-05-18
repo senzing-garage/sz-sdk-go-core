@@ -194,25 +194,26 @@ func (client *G2diagnostic) CheckDBPerf(ctx context.Context, secondsToRun int) (
 	// _DLEXPORT int G2Diagnostic_checkDBPerf(int secondsToRun, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize) );
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+	var err error = nil
+	entryTime := time.Now()
+	var resultResponse string
 	if client.isTrace {
 		client.traceEntry(1, secondsToRun)
+		defer func() { client.traceExit(2, secondsToRun, resultResponse, err, time.Since(entryTime)) }()
 	}
-	entryTime := time.Now()
-	var err error = nil
 	result := C.G2Diagnostic_checkDBPerf_helper(C.int(secondsToRun))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4001, secondsToRun, result.returnCode, time.Since(entryTime))
 	}
+	resultResponse = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8001, err, details)
 		}()
 	}
-	if client.isTrace {
-		defer client.traceExit(2, secondsToRun, C.GoString(result.response), err, time.Since(entryTime))
-	}
-	return C.GoString(result.response), err
+	return resultResponse, err
 }
 
 /*
@@ -296,27 +297,27 @@ func (client *G2diagnostic) FetchNextEntityBySize(ctx context.Context, entityLis
 	//  _DLEXPORT int G2Diagnostic_fetchNextEntityBySize(EntityListBySizeHandle entityListBySizeHandle, char *responseBuf, const size_t bufSize);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+	var err error = nil
+	entryTime := time.Now()
+	var responseResult string
 	if client.isTrace {
 		client.traceEntry(9)
+		defer func() { client.traceExit(10, responseResult, err, time.Since(entryTime)) }()
 	}
-	entryTime := time.Now()
-	var err error = nil
 	stringBuffer := client.getByteArray(initialByteArraySize)
 	result := C.G2Diagnostic_fetchNextEntityBySize_helper(C.uintptr_t(entityListBySizeHandle), (*C.char)(unsafe.Pointer(&stringBuffer[0])), C.ulong(len(stringBuffer)))
 	if result < 0 {
 		err = client.newError(ctx, 4004, result, time.Since(entryTime))
 	}
 	stringBuffer = bytes.Trim(stringBuffer, "\x00")
+	responseResult = string(stringBuffer)
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8004, err, details)
 		}()
 	}
-	if client.isTrace {
-		defer client.traceExit(10, string(stringBuffer), err, time.Since(entryTime))
-	}
-	return string(stringBuffer), err
+	return responseResult, err
 }
 
 /*
@@ -336,27 +337,28 @@ func (client *G2diagnostic) FindEntitiesByFeatureIDs(ctx context.Context, featur
 	//  _DLEXPORT int G2Diagnostic_findEntitiesByFeatureIDs(const char *features, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+	var err error = nil
+	entryTime := time.Now()
+	var resultResponse string
 	if client.isTrace {
 		client.traceEntry(11, features)
+		defer func() { client.traceExit(12, features, resultResponse, err, time.Since(entryTime)) }()
 	}
-	entryTime := time.Now()
-	var err error = nil
 	featuresForC := C.CString(features)
 	defer C.free(unsafe.Pointer(featuresForC))
 	result := C.G2Diagnostic_findEntitiesByFeatureIDs_helper(featuresForC)
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4005, features, result.returnCode, time.Since(entryTime))
 	}
+	resultResponse = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8005, err, details)
 		}()
 	}
-	if client.isTrace {
-		defer client.traceExit(12, features, C.GoString(result.response), err, time.Since(entryTime))
-	}
-	return C.GoString(result.response), err
+	return resultResponse, err
 }
 
 /*
@@ -403,25 +405,26 @@ func (client *G2diagnostic) GetDataSourceCounts(ctx context.Context) (string, er
 	//  _DLEXPORT int G2Diagnostic_getDataSourceCounts(char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize) );
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+	var err error = nil
+	entryTime := time.Now()
+	var resultResponse string
 	if client.isTrace {
 		client.traceEntry(15)
+		defer func() { client.traceExit(16, resultResponse, err, time.Since(entryTime)) }()
 	}
-	entryTime := time.Now()
-	var err error = nil
 	result := C.G2Diagnostic_getDataSourceCounts_helper()
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4006, result.returnCode, time.Since(entryTime))
 	}
+	resultResponse = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8007, err, details)
 		}()
 	}
-	if client.isTrace {
-		defer client.traceExit(16, C.GoString(result.response), err, time.Since(entryTime))
-	}
-	return C.GoString(result.response), err
+	return resultResponse, err
 }
 
 /*
@@ -438,25 +441,26 @@ func (client *G2diagnostic) GetDBInfo(ctx context.Context) (string, error) {
 	// _DLEXPORT int G2Diagnostic_getDBInfo(char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize) );
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+	var err error = nil
+	entryTime := time.Now()
+	var resultResponse string
 	if client.isTrace {
 		client.traceEntry(17)
+		defer func() { client.traceExit(18, resultResponse, err, time.Since(entryTime)) }()
 	}
-	entryTime := time.Now()
-	var err error = nil
 	result := C.G2Diagnostic_getDBInfo_helper()
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4007, result.returnCode, time.Since(entryTime))
 	}
+	resultResponse = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8008, err, details)
 		}()
 	}
-	if client.isTrace {
-		defer client.traceExit(18, C.GoString(result.response), err, time.Since(entryTime))
-	}
-	return C.GoString(result.response), err
+	return resultResponse, err
 }
 
 /*
@@ -475,25 +479,28 @@ func (client *G2diagnostic) GetEntityDetails(ctx context.Context, entityID int64
 	//  _DLEXPORT int G2Diagnostic_getEntityDetails(const long long entityID, const int includeInternalFeatures, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize) );
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+	var err error = nil
+	entryTime := time.Now()
+	var resultResponse string
 	if client.isTrace {
 		client.traceEntry(19, entityID, includeInternalFeatures)
+		defer func() {
+			client.traceExit(20, entityID, includeInternalFeatures, resultResponse, err, time.Since(entryTime))
+		}()
 	}
-	entryTime := time.Now()
-	var err error = nil
 	result := C.G2Diagnostic_getEntityDetails_helper(C.longlong(entityID), C.int(includeInternalFeatures))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4008, entityID, includeInternalFeatures, result.returnCode, time.Since(entryTime))
 	}
+	resultResponse = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8009, err, details)
 		}()
 	}
-	if client.isTrace {
-		defer client.traceExit(20, entityID, includeInternalFeatures, C.GoString(result.response), err, time.Since(entryTime))
-	}
-	return C.GoString(result.response), err
+	return resultResponse, err
 }
 
 /*
@@ -513,25 +520,25 @@ func (client *G2diagnostic) GetEntityListBySize(ctx context.Context, entitySize 
 	//  _DLEXPORT int G2Diagnostic_getEntityListBySize(const size_t entitySize, EntityListBySizeHandle* entityListBySizeHandle);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+	var err error = nil
+	entryTime := time.Now()
+	var resultResponse uintptr
 	if client.isTrace {
 		client.traceEntry(21, entitySize)
+		defer func() { client.traceExit(22, entitySize, resultResponse, err, time.Since(entryTime)) }()
 	}
-	entryTime := time.Now()
-	var err error = nil
 	result := C.G2Diagnostic_getEntityListBySize_helper(C.size_t(entitySize))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4009, entitySize, result.returnCode, time.Since(entryTime))
 	}
+	resultResponse = (uintptr)(result.response)
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8010, err, details)
 		}()
 	}
-	if client.isTrace {
-		defer client.traceExit(22, entitySize, (uintptr)(result.response), err, time.Since(entryTime))
-	}
-	return (uintptr)(result.response), err
+	return resultResponse, err
 }
 
 /*
@@ -549,25 +556,26 @@ func (client *G2diagnostic) GetEntityResume(ctx context.Context, entityID int64)
 	//  _DLEXPORT int G2Diagnostic_getEntityResume(const long long entityID, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize) );
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+	var err error = nil
+	entryTime := time.Now()
+	var resultResponse string
 	if client.isTrace {
 		client.traceEntry(23, entityID)
+		defer func() { client.traceExit(24, entityID, resultResponse, err, time.Since(entryTime)) }()
 	}
-	entryTime := time.Now()
-	var err error = nil
 	result := C.G2Diagnostic_getEntityResume_helper(C.longlong(entityID))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4010, entityID, result.returnCode, time.Since(entryTime))
 	}
+	resultResponse = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8011, err, details)
 		}()
 	}
-	if client.isTrace {
-		defer client.traceExit(24, entityID, C.GoString(result.response), err, time.Since(entryTime))
-	}
-	return C.GoString(result.response), err
+	return resultResponse, err
 }
 
 /*
@@ -586,25 +594,28 @@ func (client *G2diagnostic) GetEntitySizeBreakdown(ctx context.Context, minimumE
 	//  _DLEXPORT int G2Diagnostic_getEntitySizeBreakdown(const size_t minimumEntitySize, const int includeInternalFeatures, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize) );
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+	var err error = nil
+	entryTime := time.Now()
+	var resultResponse string
 	if client.isTrace {
 		client.traceEntry(25, minimumEntitySize, includeInternalFeatures)
+		defer func() {
+			client.traceExit(26, minimumEntitySize, includeInternalFeatures, resultResponse, err, time.Since(entryTime))
+		}()
 	}
-	entryTime := time.Now()
-	var err error = nil
 	result := C.G2Diagnostic_getEntitySizeBreakdown_helper(C.size_t(minimumEntitySize), C.int(includeInternalFeatures))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4011, minimumEntitySize, includeInternalFeatures, result.returnCode, time.Since(entryTime))
 	}
+	resultResponse = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8012, err, details)
 		}()
 	}
-	if client.isTrace {
-		defer client.traceExit(26, minimumEntitySize, includeInternalFeatures, C.GoString(result.response), err, time.Since(entryTime))
-	}
-	return C.GoString(result.response), err
+	return resultResponse, err
 }
 
 /*
@@ -622,25 +633,26 @@ func (client *G2diagnostic) GetFeature(ctx context.Context, libFeatID int64) (st
 	//  _DLEXPORT int G2Diagnostic_getFeature(const long long libFeatID, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+	var err error = nil
+	entryTime := time.Now()
+	var resultResponse string
 	if client.isTrace {
 		client.traceEntry(27, libFeatID)
+		defer func() { client.traceExit(28, libFeatID, resultResponse, err, time.Since(entryTime)) }()
 	}
-	entryTime := time.Now()
-	var err error = nil
 	result := C.G2Diagnostic_getFeature_helper(C.longlong(libFeatID))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4012, libFeatID, result.returnCode, time.Since(entryTime))
 	}
+	resultResponse = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8013, err, details)
 		}()
 	}
-	if client.isTrace {
-		defer client.traceExit(28, libFeatID, C.GoString(result.response), err, time.Since(entryTime))
-	}
-	return C.GoString(result.response), err
+	return resultResponse, err
 }
 
 /*
@@ -659,27 +671,30 @@ func (client *G2diagnostic) GetGenericFeatures(ctx context.Context, featureType 
 	//  _DLEXPORT int G2Diagnostic_getGenericFeatures(const char* featureType, const size_t maximumEstimatedCount, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize) );
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+	var err error = nil
+	entryTime := time.Now()
+	var resultResponse string
 	if client.isTrace {
 		client.traceEntry(29, featureType, maximumEstimatedCount)
+		defer func() {
+			client.traceExit(30, featureType, maximumEstimatedCount, resultResponse, err, time.Since(entryTime))
+		}()
 	}
-	entryTime := time.Now()
-	var err error = nil
 	featureTypeForC := C.CString(featureType)
 	defer C.free(unsafe.Pointer(featureTypeForC))
 	result := C.G2Diagnostic_getGenericFeatures_helper(featureTypeForC, C.size_t(maximumEstimatedCount))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4013, featureType, maximumEstimatedCount, result.returnCode, time.Since(entryTime))
 	}
+	resultResponse = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8014, err, details)
 		}()
 	}
-	if client.isTrace {
-		defer client.traceExit(30, featureType, maximumEstimatedCount, C.GoString(result.response), err, time.Since(entryTime))
-	}
-	return C.GoString(result.response), err
+	return resultResponse, err
 }
 
 /*
@@ -698,9 +713,9 @@ func (client *G2diagnostic) GetLogicalCores(ctx context.Context) (int, error) {
 	var err error = nil
 	var result int
 	if client.isTrace {
-		client.traceEntry(35)
 		entryTime := time.Now()
-		defer client.traceExit(36, result, err, time.Since(entryTime))
+		client.traceEntry(35)
+		defer func() { client.traceExit(36, result, err, time.Since(entryTime)) }()
 	}
 	result = int(C.G2Diagnostic_getLogicalCores())
 	if client.observers != nil {
@@ -727,25 +742,26 @@ func (client *G2diagnostic) GetMappingStatistics(ctx context.Context, includeInt
 	//  _DLEXPORT int G2Diagnostic_getMappingStatistics(const int includeInternalFeatures, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize) );
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+	var err error = nil
+	entryTime := time.Now()
+	var resultResponse string
 	if client.isTrace {
 		client.traceEntry(37, includeInternalFeatures)
+		defer func() { client.traceExit(38, includeInternalFeatures, resultResponse, err, time.Since(entryTime)) }()
 	}
-	entryTime := time.Now()
-	var err error = nil
 	result := C.G2Diagnostic_getMappingStatistics_helper(C.int(includeInternalFeatures))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4015, includeInternalFeatures, result.returnCode, time.Since(entryTime))
 	}
+	resultResponse = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8016, err, details)
 		}()
 	}
-	if client.isTrace {
-		defer client.traceExit(38, includeInternalFeatures, C.GoString(result.response), err, time.Since(entryTime))
-	}
-	return C.GoString(result.response), err
+	return resultResponse, err
 }
 
 /*
@@ -807,25 +823,28 @@ func (client *G2diagnostic) GetRelationshipDetails(ctx context.Context, relation
 	//  _DLEXPORT int G2Diagnostic_getRelationshipDetails(const long long relationshipID, const int includeInternalFeatures, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize) );
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+	var err error = nil
+	entryTime := time.Now()
+	var resultResponse string
 	if client.isTrace {
 		client.traceEntry(41, relationshipID, includeInternalFeatures)
+		defer func() {
+			client.traceExit(42, relationshipID, includeInternalFeatures, resultResponse, err, time.Since(entryTime))
+		}()
 	}
-	entryTime := time.Now()
-	var err error = nil
 	result := C.G2Diagnostic_getRelationshipDetails_helper(C.longlong(relationshipID), C.int(includeInternalFeatures))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4016, relationshipID, includeInternalFeatures, result.returnCode, time.Since(entryTime))
 	}
+	resultResponse = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8018, err, details)
 		}()
 	}
-	if client.isTrace {
-		defer client.traceExit(42, relationshipID, includeInternalFeatures, C.GoString(result.response), err, time.Since(entryTime))
-	}
-	return C.GoString(result.response), err
+	return resultResponse, err
 }
 
 /*
@@ -842,25 +861,26 @@ func (client *G2diagnostic) GetResolutionStatistics(ctx context.Context) (string
 	//  _DLEXPORT int G2Diagnostic_getResolutionStatistics(char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize) );
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+	var err error = nil
+	entryTime := time.Now()
+	var resultResponse string
 	if client.isTrace {
 		client.traceEntry(43)
+		defer func() { client.traceExit(44, resultResponse, err, time.Since(entryTime)) }()
 	}
-	entryTime := time.Now()
-	var err error = nil
 	result := C.G2Diagnostic_getResolutionStatistics_helper()
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4017, result.returnCode, time.Since(entryTime))
 	}
+	resultResponse = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8019, err, details)
 		}()
 	}
-	if client.isTrace {
-		defer client.traceExit(44, C.GoString(result.response), err, time.Since(entryTime))
-	}
-	return C.GoString(result.response), err
+	return resultResponse, err
 }
 
 /*

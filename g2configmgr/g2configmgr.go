@@ -198,7 +198,7 @@ func (client *G2configmgr) AddConfig(ctx context.Context, configStr string, conf
 	var resultConfigID int64
 	if client.isTrace {
 		client.traceEntry(1, configStr, configComments)
-		defer client.traceExit(2, configStr, configComments, resultConfigID, err, time.Since(entryTime))
+		defer func() { client.traceExit(2, configStr, configComments, resultConfigID, err, time.Since(entryTime)) }()
 	}
 	configStrForC := C.CString(configStr)
 	defer C.free(unsafe.Pointer(configStrForC))
@@ -270,7 +270,7 @@ func (client *G2configmgr) GetConfig(ctx context.Context, configID int64) (strin
 	var resultResponse string
 	if client.isTrace {
 		client.traceEntry(7, configID)
-		defer client.traceExit(8, configID, resultResponse, err, time.Since(entryTime))
+		defer func() { client.traceExit(8, configID, resultResponse, err, time.Since(entryTime)) }()
 	}
 	result := C.G2ConfigMgr_getConfig_helper(C.longlong(configID))
 	if result.returnCode != 0 {
@@ -306,7 +306,7 @@ func (client *G2configmgr) GetConfigList(ctx context.Context) (string, error) {
 	var resultResponse string
 	if client.isTrace {
 		client.traceEntry(9)
-		defer client.traceExit(10, resultResponse, err, time.Since(entryTime))
+		defer func() { client.traceExit(10, resultResponse, err, time.Since(entryTime)) }()
 	}
 	result := C.G2ConfigMgr_getConfigList_helper()
 	if result.returnCode != 0 {

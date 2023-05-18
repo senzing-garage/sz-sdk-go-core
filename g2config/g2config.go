@@ -200,7 +200,7 @@ func (client *G2config) AddDataSource(ctx context.Context, configHandle uintptr,
 	var resultResponse string
 	if client.isTrace {
 		client.traceEntry(1, configHandle, inputJson)
-		defer client.traceExit(2, configHandle, inputJson, resultResponse, err, time.Since(entryTime))
+		defer func() { client.traceExit(2, configHandle, inputJson, resultResponse, err, time.Since(entryTime)) }()
 	}
 	inputJsonForC := C.CString(inputJson)
 	defer C.free(unsafe.Pointer(inputJsonForC))
@@ -270,12 +270,13 @@ func (client *G2config) Create(ctx context.Context) (uintptr, error) {
 	// _DLEXPORT int G2Config_create(ConfigHandle* configHandle);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+	var err error = nil
+	entryTime := time.Now()
+	var resultResponse uintptr
 	if client.isTrace {
 		client.traceEntry(7)
+		defer func() { client.traceExit(8, resultResponse, err, time.Since(entryTime)) }()
 	}
-	entryTime := time.Now()
-	var err error = nil
-	var resultResponse uintptr
 	result := C.G2config_create_helper()
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4003, result.returnCode, time.Since(entryTime))
@@ -456,7 +457,7 @@ func (client *G2config) ListDataSources(ctx context.Context, configHandle uintpt
 	var resultResponse string
 	if client.isTrace {
 		client.traceEntry(19, configHandle)
-		defer client.traceExit(20, configHandle, resultResponse, err, time.Since(entryTime))
+		defer func() { client.traceExit(20, configHandle, resultResponse, err, time.Since(entryTime)) }()
 	}
 	result := C.G2Config_listDataSources_helper(C.uintptr_t(configHandle))
 	if result.returnCode != 0 {
@@ -557,7 +558,7 @@ func (client *G2config) Save(ctx context.Context, configHandle uintptr) (string,
 	var resultResponse string
 	if client.isTrace {
 		client.traceEntry(23, configHandle)
-		defer client.traceExit(24, configHandle, resultResponse, err, time.Since(entryTime))
+		defer func() { client.traceExit(24, configHandle, resultResponse, err, time.Since(entryTime)) }()
 	}
 	result := C.G2Config_save_helper(C.uintptr_t(configHandle))
 	if result.returnCode != 0 {
