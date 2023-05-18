@@ -47,21 +47,21 @@ func getTestObject(ctx context.Context, test *testing.T) g2api.G2product {
 }
 
 func getG2Product(ctx context.Context) g2api.G2product {
-	if g2productSingleton == nil {
-		g2productSingleton = &G2product{}
-		g2productSingleton.SetLogLevel(ctx, logging.LevelInfoName)
-		log.SetFlags(0)
-		moduleName := "Test module name"
-		verboseLogging := 0
-		iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
-		if err != nil {
-			fmt.Println(err)
-		}
-		err = g2productSingleton.Init(ctx, moduleName, iniParams, verboseLogging)
-		if err != nil {
-			fmt.Println(err)
-		}
+	// if g2productSingleton == nil {
+	g2productSingleton = &G2product{}
+	g2productSingleton.SetLogLevel(ctx, logging.LevelInfoName)
+	log.SetFlags(0)
+	moduleName := "Test module name"
+	verboseLogging := 0
+	iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
+	if err != nil {
+		fmt.Println(err)
 	}
+	err = g2productSingleton.Init(ctx, moduleName, iniParams, verboseLogging)
+	if err != nil {
+		fmt.Println(err)
+	}
+	// }
 	return g2productSingleton
 }
 
@@ -199,7 +199,7 @@ func TestG2product_Destroy(test *testing.T) {
 	g2product := getTestObject(ctx, test)
 	err := g2product.Destroy(ctx)
 	testError(test, ctx, g2product, err)
-	// g2productSingleton = nil
+	g2productSingleton = nil
 }
 
 // ----------------------------------------------------------------------------
@@ -228,15 +228,15 @@ func ExampleG2product_GetObserverOrigin() {
 
 func ExampleG2product_Init() {
 	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2product/g2product_test.go
-	// ctx := context.TODO()
-	// g2product := getG2Product(ctx)
-	// moduleName := "Test module name"
-	// iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
-	// verboseLogging := 0
-	// g2product.Init(ctx, moduleName, iniParams, verboseLogging)
+	ctx := context.TODO()
+	g2product := getG2Product(ctx)
+	moduleName := "Test module name"
+	iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
+	if err != nil {
+		fmt.Println(err)
+	}
+	verboseLogging := 0
+	g2product.Init(ctx, moduleName, iniParams, verboseLogging)
 	// Output:
 }
 

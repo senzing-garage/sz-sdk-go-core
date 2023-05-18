@@ -309,7 +309,6 @@ func (client *G2product) License(ctx context.Context) (string, error) {
 	}
 	result := C.G2Product_license()
 	resultResponse = C.GoString(result)
-	C.free(unsafe.Pointer(result))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
@@ -526,7 +525,6 @@ func (client *G2product) Version(ctx context.Context) (string, error) {
 	}
 	result := C.G2Product_version()
 	resultResponse = C.GoString(result)
-	C.free(unsafe.Pointer(result))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
