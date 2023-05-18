@@ -244,11 +244,11 @@ func (client *G2engine) AddRecordWithInfo(ctx context.Context, dataSourceCode st
 	defer runtime.UnlockOSThread()
 	var err error = nil
 	entryTime := time.Now()
-	var withInfoResult string
+	var resultResponse string
 	if client.isTrace {
 		client.traceEntry(3, dataSourceCode, recordID, jsonData, loadID, flags)
 		defer func() {
-			client.traceExit(4, dataSourceCode, recordID, jsonData, loadID, flags, withInfoResult, err, time.Since(entryTime))
+			client.traceExit(4, dataSourceCode, recordID, jsonData, loadID, flags, resultResponse, err, time.Since(entryTime))
 		}()
 	}
 	dataSourceCodeForC := C.CString(dataSourceCode)
@@ -263,6 +263,8 @@ func (client *G2engine) AddRecordWithInfo(ctx context.Context, dataSourceCode st
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4002, dataSourceCode, recordID, jsonData, loadID, flags, result.returnCode, time.Since(entryTime))
 	}
+	resultResponse = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -273,9 +275,7 @@ func (client *G2engine) AddRecordWithInfo(ctx context.Context, dataSourceCode st
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8002, err, details)
 		}()
 	}
-	withInfoResult = C.GoString(result.response)
-	C.free(unsafe.Pointer(result.response))
-	return withInfoResult, err
+	return resultResponse, err
 }
 
 /*
@@ -300,12 +300,12 @@ func (client *G2engine) AddRecordWithInfoWithReturnedRecordID(ctx context.Contex
 	defer runtime.UnlockOSThread()
 	var err error = nil
 	entryTime := time.Now()
-	var withInfoResult string
-	var recordIDResult string
+	var resultWithInfo string
+	var resultRecordID string
 	if client.isTrace {
 		client.traceEntry(5, dataSourceCode, jsonData, loadID, flags)
 		defer func() {
-			client.traceExit(6, dataSourceCode, jsonData, loadID, flags, withInfoResult, recordIDResult, err, time.Since(entryTime))
+			client.traceExit(6, dataSourceCode, jsonData, loadID, flags, resultWithInfo, resultRecordID, err, time.Since(entryTime))
 		}()
 	}
 	dataSourceCodeForC := C.CString(dataSourceCode)
@@ -315,24 +315,24 @@ func (client *G2engine) AddRecordWithInfoWithReturnedRecordID(ctx context.Contex
 	loadIDForC := C.CString(loadID)
 	defer C.free(unsafe.Pointer(loadIDForC))
 	result := C.G2_addRecordWithInfoWithReturnedRecordID_helper(dataSourceCodeForC, jsonDataForC, loadIDForC, C.longlong(flags))
-	withInfoResult = C.GoString(result.withInfo)
-	recordIDResult = C.GoString(result.recordID)
-	C.free(unsafe.Pointer(result.withInfo))
-	C.free(unsafe.Pointer(result.recordID))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4003, dataSourceCode, jsonData, loadID, flags, result.returnCode, result, time.Since(entryTime))
 	}
+	resultWithInfo = C.GoString(result.withInfo)
+	resultRecordID = C.GoString(result.recordID)
+	C.free(unsafe.Pointer(result.withInfo))
+	C.free(unsafe.Pointer(result.recordID))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
 				"dataSourceCode": dataSourceCode,
-				"recordID":       recordIDResult,
+				"recordID":       resultRecordID,
 				"loadID":         loadID,
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8003, err, details)
 		}()
 	}
-	return withInfoResult, recordIDResult, err
+	return resultWithInfo, resultRecordID, err
 }
 
 /*
@@ -354,11 +354,11 @@ func (client *G2engine) AddRecordWithReturnedRecordID(ctx context.Context, dataS
 	defer runtime.UnlockOSThread()
 	var err error = nil
 	entryTime := time.Now()
-	var recordIDResult string
+	var resultRecordID string
 	if client.isTrace {
 		client.traceEntry(7, dataSourceCode, jsonData, loadID)
 		defer func() {
-			client.traceExit(8, dataSourceCode, jsonData, loadID, recordIDResult, err, time.Since(entryTime))
+			client.traceExit(8, dataSourceCode, jsonData, loadID, resultRecordID, err, time.Since(entryTime))
 		}()
 	}
 	dataSourceCodeForC := C.CString(dataSourceCode)
@@ -368,22 +368,22 @@ func (client *G2engine) AddRecordWithReturnedRecordID(ctx context.Context, dataS
 	loadIDForC := C.CString(loadID)
 	defer C.free(unsafe.Pointer(loadIDForC))
 	result := C.G2_addRecordWithReturnedRecordID_helper(dataSourceCodeForC, jsonDataForC, loadIDForC)
-	recordIDResult = C.GoString(result.recordID)
-	C.free(unsafe.Pointer(result.recordID))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4004, dataSourceCode, jsonData, loadID, result.returnCode, time.Since(entryTime))
 	}
+	resultRecordID = C.GoString(result.recordID)
+	C.free(unsafe.Pointer(result.recordID))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
 				"dataSourceCode": dataSourceCode,
-				"recordID":       recordIDResult,
+				"recordID":       resultRecordID,
 				"loadID":         loadID,
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8004, err, details)
 		}()
 	}
-	return recordIDResult, err
+	return resultRecordID, err
 }
 
 /*
@@ -405,10 +405,10 @@ func (client *G2engine) CheckRecord(ctx context.Context, record string, recordQu
 	defer runtime.UnlockOSThread()
 	var err error = nil
 	entryTime := time.Now()
-	var checkRecordResult string
+	var resultResponse string
 	if client.isTrace {
 		client.traceEntry(9, record, recordQueryList)
-		defer func() { client.traceExit(10, record, recordQueryList, checkRecordResult, err, time.Since(entryTime)) }()
+		defer func() { client.traceExit(10, record, recordQueryList, resultResponse, err, time.Since(entryTime)) }()
 	}
 	recordForC := C.CString(record)
 	defer C.free(unsafe.Pointer(recordForC))
@@ -418,15 +418,15 @@ func (client *G2engine) CheckRecord(ctx context.Context, record string, recordQu
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4005, record, recordQueryList, result.returnCode, time.Since(entryTime))
 	}
+	resultResponse = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8005, err, details)
 		}()
 	}
-	checkRecordResult = C.GoString(result.response)
-	C.free(unsafe.Pointer(result.response))
-	return checkRecordResult, err
+	return resultResponse, err
 }
 
 /*
@@ -555,11 +555,11 @@ func (client *G2engine) DeleteRecordWithInfo(ctx context.Context, dataSourceCode
 	defer runtime.UnlockOSThread()
 	var err error = nil
 	entryTime := time.Now()
-	var infoResult string
+	var resultResponse string
 	if client.isTrace {
 		client.traceEntry(19, dataSourceCode, recordID, loadID, flags)
 		defer func() {
-			client.traceExit(20, dataSourceCode, recordID, loadID, flags, infoResult, err, time.Since(entryTime))
+			client.traceExit(20, dataSourceCode, recordID, loadID, flags, resultResponse, err, time.Since(entryTime))
 		}()
 	}
 	dataSourceCodeForC := C.CString(dataSourceCode)
@@ -572,6 +572,8 @@ func (client *G2engine) DeleteRecordWithInfo(ctx context.Context, dataSourceCode
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4008, dataSourceCode, recordID, loadID, flags, result.returnCode, time.Since(entryTime))
 	}
+	resultResponse = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -582,9 +584,7 @@ func (client *G2engine) DeleteRecordWithInfo(ctx context.Context, dataSourceCode
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8009, err, details)
 		}()
 	}
-	infoResult = C.GoString(result.response)
-	C.free(unsafe.Pointer(result.response))
-	return infoResult, err
+	return resultResponse, err
 }
 
 /*
@@ -632,24 +632,24 @@ func (client *G2engine) ExportConfig(ctx context.Context) (string, error) {
 	defer runtime.UnlockOSThread()
 	var err error = nil
 	entryTime := time.Now()
-	var configStr string
+	var resultResponse string
 	if client.isTrace {
 		client.traceEntry(25)
-		defer func() { client.traceExit(26, configStr, err, time.Since(entryTime)) }()
+		defer func() { client.traceExit(26, resultResponse, err, time.Since(entryTime)) }()
 	}
 	result := C.G2_exportConfig_helper()
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4011, result.returnCode, time.Since(entryTime))
 	}
+	resultResponse = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8011, err, details)
 		}()
 	}
-	configStr = C.GoString(result.response)
-	C.free(unsafe.Pointer(result.response))
-	return configStr, err
+	return resultResponse, err
 }
 
 /*
@@ -668,28 +668,28 @@ func (client *G2engine) ExportConfigAndConfigID(ctx context.Context) (string, in
 	defer runtime.UnlockOSThread()
 	var err error = nil
 	entryTime := time.Now()
-	var configStr string
-	var configID int64
+	var resultConfig string
+	var resultConfigID int64
 	if client.isTrace {
 		client.traceEntry(23)
-		defer func() { client.traceExit(24, configStr, configID, err, time.Since(entryTime)) }()
+		defer func() { client.traceExit(24, resultConfig, resultConfigID, err, time.Since(entryTime)) }()
 	}
 	result := C.G2_exportConfigAndConfigID_helper()
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4010, result.returnCode, result, time.Since(entryTime))
 	}
-	configID = int64(C.longlong(result.configID))
-	configStr = C.GoString(result.config)
+	resultConfigID = int64(C.longlong(result.configID))
+	resultConfig = C.GoString(result.config)
 	C.free(unsafe.Pointer(result.config))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
-				"configID": strconv.FormatInt(configID, 10),
+				"configID": strconv.FormatInt(resultConfigID, 10),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8012, err, details)
 		}()
 	}
-	return configStr, configID, err
+	return resultConfig, resultConfigID, err
 }
 
 /*
@@ -825,17 +825,17 @@ func (client *G2engine) FindInterestingEntitiesByEntityID(ctx context.Context, e
 	defer runtime.UnlockOSThread()
 	var err error = nil
 	entryTime := time.Now()
-	var response string
+	var resultResponse string
 	if client.isTrace {
 		client.traceEntry(33, entityID, flags)
-		defer func() { client.traceExit(34, entityID, flags, response, err, time.Since(entryTime)) }()
+		defer func() { client.traceExit(34, entityID, flags, resultResponse, err, time.Since(entryTime)) }()
 	}
 	result := C.G2_findInterestingEntitiesByEntityID_helper(C.longlong(entityID), C.longlong(flags))
-	response = C.GoString(result.response)
-	C.free(unsafe.Pointer(result.response))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4015, entityID, flags, result.returnCode, time.Since(entryTime))
 	}
+	resultResponse = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -844,7 +844,7 @@ func (client *G2engine) FindInterestingEntitiesByEntityID(ctx context.Context, e
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8016, err, details)
 		}()
 	}
-	return response, err
+	return resultResponse, err
 }
 
 /*
@@ -866,21 +866,23 @@ func (client *G2engine) FindInterestingEntitiesByRecordID(ctx context.Context, d
 	defer runtime.UnlockOSThread()
 	var err error = nil
 	entryTime := time.Now()
-	var response string
+	var resultResponse string
 	if client.isTrace {
 		client.traceEntry(35, dataSourceCode, recordID, flags)
-		defer func() { client.traceExit(36, dataSourceCode, recordID, flags, response, err, time.Since(entryTime)) }()
+		defer func() {
+			client.traceExit(36, dataSourceCode, recordID, flags, resultResponse, err, time.Since(entryTime))
+		}()
 	}
 	dataSourceCodeForC := C.CString(dataSourceCode)
 	defer C.free(unsafe.Pointer(dataSourceCodeForC))
 	recordIDForC := C.CString(recordID)
 	defer C.free(unsafe.Pointer(recordIDForC))
 	result := C.G2_findInterestingEntitiesByRecordID_helper(dataSourceCodeForC, recordIDForC, C.longlong(flags))
-	response = C.GoString(result.response)
-	C.free(unsafe.Pointer(result.response))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4016, dataSourceCode, recordID, flags, result.returnCode, time.Since(entryTime))
 	}
+	resultResponse = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -890,7 +892,7 @@ func (client *G2engine) FindInterestingEntitiesByRecordID(ctx context.Context, d
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8017, err, details)
 		}()
 	}
-	return response, err
+	return resultResponse, err
 }
 
 /*
@@ -916,21 +918,21 @@ func (client *G2engine) FindNetworkByEntityID(ctx context.Context, entityList st
 	defer runtime.UnlockOSThread()
 	var err error = nil
 	entryTime := time.Now()
-	var response string
+	var resultResponse string
 	if client.isTrace {
 		client.traceEntry(37, entityList, maxDegree, buildOutDegree, maxDegree)
 		defer func() {
-			client.traceExit(38, entityList, maxDegree, buildOutDegree, maxDegree, response, err, time.Since(entryTime))
+			client.traceExit(38, entityList, maxDegree, buildOutDegree, maxDegree, resultResponse, err, time.Since(entryTime))
 		}()
 	}
 	entityListForC := C.CString(entityList)
 	defer C.free(unsafe.Pointer(entityListForC))
 	result := C.G2_findNetworkByEntityID_helper(entityListForC, C.int(maxDegree), C.int(buildOutDegree), C.int(maxEntities))
-	response = C.GoString(result.response)
-	C.free(unsafe.Pointer(result.response))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4017, entityList, maxDegree, buildOutDegree, maxEntities, result.returnCode, time.Since(entryTime))
 	}
+	resultResponse = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -939,7 +941,7 @@ func (client *G2engine) FindNetworkByEntityID(ctx context.Context, entityList st
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8018, err, details)
 		}()
 	}
-	return response, err
+	return resultResponse, err
 }
 
 /*
@@ -976,11 +978,11 @@ func (client *G2engine) FindNetworkByEntityID_V2(ctx context.Context, entityList
 	entityListForC := C.CString(entityList)
 	defer C.free(unsafe.Pointer(entityListForC))
 	result := C.G2_findNetworkByEntityID_V2_helper(entityListForC, C.int(maxDegree), C.int(buildOutDegree), C.int(maxEntities), C.longlong(flags))
-	response = C.GoString(result.response)
-	C.free(unsafe.Pointer(result.response))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4018, entityList, maxDegree, buildOutDegree, maxEntities, flags, result.returnCode, time.Since(entryTime))
 	}
+	response = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -1025,11 +1027,11 @@ func (client *G2engine) FindNetworkByRecordID(ctx context.Context, recordList st
 	recordListForC := C.CString(recordList)
 	defer C.free(unsafe.Pointer(recordListForC))
 	result := C.G2_findNetworkByRecordID_helper(recordListForC, C.int(maxDegree), C.int(buildOutDegree), C.int(maxEntities))
-	response = C.GoString(result.response)
-	C.free(unsafe.Pointer(result.response))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4019, recordList, maxDegree, buildOutDegree, maxEntities, recordList, result.returnCode, time.Since(entryTime))
 	}
+	response = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -1075,11 +1077,11 @@ func (client *G2engine) FindNetworkByRecordID_V2(ctx context.Context, recordList
 	recordListForC := C.CString(recordList)
 	defer C.free(unsafe.Pointer(recordListForC))
 	result := C.G2_findNetworkByRecordID_V2_helper(recordListForC, C.int(maxDegree), C.int(buildOutDegree), C.int(maxEntities), C.longlong(flags))
-	response = C.GoString(result.response)
-	C.free(unsafe.Pointer(result.response))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4020, recordList, maxDegree, buildOutDegree, maxEntities, flags, result.returnCode, time.Since(entryTime))
 	}
+	response = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -1118,11 +1120,11 @@ func (client *G2engine) FindPathByEntityID(ctx context.Context, entityID1 int64,
 		defer func() { client.traceExit(46, entityID1, entityID2, maxDegree, response, err, time.Since(entryTime)) }()
 	}
 	result := C.G2_findPathByEntityID_helper(C.longlong(entityID1), C.longlong(entityID2), C.int(maxDegree))
-	response = C.GoString(result.response)
-	C.free(unsafe.Pointer(result.response))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4021, entityID1, entityID2, maxDegree, result.returnCode, time.Since(entryTime))
 	}
+	response = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -1165,11 +1167,11 @@ func (client *G2engine) FindPathByEntityID_V2(ctx context.Context, entityID1 int
 		}()
 	}
 	result := C.G2_findPathByEntityID_V2_helper(C.longlong(entityID1), C.longlong(entityID2), C.int(maxDegree), C.longlong(flags))
-	response = C.GoString(result.response)
-	C.free(unsafe.Pointer(result.response))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4022, entityID1, entityID2, maxDegree, flags, result.returnCode, time.Since(entryTime))
 	}
+	response = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -1223,11 +1225,11 @@ func (client *G2engine) FindPathByRecordID(ctx context.Context, dataSourceCode1 
 	recordID2ForC := C.CString(recordID2)
 	defer C.free(unsafe.Pointer(recordID2ForC))
 	result := C.G2_findPathByRecordID_helper(dataSource1CodeForC, recordID1ForC, dataSource2CodeForC, recordID2ForC, C.int(maxDegree))
-	response = C.GoString(result.response)
-	C.free(unsafe.Pointer(result.response))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4023, dataSourceCode1, recordID1, dataSourceCode2, recordID2, maxDegree, result.returnCode, time.Since(entryTime))
 	}
+	response = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -1283,11 +1285,11 @@ func (client *G2engine) FindPathByRecordID_V2(ctx context.Context, dataSourceCod
 	recordID2ForC := C.CString(recordID2)
 	defer C.free(unsafe.Pointer(recordID2ForC))
 	result := C.G2_findPathByRecordID_V2_helper(dataSource1CodeForC, recordID1ForC, dataSource2CodeForC, recordID2ForC, C.int(maxDegree), C.longlong(flags))
-	response = C.GoString(result.response)
-	C.free(unsafe.Pointer(result.response))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4024, dataSourceCode1, recordID1, dataSourceCode2, recordID2, maxDegree, flags, result.returnCode, time.Since(entryTime))
 	}
+	response = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -1335,11 +1337,11 @@ func (client *G2engine) FindPathExcludingByEntityID(ctx context.Context, entityI
 	excludedEntitiesForC := C.CString(excludedEntities)
 	defer C.free(unsafe.Pointer(excludedEntitiesForC))
 	result := C.G2_findPathExcludingByEntityID_helper(C.longlong(entityID1), C.longlong(entityID2), C.int(maxDegree), excludedEntitiesForC)
-	response = C.GoString(result.response)
-	C.free(unsafe.Pointer(result.response))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4025, entityID1, entityID2, maxDegree, excludedEntities, result.returnCode, time.Since(entryTime))
 	}
+	response = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -1391,11 +1393,11 @@ func (client *G2engine) FindPathExcludingByEntityID_V2(ctx context.Context, enti
 	excludedEntitiesForC := C.CString(excludedEntities)
 	defer C.free(unsafe.Pointer(excludedEntitiesForC))
 	result := C.G2_findPathExcludingByEntityID_V2_helper(C.longlong(entityID1), C.longlong(entityID2), C.int(maxDegree), excludedEntitiesForC, C.longlong(flags))
-	response = C.GoString(result.response)
-	C.free(unsafe.Pointer(result.response))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4026, entityID1, entityID2, maxDegree, excludedEntities, flags, result.returnCode, time.Since(entryTime))
 	}
+	response = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -1451,11 +1453,11 @@ func (client *G2engine) FindPathExcludingByRecordID(ctx context.Context, dataSou
 	excludedRecordsForC := C.CString(excludedRecords)
 	defer C.free(unsafe.Pointer(excludedRecordsForC))
 	result := C.G2_findPathExcludingByRecordID_helper(dataSource1CodeForC, recordID1ForC, dataSource2CodeForC, recordID2ForC, C.int(maxDegree), excludedRecordsForC)
-	response = C.GoString(result.response)
-	C.free(unsafe.Pointer(result.response))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4027, dataSourceCode1, recordID1, dataSourceCode2, recordID2, maxDegree, excludedRecords, result.returnCode, time.Since(entryTime))
 	}
+	response = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -1519,11 +1521,11 @@ func (client *G2engine) FindPathExcludingByRecordID_V2(ctx context.Context, data
 	excludedRecordsForC := C.CString(excludedRecords)
 	defer C.free(unsafe.Pointer(excludedRecordsForC))
 	result := C.G2_findPathExcludingByRecordID_V2_helper(dataSource1CodeForC, recordID1ForC, dataSource2CodeForC, recordID2ForC, C.int(maxDegree), excludedRecordsForC, C.longlong(flags))
-	response = C.GoString(result.response)
-	C.free(unsafe.Pointer(result.response))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4028, dataSourceCode1, recordID1, dataSourceCode2, recordID2, maxDegree, excludedRecords, flags, result.returnCode, time.Since(entryTime))
 	}
+	response = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -1575,11 +1577,11 @@ func (client *G2engine) FindPathIncludingSourceByEntityID(ctx context.Context, e
 	requiredDsrcsForC := C.CString(requiredDsrcs)
 	defer C.free(unsafe.Pointer(requiredDsrcsForC))
 	result := C.G2_findPathIncludingSourceByEntityID_helper(C.longlong(entityID1), C.longlong(entityID2), C.int(maxDegree), excludedEntitiesForC, requiredDsrcsForC)
-	response = C.GoString(result.response)
-	C.free(unsafe.Pointer(result.response))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4029, entityID1, entityID2, maxDegree, excludedEntities, requiredDsrcs, result.returnCode, time.Since(entryTime))
 	}
+	response = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -1630,11 +1632,11 @@ func (client *G2engine) FindPathIncludingSourceByEntityID_V2(ctx context.Context
 	requiredDsrcsForC := C.CString(requiredDsrcs)
 	defer C.free(unsafe.Pointer(requiredDsrcsForC))
 	result := C.G2_findPathIncludingSourceByEntityID_V2_helper(C.longlong(entityID1), C.longlong(entityID2), C.int(maxDegree), excludedEntitiesForC, requiredDsrcsForC, C.longlong(flags))
-	response = C.GoString(result.response)
-	C.free(unsafe.Pointer(result.response))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4030, entityID1, entityID2, maxDegree, excludedEntities, requiredDsrcs, flags, result.returnCode, time.Since(entryTime))
 	}
+	response = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -1694,11 +1696,11 @@ func (client *G2engine) FindPathIncludingSourceByRecordID(ctx context.Context, d
 	requiredDsrcsForC := C.CString(requiredDsrcs)
 	defer C.free(unsafe.Pointer(requiredDsrcsForC))
 	result := C.G2_findPathIncludingSourceByRecordID_helper(dataSource1CodeForC, recordID1ForC, dataSource2CodeForC, recordID2ForC, C.int(maxDegree), excludedRecordsForC, requiredDsrcsForC)
-	response = C.GoString(result.response)
-	C.free(unsafe.Pointer(result.response))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4031, dataSourceCode1, recordID1, dataSourceCode2, recordID2, maxDegree, excludedRecords, requiredDsrcs, result.returnCode, time.Since(entryTime))
 	}
+	response = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -1761,11 +1763,11 @@ func (client *G2engine) FindPathIncludingSourceByRecordID_V2(ctx context.Context
 	requiredDsrcsForC := C.CString(requiredDsrcs)
 	defer C.free(unsafe.Pointer(requiredDsrcsForC))
 	result := C.G2_findPathIncludingSourceByRecordID_V2_helper(dataSource1CodeForC, recordID1ForC, dataSource2CodeForC, recordID2ForC, C.int(maxDegree), excludedRecordsForC, requiredDsrcsForC, C.longlong(flags))
-	response = C.GoString(result.response)
-	C.free(unsafe.Pointer(result.response))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4032, dataSourceCode1, recordID1, dataSourceCode2, recordID2, maxDegree, excludedRecords, requiredDsrcs, flags, result.returnCode, time.Since(entryTime))
 	}
+	response = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -1839,11 +1841,11 @@ func (client *G2engine) GetEntityByEntityID(ctx context.Context, entityID int64)
 		defer func() { client.traceExit(72, entityID, response, err, time.Since(entryTime)) }()
 	}
 	result := C.G2_getEntityByEntityID_helper(C.longlong(entityID))
-	response = C.GoString(result.response)
-	C.free(unsafe.Pointer(result.response))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4034, entityID, result.returnCode, time.Since(entryTime))
 	}
+	response = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -1880,11 +1882,11 @@ func (client *G2engine) GetEntityByEntityID_V2(ctx context.Context, entityID int
 		defer func() { client.traceExit(74, entityID, flags, response, err, time.Since(entryTime)) }()
 	}
 	result := C.G2_getEntityByEntityID_V2_helper(C.longlong(entityID), C.longlong(flags))
-	response = C.GoString(result.response)
-	C.free(unsafe.Pointer(result.response))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4035, entityID, flags, result.returnCode, time.Since(entryTime))
 	}
+	response = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -1925,11 +1927,11 @@ func (client *G2engine) GetEntityByRecordID(ctx context.Context, dataSourceCode 
 	recordIDForC := C.CString(recordID)
 	defer C.free(unsafe.Pointer(recordIDForC))
 	result := C.G2_getEntityByRecordID_helper(dataSourceCodeForC, recordIDForC)
-	response = C.GoString(result.response)
-	C.free(unsafe.Pointer(result.response))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4036, dataSourceCode, recordID, result.returnCode, time.Since(entryTime))
 	}
+	response = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -1972,11 +1974,11 @@ func (client *G2engine) GetEntityByRecordID_V2(ctx context.Context, dataSourceCo
 	recordIDForC := C.CString(recordID)
 	defer C.free(unsafe.Pointer(recordIDForC))
 	result := C.G2_getEntityByRecordID_V2_helper(dataSourceCodeForC, recordIDForC, C.longlong(flags))
-	response = C.GoString(result.response)
-	C.free(unsafe.Pointer(result.response))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4037, dataSourceCode, recordID, flags, result.returnCode, time.Since(entryTime))
 	}
+	response = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -2031,11 +2033,11 @@ func (client *G2engine) GetRecord(ctx context.Context, dataSourceCode string, re
 	recordIDForC := C.CString(recordID)
 	defer C.free(unsafe.Pointer(recordIDForC))
 	result := C.G2_getRecord_helper(dataSourceCodeForC, recordIDForC)
-	response = C.GoString(result.response)
-	C.free(unsafe.Pointer(result.response))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4039, dataSourceCode, recordID, result.returnCode, time.Since(entryTime))
 	}
+	response = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -2078,11 +2080,11 @@ func (client *G2engine) GetRecord_V2(ctx context.Context, dataSourceCode string,
 	recordIDForC := C.CString(recordID)
 	defer C.free(unsafe.Pointer(recordIDForC))
 	result := C.G2_getRecord_V2_helper(dataSourceCodeForC, recordIDForC, C.longlong(flags))
-	response = C.GoString(result.response)
-	C.free(unsafe.Pointer(result.response))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4040, dataSourceCode, recordID, flags, result.returnCode, time.Since(entryTime))
 	}
+	response = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -2118,11 +2120,11 @@ func (client *G2engine) GetRedoRecord(ctx context.Context) (string, error) {
 		defer func() { client.traceExit(88, response, err, time.Since(entryTime)) }()
 	}
 	result := C.G2_getRedoRecord_helper()
-	response = C.GoString(result.response)
-	C.free(unsafe.Pointer(result.response))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4041, result.returnCode, result, time.Since(entryTime))
 	}
+	response = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
@@ -2217,11 +2219,11 @@ func (client *G2engine) GetVirtualEntityByRecordID(ctx context.Context, recordLi
 	recordListForC := C.CString(recordList)
 	defer C.free(unsafe.Pointer(recordListForC))
 	result := C.G2_getVirtualEntityByRecordID_helper(recordListForC)
-	response = C.GoString(result.response)
-	C.free(unsafe.Pointer(result.response))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4043, recordList, result.returnCode, time.Since(entryTime))
 	}
+	response = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -2261,11 +2263,11 @@ func (client *G2engine) GetVirtualEntityByRecordID_V2(ctx context.Context, recor
 	recordListForC := C.CString(recordList)
 	defer C.free(unsafe.Pointer(recordListForC))
 	result := C.G2_getVirtualEntityByRecordID_V2_helper(recordListForC, C.longlong(flags))
-	response = C.GoString(result.response)
-	C.free(unsafe.Pointer(result.response))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4044, recordList, flags, result.returnCode, time.Since(entryTime))
 	}
+	response = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -2301,11 +2303,11 @@ func (client *G2engine) HowEntityByEntityID(ctx context.Context, entityID int64)
 		defer func() { client.traceExit(96, entityID, response, err, time.Since(entryTime)) }()
 	}
 	result := C.G2_howEntityByEntityID_helper(C.longlong(entityID))
-	response = C.GoString(result.response)
-	C.free(unsafe.Pointer(result.response))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4045, entityID, result.returnCode, time.Since(entryTime))
 	}
+	response = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -2342,11 +2344,11 @@ func (client *G2engine) HowEntityByEntityID_V2(ctx context.Context, entityID int
 		defer func() { client.traceExit(98, entityID, flags, response, err, time.Since(entryTime)) }()
 	}
 	result := C.G2_howEntityByEntityID_V2_helper(C.longlong(entityID), C.longlong(flags))
-	response = C.GoString(result.response)
-	C.free(unsafe.Pointer(result.response))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4046, entityID, flags, result.returnCode, time.Since(entryTime))
 	}
+	response = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -2529,11 +2531,11 @@ func (client *G2engine) ProcessRedoRecord(ctx context.Context) (string, error) {
 		defer func() { client.traceExit(108, response, err, time.Since(entryTime)) }()
 	}
 	result := C.G2_processRedoRecord_helper()
-	response = C.GoString(result.response)
-	C.free(unsafe.Pointer(result.response))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4051, result.returnCode, result, time.Since(entryTime))
 	}
+	response = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
@@ -2568,13 +2570,13 @@ func (client *G2engine) ProcessRedoRecordWithInfo(ctx context.Context, flags int
 		defer func() { client.traceExit(110, flags, response, withInfo, err, time.Since(entryTime)) }()
 	}
 	result := C.G2_processRedoRecordWithInfo_helper(C.longlong(flags))
+	if result.returnCode != 0 {
+		err = client.newError(ctx, 4052, flags, result.returnCode, result, time.Since(entryTime))
+	}
 	response = C.GoString(result.response)
 	withInfo = C.GoString(result.withInfo)
 	C.free(unsafe.Pointer(result.response))
 	C.free(unsafe.Pointer(result.withInfo))
-	if result.returnCode != 0 {
-		err = client.newError(ctx, 4052, flags, result.returnCode, result, time.Since(entryTime))
-	}
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
@@ -2610,11 +2612,11 @@ func (client *G2engine) ProcessWithInfo(ctx context.Context, record string, flag
 	recordForC := C.CString(record)
 	defer C.free(unsafe.Pointer(recordForC))
 	result := C.G2_processWithInfo_helper(recordForC, C.longlong(flags))
-	response = C.GoString(result.response)
-	C.free(unsafe.Pointer(result.response))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4053, record, flags, result.returnCode, time.Since(entryTime))
 	}
+	response = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
@@ -2649,11 +2651,11 @@ func (client *G2engine) ProcessWithResponse(ctx context.Context, record string) 
 	recordForC := C.CString(record)
 	defer C.free(unsafe.Pointer(recordForC))
 	result := C.G2_processWithResponse_helper(recordForC)
-	response = C.GoString(result.response)
-	C.free(unsafe.Pointer(result.response))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4054, record, result.returnCode, time.Since(entryTime))
 	}
+	response = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
@@ -2688,11 +2690,11 @@ func (client *G2engine) ProcessWithResponseResize(ctx context.Context, record st
 	recordForC := C.CString(record)
 	defer C.free(unsafe.Pointer(recordForC))
 	result := C.G2_processWithResponseResize_helper(recordForC)
-	response = C.GoString(result.response)
-	C.free(unsafe.Pointer(result.response))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4055, record, result.returnCode, time.Since(entryTime))
 	}
+	response = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
@@ -2793,11 +2795,11 @@ func (client *G2engine) ReevaluateEntityWithInfo(ctx context.Context, entityID i
 		defer func() { client.traceExit(122, entityID, flags, response, err, time.Since(entryTime)) }()
 	}
 	result := C.G2_reevaluateEntityWithInfo_helper(C.longlong(entityID), C.longlong(flags))
-	response = C.GoString(result.response)
-	C.free(unsafe.Pointer(result.response))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4058, entityID, flags, result.returnCode, time.Since(entryTime))
 	}
+	response = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -2878,11 +2880,11 @@ func (client *G2engine) ReevaluateRecordWithInfo(ctx context.Context, dataSource
 	recordIDForC := C.CString(recordID)
 	defer C.free(unsafe.Pointer(recordIDForC))
 	result := C.G2_reevaluateRecordWithInfo_helper(dataSourceCodeForC, recordIDForC, C.longlong(flags))
-	response = C.GoString(result.response)
-	C.free(unsafe.Pointer(result.response))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4060, dataSourceCode, recordID, flags, result.returnCode, time.Since(entryTime))
 	}
+	response = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -3040,11 +3042,11 @@ func (client *G2engine) ReplaceRecordWithInfo(ctx context.Context, dataSourceCod
 	loadIDForC := C.CString(loadID)
 	defer C.free(unsafe.Pointer(loadIDForC))
 	result := C.G2_replaceRecordWithInfo_helper(dataSourceCodeForC, recordIDForC, jsonDataForC, loadIDForC, C.longlong(flags))
-	response = C.GoString(result.response)
-	C.free(unsafe.Pointer(result.response))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4063, dataSourceCode, recordID, jsonData, loadID, flags, result.returnCode, time.Since(entryTime))
 	}
+	response = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -3084,11 +3086,11 @@ func (client *G2engine) SearchByAttributes(ctx context.Context, jsonData string)
 	jsonDataForC := C.CString(jsonData)
 	defer C.free(unsafe.Pointer(jsonDataForC))
 	result := C.G2_searchByAttributes_helper(jsonDataForC)
-	response = C.GoString(result.response)
-	C.free(unsafe.Pointer(result.response))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4064, jsonData, result.returnCode, time.Since(entryTime))
 	}
+	response = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
@@ -3125,11 +3127,11 @@ func (client *G2engine) SearchByAttributes_V2(ctx context.Context, jsonData stri
 	jsonDataForC := C.CString(jsonData)
 	defer C.free(unsafe.Pointer(jsonDataForC))
 	result := C.G2_searchByAttributes_V2_helper(jsonDataForC, C.longlong(flags))
-	response = C.GoString(result.response)
-	C.free(unsafe.Pointer(result.response))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4065, jsonData, flags, result.returnCode, time.Since(entryTime))
 	}
+	response = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
@@ -3205,11 +3207,11 @@ func (client *G2engine) Stats(ctx context.Context) (string, error) {
 		defer func() { client.traceExit(140, response, err, time.Since(entryTime)) }()
 	}
 	result := C.G2_stats_helper()
-	response = C.GoString(result.response)
-	C.free(unsafe.Pointer(result.response))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4066, result.returnCode, time.Since(entryTime))
 	}
+	response = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
@@ -3278,11 +3280,11 @@ func (client *G2engine) WhyEntities(ctx context.Context, entityID1 int64, entity
 		defer func() { client.traceExit(142, entityID1, entityID2, response, err, time.Since(entryTime)) }()
 	}
 	result := C.G2_whyEntities_helper(C.longlong(entityID1), C.longlong(entityID2))
-	response = C.GoString(result.response)
-	C.free(unsafe.Pointer(result.response))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4067, entityID1, entityID2, result.returnCode, time.Since(entryTime))
 	}
+	response = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -3324,11 +3326,11 @@ func (client *G2engine) WhyEntities_V2(ctx context.Context, entityID1 int64, ent
 		defer func() { client.traceExit(144, entityID1, entityID2, flags, response, err, time.Since(entryTime)) }()
 	}
 	result := C.G2_whyEntities_V2_helper(C.longlong(entityID1), C.longlong(entityID2), C.longlong(flags))
-	response = C.GoString(result.response)
-	C.free(unsafe.Pointer(result.response))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4068, entityID1, entityID2, flags, result.returnCode, time.Since(entryTime))
 	}
+	response = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -3366,11 +3368,11 @@ func (client *G2engine) WhyEntityByEntityID(ctx context.Context, entityID int64)
 		defer func() { client.traceExit(146, entityID, response, err, time.Since(entryTime)) }()
 	}
 	result := C.G2_whyEntityByEntityID_helper(C.longlong(entityID))
-	response = C.GoString(result.response)
-	C.free(unsafe.Pointer(result.response))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4069, entityID, result.returnCode, time.Since(entryTime))
 	}
+	response = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -3407,11 +3409,11 @@ func (client *G2engine) WhyEntityByEntityID_V2(ctx context.Context, entityID int
 		defer func() { client.traceExit(148, entityID, flags, response, err, time.Since(entryTime)) }()
 	}
 	result := C.G2_whyEntityByEntityID_V2_helper(C.longlong(entityID), C.longlong(flags))
-	response = C.GoString(result.response)
-	C.free(unsafe.Pointer(result.response))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4070, entityID, flags, result.returnCode, time.Since(entryTime))
 	}
+	response = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -3452,11 +3454,11 @@ func (client *G2engine) WhyEntityByRecordID(ctx context.Context, dataSourceCode 
 	recordIDForC := C.CString(recordID)
 	defer C.free(unsafe.Pointer(recordIDForC))
 	result := C.G2_whyEntityByRecordID_helper(dataSourceCodeForC, recordIDForC)
-	response = C.GoString(result.response)
-	C.free(unsafe.Pointer(result.response))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4071, dataSourceCode, recordID, result.returnCode, time.Since(entryTime))
 	}
+	response = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -3499,11 +3501,11 @@ func (client *G2engine) WhyEntityByRecordID_V2(ctx context.Context, dataSourceCo
 	recordIDForC := C.CString(recordID)
 	defer C.free(unsafe.Pointer(recordIDForC))
 	result := C.G2_whyEntityByRecordID_V2_helper(dataSourceCodeForC, recordIDForC, C.longlong(flags))
-	response = C.GoString(result.response)
-	C.free(unsafe.Pointer(result.response))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4072, dataSourceCode, recordID, flags, result.returnCode, time.Since(entryTime))
 	}
+	response = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -3554,11 +3556,11 @@ func (client *G2engine) WhyRecords(ctx context.Context, dataSourceCode1 string, 
 	recordID2ForC := C.CString(recordID2)
 	defer C.free(unsafe.Pointer(recordID2ForC))
 	result := C.G2_whyRecords_helper(dataSource1CodeForC, recordID1ForC, dataSource2CodeForC, recordID2ForC)
-	response = C.GoString(result.response)
-	C.free(unsafe.Pointer(result.response))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4073, dataSourceCode1, recordID1, dataSourceCode2, recordID2, result.returnCode, time.Since(entryTime))
 	}
+	response = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -3611,11 +3613,11 @@ func (client *G2engine) WhyRecords_V2(ctx context.Context, dataSourceCode1 strin
 	recordID2ForC := C.CString(recordID2)
 	defer C.free(unsafe.Pointer(recordID2ForC))
 	result := C.G2_whyRecords_V2_helper(dataSource1CodeForC, recordID1ForC, dataSource2CodeForC, recordID2ForC, C.longlong(flags))
-	response = C.GoString(result.response)
-	C.free(unsafe.Pointer(result.response))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4074, dataSourceCode1, recordID1, dataSourceCode2, recordID2, flags, result.returnCode, time.Since(entryTime))
 	}
+	response = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
