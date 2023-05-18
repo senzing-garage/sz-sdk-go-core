@@ -275,20 +275,20 @@ func (client *G2config) Create(ctx context.Context) (uintptr, error) {
 	}
 	entryTime := time.Now()
 	var err error = nil
+	var resultResponse uintptr
 	result := C.G2config_create_helper()
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4003, result.returnCode, time.Since(entryTime))
+		defer client.traceExit(8, resultResponse, err, time.Since(entryTime))
 	}
+	resultResponse = uintptr(result.response)
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8003, err, details)
 		}()
 	}
-	if client.isTrace {
-		defer client.traceExit(8, (uintptr)(result.response), err, time.Since(entryTime))
-	}
-	return (uintptr)(result.response), err
+	return resultResponse, err
 }
 
 /*

@@ -195,10 +195,10 @@ func (client *G2configmgr) AddConfig(ctx context.Context, configStr string, conf
 	defer runtime.UnlockOSThread()
 	var err error = nil
 	entryTime := time.Now()
-	var configID int64
+	var resultConfigID int64
 	if client.isTrace {
 		client.traceEntry(1, configStr, configComments)
-		defer client.traceExit(2, configStr, configComments, configID, err, time.Since(entryTime))
+		defer client.traceExit(2, configStr, configComments, resultConfigID, err, time.Since(entryTime))
 	}
 	configStrForC := C.CString(configStr)
 	defer C.free(unsafe.Pointer(configStrForC))
@@ -208,7 +208,7 @@ func (client *G2configmgr) AddConfig(ctx context.Context, configStr string, conf
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4001, configStr, configComments, result.returnCode, result, time.Since(entryTime))
 	}
-	configID = int64(C.longlong(result.configID))
+	resultConfigID = int64(C.longlong(result.configID))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -217,7 +217,7 @@ func (client *G2configmgr) AddConfig(ctx context.Context, configStr string, conf
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8001, err, details)
 		}()
 	}
-	return configID, err
+	return resultConfigID, err
 }
 
 /*
@@ -338,23 +338,23 @@ func (client *G2configmgr) GetDefaultConfigID(ctx context.Context) (int64, error
 	defer runtime.UnlockOSThread()
 	var err error = nil
 	entryTime := time.Now()
-	var configID int64
+	var resultConfigID int64
 	if client.isTrace {
 		client.traceEntry(11)
-		defer func() { client.traceExit(12, configID, err, time.Since(entryTime)) }()
+		defer func() { client.traceExit(12, resultConfigID, err, time.Since(entryTime)) }()
 	}
 	result := C.G2ConfigMgr_getDefaultConfigID_helper()
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4005, result.returnCode, result, time.Since(entryTime))
 	}
-	configID = int64(C.longlong(result.configID))
+	resultConfigID = int64(C.longlong(result.configID))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8005, err, details)
 		}()
 	}
-	return configID, err
+	return resultConfigID, err
 }
 
 /*
