@@ -47,21 +47,21 @@ func getTestObject(ctx context.Context, test *testing.T) g2api.G2product {
 }
 
 func getG2Product(ctx context.Context) g2api.G2product {
-	// if g2productSingleton == nil {
-	g2productSingleton = &G2product{}
-	g2productSingleton.SetLogLevel(ctx, logging.LevelInfoName)
-	log.SetFlags(0)
-	moduleName := "Test module name"
-	verboseLogging := 0
-	iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
-	if err != nil {
-		fmt.Println(err)
+	if g2productSingleton == nil {
+		g2productSingleton = &G2product{}
+		g2productSingleton.SetLogLevel(ctx, logging.LevelInfoName)
+		log.SetFlags(0)
+		moduleName := "Test module name"
+		verboseLogging := 0
+		iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
+		if err != nil {
+			fmt.Println(err)
+		}
+		err = g2productSingleton.Init(ctx, moduleName, iniParams, verboseLogging)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}
-	err = g2productSingleton.Init(ctx, moduleName, iniParams, verboseLogging)
-	if err != nil {
-		fmt.Println(err)
-	}
-	// }
 	return g2productSingleton
 }
 

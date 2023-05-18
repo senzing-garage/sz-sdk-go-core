@@ -76,29 +76,3 @@ struct G2Config_save_result G2Config_save_helper(uintptr_t configHandle)
     result.returnCode = returnCode;
     return result;
 }
-
-// == DEBUG ===================================================================
-
-// int G2config_close_helper_debug(uintptr_t configHandle)
-// {
-//     printf(">>>> Close >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
-//     printf(" configHandle: %lu\n", configHandle);
-//     printf("&configHandle: %p\n", &configHandle);
-//     fflush(stdout);
-//     printf("<<<< Close <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
-//     int returnCode = G2Config_close((void *)configHandle);
-//     return returnCode;
-// }
-
-// void *G2config_create_helper_debug()
-// {
-//     ConfigHandle configHandle;
-//     printf(">>>> Create >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
-//     fflush(stdout);
-//     int returnCode = G2Config_create(&configHandle);
-//     printf("Return  code: %i\n", returnCode);
-//     printf("configHandle: %p\n", configHandle);
-//     printf("<<<< Create <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
-//     fflush(stdout);
-//     return configHandle;
-// }
