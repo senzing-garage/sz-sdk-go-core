@@ -52,7 +52,7 @@ func createError(errorId int, err error) error {
 func getTestObject(ctx context.Context, test *testing.T) g2api.G2engine {
 	if g2engineSingleton == nil {
 		g2engineSingleton = &G2engine{}
-		g2engineSingleton.SetLogLevel(ctx, logging.LevelTraceName)
+		g2engineSingleton.SetLogLevel(ctx, logging.LevelInfoName)
 		log.SetFlags(0)
 		moduleName := "Test module name"
 		verboseLogging := 0
@@ -71,7 +71,7 @@ func getTestObject(ctx context.Context, test *testing.T) g2api.G2engine {
 func getG2Engine(ctx context.Context) g2api.G2engine {
 	if g2engineSingleton == nil {
 		g2engineSingleton = &G2engine{}
-		// g2engineSingleton.SetLogLevel(ctx, logger.LevelTrace)
+		g2engineSingleton.SetLogLevel(ctx, logging.LevelInfoName)
 		log.SetFlags(0)
 		moduleName := "Test module name"
 		verboseLogging := 0
