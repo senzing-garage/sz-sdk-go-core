@@ -709,27 +709,27 @@ func (client *G2engine) ExportCSVEntityReport(ctx context.Context, csvColumnList
 	//  _DLEXPORT int G2_exportCSVEntityReport(const char* csvColumnList, const long long flags, ExportHandle* responseHandle);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+	var err error = nil
+	entryTime := time.Now()
+	var resultExportHandle uintptr
 	if client.isTrace {
 		client.traceEntry(27, csvColumnList, flags)
+		defer func() { client.traceExit(28, csvColumnList, flags, resultExportHandle, err, time.Since(entryTime)) }()
 	}
-	entryTime := time.Now()
-	var err error = nil
 	csvColumnListForC := C.CString(csvColumnList)
 	defer C.free(unsafe.Pointer(csvColumnListForC))
 	result := C.G2_exportCSVEntityReport_helper(csvColumnListForC, C.longlong(flags))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4012, csvColumnList, flags, result.returnCode, result, time.Since(entryTime))
 	}
+	resultExportHandle = (uintptr)(result.exportHandle)
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8013, err, details)
 		}()
 	}
-	if client.isTrace {
-		defer client.traceExit(28, csvColumnList, flags, (uintptr)(result.exportHandle), err, time.Since(entryTime))
-	}
-	return (uintptr)(result.exportHandle), err
+	return resultExportHandle, err
 }
 
 /*
@@ -748,25 +748,25 @@ func (client *G2engine) ExportJSONEntityReport(ctx context.Context, flags int64)
 	//  _DLEXPORT int G2_exportJSONEntityReport(const long long flags, ExportHandle* responseHandle);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+	var err error = nil
+	entryTime := time.Now()
+	var resultExportHandle uintptr
 	if client.isTrace {
 		client.traceEntry(29, flags)
+		defer func() { client.traceExit(30, flags, resultExportHandle, err, time.Since(entryTime)) }()
 	}
-	entryTime := time.Now()
-	var err error = nil
 	result := C.G2_exportJSONEntityReport_helper(C.longlong(flags))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4013, flags, result.returnCode, result, time.Since(entryTime))
 	}
+	resultExportHandle = (uintptr)(result.exportHandle)
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8014, err, details)
 		}()
 	}
-	if client.isTrace {
-		defer client.traceExit(30, flags, (uintptr)(result.exportHandle), err, time.Since(entryTime))
-	}
-	return (uintptr)(result.exportHandle), err
+	return resultExportHandle, err
 }
 
 /*
@@ -785,25 +785,26 @@ func (client *G2engine) FetchNext(ctx context.Context, responseHandle uintptr) (
 	//  _DLEXPORT int G2_fetchNext(ExportHandle responseHandle, char *responseBuf, const size_t bufSize);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+	var err error = nil
+	entryTime := time.Now()
+	var resultResponse string
 	if client.isTrace {
 		client.traceEntry(31, responseHandle)
+		defer func() { client.traceExit(32, responseHandle, resultResponse, err, time.Since(entryTime)) }()
 	}
-	entryTime := time.Now()
-	var err error = nil
 	result := C.G2_fetchNext_helper(C.uintptr_t(responseHandle))
 	if result.returnCode < 0 {
 		err = client.newError(ctx, 4014, responseHandle, result.returnCode, result, time.Since(entryTime))
 	}
+	resultResponse = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8015, err, details)
 		}()
 	}
-	if client.isTrace {
-		defer client.traceExit(32, responseHandle, C.GoString(result.response), err, time.Since(entryTime))
-	}
-	return C.GoString(result.response), err
+	return resultResponse, err
 }
 
 /*
