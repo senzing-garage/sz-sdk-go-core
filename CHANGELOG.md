@@ -15,7 +15,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed in 0.1.11
 
 - Fixed go/CGO memory issues
-- Added `gosec` checking
 - Update dependencies
   - github.com/senzing/go-observing v0.2.5
 

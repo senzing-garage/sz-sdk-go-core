@@ -17,7 +17,7 @@ require (
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/senzing/go-messaging v0.2.1 // indirect
-	golang.org/x/exp v0.0.0-20230515195305-f3d0a9c9a5cc // indirect
+	golang.org/x/exp v0.0.0-20230519143937-03e91628a987 // indirect
 	golang.org/x/net v0.10.0 // indirect
 	golang.org/x/sys v0.8.0 // indirect
 	golang.org/x/text v0.9.0 // indirect
