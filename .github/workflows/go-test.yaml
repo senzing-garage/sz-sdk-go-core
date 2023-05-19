@@ -40,3 +40,7 @@ jobs:
       - run: mkdir /tmp/sqlite
       - run: cp testdata/sqlite/G2C.db /tmp/sqlite/G2C.db
       - run: go test -v -p 1 ./...
+      - name: Run Gosec Security Scanner
+        uses: securego/gosec@master
+        with:
+          args: -exclude=G103 ./...
