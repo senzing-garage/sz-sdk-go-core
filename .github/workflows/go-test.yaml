@@ -45,6 +45,7 @@ jobs:
       - run: cp testdata/sqlite/G2C.db /tmp/sqlite/G2C.db
       - run: go test -v -p 1 ./...
       - run: pwd
+      - run: cp /opt/senzing/g2/sdk/c/*.h .
       - name: Run Gosec Security Scanner
         uses: securego/gosec@master
         with:
