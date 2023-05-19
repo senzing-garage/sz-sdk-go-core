@@ -16,6 +16,7 @@ jobs:
     env:
       GO111MODULE: on
       LD_LIBRARY_PATH: /opt/senzing/g2/lib/
+      CGO_ENABLED: 1
     strategy:
       matrix:
         go: ["1.20"]
