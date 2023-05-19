@@ -10,9 +10,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 -
 
+## [0.1.11] - 2023-05-19
+
+### Changed in 0.1.11
+
+- Fixed go/CGO memory issues
+- Update dependencies
+  - github.com/senzing/go-observing v0.2.5
+
 ## [0.1.10] - 2023-05-11
 
-### Changed in 0.1.1
+### Changed in 0.1.10
 
 - Update dependencies
   - github.com/senzing/go-common v0.1.3

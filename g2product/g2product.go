@@ -300,22 +300,22 @@ func (client *G2product) License(ctx context.Context) (string, error) {
 	// _DLEXPORT char* G2Product_license();
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+	var err error = nil
+	entryTime := time.Now()
+	var resultResponse string
 	if client.isTrace {
 		client.traceEntry(11)
+		defer func() { client.traceExit(12, resultResponse, err, time.Since(entryTime)) }()
 	}
-	entryTime := time.Now()
-	var err error = nil
 	result := C.G2Product_license()
+	resultResponse = C.GoString(result)
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8003, err, details)
 		}()
 	}
-	if client.isTrace {
-		defer client.traceExit(12, C.GoString(result), err, time.Since(entryTime))
-	}
-	return C.GoString(result), err
+	return resultResponse, err
 }
 
 /*
@@ -366,7 +366,7 @@ func (client *G2product) SetLogLevel(ctx context.Context, logLevelName string) e
 	if !logging.IsValidLogLevelName(logLevelName) {
 		return fmt.Errorf("invalid error level: %s", logLevelName)
 	}
-	client.getLogger().SetLogLevel(logLevelName)
+	err = client.getLogger().SetLogLevel(logLevelName)
 	client.isTrace = (logLevelName == logging.LevelTraceName)
 	if client.observers != nil {
 		go func() {
@@ -437,27 +437,28 @@ func (client *G2product) ValidateLicenseFile(ctx context.Context, licenseFilePat
 	// _DLEXPORT int G2Product_validateLicenseFile(const char* licenseFilePath, char **errorBuf, size_t *errorBufSize, void *(*resizeFunc)(void *ptr,size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+	var err error = nil
+	entryTime := time.Now()
+	var resultResponse string
 	if client.isTrace {
 		client.traceEntry(15, licenseFilePath)
+		defer func() { client.traceExit(16, licenseFilePath, resultResponse, err, time.Since(entryTime)) }()
 	}
-	entryTime := time.Now()
-	var err error = nil
 	licenseFilePathForC := C.CString(licenseFilePath)
 	defer C.free(unsafe.Pointer(licenseFilePathForC))
 	result := C.G2Product_validateLicenseFile_helper(licenseFilePathForC)
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4004, licenseFilePath, result.returnCode, result, time.Since(entryTime))
 	}
+	resultResponse = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8004, err, details)
 		}()
 	}
-	if client.isTrace {
-		defer client.traceExit(16, licenseFilePath, C.GoString(result.response), err, time.Since(entryTime))
-	}
-	return C.GoString(result.response), err
+	return resultResponse, err
 }
 
 /*
@@ -477,27 +478,28 @@ func (client *G2product) ValidateLicenseStringBase64(ctx context.Context, licens
 	// _DLEXPORT int G2Product_validateLicenseStringBase64(const char* licenseString, char **errorBuf, size_t *errorBufSize, void *(*resizeFunc)(void *ptr,size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+	var err error = nil
+	entryTime := time.Now()
+	var resultResponse string
 	if client.isTrace {
 		client.traceEntry(17, licenseString)
+		defer func() { client.traceExit(18, licenseString, resultResponse, err, time.Since(entryTime)) }()
 	}
-	entryTime := time.Now()
-	var err error = nil
 	licenseStringForC := C.CString(licenseString)
 	defer C.free(unsafe.Pointer(licenseStringForC))
 	result := C.G2Product_validateLicenseStringBase64_helper(licenseStringForC)
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4005, licenseString, result.returnCode, result, time.Since(entryTime))
 	}
+	resultResponse = C.GoString(result.response)
+	C.free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8005, err, details)
 		}()
 	}
-	if client.isTrace {
-		defer client.traceExit(18, licenseString, C.GoString(result.response), err, time.Since(entryTime))
-	}
-	return C.GoString(result.response), err
+	return resultResponse, err
 }
 
 /*
@@ -514,20 +516,20 @@ func (client *G2product) Version(ctx context.Context) (string, error) {
 	// _DLEXPORT char* G2Product_license();
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+	var err error = nil
+	entryTime := time.Now()
+	var resultResponse string
 	if client.isTrace {
 		client.traceEntry(19)
+		defer func() { client.traceExit(20, resultResponse, err, time.Since(entryTime)) }()
 	}
-	entryTime := time.Now()
-	var err error = nil
 	result := C.G2Product_version()
+	resultResponse = C.GoString(result)
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8006, err, details)
 		}()
 	}
-	if client.isTrace {
-		defer client.traceExit(20, C.GoString(result), err, time.Since(entryTime))
-	}
-	return C.GoString(result), err
+	return resultResponse, err
 }

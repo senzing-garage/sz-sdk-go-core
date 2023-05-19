@@ -30,7 +30,7 @@ var (
 func getTestObject(ctx context.Context, test *testing.T) g2api.G2config {
 	if g2configSingleton == nil {
 		g2configSingleton = &G2config{}
-		g2configSingleton.SetLogLevel(ctx, logging.LevelTraceName)
+		g2configSingleton.SetLogLevel(ctx, logging.LevelInfoName)
 		log.SetFlags(0)
 		moduleName := "Test module name"
 		verboseLogging := 0
@@ -49,6 +49,8 @@ func getTestObject(ctx context.Context, test *testing.T) g2api.G2config {
 func getG2Config(ctx context.Context) g2api.G2config {
 	if g2configSingleton == nil {
 		g2configSingleton := &G2config{}
+		g2configSingleton.SetLogLevel(ctx, logging.LevelInfoName)
+		log.SetFlags(0)
 		moduleName := "Test module name"
 		verboseLogging := 0
 		iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")

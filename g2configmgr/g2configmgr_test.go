@@ -44,7 +44,7 @@ func createError(errorId int, err error) error {
 func getTestObject(ctx context.Context, test *testing.T) g2api.G2configmgr {
 	if g2configmgrSingleton == nil {
 		g2configmgrSingleton = &G2configmgr{}
-		g2configmgrSingleton.SetLogLevel(ctx, logging.LevelTraceName)
+		g2configmgrSingleton.SetLogLevel(ctx, logging.LevelInfoName)
 		log.SetFlags(0)
 		moduleName := "Test module name"
 		verboseLogging := 0
@@ -63,6 +63,8 @@ func getTestObject(ctx context.Context, test *testing.T) g2api.G2configmgr {
 func getG2Configmgr(ctx context.Context) g2api.G2configmgr {
 	if g2configmgrSingleton == nil {
 		g2configmgrSingleton := &G2configmgr{}
+		g2configmgrSingleton.SetLogLevel(ctx, logging.LevelInfoName)
+		log.SetFlags(0)
 		moduleName := "Test module name"
 		verboseLogging := 0
 		iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
