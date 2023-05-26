@@ -257,7 +257,7 @@ func (client *G2config) Close(ctx context.Context, configHandle uintptr) error {
 The Create method creates an in-memory Senzing configuration from the g2config.json
 template configuration file located in the PIPELINE.RESOURCEPATH path.
 A handle is returned to identify the in-memory configuration.
-The handle is used by the AddDataSource(), ListDataSources(), DeleteDataSource(), Load(), and Save() methods.
+The handle is used by the AddDataSource(), ListDataSources(), DeleteDataSource(), and Save() methods.
 The handle is terminated by the Close() method.
 
 Input
@@ -280,7 +280,6 @@ func (client *G2config) Create(ctx context.Context) (uintptr, error) {
 	result := C.G2config_create_helper()
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4003, result.returnCode, time.Since(entryTime))
-		defer client.traceExit(8, resultResponse, err, time.Since(entryTime))
 	}
 	resultResponse = uintptr(result.response)
 	if client.observers != nil {
@@ -483,29 +482,31 @@ Input
   - configHandle: An identifier of an in-memory configuration.
   - jsonConfig: A JSON document containing the Senzing configuration.
 */
-func (client *G2config) Load(ctx context.Context, configHandle uintptr, jsonConfig string) error {
+func (client *G2config) Load(ctx context.Context, jsonConfig string) (uintptr, error) {
 	// _DLEXPORT int G2Config_load(const char *jsonConfig,ConfigHandle* configHandle);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error = nil
 	entryTime := time.Now()
+	var resultResponse uintptr
 	if client.isTrace {
-		client.traceEntry(21, configHandle, jsonConfig)
-		defer func() { client.traceExit(22, configHandle, jsonConfig, err, time.Since(entryTime)) }()
+		client.traceEntry(21, jsonConfig)
+		defer func() { client.traceExit(22, jsonConfig, resultResponse, err, time.Since(entryTime)) }()
 	}
 	jsonConfigForC := C.CString(jsonConfig)
 	defer C.free(unsafe.Pointer(jsonConfigForC))
-	result := C.G2Config_load_helper(C.uintptr_t(configHandle), jsonConfigForC)
-	if result != 0 {
-		err = client.newError(ctx, 4009, configHandle, jsonConfig, result, time.Since(entryTime))
+	result := C.G2Config_load_helper(jsonConfigForC)
+	if result.returnCode != 0 {
+		err = client.newError(ctx, 4009, jsonConfig, result.returnCode, time.Since(entryTime))
 	}
+	resultResponse = uintptr(result.response)
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8008, err, details)
 		}()
 	}
-	return err
+	return resultResponse, err
 }
 
 /*

@@ -58,10 +58,14 @@ struct G2Config_listDataSources_result G2Config_listDataSources_helper(uintptr_t
     return result;
 }
 
-int G2Config_load_helper(uintptr_t configHandle, const char *inputJson)
+struct G2Config_load_result G2Config_load_helper(const char *inputJson)
 {
-    int returnCode = G2Config_load(inputJson, (void *)configHandle);
-    return returnCode;
+    ConfigHandle configHandle;
+    int returnCode = G2Config_load(inputJson, &configHandle);
+    struct G2Config_load_result result;
+    result.response = configHandle;
+    result.returnCode = returnCode;
+    return result;
 }
 
 struct G2Config_save_result G2Config_save_helper(uintptr_t configHandle)
