@@ -16,7 +16,7 @@ import (
 
 const (
 	defaultTruncation = 76
-	printResults      = true
+	printResults      = false
 )
 
 var (
