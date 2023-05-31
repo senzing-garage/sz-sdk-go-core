@@ -22,8 +22,8 @@ github.com/senzing/go-messaging v0.2.1 h1:sH4/Fn7aYiBPIP/pyjaqgGX4VcQNl6RSUW0Kat
 github.com/senzing/go-messaging v0.2.1/go.mod h1:rAdbka1k6dUuLN3lh+eih9MPCb3kui8FvA9cf19oOt4=
 github.com/senzing/go-observing v0.2.5 h1:QNcXOWIz4O9u/oEEqUiZ59L+oZPsyOA6kDzQAIYLbnA=
 github.com/senzing/go-observing v0.2.5/go.mod h1:sLweF5OysRAD65NLNm63o1IpOqN6VyXfgRDozc+pQy8=
-github.com/stretchr/testify v1.8.3 h1:RP3t2pwF7cMEbC1dqtB6poj3niw/9gnV4Cjg5oW5gtY=
-github.com/stretchr/testify v1.8.3/go.mod h1:sz/lmYIOXD/1dqDmKjjqLyZ2RngseejIcXlSw2iwfAo=
+github.com/stretchr/testify v1.8.4 h1:CcVxjf3Q8PM0mHUKJCdn+eZZtm5yQwehR5yeSVQQcUk=
+github.com/stretchr/testify v1.8.4/go.mod h1:sz/lmYIOXD/1dqDmKjjqLyZ2RngseejIcXlSw2iwfAo=
 golang.org/x/exp v0.0.0-20230522175609-2e198f4a06a1 h1:k/i9J1pBpvlfR+9QsetwPyERsqu1GIbi967PQMq3Ivc=
 golang.org/x/exp v0.0.0-20230522175609-2e198f4a06a1/go.mod h1:V1LtkGg67GoY2N1AnLN78QLrzxkLyJw7RJb1gzOOz9w=
 golang.org/x/net v0.10.0 h1:X2//UzNDwYmtCLn7To6G58Wr6f5ahEAQgKNzv9Y951M=
