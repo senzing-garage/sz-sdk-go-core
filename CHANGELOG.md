@@ -10,6 +10,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 -
 
+## [0.2.1] - 2023-06-16
+
+### Changed in 0.2.1
+
+- Update dependencies
+  - github.com/stretchr/testify v1.8.4
+  - google.golang.org/grpc v1.56.0
+
 ## [0.2.0] - 2023-05-26
 
 ### Changed in 0.2.0

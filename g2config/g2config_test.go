@@ -400,15 +400,15 @@ func ExampleG2config_Load() {
 	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2config/g2config_test.go
 	ctx := context.TODO()
 	g2config := getG2Config(ctx)
-	configHandle, err := g2config.Create(ctx)
+	mockConfigHandle, err := g2config.Create(ctx)
 	if err != nil {
 		fmt.Println(err)
 	}
-	jsonConfig, err := g2config.Save(ctx, configHandle)
+	jsonConfig, err := g2config.Save(ctx, mockConfigHandle)
 	if err != nil {
 		fmt.Println(err)
 	}
-	configHandle, err = g2config.Load(ctx, jsonConfig)
+	configHandle, err := g2config.Load(ctx, jsonConfig)
 	if err != nil {
 		fmt.Println(err)
 	}

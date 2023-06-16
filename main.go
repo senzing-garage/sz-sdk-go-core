@@ -294,13 +294,12 @@ func failOnError(msgId int, err error) {
 // ----------------------------------------------------------------------------
 
 func main() {
-	var err error = nil
 	ctx := context.TODO()
 
 	// Configure the "log" standard library.
 
 	log.SetFlags(0)
-	logger, err = getLogger(ctx)
+	logger, err := getLogger(ctx)
 	if err != nil {
 		failOnError(5000, err)
 	}
