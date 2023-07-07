@@ -29,7 +29,7 @@ const (
 var (
 	g2diagnosticSingleton g2api.G2diagnostic
 	g2configmgrSingleton  g2api.G2configmgr
-	localLogger           logging.LoggingInterface
+	logger                logging.LoggingInterface
 )
 
 // ----------------------------------------------------------------------------
@@ -37,7 +37,7 @@ var (
 // ----------------------------------------------------------------------------
 
 func createError(errorId int, err error) error {
-	return g2error.Cast(localLogger.NewError(errorId, err), err)
+	return g2error.Cast(logger.NewError(errorId, err), err)
 }
 
 func getTestObject(ctx context.Context, test *testing.T) g2api.G2diagnostic {
@@ -263,7 +263,7 @@ func setup() error {
 	ctx := context.TODO()
 	moduleName := "Test module name"
 	verboseLogging := 0
-	localLogger, err = logging.NewSenzingSdkLogger(ComponentId, g2diagnosticapi.IdMessages)
+	logger, err = logging.NewSenzingSdkLogger(ComponentId, g2diagnosticapi.IdMessages)
 	if err != nil {
 		return createError(5901, err)
 	}
