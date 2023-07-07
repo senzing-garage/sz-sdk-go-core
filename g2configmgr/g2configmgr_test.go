@@ -18,7 +18,6 @@ import (
 	"github.com/senzing/go-common/g2engineconfigurationjson"
 	"github.com/senzing/go-common/truthset"
 	"github.com/senzing/go-logging/logging"
-	"github.com/senzing/go-logging/messagelogger"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -30,7 +29,7 @@ const (
 var (
 	g2configmgrSingleton g2api.G2configmgr
 	g2configSingleton    g2api.G2config
-	localLogger          messagelogger.MessageLoggerInterface
+	logger               logging.LoggingInterface
 )
 
 // ----------------------------------------------------------------------------
@@ -38,7 +37,7 @@ var (
 // ----------------------------------------------------------------------------
 
 func createError(errorId int, err error) error {
-	return g2error.Cast(localLogger.Error(errorId, err), err)
+	return g2error.Cast(logger.NewError(errorId, err), err)
 }
 
 func getTestObject(ctx context.Context, test *testing.T) g2api.G2configmgr {
@@ -229,7 +228,7 @@ func setup() error {
 	ctx := context.TODO()
 	moduleName := "Test module name"
 	verboseLogging := 0
-	localLogger, err = messagelogger.NewSenzingApiLogger(ComponentId, g2configmgrapi.IdMessages, g2configmgrapi.IdStatuses, messagelogger.LevelInfo)
+	logger, err = logging.NewSenzingSdkLogger(ComponentId, g2configmgrapi.IdMessages)
 	if err != nil {
 		return createError(5901, err)
 	}
