@@ -34,7 +34,7 @@ func getTestObject(ctx context.Context, test *testing.T) g2api.G2config {
 		log.SetFlags(0)
 		moduleName := "Test module name"
 		verboseLogging := 0
-		iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
+		iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
 		if err != nil {
 			test.Logf("Cannot construct system configuration. Error: %v", err)
 		}
@@ -53,7 +53,7 @@ func getG2Config(ctx context.Context) g2api.G2config {
 		log.SetFlags(0)
 		moduleName := "Test module name"
 		verboseLogging := 0
-		iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
+		iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -114,8 +114,8 @@ func teardown() error {
 	return err
 }
 
-func TestBuildSimpleSystemConfigurationJson(test *testing.T) {
-	actual, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
+func TestBuildSimpleSystemConfigurationJsonUsingEnvVars(test *testing.T) {
+	actual, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
 	if err != nil {
 		test.Log("Error:", err.Error())
 		assert.FailNow(test, actual)
@@ -283,7 +283,7 @@ func TestG2config_Init(test *testing.T) {
 	g2config := getTestObject(ctx, test)
 	moduleName := "Test module name"
 	verboseLogging := 0
-	iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
+	iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
 	testError(test, ctx, g2config, err)
 	err = g2config.Init(ctx, moduleName, iniParams, verboseLogging)
 	testError(test, ctx, g2config, err)
@@ -448,7 +448,7 @@ func ExampleG2config_Init() {
 	ctx := context.TODO()
 	g2config := getG2Config(ctx)
 	moduleName := "Test module name"
-	iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
+	iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
 	if err != nil {
 		fmt.Println(err)
 	}

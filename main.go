@@ -58,7 +58,7 @@ func getG2config(ctx context.Context) (g2api.G2config, error) {
 	result := g2config.G2config{}
 	moduleName := "Test module name"
 	verboseLogging := 0 // 0 for no Senzing logging; 1 for logging
-	iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
+	iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
 	if err != nil {
 		return &result, err
 	}
@@ -70,7 +70,7 @@ func getG2configmgr(ctx context.Context) (g2api.G2configmgr, error) {
 	result := g2configmgr.G2configmgr{}
 	moduleName := "Test module name"
 	verboseLogging := 0
-	iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
+	iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
 	if err != nil {
 		return &result, err
 	}
@@ -82,7 +82,7 @@ func getG2diagnostic(ctx context.Context) (g2api.G2diagnostic, error) {
 	result := g2diagnostic.G2diagnostic{}
 	moduleName := "Test module name"
 	verboseLogging := 0
-	iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
+	iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
 	if err != nil {
 		return &result, err
 	}
@@ -94,7 +94,7 @@ func getG2engine(ctx context.Context) (g2api.G2engine, error) {
 	result := g2engine.G2engine{}
 	moduleName := "Test module name"
 	verboseLogging := 0
-	iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
+	iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
 	if err != nil {
 		return &result, err
 	}
@@ -106,7 +106,7 @@ func getG2product(ctx context.Context) (g2api.G2product, error) {
 	result := g2product.G2product{}
 	moduleName := "Test module name"
 	verboseLogging := 0
-	iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
+	iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
 	if err != nil {
 		return &result, err
 	}

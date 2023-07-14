@@ -47,7 +47,7 @@ func getTestObject(ctx context.Context, test *testing.T) g2api.G2configmgr {
 		log.SetFlags(0)
 		moduleName := "Test module name"
 		verboseLogging := 0
-		iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
+		iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
 		if err != nil {
 			test.Logf("Cannot construct system configuration. Error: %v", err)
 		}
@@ -66,7 +66,7 @@ func getG2Configmgr(ctx context.Context) g2api.G2configmgr {
 		log.SetFlags(0)
 		moduleName := "Test module name"
 		verboseLogging := 0
-		iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
+		iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -80,7 +80,7 @@ func getG2Config(ctx context.Context) g2api.G2config {
 		g2configSingleton = &g2config.G2config{}
 		moduleName := "Test module name"
 		verboseLogging := 0
-		iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
+		iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -233,7 +233,7 @@ func setup() error {
 		return createError(5901, err)
 	}
 
-	iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
+	iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
 	if err != nil {
 		return createError(5902, err)
 	}
@@ -259,8 +259,8 @@ func teardown() error {
 	return err
 }
 
-func TestBuildSimpleSystemConfigurationJson(test *testing.T) {
-	actual, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
+func TestBuildSimpleSystemConfigurationJsonUsingEnvVars(test *testing.T) {
+	actual, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
 	if err != nil {
 		test.Log("Error:", err.Error())
 		assert.FailNow(test, actual)
@@ -382,7 +382,7 @@ func TestG2configmgr_Init(test *testing.T) {
 	g2configmgr := getTestObject(ctx, test)
 	moduleName := "Test module name"
 	verboseLogging := 0
-	iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
+	iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
 	if err != nil {
 		test.Fatalf("Cannot construct system configuration: %v", err)
 	}
@@ -543,7 +543,7 @@ func ExampleG2configmgr_Init() {
 	ctx := context.TODO()
 	g2configmgr := &G2configmgr{}
 	moduleName := "Test module name"
-	iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("") // See https://pkg.go.dev/github.com/senzing/go-common
+	iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars() // See https://pkg.go.dev/github.com/senzing/go-common
 	if err != nil {
 		fmt.Println(err)
 	}
