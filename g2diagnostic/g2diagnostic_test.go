@@ -16,6 +16,7 @@ import (
 	g2diagnosticapi "github.com/senzing/g2-sdk-go/g2diagnostic"
 	"github.com/senzing/g2-sdk-go/g2error"
 	"github.com/senzing/go-common/g2engineconfigurationjson"
+	"github.com/senzing/go-common/jsonutil"
 	"github.com/senzing/go-common/truthset"
 	"github.com/senzing/go-logging/logging"
 	"github.com/stretchr/testify/assert"
@@ -709,9 +710,15 @@ func ExampleG2diagnostic_GetFeature() {
 	result, err := g2diagnostic.GetFeature(ctx, libFeatID)
 	if err != nil {
 		fmt.Println(err)
+		return
+	}
+	result, err = jsonutil.NormalizeAndSortJson(result)
+	if err != nil {
+		fmt.Println(err)
+		return
 	}
 	fmt.Println(result)
-	// Output: {"LIB_FEAT_ID":1,"FTYPE_CODE":"NAME","ELEMENTS":[{"FELEM_CODE":"TOKENIZED_NM","FELEM_VALUE":"ROBERT|SMITH"},{"FELEM_CODE":"CATEGORY","FELEM_VALUE":"PERSON"},{"FELEM_CODE":"CULTURE","FELEM_VALUE":"ANGLO"},{"FELEM_CODE":"GIVEN_NAME","FELEM_VALUE":"Robert"},{"FELEM_CODE":"SUR_NAME","FELEM_VALUE":"Smith"},{"FELEM_CODE":"FULL_NAME","FELEM_VALUE":"Robert Smith"}]}
+	// Output: {"ELEMENTS":[{"FELEM_CODE":"CATEGORY","FELEM_VALUE":"PERSON"},{"FELEM_CODE":"CULTURE","FELEM_VALUE":"ANGLO"},{"FELEM_CODE":"FULL_NAME","FELEM_VALUE":"Robert Smith"},{"FELEM_CODE":"GIVEN_NAME","FELEM_VALUE":"Robert"},{"FELEM_CODE":"SUR_NAME","FELEM_VALUE":"Smith"},{"FELEM_CODE":"TOKENIZED_NM","FELEM_VALUE":"ROBERT|SMITH"}],"FTYPE_CODE":"NAME","LIB_FEAT_ID":1}
 }
 
 func ExampleG2diagnostic_GetGenericFeatures() {

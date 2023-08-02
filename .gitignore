@@ -5,6 +5,9 @@
 *.so
 *.dylib
 
+# macOS artifacts
+.DS_STORE
+
 # Test binary, built with `go test -c`
 *.test
 
@@ -16,3 +19,6 @@
 
 .history/
 .vscode
+
+# VSCode
+*.code-workspace
