@@ -10,7 +10,7 @@ import (
 	truncator "github.com/aquilax/truncate"
 	"github.com/senzing/g2-sdk-go/g2api"
 	"github.com/senzing/go-common/g2engineconfigurationjson"
-	"github.com/senzing/go-common/jsonutil"
+	util "github.com/senzing/go-common/jsonutil"
 	"github.com/senzing/go-logging/logging"
 	"github.com/stretchr/testify/assert"
 )
@@ -249,12 +249,8 @@ func ExampleG2product_License() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	redactedJson, err := jsonutil.RedactJson(result, "customer", "contract", "issueDate", "licenseLevel", "billing", "licenseType", "expireDate", "recordLimit")
-	if err != nil {
-		fmt.Println(err)
-	} else {
-		fmt.Println(redactedJson)
-	}
+
+	fmt.Println(util.Flatten(util.RedactJson(result, "customer", "contract", "issueDate", "licenseLevel", "billing", "licenseType", "expireDate", "recordLimit")))
 	// Output: {"billing":null,"contract":null,"customer":null,"expireDate":null,"issueDate":null,"licenseLevel":null,"licenseType":null,"recordLimit":null}
 }
 
@@ -273,10 +269,10 @@ func ExampleG2product_ValidateLicenseFile() {
 	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2product/g2product_test.go
 	ctx := context.TODO()
 	g2product := getG2Product(ctx)
-	licenseFilePath := "testdata/senzing-license/g2.lic"
+	licenseFilePath := "../testdata/senzing-license/g2.lic"
 	result, err := g2product.ValidateLicenseFile(ctx, licenseFilePath)
 	if err != nil {
-		fmt.Println("Invalid license")
+		fmt.Println("Invalid license: " + err.Error())
 	} else {
 		fmt.Println(result)
 	}
