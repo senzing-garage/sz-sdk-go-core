@@ -16,7 +16,7 @@ jobs:
     env:
       GO111MODULE: on
       CGO_ENABLED: 1
-      PATH: $PATH:/Users/runner/work/g2-sdk-go-base/g2-sdk-go-base/bin
+      # PATH: $PATH:/Users/runner/work/g2-sdk-go-base/g2-sdk-go-base/bin
     strategy:
       matrix:
         go: ["1.20"]
@@ -39,4 +39,4 @@ jobs:
       - run: pwd
       - run: echo ${PATH}
       - name: Run go test
-        run: go test -exec macos_exec_dyld.sh -v -p 1 ./...
+        run: go test -exec bin/macos_exec_dyld.sh -v -p 1 ./...
