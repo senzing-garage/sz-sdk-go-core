@@ -16,7 +16,7 @@ jobs:
     env:
       GO111MODULE: on
       CGO_ENABLED: 1
-      PATH: /Users/runner/work/g2-sdk-go-base/g2-sdk-go-base/bin:$PATH
+      PATH: $PATH:/Users/runner/work/g2-sdk-go-base/g2-sdk-go-base/bin
     strategy:
       matrix:
         go: ["1.20"]
