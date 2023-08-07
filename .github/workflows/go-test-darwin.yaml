@@ -40,5 +40,11 @@ jobs:
         run: sudo mkdir -p /etc/opt/senzing && sudo cp testdata/senzing-license/g2.lic /etc/opt/senzing
       - name: Copy test database fies
         run: mkdir /tmp/sqlite && cp testdata/sqlite/G2C.db /tmp/sqlite/G2C.db
-      - name: Run go test
-        run: go test -exec /Users/runner/work/g2-sdk-go-base/g2-sdk-go-base/bin/macos_exec_dyld.sh -v -p 1 ./...
+      # - name: Run go test
+      #   run: go test -exec /Users/runner/work/g2-sdk-go-base/g2-sdk-go-base/bin/macos_exec_dyld.sh -v -p 1 ./...
+      - name: Run go test - main
+        run: go test -exec /Users/runner/work/g2-sdk-go-base/g2-sdk-go-base/bin/macos_exec_dyld.sh -v -p 1 ./.
+      - name: Run go test - main
+        run: go test -exec /Users/runner/work/g2-sdk-go-base/g2-sdk-go-base/bin/macos_exec_dyld.sh -v -p 1 ./g2config
+      - name: Run go test - main
+        run: go test -exec /Users/runner/work/g2-sdk-go-base/g2-sdk-go-base/bin/macos_exec_dyld.sh -v -p 1 ./g2configmgr
