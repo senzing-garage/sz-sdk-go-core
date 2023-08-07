@@ -21,8 +21,15 @@ GO_PACKAGE_NAME := $(shell echo $(GIT_REMOTE_URL) | sed -e 's|^git@github.com:|g
 BIN_DIRECTORY := $(MAKEFILE_DIRECTORY)/bin
 PATH := $(BIN_DIRECTORY):$(PATH)
 
-# Recursive assignment ('=')
+# set SQLite database variables
+SENZING_TOOLS_DATABASE_PATH=$(TARGET_DIRECTORY)/sqlite/G2C.db
+SENZING_TOOLS_DATABASE_URL ?= sqlite3://na:na@$(SENZING_TOOLS_DATABASE_PATH)
 
+# include platform-speciifc make variables and targets
+-include Makefile.$(OSTYPE)
+-include Makefile.$(OSTYPE)_$(OSARCH)
+
+# Recursive assignment ('=')
 CC = gcc
 
 # Export environment variables.
@@ -88,8 +95,4 @@ help:
 	@echo "Build $(PROGRAM_NAME) version $(BUILD_VERSION)-$(BUILD_ITERATION)".
 	@echo "All targets:"
 	@$(MAKE) -pRrq -f $(firstword $(MAKEFILE_LIST)) : 2>/dev/null | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | egrep -v -e '^[^[:alnum:]]' -e '^$@$$' | xargs
-
-# include platform-speciifc make variables and targets
--include Makefile.$(OSTYPE)
--include Makefile.$(OSTYPE)_$(OSARCH)
 

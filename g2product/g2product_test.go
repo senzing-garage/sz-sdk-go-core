@@ -250,7 +250,7 @@ func ExampleG2product_License() {
 		fmt.Println(err)
 	}
 
-	fmt.Println(util.Flatten(util.RedactJson(result, "customer", "contract", "issueDate", "licenseLevel", "billing", "licenseType", "expireDate", "recordLimit")))
+	fmt.Println(util.Flatten(util.Redact(result, "customer", "contract", "issueDate", "licenseLevel", "billing", "licenseType", "expireDate", "recordLimit")))
 	// Output: {"billing":null,"contract":null,"customer":null,"expireDate":null,"issueDate":null,"licenseLevel":null,"licenseType":null,"recordLimit":null}
 }
 

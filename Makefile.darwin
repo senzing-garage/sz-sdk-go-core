@@ -1,14 +1,11 @@
-SENZING_DIR ?= /Applications/Senzing.app/Contents/Resources/app/g2
+SENZING_DIR ?= /opt/senzing/g2
 SENZING_TOOLS_SENZING_DIRECTORY ?= $(SENZING_DIR)
 
 # Set LD_LIBRARY_PATH because it _can_ be inherited
 LD_LIBRARY_PATH := $(SENZING_TOOLS_SENZING_DIRECTORY)/lib:$(SENZING_TOOLS_SENZING_DIRECTORY)/lib/macos
-SENZING_TOOLS_DATABASE_PATH=/tmp/$(PROGRAM_NAME)/sqlite/G2C.db
 
 # Set the DYLD_LIBRARY_PATH to LD_LIBRARY_PATH (it cannot be inherited)
 DYLD_LIBRARY_PATH := $(LD_LIBRARY_PATH)
-
-SENZING_TOOLS_DATABASE_URL ?= sqlite3://na:na@$(SENZING_TOOLS_DATABASE_PATH)
 
 # -----------------------------------------------------------------------------
 # Test
