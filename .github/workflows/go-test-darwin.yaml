@@ -34,11 +34,11 @@ jobs:
         run: curl --output /tmp/senzingapi.dmg https://public-read-access.s3.amazonaws.com/staging/senzingapi.dmg
       - name: Attach .dmg
         run: hdiutil attach /tmp/senzingapi.dmg
-      - name: Copy files
-        run: sudo mkdir -p /opt/senzing/ && sudo cp -R /Volumes/SenzingAPI/senzing/g2 /opt/senzing
-      - run: sudo mkdir /etc/opt/senzing
-      - run: sudo cp testdata/senzing-license/g2.lic                         /etc/opt/senzing
-      - run: mkdir /tmp/sqlite
-      - run: cp testdata/sqlite/G2C.db /tmp/sqlite/G2C.db
+      - name: Copy SenzingApi files
+        run: sudo mkdir -p /opt/senzing/    && sudo cp -R /Volumes/SenzingAPI/senzing/g2 /opt/senzing
+      - name: Copy /etc files
+        run: sudo mkdir -p /etc/opt/senzing && sudo cp testdata/senzing-license/g2.lic /etc/opt/senzing
+      - name: Copy test database fies
+        run: mkdir /tmp/sqlite && cp testdata/sqlite/G2C.db /tmp/sqlite/G2C.db
       - name: Run go test
         run: go test -exec bin/macos_exec_dyld.sh -v -p 1 ./...
