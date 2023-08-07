@@ -1,9 +1,4 @@
-# Makefile extensions for linux.
-# Conditional assignment. ('?=')
-# Can be overridden with "export"
-# Example: "export LD_LIBRARY_PATH=/path/to/my/senzing/g2/lib"
-
-LD_LIBRARY_PATH ?= /opt/senzing/g2/lib
+# Makefile extensions for windows.
 
 # -----------------------------------------------------------------------------
 # Makefile targets supported by all platforms.
@@ -11,32 +6,28 @@ LD_LIBRARY_PATH ?= /opt/senzing/g2/lib
 
 .PHONY: hello-world
 hello-world:
-	@echo "Hello World, from linux."
+	@echo "Hello World, from windows."
 
 # -----------------------------------------------------------------------------
 # Build
 # -----------------------------------------------------------------------------
 
 .PHONY: build
-build: linux/amd64
+build: windows/amd64
+	@mv $(TARGET_DIRECTORY)/windows-amd64/$(PROGRAM_NAME) $(TARGET_DIRECTORY)/windows-amd64/$(PROGRAM_NAME).exe
 
 # -----------------------------------------------------------------------------
 # Test
 # -----------------------------------------------------------------------------
+
 .PHONY: test
-test: setup
+test:
 	@go test -v -p 1 ./...
-#	@go test -v ./.
-#	@go test -v ./g2config
-#	@go test -v ./g2configmgr
-#	@go test -v ./g2diagnostic
-#	@go test -v ./g2engine
-#	@go test -v ./g2product
 
 # -----------------------------------------------------------------------------
 # Makefile targets supported only by this platform.
 # -----------------------------------------------------------------------------
 
-.PHONY: only-linux
-only-linux:
-	@echo "Only linux has this Makefile target."
+.PHONY: only-windows
+only-windows:
+	@echo "Only windows has this Makefile target."

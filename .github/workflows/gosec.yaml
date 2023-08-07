@@ -1,0 +1,17 @@
+# Based on
+# - https://github.com/securego/gosec
+
+name: gosec.yaml
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+jobs:
+  gosec:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Reminder - gosec done in go-test-linux.yaml
+        run: echo "Reminder - gosec done in go-test-linux.yaml"
