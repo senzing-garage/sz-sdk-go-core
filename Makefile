@@ -1,7 +1,6 @@
 # Makefile for g2-sdk-go-base.
 
 # Detect the operating system and architecture
-
 include Makefile.osdetect
 
 # -----------------------------------------------------------------------------
@@ -28,21 +27,20 @@ GO_OSARCH = $(subst /, ,$@)
 GO_OS = $(word 1, $(GO_OSARCH))
 GO_ARCH = $(word 2, $(GO_OSARCH))
 
-# Recursive assignment ('=')
+# set SQLite database variables
+SENZING_TOOLS_DATABASE_PATH=$(TARGET_DIRECTORY)/sqlite/G2C.db
+SENZING_TOOLS_DATABASE_URL ?= sqlite3://na:na@$(SENZING_TOOLS_DATABASE_PATH)
 
+# Recursive assignment ('=')
 CC = gcc
 
-# Conditional assignment. ('?=')
-# Can be overridden with "export"
-# Example: "export LD_LIBRARY_PATH=/path/to/my/senzing/g2/lib"
-
-LD_LIBRARY_PATH ?= /opt/senzing/g2/lib
-SENZING_TOOLS_DATABASE_URL ?= sqlite3://na:na@/tmp/sqlite/G2C.db
-
 # Export environment variables.
-
 .EXPORT_ALL_VARIABLES:
 
+# -----------------------------------------------------------------------------
+# Optionally include platform-specific settings and targets.
+#  - Note: This is last because the "last one wins" when over-writing targets.
+# -----------------------------------------------------------------------------
 -include Makefile.$(OSTYPE)
 -include Makefile.$(OSTYPE)_$(OSARCH)
 
@@ -98,7 +96,11 @@ update-pkg-cache:
 	@GOPROXY=https://proxy.golang.org GO111MODULE=on \
 		go get $(GO_PACKAGE_NAME)@$(BUILD_TAG)
 
-
+.PHONY: setup
+setup: 
+	@mkdir -p $(shell dirname $(SENZING_TOOLS_DATABASE_PATH))
+	@if [ ! -f $(SENZING_TOOLS_DATABASE_PATH) ]; then cp testdata/sqlite/G2C.db $(SENZING_TOOLS_DATABASE_PATH); fi
+	
 .PHONY: clean
 clean:
 	@go clean -cache
@@ -107,10 +109,8 @@ clean:
 	@docker rmi --force $(DOCKER_IMAGE_NAME) $(DOCKER_BUILD_IMAGE_NAME) 2> /dev/null || true
 	@rm -rf $(TARGET_DIRECTORY) || true
 	@rm -f $(GOPATH)/bin/$(PROGRAM_NAME) || true
-	@rm -rf /tmp/sqlite
-	@mkdir  /tmp/sqlite
-	@cp testdata/sqlite/G2C.db /tmp/sqlite/G2C.db
-
+	@rm -rf $(shell dirname $(SENZING_TOOLS_DATABASE_PATH))
+	@rm -rf /tmp/$(PROGRAM_NAME)
 
 .PHONY: print-make-variables
 print-make-variables:
@@ -121,17 +121,8 @@ print-make-variables:
 # -----------------------------------------------------------------------------
 # Help
 # -----------------------------------------------------------------------------
-
 .PHONY: help
 help:
 	@echo "Build $(PROGRAM_NAME) version $(BUILD_VERSION)-$(BUILD_ITERATION)".
 	@echo "Makefile targets:"
 	@$(MAKE) -pRrq -f $(firstword $(MAKEFILE_LIST)) : 2>/dev/null | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | egrep -v -e '^[^[:alnum:]]' -e '^$@$$' | xargs
-
-# -----------------------------------------------------------------------------
-# Optionally include platform-specific settings and targets.
-#  - Note: This is last because the "last one wins" when over-writing targets.
-# -----------------------------------------------------------------------------
-
-# -include Makefile.$(OSTYPE)
-# -include Makefile.$(OSTYPE)_$(OSARCH)

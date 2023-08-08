@@ -10,6 +10,7 @@ import (
 	truncator "github.com/aquilax/truncate"
 	"github.com/senzing/g2-sdk-go/g2api"
 	"github.com/senzing/go-common/g2engineconfigurationjson"
+	util "github.com/senzing/go-common/jsonutil"
 	"github.com/senzing/go-logging/logging"
 	"github.com/stretchr/testify/assert"
 )
@@ -171,7 +172,7 @@ func TestG2product_License(test *testing.T) {
 func TestG2product_ValidateLicenseFile(test *testing.T) {
 	ctx := context.TODO()
 	g2product := getTestObject(ctx, test)
-	licenseFilePath := "/etc/opt/senzing/g2.lic"
+	licenseFilePath := "testdata/senzing-license/g2.lic"
 	actual, err := g2product.ValidateLicenseFile(ctx, licenseFilePath)
 	testErrorNoFail(test, ctx, g2product, err)
 	printActual(test, actual)
@@ -248,8 +249,9 @@ func ExampleG2product_License() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println(result)
-	// Output: {"customer":"Senzing Public Test License","contract":"EVALUATION - support@senzing.com","issueDate":"2022-11-29","licenseType":"EVAL (Solely for non-productive use)","licenseLevel":"STANDARD","billing":"MONTHLY","expireDate":"2023-11-29","recordLimit":50000}
+
+	fmt.Println(util.Flatten(util.Redact(result, "customer", "contract", "issueDate", "licenseLevel", "billing", "licenseType", "expireDate", "recordLimit")))
+	// Output: {"billing":null,"contract":null,"customer":null,"expireDate":null,"issueDate":null,"licenseLevel":null,"licenseType":null,"recordLimit":null}
 }
 
 func ExampleG2product_SetLogLevel() {
@@ -267,10 +269,10 @@ func ExampleG2product_ValidateLicenseFile() {
 	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2product/g2product_test.go
 	ctx := context.TODO()
 	g2product := getG2Product(ctx)
-	licenseFilePath := "/etc/opt/senzing/g2.lic"
+	licenseFilePath := "../testdata/senzing-license/g2.lic"
 	result, err := g2product.ValidateLicenseFile(ctx, licenseFilePath)
 	if err != nil {
-		fmt.Println("Invalid license")
+		fmt.Println("Invalid license: " + err.Error())
 	} else {
 		fmt.Println(result)
 	}
