@@ -38,6 +38,10 @@ CC = gcc
 # Export environment variables.
 .EXPORT_ALL_VARIABLES:
 
+# -----------------------------------------------------------------------------
+# Optionally include platform-specific settings and targets.
+#  - Note: This is last because the "last one wins" when over-writing targets.
+# -----------------------------------------------------------------------------
 -include Makefile.$(OSTYPE)
 -include Makefile.$(OSTYPE)_$(OSARCH)
 
@@ -123,10 +127,3 @@ help:
 	@echo "Build $(PROGRAM_NAME) version $(BUILD_VERSION)-$(BUILD_ITERATION)".
 	@echo "Makefile targets:"
 	@$(MAKE) -pRrq -f $(firstword $(MAKEFILE_LIST)) : 2>/dev/null | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | egrep -v -e '^[^[:alnum:]]' -e '^$@$$' | xargs
-
-# -----------------------------------------------------------------------------
-# Optionally include platform-specific settings and targets.
-#  - Note: This is last because the "last one wins" when over-writing targets.
-# -----------------------------------------------------------------------------
-# -include Makefile.targets.$(OSTYPE)
-# -include Makefile.targets.$(OSTYPE)_$(OSARCH)
