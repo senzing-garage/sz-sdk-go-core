@@ -14,14 +14,11 @@
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
 
-# Target directory for intermediary and final build artifacts
-target/
-
 # Dependency directories (remove the comment below to include it)
 # vendor/
 
-.history/
-.vscode
+# Go workspace file
+go.work
 
-# VSCode
-*.code-workspace
+.history
+target/
