@@ -1,4 +1,9 @@
 # Makefile extensions for linux.
+# Conditional assignment. ('?=')
+# Can be overridden with "export"
+# Example: "export LD_LIBRARY_PATH=/path/to/my/senzing/g2/lib"
+
+LD_LIBRARY_PATH ?= /opt/senzing/g2/lib
 
 # -----------------------------------------------------------------------------
 # Variables
@@ -28,7 +33,6 @@ build: linux/amd64
 # -----------------------------------------------------------------------------
 # Test
 # -----------------------------------------------------------------------------
-
 .PHONY: test
 test: setup
 	@go test -v -p 1 ./...

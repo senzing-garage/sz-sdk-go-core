@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 	"strconv"
 	"testing"
 	"time"
@@ -16,8 +17,9 @@ import (
 	"github.com/senzing/g2-sdk-go/g2api"
 	g2engineapi "github.com/senzing/g2-sdk-go/g2engine"
 	"github.com/senzing/g2-sdk-go/g2error"
+	futil "github.com/senzing/go-common/fileutil"
 	"github.com/senzing/go-common/g2engineconfigurationjson"
-	util "github.com/senzing/go-common/jsonutil"
+	jutil "github.com/senzing/go-common/jsonutil"
 	"github.com/senzing/go-common/record"
 	"github.com/senzing/go-common/truthset"
 	"github.com/senzing/go-logging/logging"
@@ -28,6 +30,8 @@ const (
 	defaultTruncation = 76
 	loadId            = "G2Engine_test"
 	printResults      = false
+	moduleName        = "Engine Test Module"
+	verboseLogging    = 0
 )
 
 type GetEntityByRecordIDResponse struct {
@@ -37,7 +41,9 @@ type GetEntityByRecordIDResponse struct {
 }
 
 var (
-	g2engineSingleton g2api.G2engine
+	engineInitialized bool     = false
+	globalG2engine    G2engine = G2engine{}
+	senzingConfigId   int64    = 0
 	logger            logging.LoggingInterface
 )
 
@@ -50,38 +56,12 @@ func createError(errorId int, err error) error {
 }
 
 func getTestObject(ctx context.Context, test *testing.T) g2api.G2engine {
-	if g2engineSingleton == nil {
-		g2engineSingleton = &G2engine{}
-		g2engineSingleton.SetLogLevel(ctx, logging.LevelInfoName)
-		log.SetFlags(0)
-		moduleName := "Test module name"
-		verboseLogging := 0
-		iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
-		if err != nil {
-			test.Logf("Cannot construct system configuration. Error: %v", err)
-		}
-		err = g2engineSingleton.Init(ctx, moduleName, iniParams, verboseLogging)
-		if err != nil {
-			test.Logf("Cannot Init. Error: %v", err)
-		}
-	}
-	return g2engineSingleton
+	return &globalG2engine
 }
 
 func getG2Engine(ctx context.Context) g2api.G2engine {
-	if g2engineSingleton == nil {
-		g2engineSingleton = &G2engine{}
-		g2engineSingleton.SetLogLevel(ctx, logging.LevelInfoName)
-		log.SetFlags(0)
-		moduleName := "Test module name"
-		verboseLogging := 0
-		iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
-		if err != nil {
-			fmt.Println(err)
-		}
-		g2engineSingleton.Init(ctx, moduleName, iniParams, verboseLogging)
-	}
-	return g2engineSingleton
+	return &globalG2engine
+
 }
 
 func getEntityIdForRecord(datasource string, id string) int64 {
@@ -128,6 +108,13 @@ func printActual(test *testing.T, actual interface{}) {
 	printResult(test, "Actual", actual)
 }
 
+func testErrorBasic(test *testing.T, err error) {
+	if err != nil {
+		test.Log("Error:", err.Error())
+		assert.FailNow(test, err.Error())
+	}
+}
+
 func testError(test *testing.T, ctx context.Context, g2engine g2api.G2engine, err error) {
 	if err != nil {
 		test.Log("Error:", err.Error())
@@ -139,6 +126,14 @@ func testErrorNoFail(test *testing.T, ctx context.Context, g2engine g2api.G2engi
 	if err != nil {
 		test.Log("Error:", err.Error())
 	}
+}
+
+func baseDirectoryPath() string {
+	return filepath.FromSlash("../target/test/g2engine")
+}
+
+func dbTemplatePath() string {
+	return filepath.FromSlash("../testdata/sqlite/G2C.db")
 }
 
 // ----------------------------------------------------------------------------
@@ -166,6 +161,81 @@ func TestMain(m *testing.M) {
 		fmt.Print(err)
 	}
 	os.Exit(code)
+}
+
+func setupDB(preserveDB bool) (string, bool, error) {
+	var err error = nil
+
+	// get the base directory
+	baseDir := baseDirectoryPath()
+
+	// get the template database file path
+	dbFilePath := dbTemplatePath()
+
+	dbFilePath, err = filepath.Abs(dbFilePath)
+	if err != nil {
+		err = fmt.Errorf("failed to obtain absolute path to database file (%s): %s",
+			dbFilePath, err.Error())
+		return "", false, err
+	}
+
+	// check the environment for a database URL
+	dbUrl, envUrlExists := os.LookupEnv("SENZING_TOOLS_DATABASE_URL")
+
+	dbTargetPath := filepath.Join(baseDirectoryPath(), "G2C.db")
+
+	dbTargetPath, err = filepath.Abs(dbTargetPath)
+	if err != nil {
+		err = fmt.Errorf("failed to make target database path (%s) absolute: %w",
+			dbTargetPath, err)
+		return "", false, err
+	}
+
+	dbDefaultUrl := fmt.Sprintf("sqlite3://na:na@%s", dbTargetPath)
+
+	dbExternal := envUrlExists && dbDefaultUrl != dbUrl
+
+	if !dbExternal {
+		// set the database URL
+		dbUrl = dbDefaultUrl
+
+		if !preserveDB {
+			// copy the SQLite database file
+			_, _, err := futil.CopyFile(dbFilePath, baseDir, true)
+
+			if err != nil {
+				err = fmt.Errorf("setup failed to copy template database (%v) to target path (%v): %w",
+					dbFilePath, baseDir, err)
+				// fall through to return the error
+			}
+		}
+	}
+
+	return dbUrl, dbExternal, err
+}
+
+func setupIniParams(dbUrl string) (string, error) {
+	configAttrMap := map[string]string{"databaseUrl": dbUrl}
+
+	iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingMap(configAttrMap)
+
+	if err != nil {
+		err = createError(5902, err)
+	}
+
+	return iniParams, err
+}
+
+func getIniParams() (string, error) {
+	dbUrl, _, err := setupDB(true)
+	if err != nil {
+		return "", err
+	}
+	iniParams, err := setupIniParams(dbUrl)
+	if err != nil {
+		return "", err
+	}
+	return iniParams, nil
 }
 
 func setupSenzingConfig(ctx context.Context, moduleName string, iniParams string, verboseLogging int) error {
@@ -201,6 +271,30 @@ func setupSenzingConfig(ctx context.Context, moduleName string, iniParams string
 		return createError(5910, err)
 	}
 
+	configHandle, err = aG2config.Create(ctx)
+	if err != nil {
+		return createError(5907, err)
+	}
+
+	datasourceNames = []string{"CUSTOMERS", "REFERENCE", "WATCHLIST", "EMPLOYEES"}
+	for _, datasourceName := range datasourceNames {
+		datasourceJson := fmt.Sprintf(`{"DSRC_CODE": "%v"}`, datasourceName)
+		_, err := aG2config.AddDataSource(ctx, configHandle, datasourceJson)
+		if err != nil {
+			return createError(5908, err)
+		}
+	}
+
+	altConfigStr, err := aG2config.Save(ctx, configHandle)
+	if err != nil {
+		return createError(5909, err)
+	}
+
+	err = aG2config.Close(ctx, configHandle)
+	if err != nil {
+		return createError(5910, err)
+	}
+
 	err = aG2config.Destroy(ctx)
 	if err != nil {
 		return createError(5911, err)
@@ -214,86 +308,151 @@ func setupSenzingConfig(ctx context.Context, moduleName string, iniParams string
 		return createError(5912, err)
 	}
 
-	configComments := fmt.Sprintf("Created by g2diagnostic_test at %s", now.UTC())
+	configComments := fmt.Sprintf("Created by g2engine_test at %s", now.UTC())
 	configID, err := aG2configmgr.AddConfig(ctx, configStr, configComments)
 	if err != nil {
 		return createError(5913, err)
 	}
+
+	senzingConfigId = configID
 
 	err = aG2configmgr.SetDefaultConfigID(ctx, configID)
 	if err != nil {
 		return createError(5914, err)
 	}
 
+	configComments = fmt.Sprintf("Alternate config created by g2engine_test at %s", now.UTC())
+	configID, err = aG2configmgr.AddConfig(ctx, altConfigStr, configComments)
+	if err != nil {
+		return createError(5913, err)
+	}
+
 	err = aG2configmgr.Destroy(ctx)
 	if err != nil {
 		return createError(5915, err)
 	}
+
 	return err
 }
 
-func setupPurgeRepository(ctx context.Context, moduleName string, iniParams string, verboseLogging int) error {
-	aG2engine := &G2engine{}
-	err := aG2engine.Init(ctx, moduleName, iniParams, verboseLogging)
+func setupG2engine(ctx context.Context, moduleName string, iniParams string, verboseLogging int, purge bool) error {
+	if engineInitialized {
+		return fmt.Errorf("G2engine is already setup and has not been torn down.")
+	}
+	globalG2engine.SetLogLevel(ctx, logging.LevelInfoName)
+	log.SetFlags(0)
+
+	err := globalG2engine.Init(ctx, moduleName, iniParams, verboseLogging)
 	if err != nil {
 		return createError(5903, err)
 	}
 
-	err = aG2engine.PurgeRepository(ctx)
+	// in case of an external database (e.g.: PostgreSQL) we need to purge since the database
+	// may be shared across test suites -- this is not ideal since tests are not isolated.
+	// todo: look for a way to use external databases while still isolating tests
+	if purge {
+		err = globalG2engine.PurgeRepository(ctx)
+		if err != nil {
+			// if an error occurred on purge make sure to destroy the engine
+			defer globalG2engine.Destroy(ctx)
+			return createError(5904, err)
+		}
+	}
+	engineInitialized = true
+	return err // should be nil if we get here
+}
+
+func restoreG2engine(ctx context.Context) error {
+	iniParams, err := getIniParams()
 	if err != nil {
-		return createError(5904, err)
+		return err
 	}
 
-	err = aG2engine.Destroy(ctx)
+	err = setupG2engine(ctx, moduleName, iniParams, verboseLogging, false)
 	if err != nil {
-		return createError(5905, err)
+		return err
 	}
-	return err
+
+	return nil
+}
+
+func teardownG2engine(ctx context.Context) error {
+	// check if not initialized
+	if !engineInitialized {
+		return nil
+	}
+
+	// destroy the engine
+	err := globalG2engine.Destroy(ctx)
+	if err != nil {
+		return err
+	}
+	engineInitialized = false
+
+	return nil
 }
 
 func setup() error {
 	var err error = nil
 	ctx := context.TODO()
-	moduleName := "Test module name"
-	verboseLogging := 0
 	logger, err = logging.NewSenzingSdkLogger(ComponentId, g2engineapi.IdMessages)
 	if err != nil {
 		return createError(5901, err)
 	}
 
-	iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
+	baseDir := baseDirectoryPath()
+	err = os.RemoveAll(filepath.Clean(baseDir)) // cleanup any previous test run
 	if err != nil {
-		return createError(5902, err)
+		return fmt.Errorf("Failed to remove target test directory (%v): %w", baseDir, err)
+	}
+	err = os.MkdirAll(filepath.Clean(baseDir), 0750) // recreate the test target directory
+	if err != nil {
+		return fmt.Errorf("Failed to recreate target test directory (%v): %w", baseDir, err)
+	}
+
+	// get the database URL and determine if external or a local file just created
+	dbUrl, dbPurge, err := setupDB(false)
+	if err != nil {
+		return err
+	}
+
+	// get the INI params
+	iniParams, err := setupIniParams(dbUrl)
+	if err != nil {
+		return err
 	}
 
 	// Add Data Sources to Senzing configuration.
-
 	err = setupSenzingConfig(ctx, moduleName, iniParams, verboseLogging)
 	if err != nil {
 		return createError(5920, err)
 	}
 
-	// Purge repository.
-
-	err = setupPurgeRepository(ctx, moduleName, iniParams, verboseLogging)
+	// setup the engine
+	err = setupG2engine(ctx, moduleName, iniParams, verboseLogging, dbPurge)
 	if err != nil {
-		return createError(5921, err)
+		return err
 	}
+
+	// preload records
+	custRecords := truthset.CustomerRecords
+	records := []record.Record{custRecords["1001"], custRecords["1002"], custRecords["1003"]}
+	for _, record := range records {
+		err = globalG2engine.AddRecord(ctx, record.DataSource, record.Id, record.Json, loadId)
+		if err != nil {
+			defer teardownG2engine(ctx)
+			return err
+		}
+	}
+
+	// setup complete
 	return err
 }
 
 func teardown() error {
-	var err error = nil
+	ctx := context.TODO()
+	err := teardownG2engine(ctx)
 	return err
-}
-
-func TestBuildSimpleSystemConfigurationJsonUsingEnvVars(test *testing.T) {
-	actual, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
-	if err != nil {
-		test.Log("Error:", err.Error())
-		assert.FailNow(test, actual)
-	}
-	printActual(test, actual)
 }
 
 // ----------------------------------------------------------------------------
@@ -319,57 +478,101 @@ func TestG2engine_GetObserverOrigin(test *testing.T) {
 func TestG2engine_AddRecord_G2Unrecoverable(test *testing.T) {
 	ctx := context.TODO()
 	g2engine := getTestObject(ctx, test)
-	record1 := truthset.CustomerRecords["1001"]
-	record2 := truthset.CustomerRecords["1002"]
-	record2Json := `{"DATA_SOURCE": "BOB", "RECORD_ID": "1002", "RECORD_TYPE": "PERSON", "PRIMARY_NAME_LAST": "Smith", "PRIMARY_NAME_FIRST": "Bob", "DATE_OF_BIRTH": "11/12/1978", "ADDR_TYPE": "HOME", "ADDR_LINE1": "1515 Adela Lane", "ADDR_CITY": "Las Vegas", "ADDR_STATE": "NV", "ADDR_POSTAL_CODE": "89111", "PHONE_TYPE": "MOBILE", "PHONE_NUMBER": "702-919-1300", "DATE": "3/10/17", "STATUS": "Inactive", "AMOUNT": "200"}`
-	err := g2engine.AddRecord(ctx, record1.DataSource, record1.Id, record1.Json, loadId)
+	record1, err := record.NewRecord(`{"DATA_SOURCE": "TEST", "RECORD_ID": "ADD_TEST_ERR_1", "NAME_FULL": "NOBODY NOMATCH"}`)
+	testErrorBasic(test, err)
+	record2, err := record.NewRecord(`{"DATA_SOURCE": "BOB", "RECORD_ID": "ADD_TEST_ERR_2", "NAME_FULL": "ERR BAD SOURCE"}`)
+	testErrorBasic(test, err)
+
+	// this one should succeed
+	err = g2engine.AddRecord(ctx, record1.DataSource, record1.Id, record1.Json, loadId)
 	testError(test, ctx, g2engine, err)
-	err = g2engine.AddRecord(ctx, record2.DataSource, record2.Id, record2Json, loadId)
+	defer g2engine.DeleteRecord(ctx, record1.DataSource, record1.Id, loadId)
+
+	// this one should fail
+	err = g2engine.AddRecord(ctx, "CUSTOMERS", record2.Id, record2.Json, loadId)
 	assert.True(test, g2error.Is(err, g2error.G2Unrecoverable))
+
+	// clean-up the records we inserted
+	err = g2engine.DeleteRecord(ctx, record1.DataSource, record1.Id, loadId)
+	testError(test, ctx, g2engine, err)
 }
 
 func TestG2engine_AddRecord(test *testing.T) {
 	ctx := context.TODO()
 	g2engine := getTestObject(ctx, test)
-	record1 := truthset.CustomerRecords["1001"]
-	record2 := truthset.CustomerRecords["1002"]
-	err := g2engine.AddRecord(ctx, record1.DataSource, record1.Id, record1.Json, loadId)
+	record1, err := record.NewRecord(`{"DATA_SOURCE": "TEST", "RECORD_ID": "ADD_TEST_1", "NAME_FULL": "JIMMITY UNKNOWN"}`)
+	testErrorBasic(test, err)
+
+	record2, err := record.NewRecord(`{"DATA_SOURCE": "TEST", "RECORD_ID": "ADD_TEST_2", "NAME_FULL": "SOMEBODY NOTFOUND"}`)
+	testErrorBasic(test, err)
+
+	err = g2engine.AddRecord(ctx, record1.DataSource, record1.Id, record1.Json, loadId)
 	testError(test, ctx, g2engine, err)
+	defer g2engine.DeleteRecord(ctx, record1.DataSource, record1.Id, loadId)
+
 	err = g2engine.AddRecord(ctx, record2.DataSource, record2.Id, record2.Json, loadId)
+	testError(test, ctx, g2engine, err)
+	defer g2engine.DeleteRecord(ctx, record2.DataSource, record2.Id, loadId)
+
+	// clean-up the records we inserted
+	err = g2engine.DeleteRecord(ctx, record1.DataSource, record1.Id, loadId)
+	testError(test, ctx, g2engine, err)
+
+	err = g2engine.DeleteRecord(ctx, record2.DataSource, record2.Id, loadId)
 	testError(test, ctx, g2engine, err)
 }
 
 func TestG2engine_AddRecordWithInfo(test *testing.T) {
 	ctx := context.TODO()
 	g2engine := getTestObject(ctx, test)
-	record := truthset.CustomerRecords["1003"]
+	record, err := record.NewRecord(`{"DATA_SOURCE": "TEST", "RECORD_ID": "WITH_INFO_1", "NAME_FULL": "HUBERT WITHINFO"}`)
+	testErrorBasic(test, err)
+
 	var flags int64 = 0
 	actual, err := g2engine.AddRecordWithInfo(ctx, record.DataSource, record.Id, record.Json, loadId, flags)
 	testError(test, ctx, g2engine, err)
+	defer g2engine.DeleteRecord(ctx, record.DataSource, record.Id, loadId)
 	printActual(test, actual)
+
+	err = g2engine.DeleteRecord(ctx, record.DataSource, record.Id, loadId)
+	testError(test, ctx, g2engine, err)
 }
 
 func TestG2engine_AddRecordWithInfoWithReturnedRecordID(test *testing.T) {
 	ctx := context.TODO()
 	g2engine := getTestObject(ctx, test)
-	//	record := truthset.TestRecordsWithoutRecordId[0]
-	var record_dsrc string = "TEST"
-	var record_json string = "{\"ADDR_LINE1\":\"123 Commerce Street, Las Vegas NV 89101\",\"ADDR_TYPE\":\"MAILING\",\"AMOUNT\":\"100\",\"DATE\":\"1/2/18\",\"DATE_OF_BIRTH\":\"12/11/1978\",\"EMAIL_ADDRESS\":\"bsmith@work.com\",\"PHONE_NUMBER\":\"702-919-1300\",\"PHONE_TYPE\":\"HOME\",\"PRIMARY_NAME_FIRST\":\"Robert\",\"PRIMARY_NAME_LAST\":\"Smith\",\"RECORD_TYPE\":\"PERSON\",\"STATUS\":\"Active\"}"
+	dataSource := "TEST"
+	recordJson := `{"DATA_SOURCE": "TEST", "NAME_FULL": "ELEANOR WITHINFO NORECORDID"}`
+
 	var flags int64 = 0
 	//	actual, actualRecordID, err := g2engine.AddRecordWithInfoWithReturnedRecordID(ctx, record.DataSource, record.Json, loadId, flags)
-	actual, actualRecordID, err := g2engine.AddRecordWithInfoWithReturnedRecordID(ctx, record_dsrc, record_json, loadId, flags)
+	actual, actualRecordID, err := g2engine.AddRecordWithInfoWithReturnedRecordID(ctx, dataSource, recordJson, loadId, flags)
 	testError(test, ctx, g2engine, err)
+	defer g2engine.DeleteRecord(ctx, dataSource, actualRecordID, loadId)
+
 	printResult(test, "Actual RecordID", actualRecordID)
 	printActual(test, actual)
+
+	err = g2engine.DeleteRecord(ctx, dataSource, actualRecordID, loadId)
+	testError(test, ctx, g2engine, err)
 }
 
 func TestG2engine_AddRecordWithReturnedRecordID(test *testing.T) {
 	ctx := context.TODO()
 	g2engine := getTestObject(ctx, test)
-	record := truthset.TestRecordsWithoutRecordId[1]
-	actual, err := g2engine.AddRecordWithReturnedRecordID(ctx, record.DataSource, record.Json, loadId)
+
+	dataSource := "TEST"
+	recordJson := `{"DATA_SOURCE": "TEST", "NAME_FULL": "GERALD WITHOUTID"}`
+
+	actual, err := g2engine.AddRecordWithReturnedRecordID(ctx, dataSource, recordJson, loadId)
 	testError(test, ctx, g2engine, err)
+
+	defer g2engine.DeleteRecord(ctx, dataSource, actual, loadId)
+
 	printActual(test, actual)
+
+	err = g2engine.DeleteRecord(ctx, dataSource, actual, loadId)
+	testError(test, ctx, g2engine, err)
 }
 
 func TestG2engine_CheckRecord(test *testing.T) {
@@ -1023,9 +1226,7 @@ func TestG2engine_WhyRecords_V2(test *testing.T) {
 func TestG2engine_Init(test *testing.T) {
 	ctx := context.TODO()
 	g2engine := getTestObject(ctx, test)
-	moduleName := "Test module name"
-	verboseLogging := 0 // 0 for no Senzing logging; 1 for logging
-	iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
+	iniParams, err := getIniParams()
 	testError(test, ctx, g2engine, err)
 	err = g2engine.Init(ctx, moduleName, iniParams, verboseLogging)
 	testError(test, ctx, g2engine, err)
@@ -1034,10 +1235,8 @@ func TestG2engine_Init(test *testing.T) {
 func TestG2engine_InitWithConfigID(test *testing.T) {
 	ctx := context.TODO()
 	g2engine := getTestObject(ctx, test)
-	moduleName := "Test module name"
-	var initConfigID int64 = 1
-	verboseLogging := 0 // 0 for no Senzing logging; 1 for logging
-	iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
+	var initConfigID int64 = senzingConfigId
+	iniParams, err := getIniParams()
 	testError(test, ctx, g2engine, err)
 	err = g2engine.InitWithConfigID(ctx, moduleName, iniParams, initConfigID, verboseLogging)
 	testError(test, ctx, g2engine, err)
@@ -1056,15 +1255,31 @@ func TestG2engine_Reinit(test *testing.T) {
 func TestG2engine_DeleteRecord(test *testing.T) {
 	ctx := context.TODO()
 	g2engine := getTestObject(ctx, test)
-	record := truthset.CustomerRecords["1003"]
-	err := g2engine.DeleteRecord(ctx, record.DataSource, record.Id, loadId)
+
+	// first create and add the record to be deleted
+	record, err := record.NewRecord(`{"DATA_SOURCE": "TEST", "RECORD_ID": "DELETE_TEST", "NAME_FULL": "GONNA B. DELETED"}`)
+	testError(test, ctx, g2engine, err)
+
+	err = g2engine.AddRecord(ctx, record.DataSource, record.Id, record.Json, loadId)
+	testError(test, ctx, g2engine, err)
+
+	// now delete the record
+	err = g2engine.DeleteRecord(ctx, record.DataSource, record.Id, loadId)
 	testError(test, ctx, g2engine, err)
 }
 
 func TestG2engine_DeleteRecordWithInfo(test *testing.T) {
 	ctx := context.TODO()
 	g2engine := getTestObject(ctx, test)
-	record := truthset.CustomerRecords["1003"]
+
+	// first create and add the record to be deleted
+	record, err := record.NewRecord(`{"DATA_SOURCE": "TEST", "RECORD_ID": "DELETE_TEST", "NAME_FULL": "DELETE W. INFO"}`)
+	testError(test, ctx, g2engine, err)
+
+	err = g2engine.AddRecord(ctx, record.DataSource, record.Id, record.Json, loadId)
+	testError(test, ctx, g2engine, err)
+
+	// now delete the record
 	var flags int64 = 0
 	actual, err := g2engine.DeleteRecordWithInfo(ctx, record.DataSource, record.Id, record.Json, flags)
 	testError(test, ctx, g2engine, err)
@@ -1076,7 +1291,8 @@ func TestG2engine_Destroy(test *testing.T) {
 	g2engine := getTestObject(ctx, test)
 	err := g2engine.Destroy(ctx)
 	testError(test, ctx, g2engine, err)
-	g2engineSingleton = nil
+	engineInitialized = false
+	restoreG2engine(ctx) // put everything back the way it was
 }
 
 // ----------------------------------------------------------------------------
@@ -1137,41 +1353,41 @@ func ExampleG2engine_AddRecordWithInfo() {
 	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
-	dataSourceCode := "CUSTOMERS"
-	recordID := "1003"
-	jsonData := `{"DATA_SOURCE": "CUSTOMERS", "RECORD_ID": "1003", "RECORD_TYPE": "PERSON", "PRIMARY_NAME_LAST": "Smith", "PRIMARY_NAME_FIRST": "Bob", "PRIMARY_NAME_MIDDLE": "J", "DATE_OF_BIRTH": "12/11/1978", "EMAIL_ADDRESS": "bsmith@work.com", "DATE": "4/9/16", "STATUS": "Inactive", "AMOUNT": "300"}`
+	dataSourceCode := "TEST"
+	recordID := "ABC123"
+	jsonData := `{"DATA_SOURCE": "TEST", "RECORD_ID": "ABC123", "NAME_FULL": "JOE SCHMOE", "DATE_OF_BIRTH": "12/11/1978", "EMAIL_ADDRESS": "joeschmoe@nowhere.com"}`
 	loadID := "G2Engine_test"
 	var flags int64 = 0
 	result, err := g2engine.AddRecordWithInfo(ctx, dataSourceCode, recordID, jsonData, loadID, flags)
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println(result)
-	// Output: {"DATA_SOURCE":"CUSTOMERS","RECORD_ID":"1003","AFFECTED_ENTITIES":[{"ENTITY_ID":1}],"INTERESTING_ENTITIES":{"ENTITIES":[]}}
+	fmt.Println(jutil.Flatten(jutil.Redact(result, "ENTITY_ID")))
+	// Output: {"AFFECTED_ENTITIES":[{"ENTITY_ID":null}],"DATA_SOURCE":"TEST","INTERESTING_ENTITIES":{"ENTITIES":[]},"RECORD_ID":"ABC123"}
 }
 
 func ExampleG2engine_AddRecordWithInfoWithReturnedRecordID() {
 	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
-	dataSourceCode := "CUSTOMERS"
-	jsonData := `{"DATA_SOURCE": "CUSTOMERS", "RECORD_TYPE": "PERSON", "PRIMARY_NAME_LAST": "Kellar", "PRIMARY_NAME_FIRST": "Candace", "ADDR_LINE1": "1824 AspenOak Way", "ADDR_CITY": "Elmwood Park", "ADDR_STATE": "CA", "ADDR_POSTAL_CODE": "95865", "EMAIL_ADDRESS": "info@ca-state.gov"}`
+	dataSourceCode := "TEST"
+	jsonData := `{"DATA_SOURCE": "TEST", "NAME_FULL": "SUSAN SOMEBODY", "EMAIL_ADDRESS": "somesusan@somewhere.com"}`
 	loadID := "G2Engine_test"
 	var flags int64 = 0
 	result, _, err := g2engine.AddRecordWithInfoWithReturnedRecordID(ctx, dataSourceCode, jsonData, loadID, flags)
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println(util.Flatten(util.Redact(result, "REORD_ID")))
-	// Output: {"AFFECTED_ENTITIES":[{"ENTITY_ID":100002}],"DATA_SOURCE":"CUSTOMERS","INTERESTING_ENTITIES":{"ENTITIES":[]},"RECORD_ID":"3C977F71ED07E89ECAB6E5E0C585E2BC1F3AE8EA"}
+	fmt.Println(jutil.Flatten(jutil.Redact(result, "ENTITY_ID", "RECORD_ID")))
+	// Output: {"AFFECTED_ENTITIES":[{"ENTITY_ID":null}],"DATA_SOURCE":"TEST","INTERESTING_ENTITIES":{"ENTITIES":[]},"RECORD_ID":null}
 }
 
 func ExampleG2engine_AddRecordWithReturnedRecordID() {
 	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
-	dataSourceCode := "CUSTOMERS"
-	jsonData := `{"DATA_SOURCE": "CUSTOMERS", "RECORD_TYPE": "PERSON", "PRIMARY_NAME_LAST": "Sanders", "PRIMARY_NAME_FIRST": "Sandy", "ADDR_LINE1": "1376 BlueBell Rd", "ADDR_CITY": "Sacramento", "ADDR_STATE": "CA", "ADDR_POSTAL_CODE": "95823", "EMAIL_ADDRESS": "info@ca-state.gov"}`
+	dataSourceCode := "TEST"
+	jsonData := `{"DATA_SOURCE": "TEST", "NAME_FULL": "JOHN DOEMAN", "EMAIL_ADDRESS": "jdoeman@anywhere.com"}`
 	loadID := "G2Engine_test"
 	result, err := g2engine.AddRecordWithReturnedRecordID(ctx, dataSourceCode, jsonData, loadID)
 	if err != nil {
@@ -1217,7 +1433,7 @@ func ExampleG2engine_CountRedoRecords() {
 		fmt.Println(err)
 	}
 	fmt.Println(result)
-	// Output: 1
+	// Output: 0
 }
 
 func ExampleG2engine_ExportCSVEntityReport() {
@@ -1326,8 +1542,8 @@ func ExampleG2engine_FindNetworkByEntityID() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println(truncate(result, 175))
-	// Output: {"ENTITY_PATHS":[],"ENTITIES":[{"RESOLVED_ENTITY":{"ENTITY_ID":1,"ENTITY_NAME":"Robert Smith","RECORD_SUMMARY":[{"DATA_SOURCE":"TEST","RECORD_COUNT":1,"FIRST_SEEN_DT":"2023...
+	fmt.Println(jutil.Flatten(jutil.NormalizeAndSort(jutil.Flatten(jutil.Redact(result, "FIRST_SEEN_DT", "LAST_SEEN_DT")))))
+	// Output: {"ENTITIES":[{"RELATED_ENTITIES":[],"RESOLVED_ENTITY":{"ENTITY_ID":1,"ENTITY_NAME":"Robert Smith","LAST_SEEN_DT":null,"RECORD_SUMMARY":[{"DATA_SOURCE":"CUSTOMERS","FIRST_SEEN_DT":null,"LAST_SEEN_DT":null,"RECORD_COUNT":3}]}}],"ENTITY_PATHS":[]}
 }
 
 func ExampleG2engine_FindNetworkByEntityID_V2() {
@@ -1359,8 +1575,8 @@ func ExampleG2engine_FindNetworkByRecordID() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println(truncate(result, 175))
-	// Output: {"ENTITY_PATHS":[],"ENTITIES":[{"RESOLVED_ENTITY":{"ENTITY_ID":1,"ENTITY_NAME":"Robert Smith","RECORD_SUMMARY":[{"DATA_SOURCE":"TEST","RECORD_COUNT":1,"FIRST_SEEN_DT":"2023...
+	fmt.Println(jutil.Flatten(jutil.NormalizeAndSort(jutil.Flatten(jutil.Redact(result, "FIRST_SEEN_DT", "LAST_SEEN_DT")))))
+	// Output: {"ENTITIES":[{"RELATED_ENTITIES":[],"RESOLVED_ENTITY":{"ENTITY_ID":1,"ENTITY_NAME":"Robert Smith","LAST_SEEN_DT":null,"RECORD_SUMMARY":[{"DATA_SOURCE":"CUSTOMERS","FIRST_SEEN_DT":null,"LAST_SEEN_DT":null,"RECORD_COUNT":3}]}}],"ENTITY_PATHS":[]}
 }
 
 func ExampleG2engine_FindNetworkByRecordID_V2() {
@@ -1668,7 +1884,7 @@ func ExampleG2engine_GetRecord() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println(util.Flatten(util.Normalize(result)))
+	fmt.Println(jutil.Flatten(jutil.Normalize(result)))
 	// Output: {"DATA_SOURCE":"CUSTOMERS","JSON_DATA":{"ADDR_LINE1":"123 Main Street, Las Vegas NV 89132","ADDR_TYPE":"MAILING","AMOUNT":"100","DATA_SOURCE":"CUSTOMERS","DATE":"1/2/18","DATE_OF_BIRTH":"12/11/1978","EMAIL_ADDRESS":"bsmith@work.com","PHONE_NUMBER":"702-919-1300","PHONE_TYPE":"HOME","PRIMARY_NAME_FIRST":"Robert","PRIMARY_NAME_LAST":"Smith","RECORD_ID":"1001","RECORD_TYPE":"PERSON","STATUS":"Active"},"RECORD_ID":"1001"}
 }
 
@@ -1683,7 +1899,7 @@ func ExampleG2engine_GetRecord_V2() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println(util.Flatten(util.Normalize(result)))
+	fmt.Println(jutil.Flatten(jutil.Normalize(result)))
 	// Output: {"DATA_SOURCE":"CUSTOMERS","RECORD_ID":"1001"}
 }
 
@@ -1696,7 +1912,7 @@ func ExampleG2engine_GetRedoRecord() {
 		fmt.Println(err)
 	}
 	fmt.Println(result)
-	// Output: {"REASON":"deferred delete","DATA_SOURCE":"CUSTOMERS","RECORD_ID":"1001","ENTITY_TYPE":"GENERIC","DSRC_ACTION":"X"}
+	// Output:
 }
 
 func ExampleG2engine_GetRepositoryLastModifiedTime() {
@@ -1747,8 +1963,8 @@ func ExampleG2engine_HowEntityByEntityID() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println(util.Flatten(util.NormalizeAndSort(util.Flatten(util.Redact(result, "RECORD_ID", "INBOUND_FEAT_USAGE_TYPE")))))
-	// Output: {"HOW_RESULTS":{"FINAL_STATE":{"NEED_REEVALUATION":0,"VIRTUAL_ENTITIES":[{"MEMBER_RECORDS":[{"INTERNAL_ID":1,"RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":null}]},{"INTERNAL_ID":100001,"RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":null}]},{"INTERNAL_ID":2,"RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":null}]},{"INTERNAL_ID":4,"RECORDS":[{"DATA_SOURCE":"TEST","RECORD_ID":null}]}],"VIRTUAL_ENTITY_ID":"V1-S3"}]},"RESOLUTION_STEPS":[{"INBOUND_VIRTUAL_ENTITY_ID":"V1-S1","MATCH_INFO":{"ERRULE_CODE":"SF1_SNAME_CFF_CSTAB","FEATURE_SCORES":{"ADDRESS":[{"CANDIDATE_FEAT":"123 Commerce Street, Las Vegas NV 89101","CANDIDATE_FEAT_ID":38,"CANDIDATE_FEAT_USAGE_TYPE":"MAILING","FULL_SCORE":30,"INBOUND_FEAT":"1515 Adela Lane Las Vegas NV 89111","INBOUND_FEAT_ID":20,"INBOUND_FEAT_USAGE_TYPE":null,"SCORE_BEHAVIOR":"FF","SCORE_BUCKET":"NO_CHANCE"},{"CANDIDATE_FEAT":"123 Commerce Street, Las Vegas NV 89101","CANDIDATE_FEAT_ID":38,"CANDIDATE_FEAT_USAGE_TYPE":"MAILING","FULL_SCORE":80,"INBOUND_FEAT":"123 Main Street, Las Vegas NV 89132","INBOUND_FEAT_ID":3,"INBOUND_FEAT_USAGE_TYPE":null,"SCORE_BEHAVIOR":"FF","SCORE_BUCKET":"LIKELY"}],"DOB":[{"CANDIDATE_FEAT":"12/11/1978","CANDIDATE_FEAT_ID":2,"CANDIDATE_FEAT_USAGE_TYPE":"","FULL_SCORE":100,"INBOUND_FEAT":"12/11/1978","INBOUND_FEAT_ID":2,"INBOUND_FEAT_USAGE_TYPE":null,"SCORE_BEHAVIOR":"FMES","SCORE_BUCKET":"SAME"}],"EMAIL":[{"CANDIDATE_FEAT":"bsmith@work.com","CANDIDATE_FEAT_ID":5,"CANDIDATE_FEAT_USAGE_TYPE":"","FULL_SCORE":100,"INBOUND_FEAT":"bsmith@work.com","INBOUND_FEAT_ID":5,"INBOUND_FEAT_USAGE_TYPE":null,"SCORE_BEHAVIOR":"F1","SCORE_BUCKET":"SAME"}],"NAME":[{"CANDIDATE_FEAT":"Robert Smith","CANDIDATE_FEAT_ID":1,"CANDIDATE_FEAT_USAGE_TYPE":"PRIMARY","GENERATION_MATCH":-1,"GNR_FN":100,"GNR_GN":100,"GNR_ON":-1,"GNR_SN":100,"INBOUND_FEAT":"Robert Smith","INBOUND_FEAT_ID":1,"INBOUND_FEAT_USAGE_TYPE":null,"SCORE_BEHAVIOR":"NAME","SCORE_BUCKET":"SAME"}],"PHONE":[{"CANDIDATE_FEAT":"702-919-1300","CANDIDATE_FEAT_ID":4,"CANDIDATE_FEAT_USAGE_TYPE":"HOME","FULL_SCORE":100,"INBOUND_FEAT":"702-919-1300","INBOUND_FEAT_ID":4,"INBOUND_FEAT_USAGE_TYPE":null,"SCORE_BEHAVIOR":"FF","SCORE_BUCKET":"SAME"}],"RECORD_TYPE":[{"CANDIDATE_FEAT":"PERSON","CANDIDATE_FEAT_ID":16,"CANDIDATE_FEAT_USAGE_TYPE":"","FULL_SCORE":100,"INBOUND_FEAT":"PERSON","INBOUND_FEAT_ID":16,"INBOUND_FEAT_USAGE_TYPE":null,"SCORE_BEHAVIOR":"FVME","SCORE_BUCKET":"SAME"}]},"MATCH_KEY":"+NAME+DOB+PHONE+EMAIL"},"RESULT_VIRTUAL_ENTITY_ID":"V1-S2","STEP":2,"VIRTUAL_ENTITY_1":{"MEMBER_RECORDS":[{"INTERNAL_ID":1,"RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":null}]},{"INTERNAL_ID":2,"RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":null}]}],"VIRTUAL_ENTITY_ID":"V1-S1"},"VIRTUAL_ENTITY_2":{"MEMBER_RECORDS":[{"INTERNAL_ID":4,"RECORDS":[{"DATA_SOURCE":"TEST","RECORD_ID":null}]}],"VIRTUAL_ENTITY_ID":"V4"}},{"INBOUND_VIRTUAL_ENTITY_ID":"V1-S2","MATCH_INFO":{"ERRULE_CODE":"SF1_PNAME_CSTAB","FEATURE_SCORES":{"DOB":[{"CANDIDATE_FEAT":"12/11/1978","CANDIDATE_FEAT_ID":2,"CANDIDATE_FEAT_USAGE_TYPE":"","FULL_SCORE":100,"INBOUND_FEAT":"12/11/1978","INBOUND_FEAT_ID":2,"INBOUND_FEAT_USAGE_TYPE":null,"SCORE_BEHAVIOR":"FMES","SCORE_BUCKET":"SAME"}],"EMAIL":[{"CANDIDATE_FEAT":"bsmith@work.com","CANDIDATE_FEAT_ID":5,"CANDIDATE_FEAT_USAGE_TYPE":"","FULL_SCORE":100,"INBOUND_FEAT":"bsmith@work.com","INBOUND_FEAT_ID":5,"INBOUND_FEAT_USAGE_TYPE":null,"SCORE_BEHAVIOR":"F1","SCORE_BUCKET":"SAME"}],"NAME":[{"CANDIDATE_FEAT":"Bob J Smith","CANDIDATE_FEAT_ID":32,"CANDIDATE_FEAT_USAGE_TYPE":"PRIMARY","GENERATION_MATCH":-1,"GNR_FN":90,"GNR_GN":88,"GNR_ON":-1,"GNR_SN":100,"INBOUND_FEAT":"Robert Smith","INBOUND_FEAT_ID":1,"INBOUND_FEAT_USAGE_TYPE":null,"SCORE_BEHAVIOR":"NAME","SCORE_BUCKET":"CLOSE"},{"CANDIDATE_FEAT":"Bob J Smith","CANDIDATE_FEAT_ID":32,"CANDIDATE_FEAT_USAGE_TYPE":"PRIMARY","GENERATION_MATCH":-1,"GNR_FN":93,"GNR_GN":93,"GNR_ON":-1,"GNR_SN":100,"INBOUND_FEAT":"Bob Smith","INBOUND_FEAT_ID":18,"INBOUND_FEAT_USAGE_TYPE":null,"SCORE_BEHAVIOR":"NAME","SCORE_BUCKET":"CLOSE"}],"RECORD_TYPE":[{"CANDIDATE_FEAT":"PERSON","CANDIDATE_FEAT_ID":16,"CANDIDATE_FEAT_USAGE_TYPE":"","FULL_SCORE":100,"INBOUND_FEAT":"PERSON","INBOUND_FEAT_ID":16,"INBOUND_FEAT_USAGE_TYPE":null,"SCORE_BEHAVIOR":"FVME","SCORE_BUCKET":"SAME"}]},"MATCH_KEY":"+NAME+DOB+EMAIL"},"RESULT_VIRTUAL_ENTITY_ID":"V1-S3","STEP":3,"VIRTUAL_ENTITY_1":{"MEMBER_RECORDS":[{"INTERNAL_ID":1,"RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":null}]},{"INTERNAL_ID":2,"RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":null}]},{"INTERNAL_ID":4,"RECORDS":[{"DATA_SOURCE":"TEST","RECORD_ID":null}]}],"VIRTUAL_ENTITY_ID":"V1-S2"},"VIRTUAL_ENTITY_2":{"MEMBER_RECORDS":[{"INTERNAL_ID":100001,"RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":null}]}],"VIRTUAL_ENTITY_ID":"V100001"}},{"INBOUND_VIRTUAL_ENTITY_ID":"V2","MATCH_INFO":{"ERRULE_CODE":"CNAME_CFF_CEXCL","FEATURE_SCORES":{"ADDRESS":[{"CANDIDATE_FEAT":"123 Main Street, Las Vegas NV 89132","CANDIDATE_FEAT_ID":3,"CANDIDATE_FEAT_USAGE_TYPE":"MAILING","FULL_SCORE":42,"INBOUND_FEAT":"1515 Adela Lane Las Vegas NV 89111","INBOUND_FEAT_ID":20,"INBOUND_FEAT_USAGE_TYPE":null,"SCORE_BEHAVIOR":"FF","SCORE_BUCKET":"NO_CHANCE"}],"DOB":[{"CANDIDATE_FEAT":"12/11/1978","CANDIDATE_FEAT_ID":2,"CANDIDATE_FEAT_USAGE_TYPE":"","FULL_SCORE":95,"INBOUND_FEAT":"11/12/1978","INBOUND_FEAT_ID":19,"INBOUND_FEAT_USAGE_TYPE":null,"SCORE_BEHAVIOR":"FMES","SCORE_BUCKET":"CLOSE"}],"NAME":[{"CANDIDATE_FEAT":"Robert Smith","CANDIDATE_FEAT_ID":1,"CANDIDATE_FEAT_USAGE_TYPE":"PRIMARY","GENERATION_MATCH":-1,"GNR_FN":97,"GNR_GN":95,"GNR_ON":-1,"GNR_SN":100,"INBOUND_FEAT":"Bob Smith","INBOUND_FEAT_ID":18,"INBOUND_FEAT_USAGE_TYPE":null,"SCORE_BEHAVIOR":"NAME","SCORE_BUCKET":"CLOSE"}],"PHONE":[{"CANDIDATE_FEAT":"702-919-1300","CANDIDATE_FEAT_ID":4,"CANDIDATE_FEAT_USAGE_TYPE":"HOME","FULL_SCORE":100,"INBOUND_FEAT":"702-919-1300","INBOUND_FEAT_ID":4,"INBOUND_FEAT_USAGE_TYPE":null,"SCORE_BEHAVIOR":"FF","SCORE_BUCKET":"SAME"}],"RECORD_TYPE":[{"CANDIDATE_FEAT":"PERSON","CANDIDATE_FEAT_ID":16,"CANDIDATE_FEAT_USAGE_TYPE":"","FULL_SCORE":100,"INBOUND_FEAT":"PERSON","INBOUND_FEAT_ID":16,"INBOUND_FEAT_USAGE_TYPE":null,"SCORE_BEHAVIOR":"FVME","SCORE_BUCKET":"SAME"}]},"MATCH_KEY":"+NAME+DOB+PHONE"},"RESULT_VIRTUAL_ENTITY_ID":"V1-S1","STEP":1,"VIRTUAL_ENTITY_1":{"MEMBER_RECORDS":[{"INTERNAL_ID":1,"RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":null}]}],"VIRTUAL_ENTITY_ID":"V1"},"VIRTUAL_ENTITY_2":{"MEMBER_RECORDS":[{"INTERNAL_ID":2,"RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":null}]}],"VIRTUAL_ENTITY_ID":"V2"}}]}}
+	fmt.Println(jutil.Flatten(jutil.NormalizeAndSort(jutil.Flatten(jutil.Redact(result, "RECORD_ID", "INBOUND_FEAT_USAGE_TYPE")))))
+	// Output: {"HOW_RESULTS":{"FINAL_STATE":{"NEED_REEVALUATION":0,"VIRTUAL_ENTITIES":[{"MEMBER_RECORDS":[{"INTERNAL_ID":1,"RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":null}]},{"INTERNAL_ID":2,"RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":null}]},{"INTERNAL_ID":3,"RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":null}]}],"VIRTUAL_ENTITY_ID":"V1-S2"}]},"RESOLUTION_STEPS":[{"INBOUND_VIRTUAL_ENTITY_ID":"V1-S1","MATCH_INFO":{"ERRULE_CODE":"SF1_PNAME_CSTAB","FEATURE_SCORES":{"DOB":[{"CANDIDATE_FEAT":"12/11/1978","CANDIDATE_FEAT_ID":2,"CANDIDATE_FEAT_USAGE_TYPE":"","FULL_SCORE":100,"INBOUND_FEAT":"12/11/1978","INBOUND_FEAT_ID":2,"INBOUND_FEAT_USAGE_TYPE":null,"SCORE_BEHAVIOR":"FMES","SCORE_BUCKET":"SAME"}],"EMAIL":[{"CANDIDATE_FEAT":"bsmith@work.com","CANDIDATE_FEAT_ID":5,"CANDIDATE_FEAT_USAGE_TYPE":"","FULL_SCORE":100,"INBOUND_FEAT":"bsmith@work.com","INBOUND_FEAT_ID":5,"INBOUND_FEAT_USAGE_TYPE":null,"SCORE_BEHAVIOR":"F1","SCORE_BUCKET":"SAME"}],"NAME":[{"CANDIDATE_FEAT":"Bob J Smith","CANDIDATE_FEAT_ID":32,"CANDIDATE_FEAT_USAGE_TYPE":"PRIMARY","GENERATION_MATCH":-1,"GNR_FN":90,"GNR_GN":88,"GNR_ON":-1,"GNR_SN":100,"INBOUND_FEAT":"Robert Smith","INBOUND_FEAT_ID":1,"INBOUND_FEAT_USAGE_TYPE":null,"SCORE_BEHAVIOR":"NAME","SCORE_BUCKET":"CLOSE"},{"CANDIDATE_FEAT":"Bob J Smith","CANDIDATE_FEAT_ID":32,"CANDIDATE_FEAT_USAGE_TYPE":"PRIMARY","GENERATION_MATCH":-1,"GNR_FN":93,"GNR_GN":93,"GNR_ON":-1,"GNR_SN":100,"INBOUND_FEAT":"Bob Smith","INBOUND_FEAT_ID":18,"INBOUND_FEAT_USAGE_TYPE":null,"SCORE_BEHAVIOR":"NAME","SCORE_BUCKET":"CLOSE"}],"RECORD_TYPE":[{"CANDIDATE_FEAT":"PERSON","CANDIDATE_FEAT_ID":16,"CANDIDATE_FEAT_USAGE_TYPE":"","FULL_SCORE":100,"INBOUND_FEAT":"PERSON","INBOUND_FEAT_ID":16,"INBOUND_FEAT_USAGE_TYPE":null,"SCORE_BEHAVIOR":"FVME","SCORE_BUCKET":"SAME"}]},"MATCH_KEY":"+NAME+DOB+EMAIL"},"RESULT_VIRTUAL_ENTITY_ID":"V1-S2","STEP":2,"VIRTUAL_ENTITY_1":{"MEMBER_RECORDS":[{"INTERNAL_ID":1,"RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":null}]},{"INTERNAL_ID":2,"RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":null}]}],"VIRTUAL_ENTITY_ID":"V1-S1"},"VIRTUAL_ENTITY_2":{"MEMBER_RECORDS":[{"INTERNAL_ID":3,"RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":null}]}],"VIRTUAL_ENTITY_ID":"V3"}},{"INBOUND_VIRTUAL_ENTITY_ID":"V2","MATCH_INFO":{"ERRULE_CODE":"CNAME_CFF_CEXCL","FEATURE_SCORES":{"ADDRESS":[{"CANDIDATE_FEAT":"123 Main Street, Las Vegas NV 89132","CANDIDATE_FEAT_ID":3,"CANDIDATE_FEAT_USAGE_TYPE":"MAILING","FULL_SCORE":42,"INBOUND_FEAT":"1515 Adela Lane Las Vegas NV 89111","INBOUND_FEAT_ID":20,"INBOUND_FEAT_USAGE_TYPE":null,"SCORE_BEHAVIOR":"FF","SCORE_BUCKET":"NO_CHANCE"}],"DOB":[{"CANDIDATE_FEAT":"12/11/1978","CANDIDATE_FEAT_ID":2,"CANDIDATE_FEAT_USAGE_TYPE":"","FULL_SCORE":95,"INBOUND_FEAT":"11/12/1978","INBOUND_FEAT_ID":19,"INBOUND_FEAT_USAGE_TYPE":null,"SCORE_BEHAVIOR":"FMES","SCORE_BUCKET":"CLOSE"}],"NAME":[{"CANDIDATE_FEAT":"Robert Smith","CANDIDATE_FEAT_ID":1,"CANDIDATE_FEAT_USAGE_TYPE":"PRIMARY","GENERATION_MATCH":-1,"GNR_FN":97,"GNR_GN":95,"GNR_ON":-1,"GNR_SN":100,"INBOUND_FEAT":"Bob Smith","INBOUND_FEAT_ID":18,"INBOUND_FEAT_USAGE_TYPE":null,"SCORE_BEHAVIOR":"NAME","SCORE_BUCKET":"CLOSE"}],"PHONE":[{"CANDIDATE_FEAT":"702-919-1300","CANDIDATE_FEAT_ID":4,"CANDIDATE_FEAT_USAGE_TYPE":"HOME","FULL_SCORE":100,"INBOUND_FEAT":"702-919-1300","INBOUND_FEAT_ID":4,"INBOUND_FEAT_USAGE_TYPE":null,"SCORE_BEHAVIOR":"FF","SCORE_BUCKET":"SAME"}],"RECORD_TYPE":[{"CANDIDATE_FEAT":"PERSON","CANDIDATE_FEAT_ID":16,"CANDIDATE_FEAT_USAGE_TYPE":"","FULL_SCORE":100,"INBOUND_FEAT":"PERSON","INBOUND_FEAT_ID":16,"INBOUND_FEAT_USAGE_TYPE":null,"SCORE_BEHAVIOR":"FVME","SCORE_BUCKET":"SAME"}]},"MATCH_KEY":"+NAME+DOB+PHONE"},"RESULT_VIRTUAL_ENTITY_ID":"V1-S1","STEP":1,"VIRTUAL_ENTITY_1":{"MEMBER_RECORDS":[{"INTERNAL_ID":1,"RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":null}]}],"VIRTUAL_ENTITY_ID":"V1"},"VIRTUAL_ENTITY_2":{"MEMBER_RECORDS":[{"INTERNAL_ID":2,"RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":null}]}],"VIRTUAL_ENTITY_ID":"V2"}}]}}
 }
 
 func ExampleG2engine_HowEntityByEntityID_V2() {
@@ -1761,8 +1977,8 @@ func ExampleG2engine_HowEntityByEntityID_V2() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println(util.Flatten(util.NormalizeAndSort(util.Flatten(util.Redact(result, "RECORD_ID")))))
-	// Output: {"HOW_RESULTS":{"FINAL_STATE":{"NEED_REEVALUATION":0,"VIRTUAL_ENTITIES":[{"MEMBER_RECORDS":[{"INTERNAL_ID":1,"RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":null}]},{"INTERNAL_ID":100001,"RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":null}]},{"INTERNAL_ID":2,"RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":null}]},{"INTERNAL_ID":4,"RECORDS":[{"DATA_SOURCE":"TEST","RECORD_ID":null}]}],"VIRTUAL_ENTITY_ID":"V1-S3"}]},"RESOLUTION_STEPS":[{"INBOUND_VIRTUAL_ENTITY_ID":"V1-S1","MATCH_INFO":{"ERRULE_CODE":"SF1_SNAME_CFF_CSTAB","MATCH_KEY":"+NAME+DOB+PHONE+EMAIL"},"RESULT_VIRTUAL_ENTITY_ID":"V1-S2","STEP":2,"VIRTUAL_ENTITY_1":{"MEMBER_RECORDS":[{"INTERNAL_ID":1,"RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":null}]},{"INTERNAL_ID":2,"RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":null}]}],"VIRTUAL_ENTITY_ID":"V1-S1"},"VIRTUAL_ENTITY_2":{"MEMBER_RECORDS":[{"INTERNAL_ID":4,"RECORDS":[{"DATA_SOURCE":"TEST","RECORD_ID":null}]}],"VIRTUAL_ENTITY_ID":"V4"}},{"INBOUND_VIRTUAL_ENTITY_ID":"V1-S2","MATCH_INFO":{"ERRULE_CODE":"SF1_PNAME_CSTAB","MATCH_KEY":"+NAME+DOB+EMAIL"},"RESULT_VIRTUAL_ENTITY_ID":"V1-S3","STEP":3,"VIRTUAL_ENTITY_1":{"MEMBER_RECORDS":[{"INTERNAL_ID":1,"RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":null}]},{"INTERNAL_ID":2,"RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":null}]},{"INTERNAL_ID":4,"RECORDS":[{"DATA_SOURCE":"TEST","RECORD_ID":null}]}],"VIRTUAL_ENTITY_ID":"V1-S2"},"VIRTUAL_ENTITY_2":{"MEMBER_RECORDS":[{"INTERNAL_ID":100001,"RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":null}]}],"VIRTUAL_ENTITY_ID":"V100001"}},{"INBOUND_VIRTUAL_ENTITY_ID":"V2","MATCH_INFO":{"ERRULE_CODE":"CNAME_CFF_CEXCL","MATCH_KEY":"+NAME+DOB+PHONE"},"RESULT_VIRTUAL_ENTITY_ID":"V1-S1","STEP":1,"VIRTUAL_ENTITY_1":{"MEMBER_RECORDS":[{"INTERNAL_ID":1,"RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":null}]}],"VIRTUAL_ENTITY_ID":"V1"},"VIRTUAL_ENTITY_2":{"MEMBER_RECORDS":[{"INTERNAL_ID":2,"RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":null}]}],"VIRTUAL_ENTITY_ID":"V2"}}]}}
+	fmt.Println(jutil.Flatten(jutil.NormalizeAndSort(jutil.Flatten(jutil.Redact(result, "RECORD_ID")))))
+	// Output: {"HOW_RESULTS":{"FINAL_STATE":{"NEED_REEVALUATION":0,"VIRTUAL_ENTITIES":[{"MEMBER_RECORDS":[{"INTERNAL_ID":1,"RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":null}]},{"INTERNAL_ID":2,"RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":null}]},{"INTERNAL_ID":3,"RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":null}]}],"VIRTUAL_ENTITY_ID":"V1-S2"}]},"RESOLUTION_STEPS":[{"INBOUND_VIRTUAL_ENTITY_ID":"V1-S1","MATCH_INFO":{"ERRULE_CODE":"SF1_PNAME_CSTAB","MATCH_KEY":"+NAME+DOB+EMAIL"},"RESULT_VIRTUAL_ENTITY_ID":"V1-S2","STEP":2,"VIRTUAL_ENTITY_1":{"MEMBER_RECORDS":[{"INTERNAL_ID":1,"RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":null}]},{"INTERNAL_ID":2,"RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":null}]}],"VIRTUAL_ENTITY_ID":"V1-S1"},"VIRTUAL_ENTITY_2":{"MEMBER_RECORDS":[{"INTERNAL_ID":3,"RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":null}]}],"VIRTUAL_ENTITY_ID":"V3"}},{"INBOUND_VIRTUAL_ENTITY_ID":"V2","MATCH_INFO":{"ERRULE_CODE":"CNAME_CFF_CEXCL","MATCH_KEY":"+NAME+DOB+PHONE"},"RESULT_VIRTUAL_ENTITY_ID":"V1-S1","STEP":1,"VIRTUAL_ENTITY_1":{"MEMBER_RECORDS":[{"INTERNAL_ID":1,"RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":null}]}],"VIRTUAL_ENTITY_ID":"V1"},"VIRTUAL_ENTITY_2":{"MEMBER_RECORDS":[{"INTERNAL_ID":2,"RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":null}]}],"VIRTUAL_ENTITY_ID":"V2"}}]}}
 }
 
 func ExampleG2engine_PrimeEngine() {
@@ -1785,8 +2001,8 @@ func ExampleG2engine_SearchByAttributes() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println(util.Flatten(util.Redact(util.Flatten(util.NormalizeAndSort(result)), "FIRST_SEEN_DT", "LAST_SEEN_DT")))
-	// Output: {"RESOLVED_ENTITIES":[{"ENTITY":{"RESOLVED_ENTITY":{"ENTITY_ID":1,"ENTITY_NAME":"Robert Smith","FEATURES":{"ADDRESS":[{"FEAT_DESC":"123 Commerce Street, Las Vegas NV 89101","FEAT_DESC_VALUES":[{"FEAT_DESC":"123 Commerce Street, Las Vegas NV 89101","LIB_FEAT_ID":38}],"LIB_FEAT_ID":38,"USAGE_TYPE":"MAILING"},{"FEAT_DESC":"123 Main Street, Las Vegas NV 89132","FEAT_DESC_VALUES":[{"FEAT_DESC":"123 Main Street, Las Vegas NV 89132","LIB_FEAT_ID":3}],"LIB_FEAT_ID":3,"USAGE_TYPE":"MAILING"},{"FEAT_DESC":"1515 Adela Lane Las Vegas NV 89111","FEAT_DESC_VALUES":[{"FEAT_DESC":"1515 Adela Lane Las Vegas NV 89111","LIB_FEAT_ID":20}],"LIB_FEAT_ID":20,"USAGE_TYPE":"HOME"}],"DOB":[{"FEAT_DESC":"12/11/1978","FEAT_DESC_VALUES":[{"FEAT_DESC":"11/12/1978","LIB_FEAT_ID":19},{"FEAT_DESC":"12/11/1978","LIB_FEAT_ID":2}],"LIB_FEAT_ID":2}],"EMAIL":[{"FEAT_DESC":"bsmith@work.com","FEAT_DESC_VALUES":[{"FEAT_DESC":"bsmith@work.com","LIB_FEAT_ID":5}],"LIB_FEAT_ID":5}],"NAME":[{"FEAT_DESC":"Robert Smith","FEAT_DESC_VALUES":[{"FEAT_DESC":"Bob J Smith","LIB_FEAT_ID":32},{"FEAT_DESC":"Bob Smith","LIB_FEAT_ID":18},{"FEAT_DESC":"Robert Smith","LIB_FEAT_ID":1}],"LIB_FEAT_ID":1,"USAGE_TYPE":"PRIMARY"}],"PHONE":[{"FEAT_DESC":"702-919-1300","FEAT_DESC_VALUES":[{"FEAT_DESC":"702-919-1300","LIB_FEAT_ID":4}],"LIB_FEAT_ID":4,"USAGE_TYPE":"HOME"},{"FEAT_DESC":"702-919-1300","FEAT_DESC_VALUES":[{"FEAT_DESC":"702-919-1300","LIB_FEAT_ID":4}],"LIB_FEAT_ID":4,"USAGE_TYPE":"MOBILE"}],"RECORD_TYPE":[{"FEAT_DESC":"PERSON","FEAT_DESC_VALUES":[{"FEAT_DESC":"PERSON","LIB_FEAT_ID":16}],"LIB_FEAT_ID":16}]},"LAST_SEEN_DT":null,"RECORD_SUMMARY":[{"DATA_SOURCE":"CUSTOMERS","FIRST_SEEN_DT":null,"LAST_SEEN_DT":null,"RECORD_COUNT":3},{"DATA_SOURCE":"TEST","FIRST_SEEN_DT":null,"LAST_SEEN_DT":null,"RECORD_COUNT":1}]}},"MATCH_INFO":{"ERRULE_CODE":"SF1","FEATURE_SCORES":{"EMAIL":[{"CANDIDATE_FEAT":"bsmith@work.com","FULL_SCORE":100,"INBOUND_FEAT":"bsmith@work.com"}],"NAME":[{"CANDIDATE_FEAT":"Bob J Smith","GENERATION_MATCH":-1,"GNR_FN":83,"GNR_GN":40,"GNR_ON":-1,"GNR_SN":100,"INBOUND_FEAT":"Smith"},{"CANDIDATE_FEAT":"Robert Smith","GENERATION_MATCH":-1,"GNR_FN":88,"GNR_GN":40,"GNR_ON":-1,"GNR_SN":100,"INBOUND_FEAT":"Smith"}]},"MATCH_KEY":"+PNAME+EMAIL","MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED"}}]}
+	fmt.Println(jutil.Flatten(jutil.Redact(jutil.Flatten(jutil.NormalizeAndSort(result)), "FIRST_SEEN_DT", "LAST_SEEN_DT")))
+	// Output: {"RESOLVED_ENTITIES":[{"ENTITY":{"RESOLVED_ENTITY":{"ENTITY_ID":1,"ENTITY_NAME":"Robert Smith","FEATURES":{"ADDRESS":[{"FEAT_DESC":"123 Main Street, Las Vegas NV 89132","FEAT_DESC_VALUES":[{"FEAT_DESC":"123 Main Street, Las Vegas NV 89132","LIB_FEAT_ID":3}],"LIB_FEAT_ID":3,"USAGE_TYPE":"MAILING"},{"FEAT_DESC":"1515 Adela Lane Las Vegas NV 89111","FEAT_DESC_VALUES":[{"FEAT_DESC":"1515 Adela Lane Las Vegas NV 89111","LIB_FEAT_ID":20}],"LIB_FEAT_ID":20,"USAGE_TYPE":"HOME"}],"DOB":[{"FEAT_DESC":"12/11/1978","FEAT_DESC_VALUES":[{"FEAT_DESC":"11/12/1978","LIB_FEAT_ID":19},{"FEAT_DESC":"12/11/1978","LIB_FEAT_ID":2}],"LIB_FEAT_ID":2}],"EMAIL":[{"FEAT_DESC":"bsmith@work.com","FEAT_DESC_VALUES":[{"FEAT_DESC":"bsmith@work.com","LIB_FEAT_ID":5}],"LIB_FEAT_ID":5}],"NAME":[{"FEAT_DESC":"Robert Smith","FEAT_DESC_VALUES":[{"FEAT_DESC":"Bob J Smith","LIB_FEAT_ID":32},{"FEAT_DESC":"Bob Smith","LIB_FEAT_ID":18},{"FEAT_DESC":"Robert Smith","LIB_FEAT_ID":1}],"LIB_FEAT_ID":1,"USAGE_TYPE":"PRIMARY"}],"PHONE":[{"FEAT_DESC":"702-919-1300","FEAT_DESC_VALUES":[{"FEAT_DESC":"702-919-1300","LIB_FEAT_ID":4}],"LIB_FEAT_ID":4,"USAGE_TYPE":"HOME"},{"FEAT_DESC":"702-919-1300","FEAT_DESC_VALUES":[{"FEAT_DESC":"702-919-1300","LIB_FEAT_ID":4}],"LIB_FEAT_ID":4,"USAGE_TYPE":"MOBILE"}],"RECORD_TYPE":[{"FEAT_DESC":"PERSON","FEAT_DESC_VALUES":[{"FEAT_DESC":"PERSON","LIB_FEAT_ID":16}],"LIB_FEAT_ID":16}]},"LAST_SEEN_DT":null,"RECORD_SUMMARY":[{"DATA_SOURCE":"CUSTOMERS","FIRST_SEEN_DT":null,"LAST_SEEN_DT":null,"RECORD_COUNT":3}]}},"MATCH_INFO":{"ERRULE_CODE":"SF1","FEATURE_SCORES":{"EMAIL":[{"CANDIDATE_FEAT":"bsmith@work.com","FULL_SCORE":100,"INBOUND_FEAT":"bsmith@work.com"}],"NAME":[{"CANDIDATE_FEAT":"Bob J Smith","GENERATION_MATCH":-1,"GNR_FN":83,"GNR_GN":40,"GNR_ON":-1,"GNR_SN":100,"INBOUND_FEAT":"Smith"},{"CANDIDATE_FEAT":"Robert Smith","GENERATION_MATCH":-1,"GNR_FN":88,"GNR_GN":40,"GNR_ON":-1,"GNR_SN":100,"INBOUND_FEAT":"Smith"}]},"MATCH_KEY":"+PNAME+EMAIL","MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED"}}]}
 }
 
 func ExampleG2engine_SearchByAttributes_V2() {
@@ -1799,7 +2015,7 @@ func ExampleG2engine_SearchByAttributes_V2() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println(util.Flatten(util.NormalizeAndSort(result)))
+	fmt.Println(jutil.Flatten(jutil.NormalizeAndSort(result)))
 	// Output: {"RESOLVED_ENTITIES":[{"ENTITY":{"RESOLVED_ENTITY":{"ENTITY_ID":1}},"MATCH_INFO":{"ERRULE_CODE":"SF1","MATCH_KEY":"+PNAME+EMAIL","MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED"}}]}
 }
 
@@ -2045,8 +2261,8 @@ func ExampleG2engine_ReevaluateEntityWithInfo() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println(truncate(result, 37))
-	// Output: {"DATA_SOURCE":"TEST","RECORD_ID":...
+	fmt.Println(result)
+	// Output: {"DATA_SOURCE":"CUSTOMERS","RECORD_ID":"1001","AFFECTED_ENTITIES":[{"ENTITY_ID":1}],"INTERESTING_ENTITIES":{"ENTITIES":[]}}
 }
 
 func ExampleG2engine_ReevaluateRecord() {
@@ -2145,7 +2361,7 @@ func ExampleG2engine_Init() {
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	moduleName := "Test module name"
-	iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
+	iniParams, err := getIniParams()
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -2162,11 +2378,11 @@ func ExampleG2engine_InitWithConfigID() {
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	moduleName := "Test module name"
-	iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
+	iniParams, err := getIniParams()
 	if err != nil {
 		fmt.Println(err)
 	}
-	initConfigID := int64(1)
+	initConfigID := senzingConfigId
 	verboseLogging := 0
 	err = g2engine.InitWithConfigID(ctx, moduleName, iniParams, initConfigID, verboseLogging)
 	if err != nil {
@@ -2206,5 +2422,4 @@ func ExampleG2engine_Destroy() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	// Output:
 }

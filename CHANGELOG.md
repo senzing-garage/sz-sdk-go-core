@@ -10,6 +10,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 -
 
+## [0.2.5] - 2023-08-24
+
+### Changed in 0.2.5
+
+- Changes to automated tests to isolate test suites from each other
+- Changes to automated tests to isolate individual tests from each other
+
 ## [0.2.4] - 2023-08-08
 
 ### Changed in 0.2.4
