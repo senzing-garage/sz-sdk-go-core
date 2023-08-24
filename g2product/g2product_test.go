@@ -110,8 +110,14 @@ func setup() error {
 	}
 
 	baseDir := baseDirectoryPath()
-	os.RemoveAll(filepath.Clean(baseDir))      // cleanup any previous test run
+	err = os.RemoveAll(filepath.Clean(baseDir)) // cleanup any previous test run
+	if err != nil {
+		return fmt.Errorf("Failed to remove target test directory (%v): %w", baseDir, err)
+	}
 	os.MkdirAll(filepath.Clean(baseDir), 0770) // recreate the test target directory
+	if err != nil {
+		return fmt.Errorf("Failed to recreate target test directory (%v): %w", baseDir, err)
+	}
 
 	// get the database URL and determine if external or a local file just created
 	dbUrl, _, err := setupDB(false)
