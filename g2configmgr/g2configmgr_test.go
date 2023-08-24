@@ -5,16 +5,17 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 	"strconv"
 	"testing"
 	"time"
 
 	truncator "github.com/aquilax/truncate"
 	"github.com/senzing/g2-sdk-go-base/g2config"
-	"github.com/senzing/g2-sdk-go-base/g2engine"
 	"github.com/senzing/g2-sdk-go/g2api"
 	g2configmgrapi "github.com/senzing/g2-sdk-go/g2configmgr"
 	"github.com/senzing/g2-sdk-go/g2error"
+	futil "github.com/senzing/go-common/fileutil"
 	"github.com/senzing/go-common/g2engineconfigurationjson"
 	"github.com/senzing/go-common/truthset"
 	"github.com/senzing/go-logging/logging"
@@ -24,11 +25,15 @@ import (
 const (
 	defaultTruncation = 76
 	printResults      = false
+	moduleName        = "Config Manager Test Module"
+	verboseLogging    = 0
 )
 
 var (
-	g2configmgrSingleton g2api.G2configmgr
-	g2configSingleton    g2api.G2config
+	globalG2config       g2config.G2config = g2config.G2config{}
+	globalG2configmgr    G2configmgr       = G2configmgr{}
+	configInitialized    bool              = false
+	configMgrInitialized bool              = false
 	logger               logging.LoggingInterface
 )
 
@@ -41,55 +46,15 @@ func createError(errorId int, err error) error {
 }
 
 func getTestObject(ctx context.Context, test *testing.T) g2api.G2configmgr {
-	if g2configmgrSingleton == nil {
-		g2configmgrSingleton = &G2configmgr{}
-		g2configmgrSingleton.SetLogLevel(ctx, logging.LevelInfoName)
-		log.SetFlags(0)
-		moduleName := "Test module name"
-		verboseLogging := 0
-		iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
-		if err != nil {
-			test.Logf("Cannot construct system configuration. Error: %v", err)
-		}
-		err = g2configmgrSingleton.Init(ctx, moduleName, iniParams, verboseLogging)
-		if err != nil {
-			test.Logf("Cannot Init. Error: %v", err)
-		}
-	}
-	return g2configmgrSingleton
+	return &globalG2configmgr
 }
 
 func getG2Configmgr(ctx context.Context) g2api.G2configmgr {
-	if g2configmgrSingleton == nil {
-		g2configmgrSingleton := &G2configmgr{}
-		g2configmgrSingleton.SetLogLevel(ctx, logging.LevelInfoName)
-		log.SetFlags(0)
-		moduleName := "Test module name"
-		verboseLogging := 0
-		iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
-		if err != nil {
-			fmt.Println(err)
-		}
-		g2configmgrSingleton.Init(ctx, moduleName, iniParams, verboseLogging)
-	}
-	return g2configmgrSingleton
+	return &globalG2configmgr
 }
 
 func getG2Config(ctx context.Context) g2api.G2config {
-	if g2configSingleton == nil {
-		g2configSingleton = &g2config.G2config{}
-		moduleName := "Test module name"
-		verboseLogging := 0
-		iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
-		if err != nil {
-			fmt.Println(err)
-		}
-		err = g2configSingleton.Init(ctx, moduleName, iniParams, verboseLogging)
-		if err != nil {
-			fmt.Println(err)
-		}
-	}
-	return g2configSingleton
+	return &globalG2config
 }
 
 func truncate(aString string, length int) string {
@@ -111,6 +76,14 @@ func testError(test *testing.T, ctx context.Context, g2configmgr g2api.G2configm
 		test.Log("Error:", err.Error())
 		assert.FailNow(test, err.Error())
 	}
+}
+
+func baseDirectoryPath() string {
+	return filepath.FromSlash("../target/test/g2configmgr")
+}
+
+func dbTemplatePath() string {
+	return filepath.FromSlash("../testdata/sqlite/G2C.db")
 }
 
 // ----------------------------------------------------------------------------
@@ -140,9 +113,165 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
+func dbUrl() (string, bool, error) {
+	var err error = nil
+
+	// get the base directory
+	baseDir := baseDirectoryPath()
+
+	// get the template database file path
+	dbFilePath := dbTemplatePath()
+
+	dbFilePath, err = filepath.Abs(dbFilePath)
+	if err != nil {
+		err = fmt.Errorf("failed to obtain absolute path to database file (%s): %s",
+			dbFilePath, err.Error())
+		return "", false, err
+	}
+
+	// check the environment for a database URL
+	dbUrl, envUrlExists := os.LookupEnv("SENZING_TOOLS_DATABASE_URL")
+
+	dbTargetPath := filepath.Join(baseDir, "G2C.db")
+
+	dbTargetPath, err = filepath.Abs(dbTargetPath)
+	if err != nil {
+		err = fmt.Errorf("failed to make target database path (%s) absolute: %w",
+			dbTargetPath, err)
+		return "", false, err
+	}
+
+	dbDefaultUrl := fmt.Sprintf("sqlite3://na:na@%s", dbTargetPath)
+
+	dbExternal := envUrlExists && dbDefaultUrl != dbUrl
+
+	if !dbExternal {
+		dbUrl = dbDefaultUrl
+	}
+
+	return dbUrl, dbExternal, err
+}
+
+func setupDB(preserveDB bool) (string, bool, error) {
+	var err error = nil
+
+	// get the base directory
+	baseDir := baseDirectoryPath()
+
+	// get the template database file path
+	dbFilePath := dbTemplatePath()
+
+	dbFilePath, err = filepath.Abs(dbFilePath)
+	if err != nil {
+		err = fmt.Errorf("failed to obtain absolute path to database file (%s): %s",
+			dbFilePath, err.Error())
+		return "", false, err
+	}
+
+	// check the environment for a database URL
+	dbUrl, envUrlExists := os.LookupEnv("SENZING_TOOLS_DATABASE_URL")
+
+	dbTargetPath := filepath.Join(baseDirectoryPath(), "G2C.db")
+
+	dbTargetPath, err = filepath.Abs(dbTargetPath)
+	if err != nil {
+		err = fmt.Errorf("failed to make target database path (%s) absolute: %w",
+			dbTargetPath, err)
+		return "", false, err
+	}
+
+	dbDefaultUrl := fmt.Sprintf("sqlite3://na:na@%s", dbTargetPath)
+
+	dbExternal := envUrlExists && dbDefaultUrl != dbUrl
+
+	if !dbExternal {
+		// set the database URL
+		dbUrl = dbDefaultUrl
+
+		if !preserveDB {
+			// copy the SQLite database file
+			_, _, err := futil.CopyFile(dbFilePath, baseDir, true)
+
+			if err != nil {
+				err = fmt.Errorf("setup failed to copy template database (%v) to target path (%v): %w",
+					dbFilePath, baseDir, err)
+				// fall through to return the error
+			}
+		}
+	}
+
+	return dbUrl, dbExternal, err
+}
+
+func setupIniParams(dbUrl string) (string, error) {
+	configAttrMap := map[string]string{"databaseUrl": dbUrl}
+
+	iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingMap(configAttrMap)
+
+	if err != nil {
+		err = createError(5902, err)
+	}
+
+	return iniParams, err
+}
+
+func getIniParams() (string, error) {
+	dbUrl, _, err := setupDB(true)
+	if err != nil {
+		return "", err
+	}
+	iniParams, err := setupIniParams(dbUrl)
+	if err != nil {
+		return "", err
+	}
+	return iniParams, nil
+}
+
+func setupG2configmgr(ctx context.Context, moduleName string, iniParams string, verboseLogging int) error {
+	if configMgrInitialized {
+		return fmt.Errorf("G2configmgr is already setup and has not been torn down")
+	}
+
+	globalG2configmgr.SetLogLevel(ctx, logging.LevelInfoName)
+	log.SetFlags(0)
+	err := globalG2configmgr.Init(ctx, moduleName, iniParams, verboseLogging)
+	if err != nil {
+		fmt.Println(err)
+	}
+	configMgrInitialized = true
+	return err
+}
+
+func setupG2config(ctx context.Context, moduleName string, iniParams string, verboseLogging int) error {
+	if configInitialized {
+		return fmt.Errorf("G2configmgr is already setup and has not been torn down")
+	}
+	globalG2config.SetLogLevel(ctx, logging.LevelInfoName)
+	log.SetFlags(0)
+	err := globalG2config.Init(ctx, moduleName, iniParams, verboseLogging)
+	if err != nil {
+		fmt.Println(err)
+	}
+	configInitialized = true
+	return err
+}
+
+func restoreG2configmgr(ctx context.Context) error {
+	iniParams, err := getIniParams()
+	if err != nil {
+		return err
+	}
+
+	err = setupG2configmgr(ctx, moduleName, iniParams, verboseLogging)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func setupSenzingConfig(ctx context.Context, moduleName string, iniParams string, verboseLogging int) error {
 	now := time.Now()
-
 	aG2config := &g2config.G2config{}
 	err := aG2config.Init(ctx, moduleName, iniParams, verboseLogging)
 	if err != nil {
@@ -153,7 +282,6 @@ func setupSenzingConfig(ctx context.Context, moduleName string, iniParams string
 	if err != nil {
 		return createError(5907, err)
 	}
-
 	datasourceNames := []string{"CUSTOMERS", "REFERENCE", "WATCHLIST"}
 	for _, datasourceName := range datasourceNames {
 		datasource := truthset.TruthsetDataSources[datasourceName]
@@ -176,10 +304,10 @@ func setupSenzingConfig(ctx context.Context, moduleName string, iniParams string
 	err = aG2config.Destroy(ctx)
 	if err != nil {
 		return createError(5911, err)
+
 	}
 
 	// Persist the Senzing configuration to the Senzing repository.
-
 	aG2configmgr := &G2configmgr{}
 	err = aG2configmgr.Init(ctx, moduleName, iniParams, verboseLogging)
 	if err != nil {
@@ -188,6 +316,7 @@ func setupSenzingConfig(ctx context.Context, moduleName string, iniParams string
 
 	configComments := fmt.Sprintf("Created by g2diagnostic_test at %s", now.UTC())
 	configID, err := aG2configmgr.AddConfig(ctx, configStr, configComments)
+
 	if err != nil {
 		return createError(5913, err)
 	}
@@ -204,68 +333,96 @@ func setupSenzingConfig(ctx context.Context, moduleName string, iniParams string
 	return err
 }
 
-func setupPurgeRepository(ctx context.Context, moduleName string, iniParams string, verboseLogging int) error {
-	aG2engine := &g2engine.G2engine{}
-	err := aG2engine.Init(ctx, moduleName, iniParams, verboseLogging)
-	if err != nil {
-		return createError(5903, err)
-	}
-
-	err = aG2engine.PurgeRepository(ctx)
-	if err != nil {
-		return createError(5904, err)
-	}
-
-	err = aG2engine.Destroy(ctx)
-	if err != nil {
-		return createError(5905, err)
-	}
-	return err
-}
-
 func setup() error {
 	var err error = nil
 	ctx := context.TODO()
-	moduleName := "Test module name"
-	verboseLogging := 0
 	logger, err = logging.NewSenzingSdkLogger(ComponentId, g2configmgrapi.IdMessages)
 	if err != nil {
 		return createError(5901, err)
 	}
 
-	iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
+	baseDir := baseDirectoryPath()
+	os.RemoveAll(baseDir)      // cleanup any previous test run
+	os.MkdirAll(baseDir, 0770) // recreate the test target directory
+
+	// get the database URL and determine if external or a local file just created
+	dbUrl, _, err := setupDB(false)
 	if err != nil {
-		return createError(5902, err)
+		return err
 	}
 
-	// Add Data Sources to Senzing configuration.
+	// get the INI params
+	iniParams, err := setupIniParams(dbUrl)
+	if err != nil {
+		return err
+	}
 
 	err = setupSenzingConfig(ctx, moduleName, iniParams, verboseLogging)
 	if err != nil {
-		return createError(5920, err)
+		return err
 	}
 
-	// Purge repository.
-
-	err = setupPurgeRepository(ctx, moduleName, iniParams, verboseLogging)
+	// setup the config
+	err = setupG2config(ctx, moduleName, iniParams, verboseLogging)
 	if err != nil {
-		return createError(5921, err)
+		return err
 	}
+
+	// setup the config
+	err = setupG2configmgr(ctx, moduleName, iniParams, verboseLogging)
+	if err != nil {
+		return err
+	}
+
 	return err
+}
+
+func teardownG2configmgr(ctx context.Context) error {
+	// check if not initialized
+	if !configMgrInitialized {
+		return nil
+	}
+
+	// destroy the engine
+	err := globalG2configmgr.Destroy(ctx)
+	if err != nil {
+		return err
+	}
+	configMgrInitialized = false
+
+	return nil
+}
+
+func teardownG2config(ctx context.Context) error {
+	// check if not initialized
+	if !configInitialized {
+		return nil
+	}
+
+	// destroy the engine
+	err := globalG2config.Destroy(ctx)
+	if err != nil {
+		return err
+	}
+	configInitialized = false
+
+	return nil
 }
 
 func teardown() error {
-	var err error = nil
-	return err
-}
-
-func TestBuildSimpleSystemConfigurationJsonUsingEnvVars(test *testing.T) {
-	actual, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
+	var resultErr error = nil
+	ctx := context.TODO()
+	err := teardownG2config(ctx)
 	if err != nil {
-		test.Log("Error:", err.Error())
-		assert.FailNow(test, actual)
+		fmt.Println(err)
+		resultErr = err
 	}
-	printActual(test, actual)
+	teardownG2configmgr(ctx)
+	if err != nil {
+		fmt.Println(err)
+		resultErr = err
+	}
+	return resultErr
 }
 
 // ----------------------------------------------------------------------------
@@ -382,7 +539,7 @@ func TestG2configmgr_Init(test *testing.T) {
 	g2configmgr := getTestObject(ctx, test)
 	moduleName := "Test module name"
 	verboseLogging := 0
-	iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
+	iniParams, err := getIniParams()
 	if err != nil {
 		test.Fatalf("Cannot construct system configuration: %v", err)
 	}
@@ -395,6 +552,10 @@ func TestG2configmgr_Destroy(test *testing.T) {
 	g2configmgr := getTestObject(ctx, test)
 	err := g2configmgr.Destroy(ctx)
 	testError(test, ctx, g2configmgr, err)
+
+	// restore the state that existed prior to this test
+	configMgrInitialized = false
+	restoreG2configmgr(ctx)
 }
 
 // ----------------------------------------------------------------------------
@@ -427,17 +588,20 @@ func ExampleG2configmgr_AddConfig() {
 	g2config := getG2Config(ctx)
 	configHandle, err := g2config.Create(ctx)
 	if err != nil {
-		fmt.Println(err)
+		text := err.Error()
+		fmt.Println(text[len(text)-40:])
 	}
 	g2configmgr := getG2Configmgr(ctx)
 	configStr, err := g2config.Save(ctx, configHandle)
 	if err != nil {
-		fmt.Println(err)
+		text := err.Error()
+		fmt.Println(text[len(text)-40:])
 	}
 	configComments := "Example configuration"
 	configID, err := g2configmgr.AddConfig(ctx, configStr, configComments)
 	if err != nil {
-		fmt.Println(err)
+		text := err.Error()
+		fmt.Println(text[len(text)-40:])
 	}
 	fmt.Println(configID > 0) // Dummy output.
 	// Output: true
@@ -543,7 +707,7 @@ func ExampleG2configmgr_Init() {
 	ctx := context.TODO()
 	g2configmgr := &G2configmgr{}
 	moduleName := "Test module name"
-	iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars() // See https://pkg.go.dev/github.com/senzing/go-common
+	iniParams, err := getIniParams()
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -563,5 +727,4 @@ func ExampleG2configmgr_Destroy() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	// Output:
 }

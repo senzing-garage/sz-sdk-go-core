@@ -5,12 +5,16 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 	"testing"
 
 	truncator "github.com/aquilax/truncate"
 	"github.com/senzing/g2-sdk-go/g2api"
+	"github.com/senzing/g2-sdk-go/g2error"
+	g2productapi "github.com/senzing/g2-sdk-go/g2product"
+	futil "github.com/senzing/go-common/fileutil"
 	"github.com/senzing/go-common/g2engineconfigurationjson"
-	util "github.com/senzing/go-common/jsonutil"
+	jutil "github.com/senzing/go-common/jsonutil"
 	"github.com/senzing/go-logging/logging"
 	"github.com/stretchr/testify/assert"
 )
@@ -18,52 +22,30 @@ import (
 const (
 	defaultTruncation = 76
 	printResults      = false
+	moduleName        = "Product Test Module"
+	verboseLogging    = 0
 )
 
 var (
-	g2productSingleton g2api.G2product
+	productInitialized bool      = false
+	globalG2product    G2product = G2product{}
+	logger             logging.LoggingInterface
 )
 
 // ----------------------------------------------------------------------------
 // Internal functions
 // ----------------------------------------------------------------------------
 
+func createError(errorId int, err error) error {
+	return g2error.Cast(logger.NewError(errorId, err), err)
+}
+
 func getTestObject(ctx context.Context, test *testing.T) g2api.G2product {
-	if g2productSingleton == nil {
-		g2productSingleton = &G2product{}
-		g2productSingleton.SetLogLevel(ctx, logging.LevelInfoName)
-		log.SetFlags(0)
-		moduleName := "Test module name"
-		verboseLogging := 0
-		iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
-		if err != nil {
-			test.Logf("Cannot construct system configuration. Error: %v", err)
-		}
-		err = g2productSingleton.Init(ctx, moduleName, iniParams, verboseLogging)
-		if err != nil {
-			test.Logf("Cannot Init. Error: %v", err)
-		}
-	}
-	return g2productSingleton
+	return &globalG2product
 }
 
 func getG2Product(ctx context.Context) g2api.G2product {
-	if g2productSingleton == nil {
-		g2productSingleton = &G2product{}
-		g2productSingleton.SetLogLevel(ctx, logging.LevelInfoName)
-		log.SetFlags(0)
-		moduleName := "Test module name"
-		verboseLogging := 0
-		iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
-		if err != nil {
-			fmt.Println(err)
-		}
-		err = g2productSingleton.Init(ctx, moduleName, iniParams, verboseLogging)
-		if err != nil {
-			fmt.Println(err)
-		}
-	}
-	return g2productSingleton
+	return &globalG2product
 }
 
 func truncate(aString string, length int) string {
@@ -93,6 +75,14 @@ func testErrorNoFail(test *testing.T, ctx context.Context, g2product g2api.G2pro
 	}
 }
 
+func baseDirectoryPath() string {
+	return filepath.FromSlash("../target/test/g2product")
+}
+
+func dbTemplatePath() string {
+	return filepath.FromSlash("../testdata/sqlite/G2C.db")
+}
+
 // ----------------------------------------------------------------------------
 // Test harness
 // ----------------------------------------------------------------------------
@@ -113,21 +103,161 @@ func TestMain(m *testing.M) {
 
 func setup() error {
 	var err error = nil
+	ctx := context.TODO()
+	logger, err = logging.NewSenzingSdkLogger(ComponentId, g2productapi.IdMessages)
+	if err != nil {
+		return createError(5901, err)
+	}
+
+	baseDir := baseDirectoryPath()
+	os.RemoveAll(baseDir)      // cleanup any previous test run
+	os.MkdirAll(baseDir, 0770) // recreate the test target directory
+
+	// get the database URL and determine if external or a local file just created
+	dbUrl, _, err := setupDB(false)
+	if err != nil {
+		return err
+	}
+
+	// get the INI params
+	iniParams, err := setupIniParams(dbUrl)
+	if err != nil {
+		return err
+	}
+
+	// setup the config
+	err = setupG2product(ctx, moduleName, iniParams, verboseLogging)
+	if err != nil {
+		return err
+	}
+
+	// get the tem
 	return err
+}
+
+func teardownG2product(ctx context.Context) error {
+	// check if not initialized
+	if !productInitialized {
+		return nil
+	}
+
+	// destroy the G2product
+	err := globalG2product.Destroy(ctx)
+	if err != nil {
+		return err
+	}
+	productInitialized = false
+
+	return nil
 }
 
 func teardown() error {
-	var err error = nil
+	ctx := context.TODO()
+	err := teardownG2product(ctx)
 	return err
 }
 
-func TestBuildSimpleSystemConfigurationJsonUsingEnvVars(test *testing.T) {
-	actual, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
+func restoreG2product(ctx context.Context) error {
+	iniParams, err := getIniParams()
 	if err != nil {
-		test.Log("Error:", err.Error())
-		assert.FailNow(test, actual)
+		return err
 	}
-	printActual(test, actual)
+
+	err = setupG2product(ctx, moduleName, iniParams, verboseLogging)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func setupDB(preserveDB bool) (string, bool, error) {
+	var err error = nil
+
+	// get the base directory
+	baseDir := baseDirectoryPath()
+
+	// get the template database file path
+	dbFilePath := dbTemplatePath()
+
+	dbFilePath, err = filepath.Abs(dbFilePath)
+	if err != nil {
+		err = fmt.Errorf("failed to obtain absolute path to database file (%s): %s",
+			dbFilePath, err.Error())
+		return "", false, err
+	}
+
+	// check the environment for a database URL
+	dbUrl, envUrlExists := os.LookupEnv("SENZING_TOOLS_DATABASE_URL")
+
+	dbTargetPath := filepath.Join(baseDirectoryPath(), "G2C.db")
+
+	dbTargetPath, err = filepath.Abs(dbTargetPath)
+	if err != nil {
+		err = fmt.Errorf("failed to make target database path (%s) absolute: %w",
+			dbTargetPath, err)
+		return "", false, err
+	}
+
+	dbDefaultUrl := fmt.Sprintf("sqlite3://na:na@%s", dbTargetPath)
+
+	dbExternal := envUrlExists && dbDefaultUrl != dbUrl
+
+	if !dbExternal {
+		// set the database URL
+		dbUrl = dbDefaultUrl
+
+		if !preserveDB {
+			// copy the SQLite database file
+			_, _, err := futil.CopyFile(dbFilePath, baseDir, true)
+
+			if err != nil {
+				err = fmt.Errorf("setup failed to copy template database (%v) to target path (%v): %w",
+					dbFilePath, baseDir, err)
+				// fall through to return the error
+			}
+		}
+	}
+
+	return dbUrl, dbExternal, err
+}
+
+func setupIniParams(dbUrl string) (string, error) {
+	configAttrMap := map[string]string{"databaseUrl": dbUrl}
+
+	iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingMap(configAttrMap)
+
+	if err != nil {
+		err = createError(5902, err)
+	}
+
+	return iniParams, err
+}
+
+func getIniParams() (string, error) {
+	dbUrl, _, err := setupDB(true)
+	if err != nil {
+		return "", err
+	}
+	iniParams, err := setupIniParams(dbUrl)
+	if err != nil {
+		return "", err
+	}
+	return iniParams, nil
+}
+
+func setupG2product(ctx context.Context, moduleName string, iniParams string, verboseLogging int) error {
+	if productInitialized {
+		return fmt.Errorf("G2product is already setup and has not been torn down")
+	}
+	globalG2product.SetLogLevel(ctx, logging.LevelInfoName)
+	log.SetFlags(0)
+	err := globalG2product.Init(ctx, moduleName, iniParams, verboseLogging)
+	if err != nil {
+		fmt.Println(err)
+	}
+	productInitialized = true
+	return err
 }
 
 // ----------------------------------------------------------------------------
@@ -155,7 +285,7 @@ func TestG2product_Init(test *testing.T) {
 	g2product := &G2product{}
 	moduleName := "Test module name"
 	verboseLogging := 0
-	iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
+	iniParams, err := getIniParams()
 	testError(test, ctx, g2product, err)
 	err = g2product.Init(ctx, moduleName, iniParams, verboseLogging)
 	testError(test, ctx, g2product, err)
@@ -200,7 +330,10 @@ func TestG2product_Destroy(test *testing.T) {
 	g2product := getTestObject(ctx, test)
 	err := g2product.Destroy(ctx)
 	testError(test, ctx, g2product, err)
-	g2productSingleton = nil
+
+	// restore the pre-test state
+	productInitialized = false
+	restoreG2product(ctx)
 }
 
 // ----------------------------------------------------------------------------
@@ -232,7 +365,7 @@ func ExampleG2product_Init() {
 	ctx := context.TODO()
 	g2product := getG2Product(ctx)
 	moduleName := "Test module name"
-	iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
+	iniParams, err := getIniParams()
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -250,7 +383,7 @@ func ExampleG2product_License() {
 		fmt.Println(err)
 	}
 
-	fmt.Println(util.Flatten(util.Redact(result, "customer", "contract", "issueDate", "licenseLevel", "billing", "licenseType", "expireDate", "recordLimit")))
+	fmt.Println(jutil.Flatten(jutil.Redact(result, "customer", "contract", "issueDate", "licenseLevel", "billing", "licenseType", "expireDate", "recordLimit")))
 	// Output: {"billing":null,"contract":null,"customer":null,"expireDate":null,"issueDate":null,"licenseLevel":null,"licenseType":null,"recordLimit":null}
 }
 
@@ -313,5 +446,4 @@ func ExampleG2product_Destroy() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	// Output:
 }

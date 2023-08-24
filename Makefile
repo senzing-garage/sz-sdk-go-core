@@ -27,15 +27,18 @@ GO_OSARCH = $(subst /, ,$@)
 GO_OS = $(word 1, $(GO_OSARCH))
 GO_ARCH = $(word 2, $(GO_OSARCH))
 
-# set SQLite database variables
-SENZING_TOOLS_DATABASE_PATH=$(TARGET_DIRECTORY)/sqlite/G2C.db
-SENZING_TOOLS_DATABASE_URL ?= sqlite3://na:na@$(SENZING_TOOLS_DATABASE_PATH)
-
 # Recursive assignment ('=')
 CC = gcc
 
 # Export environment variables.
 .EXPORT_ALL_VARIABLES:
+
+# -----------------------------------------------------------------------------
+# Optionally override the database URL for running automated tests.
+# If SENZING_TOOLS_DATABASE_URL is not set then a SQLite3 database in the 
+# ./target/test/{test-suite} directory is used for each test suite.
+# -----------------------------------------------------------------------------
+#SENZING_TOOLS_DATABASE_URL ?= postgresql://username:password@hostname:5432:database/?schema=schemaname
 
 # -----------------------------------------------------------------------------
 # Optionally include platform-specific settings and targets.
@@ -98,8 +101,7 @@ update-pkg-cache:
 
 .PHONY: setup
 setup: 
-	@mkdir -p $(shell dirname $(SENZING_TOOLS_DATABASE_PATH))
-	@if [ ! -f $(SENZING_TOOLS_DATABASE_PATH) ]; then cp testdata/sqlite/G2C.db $(SENZING_TOOLS_DATABASE_PATH); fi
+# do nothing for now
 	
 .PHONY: clean
 clean:
@@ -109,7 +111,6 @@ clean:
 	@docker rmi --force $(DOCKER_IMAGE_NAME) $(DOCKER_BUILD_IMAGE_NAME) 2> /dev/null || true
 	@rm -rf $(TARGET_DIRECTORY) || true
 	@rm -f $(GOPATH)/bin/$(PROGRAM_NAME) || true
-	@rm -rf $(shell dirname $(SENZING_TOOLS_DATABASE_PATH))
 	@rm -rf /tmp/$(PROGRAM_NAME)
 
 .PHONY: print-make-variables

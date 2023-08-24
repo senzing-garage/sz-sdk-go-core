@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"log"
 	"math/big"
+	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/senzing/g2-sdk-go-base/g2config"
@@ -14,6 +16,7 @@ import (
 	"github.com/senzing/g2-sdk-go-base/g2engine"
 	"github.com/senzing/g2-sdk-go-base/g2product"
 	"github.com/senzing/g2-sdk-go/g2api"
+	futil "github.com/senzing/go-common/fileutil"
 	"github.com/senzing/go-common/g2engineconfigurationjson"
 	"github.com/senzing/go-common/truthset"
 	"github.com/senzing/go-logging/logging"
@@ -53,12 +56,94 @@ var logger logging.LoggingInterface
 // ----------------------------------------------------------------------------
 // Internal methods
 // ----------------------------------------------------------------------------
+func baseDirectoryPath() string {
+	return filepath.FromSlash("target/test/main")
+}
+
+func dbTemplatePath() string {
+	return filepath.FromSlash("testdata/sqlite/G2C.db")
+}
+
+func setupDB(preserveDB bool) (string, bool, error) {
+	var err error = nil
+
+	// get the base directory
+	baseDir := baseDirectoryPath()
+
+	// get the template database file path
+	dbFilePath := dbTemplatePath()
+
+	dbFilePath, err = filepath.Abs(dbFilePath)
+	if err != nil {
+		err = fmt.Errorf("failed to obtain absolute path to database file (%s): %s",
+			dbFilePath, err.Error())
+		return "", false, err
+	}
+
+	// check the environment for a database URL
+	dbUrl, envUrlExists := os.LookupEnv("SENZING_TOOLS_DATABASE_URL")
+
+	dbTargetPath := filepath.Join(baseDirectoryPath(), "G2C.db")
+
+	dbTargetPath, err = filepath.Abs(dbTargetPath)
+	if err != nil {
+		err = fmt.Errorf("failed to make target database path (%s) absolute: %w",
+			dbTargetPath, err)
+		return "", false, err
+	}
+
+	dbDefaultUrl := fmt.Sprintf("sqlite3://na:na@%s", dbTargetPath)
+
+	dbExternal := envUrlExists && dbDefaultUrl != dbUrl
+
+	if !dbExternal {
+		// set the database URL
+		dbUrl = dbDefaultUrl
+
+		if !preserveDB {
+			// copy the SQLite database file
+			_, _, err := futil.CopyFile(dbFilePath, baseDir, true)
+
+			if err != nil {
+				err = fmt.Errorf("setup failed to copy template database (%v) to target path (%v): %w",
+					dbFilePath, baseDir, err)
+				// fall through to return the error
+			}
+		}
+	}
+
+	return dbUrl, dbExternal, err
+}
+
+func setupIniParams(dbUrl string) (string, error) {
+	configAttrMap := map[string]string{"databaseUrl": dbUrl}
+
+	iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingMap(configAttrMap)
+
+	if err != nil {
+		return "", err
+	}
+
+	return iniParams, err
+}
+
+func getIniParams() (string, error) {
+	dbUrl, _, err := setupDB(true)
+	if err != nil {
+		return "", err
+	}
+	iniParams, err := setupIniParams(dbUrl)
+	if err != nil {
+		return "", err
+	}
+	return iniParams, nil
+}
 
 func getG2config(ctx context.Context) (g2api.G2config, error) {
 	result := g2config.G2config{}
 	moduleName := "Test module name"
 	verboseLogging := 0 // 0 for no Senzing logging; 1 for logging
-	iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
+	iniParams, err := getIniParams()
 	if err != nil {
 		return &result, err
 	}
@@ -70,7 +155,7 @@ func getG2configmgr(ctx context.Context) (g2api.G2configmgr, error) {
 	result := g2configmgr.G2configmgr{}
 	moduleName := "Test module name"
 	verboseLogging := 0
-	iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
+	iniParams, err := getIniParams()
 	if err != nil {
 		return &result, err
 	}
@@ -82,7 +167,7 @@ func getG2diagnostic(ctx context.Context) (g2api.G2diagnostic, error) {
 	result := g2diagnostic.G2diagnostic{}
 	moduleName := "Test module name"
 	verboseLogging := 0
-	iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
+	iniParams, err := getIniParams()
 	if err != nil {
 		return &result, err
 	}
@@ -94,7 +179,7 @@ func getG2engine(ctx context.Context) (g2api.G2engine, error) {
 	result := g2engine.G2engine{}
 	moduleName := "Test module name"
 	verboseLogging := 0
-	iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
+	iniParams, err := getIniParams()
 	if err != nil {
 		return &result, err
 	}
@@ -106,7 +191,7 @@ func getG2product(ctx context.Context) (g2api.G2product, error) {
 	result := g2product.G2product{}
 	moduleName := "Test module name"
 	verboseLogging := 0
-	iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
+	iniParams, err := getIniParams()
 	if err != nil {
 		return &result, err
 	}
@@ -273,8 +358,15 @@ func main() {
 	var err error = nil
 	ctx := context.TODO()
 
-	// Configure the "log" standard library.
+	// get the base directory for temporary files
+	baseDir := baseDirectoryPath()
+	os.RemoveAll(baseDir)      // cleanup any previous test run
+	os.MkdirAll(baseDir, 0770) // recreate the test target directory
 
+	// setup the database
+	setupDB(false)
+
+	// Configure the "log" standard library.
 	log.SetFlags(0)
 	logger, err = getLogger(ctx)
 	if err != nil {
