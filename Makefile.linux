@@ -6,6 +6,16 @@
 LD_LIBRARY_PATH ?= /opt/senzing/g2/lib
 
 # -----------------------------------------------------------------------------
+# Variables
+# -----------------------------------------------------------------------------
+
+# Conditional assignment. ('?=')
+# Can be overridden with "export"
+# Example: "export LD_LIBRARY_PATH=/path/to/my/senzing/g2/lib"
+
+LD_LIBRARY_PATH ?= /opt/senzing/g2/lib
+
+# -----------------------------------------------------------------------------
 # Makefile targets supported by all platforms.
 # -----------------------------------------------------------------------------
 
@@ -32,6 +42,14 @@ test: setup
 #	@go test -v ./g2diagnostic
 #	@go test -v ./g2engine
 #	@go test -v ./g2product
+
+# -----------------------------------------------------------------------------
+# Run
+# -----------------------------------------------------------------------------
+
+.PHONY: run
+run:
+	@go run main.go
 
 # -----------------------------------------------------------------------------
 # Makefile targets supported only by this platform.

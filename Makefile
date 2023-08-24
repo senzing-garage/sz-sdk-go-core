@@ -1,6 +1,7 @@
 # Makefile for g2-sdk-go-base.
 
 # Detect the operating system and architecture
+
 include Makefile.osdetect
 
 # -----------------------------------------------------------------------------
@@ -23,20 +24,21 @@ BUILD_ITERATION := $(shell git log $(BUILD_TAG)..HEAD --oneline | wc -l | sed 's
 GIT_REMOTE_URL := $(shell git config --get remote.origin.url)
 GO_PACKAGE_NAME := $(shell echo $(GIT_REMOTE_URL) | sed -e 's|^git@github.com:|github.com/|' -e 's|\.git$$||' -e 's|Senzing|senzing|')
 PATH := $(MAKEFILE_DIRECTORY)/bin:$(PATH)
-GO_OSARCH = $(subst /, ,$@)
-GO_OS = $(word 1, $(GO_OSARCH))
-GO_ARCH = $(word 2, $(GO_OSARCH))
 
 # Recursive assignment ('=')
 CC = gcc
+GO_OSARCH = $(subst /, ,$@)
+GO_OS = $(word 1, $(GO_OSARCH))
+GO_ARCH = $(word 2, $(GO_OSARCH))
 
 # Export environment variables.
 .EXPORT_ALL_VARIABLES:
 
 # -----------------------------------------------------------------------------
-# Optionally override the database URL for running automated tests.
-# If SENZING_TOOLS_DATABASE_URL is not set then a SQLite3 database in the 
-# ./target/test/{test-suite} directory is used for each test suite.
+# Optionally override the database URL for running automated tests.  The 
+# conditional assignment ('?=') can be overridden with with a shell environment
+# variable.  If SENZING_TOOLS_DATABASE_URL is not set then a SQLite3 database
+# in the ./target/test/{test-suite} directory is used for each test suite.
 # -----------------------------------------------------------------------------
 #SENZING_TOOLS_DATABASE_URL ?= postgresql://username:password@hostname:5432:database/?schema=schemaname
 
@@ -50,13 +52,11 @@ CC = gcc
 # -----------------------------------------------------------------------------
 # The first "make" target runs as default.
 # -----------------------------------------------------------------------------
-
 .PHONY: default
 default: help
 
 # -----------------------------------------------------------------------------
-# Build
-#  - The "build" target is implemented in Makefile.OS.ARCH files.
+# Dependency management
 # -----------------------------------------------------------------------------
 
 .PHONY: dependencies
@@ -65,6 +65,11 @@ dependencies:
 	@go get -t -u ./...
 	@go mod tidy
 
+# -----------------------------------------------------------------------------
+# Build
+#  - The "build" target is implemented in Makefile.OS.ARCH files.
+#  - docker-build: https://docs.docker.com/engine/reference/commandline/build/
+# -----------------------------------------------------------------------------
 
 PLATFORMS := darwin/amd64 linux/amd64 windows/amd64
 $(PLATFORMS):
@@ -72,23 +77,23 @@ $(PLATFORMS):
 	@mkdir -p $(TARGET_DIRECTORY)/$(GO_OS)-$(GO_ARCH) || true
 	@GOOS=$(GO_OS) GOARCH=$(GO_ARCH) go build -o $(TARGET_DIRECTORY)/$(GO_OS)-$(GO_ARCH)/$(PROGRAM_NAME)
 
-
-.PHONY: build-all $(PLATFORMS)
-build-all: $(PLATFORMS)
-	@mv $(TARGET_DIRECTORY)/windows-amd64/$(PROGRAM_NAME) $(TARGET_DIRECTORY)/windows-amd64/$(PROGRAM_NAME).exe
-
 # -----------------------------------------------------------------------------
 # Test
 #  - The "test" target is implemented in Makefile.OS.ARCH files.
 # -----------------------------------------------------------------------------
 
+
 # -----------------------------------------------------------------------------
 # Run
+#  - The "run" target is implemented in Makefile.OS.ARCH files.
 # -----------------------------------------------------------------------------
 
-.PHONY: run
-run:
-	@go run main.go
+
+# -----------------------------------------------------------------------------
+# Package
+#  - The "package" target is implemented in Makefile.OS.ARCH files.
+# -----------------------------------------------------------------------------
+
 
 # -----------------------------------------------------------------------------
 # Utility targets
