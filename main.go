@@ -366,7 +366,7 @@ func main() {
 		fmt.Println(err)
 		return
 	}
-	os.MkdirAll(filepath.Clean(baseDir), 0770) // recreate the test target directory
+	err = os.MkdirAll(filepath.Clean(baseDir), 0770) // recreate the test target directory
 	if err != nil {
 		fmt.Printf("Failed to recreate target test directory: %v\n", baseDir)
 		fmt.Println(err)
@@ -374,7 +374,12 @@ func main() {
 	}
 
 	// setup the database
-	setupDB(false)
+	_, _, err = setupDB(false)
+	if err != nil {
+		fmt.Println("Failed to setup database")
+		fmt.Println(err)
+		return
+	}
 
 	// Configure the "log" standard library.
 	log.SetFlags(0)
