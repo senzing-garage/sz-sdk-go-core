@@ -405,7 +405,7 @@ func setup() error {
 	if err != nil {
 		return fmt.Errorf("Failed to remove target test directory (%v): %w", baseDir, err)
 	}
-	err = os.MkdirAll(filepath.Clean(baseDir), 0770) // recreate the test target directory
+	err = os.MkdirAll(filepath.Clean(baseDir), 0750) // recreate the test target directory
 	if err != nil {
 		return fmt.Errorf("Failed to recreate target test directory (%v): %w", baseDir, err)
 	}

@@ -366,7 +366,7 @@ func main() {
 		fmt.Println(err)
 		return
 	}
-	err = os.MkdirAll(filepath.Clean(baseDir), 0770) // recreate the test target directory
+	err = os.MkdirAll(filepath.Clean(baseDir), 0750) // recreate the test target directory
 	if err != nil {
 		fmt.Printf("Failed to recreate target test directory: %v\n", baseDir)
 		fmt.Println(err)
