@@ -360,8 +360,8 @@ func main() {
 
 	// get the base directory for temporary files
 	baseDir := baseDirectoryPath()
-	os.RemoveAll(baseDir)      // cleanup any previous test run
-	os.MkdirAll(baseDir, 0770) // recreate the test target directory
+	os.RemoveAll(filepath.Clean(baseDir))      // cleanup any previous test run
+	os.MkdirAll(filepath.Clean(baseDir), 0770) // recreate the test target directory
 
 	// setup the database
 	setupDB(false)

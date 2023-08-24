@@ -401,8 +401,8 @@ func setup() error {
 	}
 
 	baseDir := baseDirectoryPath()
-	os.RemoveAll(baseDir)      // cleanup any previous test run
-	os.MkdirAll(baseDir, 0770) // recreate the test target directory
+	os.RemoveAll(filepath.Clean(baseDir))      // cleanup any previous test run
+	os.MkdirAll(filepath.Clean(baseDir), 0770) // recreate the test target directory
 
 	// get the database URL and determine if external or a local file just created
 	dbUrl, dbPurge, err := setupDB(false)
