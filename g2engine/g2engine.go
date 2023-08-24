@@ -6,7 +6,9 @@ package g2engine
 /*
 #include "g2engine.h"
 #cgo CFLAGS: -g -I/opt/senzing/g2/sdk/c
+#cgo windows CFLAGS: -g -IC:/Program Files/senzing/g2/sdk/c
 #cgo LDFLAGS: -L/opt/senzing/g2/lib -lG2
+#cgo windows LDFLAGS: -LC:/Program Files/senzing/g2/lib -lG2
 */
 import "C"
 
