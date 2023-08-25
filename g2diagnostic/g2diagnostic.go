@@ -307,7 +307,7 @@ func (client *G2diagnostic) FetchNextEntityBySize(ctx context.Context, entityLis
 		defer func() { client.traceExit(10, responseResult, err, time.Since(entryTime)) }()
 	}
 	stringBuffer := client.getByteArray(initialByteArraySize)
-	result := C.G2Diagnostic_fetchNextEntityBySize_helper(C.uintptr_t(entityListBySizeHandle), (*C.char)(unsafe.Pointer(&stringBuffer[0])), C.ulong(len(stringBuffer)))
+	result := C.G2Diagnostic_fetchNextEntityBySize_helper(C.uintptr_t(entityListBySizeHandle), (*C.char)(unsafe.Pointer(&stringBuffer[0])), C.size_t(len(stringBuffer)))
 	if result < 0 {
 		err = client.newError(ctx, 4004, result, time.Since(entryTime))
 	}
