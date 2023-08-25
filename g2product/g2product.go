@@ -133,7 +133,7 @@ func (client *G2product) getLastException(ctx context.Context) (string, error) {
 		defer func() { client.traceExit(6, result, err, time.Since(entryTime)) }()
 	}
 	stringBuffer := client.getByteArray(initialByteArraySize)
-	C.G2Product_getLastException((*C.char)(unsafe.Pointer(&stringBuffer[0])), C.ulong(len(stringBuffer)))
+	C.G2Product_getLastException((*C.char)(unsafe.Pointer(&stringBuffer[0])), C.size_t(len(stringBuffer)))
 	// if result == 0 { // "result" is length of exception message.
 	// 	err = client.getLogger().Error(4002, result, time.Since(entryTime))
 	// }
