@@ -33,7 +33,7 @@ jobs:
       - name: DEBUG - Update Path variable
         run: |
           echo "C:\Program Files\Senzing\g2\lib" >> $GITHUB_PATH
-          cat ${GITHUB_PATH}
+          type ${GITHUB_PATH}
       - name: DEBUG - List environment variables #2
         run: env
       - name: Install Senzing API
