@@ -29,11 +29,11 @@ jobs:
         with:
           go-version: ${{ matrix.go }}
       - name: DEBUG - List environment variables #1
-        run: set
+        run: env
       - name: DEBUG - Update Path variable
         run: echo "C:\Program Files\Senzing\g2\lib>" >> $GITHUB_PATH
       - name: DEBUG - List environment variables #2
-        run: set
+        run: env
       - name: Install Senzing API
         uses: Senzing/github-action-install-senzing-api@main
       - name: Copy /etc files
