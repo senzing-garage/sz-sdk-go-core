@@ -31,7 +31,7 @@ jobs:
       - name: DEBUG - List environment variables #1
         run: env
       - name: Set environment variable
-      - run: |
+        run: |
           echo "/c/Program Files/Senzing/g2/lib" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
       - name: DEBUG - List environment variables #2
         run: env
