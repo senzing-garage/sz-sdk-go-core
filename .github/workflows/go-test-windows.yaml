@@ -28,12 +28,20 @@ jobs:
         uses: actions/setup-go@v4
         with:
           go-version: ${{ matrix.go }}
+      - name: DEBUG - List environment variables #1
+        run: set
+      - name: DEBUG - Update Path variable
+        run: echo "C:\Program Files\Senzing\g2\lib>" >> $GITHUB_PATH
+      - name: DEBUG - List environment variables #2
+        run: set
       - name: Install Senzing API
         uses: Senzing/github-action-install-senzing-api@main
       - name: Copy /etc files
         run: copy testdata/senzing-license/g2.lic "C:\Program Files\Senzing\g2\etc\g2.lic"
       - name: Copy test database files
         run: mkdir "C:\Temp\sqlite" && copy testdata/sqlite/G2C.db "C:\Temp\sqlite\G2C.db"
+      - name: DEBUG - List g2\lib
+        run: dir "C:\Program Files\Senzing\g2\lib>"
       - name: Update Path variable
         run: echo "C:\Program Files\Senzing\g2\lib>" >> $GITHUB_PATH
       # - name: Run go test
