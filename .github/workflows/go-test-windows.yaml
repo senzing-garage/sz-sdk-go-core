@@ -30,10 +30,9 @@ jobs:
           go-version: ${{ matrix.go }}
       - name: DEBUG - List environment variables #1
         run: env
-      - name: DEBUG - Update Path variable
-        run: |
-          echo "C:\Program Files\Senzing\g2\lib" >> $GITHUB_PATH
-          type %GITHUB_PATH%
+      - name: Set environment variable
+      - run: |
+          echo "/c/Program Files/Senzing/g2/lib" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
       - name: DEBUG - List environment variables #2
         run: env
       - name: Install Senzing API
@@ -45,19 +44,10 @@ jobs:
       # - name: Run go test
       #   run: go test -v -p 1 ./...
       - name: Run go test - main
-        run: |
-          echo "C:\Program Files\Senzing\g2\lib" >> $GITHUB_PATH
-          env
-          go test -v -p 1 ./.
+        run: go test -v -p 1 ./.
       - name: Run go test - g2config
-        run: |
-          set PATH=${PATH}:/c/Program Files/Senzing/g2/lib
-          go test -v -p 1 ./g2config
+        run: go test -v -p 1 ./g2config
       - name: Run go test - g2configmgr
-        run: |
-          set PATH=${PATH}:/c/Program Files/Senzing/g2/lib
-          go test -v -p 1 ./g2configmgr
+        run: go test -v -p 1 ./g2configmgr
       - name: Run go test - g2product
-        run: |
-          set PATH=${PATH}:/c/Program Files/Senzing/g2/lib
-          go test -v -p 1 ./g2product
+        run: go test -v -p 1 ./g2product
