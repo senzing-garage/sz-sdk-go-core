@@ -44,7 +44,12 @@ jobs:
       # - name: Run go test
       #   run: go test -v -p 1 ./...
       - name: Run go test - main
-        run: go test -v -p 1 ./.
+        run: |
+          echo "/c/Program Files/Senzing/g2/lib" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          env
+          echo "------------------------------------------------------"
+          dir env:
+          go test -v -p 1 ./.
       - name: Run go test - g2config
         run: go test -v -p 1 ./g2config
       - name: Run go test - g2configmgr
