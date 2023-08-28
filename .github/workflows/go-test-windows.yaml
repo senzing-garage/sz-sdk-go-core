@@ -35,7 +35,7 @@ jobs:
       - name: DEBUG - List environment variables #2
         run: env
       - name: DEBUG - Update Path variable
-        run: export PATH=${PATH}:/c/Program Files/Senzing/g2/lib"
+        run: export PATH=${PATH}:/c/Program Files/Senzing/g2/lib
       - name: DEBUG - List environment variables #3
         run: env
       - name: Install Senzing API
