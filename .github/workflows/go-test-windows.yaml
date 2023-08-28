@@ -51,10 +51,19 @@ jobs:
       # - name: Run go test
       #   run: go test -v -p 1 ./...
       - name: Run go test - main
-        run: go test -v -p 1 ./.
+        run: |
+          set PATH=${PATH}:/c/Program Files/Senzing/g2/lib
+          env
+          go test -v -p 1 ./.
       - name: Run go test - g2config
-        run: go test -v -p 1 ./g2config
+        run: |
+          set PATH=${PATH}:/c/Program Files/Senzing/g2/lib
+          go test -v -p 1 ./g2config
       - name: Run go test - g2configmgr
-        run: go test -v -p 1 ./g2configmgr
+        run: |
+          set PATH=${PATH}:/c/Program Files/Senzing/g2/lib
+          go test -v -p 1 ./g2configmgr
       - name: Run go test - g2product
-        run: go test -v -p 1 ./g2product
+        run: |
+          set PATH=${PATH}:/c/Program Files/Senzing/g2/lib
+          go test -v -p 1 ./g2product
