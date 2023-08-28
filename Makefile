@@ -1,6 +1,6 @@
 # Makefile for g2-sdk-go-base.
 
-# Detect the operating system and architecture
+# Detect the operating system and architecture.
 
 include Makefile.osdetect
 
@@ -26,34 +26,40 @@ GO_PACKAGE_NAME := $(shell echo $(GIT_REMOTE_URL) | sed -e 's|^git@github.com:|g
 PATH := $(MAKEFILE_DIRECTORY)/bin:$(PATH)
 
 # Recursive assignment ('=')
+
 CC = gcc
 GO_OSARCH = $(subst /, ,$@)
 GO_OS = $(word 1, $(GO_OSARCH))
 GO_ARCH = $(word 2, $(GO_OSARCH))
 
-# Export environment variables.
-.EXPORT_ALL_VARIABLES:
+# Conditional assignment. ('?=')
+# Can be overridden with "export"
+# Example: "export LD_LIBRARY_PATH=/path/to/my/senzing/g2/lib"
 
-# -----------------------------------------------------------------------------
 # Optionally override the database URL for running automated tests.  The 
 # conditional assignment ('?=') can be overridden with with a shell environment
 # variable.  If SENZING_TOOLS_DATABASE_URL is not set then a SQLite3 database
 # in the ./target/test/{test-suite} directory is used for each test suite.
-# -----------------------------------------------------------------------------
+
 #SENZING_TOOLS_DATABASE_URL ?= postgresql://username:password@hostname:5432:database/?schema=schemaname
 
-# -----------------------------------------------------------------------------
-# Optionally include platform-specific settings and targets.
-#  - Note: This is last because the "last one wins" when over-writing targets.
-# -----------------------------------------------------------------------------
--include Makefile.$(OSTYPE)
--include Makefile.$(OSTYPE)_$(OSARCH)
+# Export environment variables.
+
+.EXPORT_ALL_VARIABLES:
 
 # -----------------------------------------------------------------------------
 # The first "make" target runs as default.
 # -----------------------------------------------------------------------------
+
 .PHONY: default
 default: help
+
+# -----------------------------------------------------------------------------
+# Operating System / Architecture targets
+# -----------------------------------------------------------------------------
+
+-include Makefile.$(OSTYPE)
+-include Makefile.$(OSTYPE)_$(OSARCH)
 
 # -----------------------------------------------------------------------------
 # Dependency management
@@ -99,15 +105,6 @@ $(PLATFORMS):
 # Utility targets
 # -----------------------------------------------------------------------------
 
-.PHONY: update-pkg-cache
-update-pkg-cache:
-	@GOPROXY=https://proxy.golang.org GO111MODULE=on \
-		go get $(GO_PACKAGE_NAME)@$(BUILD_TAG)
-
-.PHONY: setup
-setup: 
-# do nothing for now
-	
 .PHONY: clean
 clean:
 	@go clean -cache
@@ -118,17 +115,27 @@ clean:
 	@rm -f $(GOPATH)/bin/$(PROGRAM_NAME) || true
 	@rm -rf /tmp/$(PROGRAM_NAME)
 
+
+.PHONY: help
+help:
+	@echo "Build $(PROGRAM_NAME) version $(BUILD_VERSION)-$(BUILD_ITERATION)".
+	@echo "Makefile targets:"
+	@$(MAKE) -pRrq -f $(firstword $(MAKEFILE_LIST)) : 2>/dev/null | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | egrep -v -e '^[^[:alnum:]]' -e '^$@$$' | xargs
+
+
 .PHONY: print-make-variables
 print-make-variables:
 	@$(foreach V,$(sort $(.VARIABLES)), \
 		$(if $(filter-out environment% default automatic, \
 		$(origin $V)),$(warning $V=$($V) ($(value $V)))))
 
-# -----------------------------------------------------------------------------
-# Help
-# -----------------------------------------------------------------------------
-.PHONY: help
-help:
-	@echo "Build $(PROGRAM_NAME) version $(BUILD_VERSION)-$(BUILD_ITERATION)".
-	@echo "Makefile targets:"
-	@$(MAKE) -pRrq -f $(firstword $(MAKEFILE_LIST)) : 2>/dev/null | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | egrep -v -e '^[^[:alnum:]]' -e '^$@$$' | xargs
+
+.PHONY: setup
+setup:
+	@echo "No setup required."
+
+
+.PHONY: update-pkg-cache
+update-pkg-cache:
+	@GOPROXY=https://proxy.golang.org GO111MODULE=on \
+		go get $(GO_PACKAGE_NAME)@$(BUILD_TAG)

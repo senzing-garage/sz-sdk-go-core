@@ -358,6 +358,8 @@ func main() {
 	var err error = nil
 	ctx := context.TODO()
 
+	fmt.Printf(">>>>>> Step 1.0\n")
+
 	// get the base directory for temporary files
 	baseDir := baseDirectoryPath()
 	err = os.RemoveAll(filepath.Clean(baseDir)) // cleanup any previous test run
@@ -366,12 +368,17 @@ func main() {
 		fmt.Println(err)
 		return
 	}
+
+	fmt.Printf(">>>>>> Step 2.0\n")
+
 	err = os.MkdirAll(filepath.Clean(baseDir), 0750) // recreate the test target directory
 	if err != nil {
 		fmt.Printf("Failed to recreate target test directory: %v\n", baseDir)
 		fmt.Println(err)
 		return
 	}
+
+	fmt.Printf(">>>>>> Step 3.0\n")
 
 	// setup the database
 	_, _, err = setupDB(false)
@@ -380,6 +387,8 @@ func main() {
 		fmt.Println(err)
 		return
 	}
+
+	fmt.Printf(">>>>>> Step 4.0\n")
 
 	// Configure the "log" standard library.
 	log.SetFlags(0)

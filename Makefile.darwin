@@ -30,8 +30,8 @@ build: darwin/amd64
 # -----------------------------------------------------------------------------
 
 .PHONY: test
-test: setup
-	@go test -exec macos_exec_dyld.sh -v -p 1 ./... 
+test:
+	@go test -exec macos_exec_dyld.sh -v -p 1 ./...
 #	@go test -exec macos_exec_dyld.sh -v ./.
 #	@go test -exec macos_exec_dyld.sh -v ./g2config
 #	@go test -exec macos_exec_dyld.sh -v ./g2configmgr
@@ -54,4 +54,3 @@ run:
 .PHONY: only-darwin
 only-darwin:
 	@echo "Only darwin has this Makefile target."
-

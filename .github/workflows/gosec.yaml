@@ -9,9 +9,27 @@ on:
   pull_request:
     branches:
       - main
+
+env:
+  LD_LIBRARY_PATH: /opt/senzing/g2/lib
+
 jobs:
   gosec:
     runs-on: ubuntu-latest
+    env:
+      GO111MODULE: on
+      CGO_ENABLED: 1
     steps:
-      - name: Reminder - gosec done in go-test-linux.yaml
-        run: echo "Reminder - gosec done in go-test-linux.yaml"
+      - name: Checkout Source
+        uses: actions/checkout@v3
+      - name: Install Senzing API
+        uses: Senzing/github-action-install-senzing-api@latest
+      - run: cp /opt/senzing/g2/sdk/c/*.h ./g2config/
+      - run: cp /opt/senzing/g2/sdk/c/*.h ./g2configmgr/
+      - run: cp /opt/senzing/g2/sdk/c/*.h ./g2diagnostic/
+      - run: cp /opt/senzing/g2/sdk/c/*.h ./g2engine/
+      - run: cp /opt/senzing/g2/sdk/c/*.h ./g2product/
+      - name: Run Gosec Security Scanner
+        uses: securego/gosec@master
+        with:
+          args: -exclude=G103 -verbose text ./...

@@ -6,7 +6,9 @@ package g2diagnostic
 /*
 #include "g2diagnostic.h"
 #cgo CFLAGS: -g -I/opt/senzing/g2/sdk/c
+#cgo windows CFLAGS: -g -I"C:/Program Files/Senzing/g2/sdk/c"
 #cgo LDFLAGS: -L/opt/senzing/g2/lib -lG2
+#cgo windows LDFLAGS: -L"C:/Program Files/Senzing/g2/lib" -lG2
 */
 import "C"
 
@@ -131,7 +133,7 @@ func (client *G2diagnostic) getLastException(ctx context.Context) (string, error
 		defer func() { client.traceExit(32, result, err, time.Since(entryTime)) }()
 	}
 	stringBuffer := client.getByteArray(initialByteArraySize)
-	C.G2Diagnostic_getLastException((*C.char)(unsafe.Pointer(&stringBuffer[0])), C.ulong(len(stringBuffer)))
+	C.G2Diagnostic_getLastException((*C.char)(unsafe.Pointer(&stringBuffer[0])), C.size_t(len(stringBuffer)))
 	// if result == 0 { // "result" is length of exception message.
 	// 	err = client.getLogger().Error(4014, result, time.Since(entryTime))
 	// }
@@ -305,7 +307,7 @@ func (client *G2diagnostic) FetchNextEntityBySize(ctx context.Context, entityLis
 		defer func() { client.traceExit(10, responseResult, err, time.Since(entryTime)) }()
 	}
 	stringBuffer := client.getByteArray(initialByteArraySize)
-	result := C.G2Diagnostic_fetchNextEntityBySize_helper(C.uintptr_t(entityListBySizeHandle), (*C.char)(unsafe.Pointer(&stringBuffer[0])), C.ulong(len(stringBuffer)))
+	result := C.G2Diagnostic_fetchNextEntityBySize_helper(C.uintptr_t(entityListBySizeHandle), (*C.char)(unsafe.Pointer(&stringBuffer[0])), C.size_t(len(stringBuffer)))
 	if result < 0 {
 		err = client.newError(ctx, 4004, result, time.Since(entryTime))
 	}
