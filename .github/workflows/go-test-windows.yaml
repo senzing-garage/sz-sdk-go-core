@@ -31,12 +31,10 @@ jobs:
       - name: DEBUG - List environment variables #1
         run: env
       - name: DEBUG - Update Path variable
-        run: echo "C:\Program Files\Senzing\g2\lib" >> $GITHUB_PATH
+        run: |
+          echo "C:\Program Files\Senzing\g2\lib" >> $GITHUB_PATH
+          cat ${GITHUB_PATH}
       - name: DEBUG - List environment variables #2
-        run: env
-      - name: DEBUG - Update Path variable
-        run: set PATH=${PATH}:/c/Program Files/Senzing/g2/lib
-      - name: DEBUG - List environment variables #3
         run: env
       - name: Install Senzing API
         uses: Senzing/github-action-install-senzing-api@main
@@ -44,15 +42,11 @@ jobs:
         run: copy testdata/senzing-license/g2.lic "C:\Program Files\Senzing\g2\etc\g2.lic"
       - name: Copy test database files
         run: mkdir "C:\Temp\sqlite" && copy testdata/sqlite/G2C.db "C:\Temp\sqlite\G2C.db"
-      - name: DEBUG - C:\Program Files\Senzing\g2\lib
-        run: dir "C:\Program Files\Senzing\g2\lib"
-      - name: Update Path variable
-        run: echo "C:\Program Files\Senzing\g2\lib" >> $GITHUB_PATH
       # - name: Run go test
       #   run: go test -v -p 1 ./...
       - name: Run go test - main
         run: |
-          set PATH=${PATH}:/c/Program Files/Senzing/g2/lib
+          echo "C:\Program Files\Senzing\g2\lib" >> $GITHUB_PATH
           env
           go test -v -p 1 ./.
       - name: Run go test - g2config
