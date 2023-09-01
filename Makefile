@@ -36,7 +36,7 @@ GO_ARCH = $(word 2, $(GO_OSARCH))
 # Can be overridden with "export"
 # Example: "export LD_LIBRARY_PATH=/path/to/my/senzing/g2/lib"
 
-# Optionally override the database URL for running automated tests.  The 
+# Optionally override the database URL for running automated tests.  The
 # conditional assignment ('?=') can be overridden with with a shell environment
 # variable.  If SENZING_TOOLS_DATABASE_URL is not set then a SQLite3 database
 # in the ./target/test/{test-suite} directory is used for each test suite.
@@ -128,11 +128,6 @@ print-make-variables:
 	@$(foreach V,$(sort $(.VARIABLES)), \
 		$(if $(filter-out environment% default automatic, \
 		$(origin $V)),$(warning $V=$($V) ($(value $V)))))
-
-
-.PHONY: setup
-setup:
-	@echo "No setup required."
 
 
 .PHONY: update-pkg-cache
