@@ -469,7 +469,7 @@ func TestG2configmgr_AddConfig(test *testing.T) {
 	}
 	configStr, err3 := g2config.Save(ctx, configHandle)
 	if err3 != nil {
-		test.Log("Error:", err2.Error())
+		test.Log("Error:", err3.Error())
 		assert.FailNow(test, configStr)
 	}
 	configComments := fmt.Sprintf("g2configmgr_test at %s", now.UTC())
