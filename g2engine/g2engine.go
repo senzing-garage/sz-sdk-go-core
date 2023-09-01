@@ -4,6 +4,7 @@ The G2engineImpl implementation is a wrapper over the Senzing libg2 library.
 package g2engine
 
 /*
+#include <stdlib.h>
 #include "libg2.h"
 #include "golang_helpers.h"
 #cgo CFLAGS: -g -I/opt/senzing/g2/sdk/c -I/opt/senzing/g2/sdk/c/gohelpers

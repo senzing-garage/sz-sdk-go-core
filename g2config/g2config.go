@@ -4,6 +4,7 @@ The G2config implementation is a wrapper over the Senzing libg2config library.
 package g2config
 
 /*
+#include <stdlib.h>
 #include "libg2config.h"
 #include "golang_helpers.h"
 #cgo CFLAGS: -g -I/opt/senzing/g2/sdk/c -I/opt/senzing/g2/sdk/c/gohelpers

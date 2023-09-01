@@ -4,6 +4,7 @@ The G2configmgr implementation is a wrapper over the Senzing libg2configmgr libr
 package g2configmgr
 
 /*
+#include <stdlib.h>
 #include "libg2configmgr.h"
 #include "golang_helpers.h"
 #cgo CFLAGS: -g -I/opt/senzing/g2/sdk/c -I/opt/senzing/g2/sdk/c/gohelpers

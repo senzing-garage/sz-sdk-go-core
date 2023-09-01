@@ -4,6 +4,7 @@ The G2productImpl implementation is a wrapper over the Senzing libg2product libr
 package g2product
 
 /*
+#include <stdlib.h>
 #include "libg2product.h"
 #include "golang_helpers.h"
 #cgo CFLAGS: -g -I/opt/senzing/g2/sdk/c -I/opt/senzing/g2/sdk/c/gohelpers
