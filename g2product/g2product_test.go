@@ -305,14 +305,14 @@ func TestG2product_License(test *testing.T) {
 	printActual(test, actual)
 }
 
-// func TestG2product_ValidateLicenseFile(test *testing.T) {
-// 	ctx := context.TODO()
-// 	g2product := getTestObject(ctx, test)
-// 	licenseFilePath := "testdata/senzing-license/g2.lic"
-// 	actual, err := g2product.ValidateLicenseFile(ctx, licenseFilePath)
-// 	testErrorNoFail(test, ctx, g2product, err)
-// 	printActual(test, actual)
-// }
+func TestG2product_ValidateLicenseFile(test *testing.T) {
+	ctx := context.TODO()
+	g2product := getTestObject(ctx, test)
+	licenseFilePath := "testdata/senzing-license/g2.lic"
+	actual, err := g2product.ValidateLicenseFile(ctx, licenseFilePath)
+	testErrorNoFail(test, ctx, g2product, err)
+	printActual(test, actual)
+}
 
 func TestG2product_ValidateLicenseStringBase64(test *testing.T) {
 	ctx := context.TODO()
