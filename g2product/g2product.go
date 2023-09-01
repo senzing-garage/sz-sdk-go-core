@@ -6,9 +6,9 @@ package g2product
 /*
 #include <stdlib.h>
 #include "libg2product.h"
-#include "golang_helpers.h"
-#cgo CFLAGS: -g -I/opt/senzing/g2/sdk/c -I/opt/senzing/g2/sdk/c/gohelpers
-#cgo windows CFLAGS: -g -I"C:/Program Files/Senzing/g2/sdk/c" -I"C:/Program Files/Senzing/g2/sdk/c/gohelpers"
+#include "gohelpers/golang_helpers.h"
+#cgo CFLAGS: -g -I/opt/senzing/g2/sdk/c
+#cgo windows CFLAGS: -g -I"C:/Program Files/Senzing/g2/sdk/c"
 #cgo LDFLAGS: -L/opt/senzing/g2/lib -lG2
 #cgo windows LDFLAGS: -L"C:/Program Files/Senzing/g2/lib" -lG2
 */
