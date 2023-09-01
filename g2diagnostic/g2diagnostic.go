@@ -4,7 +4,8 @@ The G2diagnostic implementation is a wrapper over the Senzing libg2diagnostic li
 package g2diagnostic
 
 /*
-#include "g2diagnostic.h"
+#include "libg2diagnostic.h"
+#include "gohelpers/golang_helpers.h"
 #cgo CFLAGS: -g -I/opt/senzing/g2/sdk/c
 #cgo windows CFLAGS: -g -I"C:/Program Files/Senzing/g2/sdk/c"
 #cgo LDFLAGS: -L/opt/senzing/g2/lib -lG2
