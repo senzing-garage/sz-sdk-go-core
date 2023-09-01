@@ -298,46 +298,46 @@ Output
   - The record identifier.
     Example: `2D4DABB3FAEAFBD452E9487D06FABC22DC69C846`
 */
-func (client *G2engine) AddRecordWithInfoWithReturnedRecordID(ctx context.Context, dataSourceCode string, jsonData string, loadID string, flags int64) (string, string, error) {
-	//  _DLEXPORT int G2_addRecordWithInfoWithReturnedRecordID(const char* dataSourceCode, const char* jsonData, const char *loadID, const long long flags, char *recordIDBuf, const size_t recordIDBufSize, char **responseBuf, size_t *responseBufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
-	runtime.LockOSThread()
-	defer runtime.UnlockOSThread()
-	var err error = nil
-	entryTime := time.Now()
-	var resultWithInfo string
-	var resultRecordID string
-	if client.isTrace {
-		client.traceEntry(5, dataSourceCode, jsonData, loadID, flags)
-		defer func() {
-			client.traceExit(6, dataSourceCode, jsonData, loadID, flags, resultWithInfo, resultRecordID, err, time.Since(entryTime))
-		}()
-	}
-	dataSourceCodeForC := C.CString(dataSourceCode)
-	defer C.free(unsafe.Pointer(dataSourceCodeForC))
-	jsonDataForC := C.CString(jsonData)
-	defer C.free(unsafe.Pointer(jsonDataForC))
-	loadIDForC := C.CString(loadID)
-	defer C.free(unsafe.Pointer(loadIDForC))
-	result := C.G2_addRecordWithInfoWithReturnedRecordID_helper(dataSourceCodeForC, jsonDataForC, loadIDForC, C.longlong(flags))
-	if result.returnCode != 0 {
-		err = client.newError(ctx, 4003, dataSourceCode, jsonData, loadID, flags, result.returnCode, result, time.Since(entryTime))
-	}
-	resultWithInfo = C.GoString(result.withInfo)
-	resultRecordID = C.GoString(result.recordID)
-	C.free(unsafe.Pointer(result.withInfo))
-	C.free(unsafe.Pointer(result.recordID))
-	if client.observers != nil {
-		go func() {
-			details := map[string]string{
-				"dataSourceCode": dataSourceCode,
-				"recordID":       resultRecordID,
-				"loadID":         loadID,
-			}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8003, err, details)
-		}()
-	}
-	return resultWithInfo, resultRecordID, err
-}
+// func (client *G2engine) AddRecordWithInfoWithReturnedRecordID(ctx context.Context, dataSourceCode string, jsonData string, loadID string, flags int64) (string, string, error) {
+// 	//  _DLEXPORT int G2_addRecordWithInfoWithReturnedRecordID(const char* dataSourceCode, const char* jsonData, const char *loadID, const long long flags, char *recordIDBuf, const size_t recordIDBufSize, char **responseBuf, size_t *responseBufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
+// 	runtime.LockOSThread()
+// 	defer runtime.UnlockOSThread()
+// 	var err error = nil
+// 	entryTime := time.Now()
+// 	var resultWithInfo string
+// 	var resultRecordID string
+// 	if client.isTrace {
+// 		client.traceEntry(5, dataSourceCode, jsonData, loadID, flags)
+// 		defer func() {
+// 			client.traceExit(6, dataSourceCode, jsonData, loadID, flags, resultWithInfo, resultRecordID, err, time.Since(entryTime))
+// 		}()
+// 	}
+// 	dataSourceCodeForC := C.CString(dataSourceCode)
+// 	defer C.free(unsafe.Pointer(dataSourceCodeForC))
+// 	jsonDataForC := C.CString(jsonData)
+// 	defer C.free(unsafe.Pointer(jsonDataForC))
+// 	loadIDForC := C.CString(loadID)
+// 	defer C.free(unsafe.Pointer(loadIDForC))
+// 	result := C.G2_addRecordWithInfoWithReturnedRecordID_helper(dataSourceCodeForC, jsonDataForC, loadIDForC, C.longlong(flags))
+// 	if result.returnCode != 0 {
+// 		err = client.newError(ctx, 4003, dataSourceCode, jsonData, loadID, flags, result.returnCode, result, time.Since(entryTime))
+// 	}
+// 	resultWithInfo = C.GoString(result.withInfo)
+// 	resultRecordID = C.GoString(result.recordID)
+// 	C.free(unsafe.Pointer(result.withInfo))
+// 	C.free(unsafe.Pointer(result.recordID))
+// 	if client.observers != nil {
+// 		go func() {
+// 			details := map[string]string{
+// 				"dataSourceCode": dataSourceCode,
+// 				"recordID":       resultRecordID,
+// 				"loadID":         loadID,
+// 			}
+// 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8003, err, details)
+// 		}()
+// 	}
+// 	return resultWithInfo, resultRecordID, err
+// }
 
 /*
 The AddRecordWithReturnedRecordID method adds a record into the Senzing repository and returns the record identifier.
@@ -352,43 +352,43 @@ Output
   - The record identifier.
     Example: `2D4DABB3FAEAFBD452E9487D06FABC22DC69C846`
 */
-func (client *G2engine) AddRecordWithReturnedRecordID(ctx context.Context, dataSourceCode string, jsonData string, loadID string) (string, error) {
-	//  _DLEXPORT int G2_addRecordWithReturnedRecordID(const char* dataSourceCode, const char* jsonData, const char *loadID, char *recordIDBuf, const size_t bufSize);
-	runtime.LockOSThread()
-	defer runtime.UnlockOSThread()
-	var err error = nil
-	entryTime := time.Now()
-	var resultRecordID string
-	if client.isTrace {
-		client.traceEntry(7, dataSourceCode, jsonData, loadID)
-		defer func() {
-			client.traceExit(8, dataSourceCode, jsonData, loadID, resultRecordID, err, time.Since(entryTime))
-		}()
-	}
-	dataSourceCodeForC := C.CString(dataSourceCode)
-	defer C.free(unsafe.Pointer(dataSourceCodeForC))
-	jsonDataForC := C.CString(jsonData)
-	defer C.free(unsafe.Pointer(jsonDataForC))
-	loadIDForC := C.CString(loadID)
-	defer C.free(unsafe.Pointer(loadIDForC))
-	result := C.G2_addRecordWithReturnedRecordID_helper(dataSourceCodeForC, jsonDataForC, loadIDForC)
-	if result.returnCode != 0 {
-		err = client.newError(ctx, 4004, dataSourceCode, jsonData, loadID, result.returnCode, time.Since(entryTime))
-	}
-	resultRecordID = C.GoString(result.recordID)
-	C.free(unsafe.Pointer(result.recordID))
-	if client.observers != nil {
-		go func() {
-			details := map[string]string{
-				"dataSourceCode": dataSourceCode,
-				"recordID":       resultRecordID,
-				"loadID":         loadID,
-			}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8004, err, details)
-		}()
-	}
-	return resultRecordID, err
-}
+// func (client *G2engine) AddRecordWithReturnedRecordID(ctx context.Context, dataSourceCode string, jsonData string, loadID string) (string, error) {
+// 	//  _DLEXPORT int G2_addRecordWithReturnedRecordID(const char* dataSourceCode, const char* jsonData, const char *loadID, char *recordIDBuf, const size_t bufSize);
+// 	runtime.LockOSThread()
+// 	defer runtime.UnlockOSThread()
+// 	var err error = nil
+// 	entryTime := time.Now()
+// 	var resultRecordID string
+// 	if client.isTrace {
+// 		client.traceEntry(7, dataSourceCode, jsonData, loadID)
+// 		defer func() {
+// 			client.traceExit(8, dataSourceCode, jsonData, loadID, resultRecordID, err, time.Since(entryTime))
+// 		}()
+// 	}
+// 	dataSourceCodeForC := C.CString(dataSourceCode)
+// 	defer C.free(unsafe.Pointer(dataSourceCodeForC))
+// 	jsonDataForC := C.CString(jsonData)
+// 	defer C.free(unsafe.Pointer(jsonDataForC))
+// 	loadIDForC := C.CString(loadID)
+// 	defer C.free(unsafe.Pointer(loadIDForC))
+// 	result := C.G2_addRecordWithReturnedRecordID_helper(dataSourceCodeForC, jsonDataForC, loadIDForC)
+// 	if result.returnCode != 0 {
+// 		err = client.newError(ctx, 4004, dataSourceCode, jsonData, loadID, result.returnCode, time.Since(entryTime))
+// 	}
+// 	resultRecordID = C.GoString(result.recordID)
+// 	C.free(unsafe.Pointer(result.recordID))
+// 	if client.observers != nil {
+// 		go func() {
+// 			details := map[string]string{
+// 				"dataSourceCode": dataSourceCode,
+// 				"recordID":       resultRecordID,
+// 				"loadID":         loadID,
+// 			}
+// 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8004, err, details)
+// 		}()
+// 	}
+// 	return resultRecordID, err
+// }
 
 /*
 The CheckRecord method FIXME:.
@@ -403,35 +403,35 @@ Output
   - A JSON document that FIXME:
     See the example output.
 */
-func (client *G2engine) CheckRecord(ctx context.Context, record string, recordQueryList string) (string, error) {
-	//  _DLEXPORT int G2_checkRecord(const char *record, const char* recordQueryList, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize) );
-	runtime.LockOSThread()
-	defer runtime.UnlockOSThread()
-	var err error = nil
-	entryTime := time.Now()
-	var resultResponse string
-	if client.isTrace {
-		client.traceEntry(9, record, recordQueryList)
-		defer func() { client.traceExit(10, record, recordQueryList, resultResponse, err, time.Since(entryTime)) }()
-	}
-	recordForC := C.CString(record)
-	defer C.free(unsafe.Pointer(recordForC))
-	recordQueryListForC := C.CString(recordQueryList)
-	defer C.free(unsafe.Pointer(recordQueryListForC))
-	result := C.G2_checkRecord_helper(recordForC, recordQueryListForC)
-	if result.returnCode != 0 {
-		err = client.newError(ctx, 4005, record, recordQueryList, result.returnCode, time.Since(entryTime))
-	}
-	resultResponse = C.GoString(result.response)
-	C.free(unsafe.Pointer(result.response))
-	if client.observers != nil {
-		go func() {
-			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8005, err, details)
-		}()
-	}
-	return resultResponse, err
-}
+// func (client *G2engine) CheckRecord(ctx context.Context, record string, recordQueryList string) (string, error) {
+// 	//  _DLEXPORT int G2_checkRecord(const char *record, const char* recordQueryList, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize) );
+// 	runtime.LockOSThread()
+// 	defer runtime.UnlockOSThread()
+// 	var err error = nil
+// 	entryTime := time.Now()
+// 	var resultResponse string
+// 	if client.isTrace {
+// 		client.traceEntry(9, record, recordQueryList)
+// 		defer func() { client.traceExit(10, record, recordQueryList, resultResponse, err, time.Since(entryTime)) }()
+// 	}
+// 	recordForC := C.CString(record)
+// 	defer C.free(unsafe.Pointer(recordForC))
+// 	recordQueryListForC := C.CString(recordQueryList)
+// 	defer C.free(unsafe.Pointer(recordQueryListForC))
+// 	result := C.G2_checkRecord_helper(recordForC, recordQueryListForC)
+// 	if result.returnCode != 0 {
+// 		err = client.newError(ctx, 4005, record, recordQueryList, result.returnCode, time.Since(entryTime))
+// 	}
+// 	resultResponse = C.GoString(result.response)
+// 	C.free(unsafe.Pointer(result.response))
+// 	if client.observers != nil {
+// 		go func() {
+// 			details := map[string]string{}
+// 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8005, err, details)
+// 		}()
+// 	}
+// 	return resultResponse, err
+// }
 
 /*
 The CloseExport method closes the exported document created by ExportJSONEntityReport().
@@ -2529,31 +2529,31 @@ Input
 Output
   - A JSON document.
 */
-func (client *G2engine) ProcessRedoRecord(ctx context.Context) (string, error) {
-	//  _DLEXPORT int G2_processRedoRecord(char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize) );
-	runtime.LockOSThread()
-	defer runtime.UnlockOSThread()
-	var err error = nil
-	entryTime := time.Now()
-	var resultResponse string
-	if client.isTrace {
-		client.traceEntry(107)
-		defer func() { client.traceExit(108, resultResponse, err, time.Since(entryTime)) }()
-	}
-	result := C.G2_processRedoRecord_helper()
-	if result.returnCode != 0 {
-		err = client.newError(ctx, 4051, result.returnCode, result, time.Since(entryTime))
-	}
-	resultResponse = C.GoString(result.response)
-	C.free(unsafe.Pointer(result.response))
-	if client.observers != nil {
-		go func() {
-			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8051, err, details)
-		}()
-	}
-	return resultResponse, err
-}
+// func (client *G2engine) ProcessRedoRecord(ctx context.Context) (string, error) {
+// 	//  _DLEXPORT int G2_processRedoRecord(char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize) );
+// 	runtime.LockOSThread()
+// 	defer runtime.UnlockOSThread()
+// 	var err error = nil
+// 	entryTime := time.Now()
+// 	var resultResponse string
+// 	if client.isTrace {
+// 		client.traceEntry(107)
+// 		defer func() { client.traceExit(108, resultResponse, err, time.Since(entryTime)) }()
+// 	}
+// 	result := C.G2_processRedoRecord_helper()
+// 	if result.returnCode != 0 {
+// 		err = client.newError(ctx, 4051, result.returnCode, result, time.Since(entryTime))
+// 	}
+// 	resultResponse = C.GoString(result.response)
+// 	C.free(unsafe.Pointer(result.response))
+// 	if client.observers != nil {
+// 		go func() {
+// 			details := map[string]string{}
+// 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8051, err, details)
+// 		}()
+// 	}
+// 	return resultResponse, err
+// }
 
 /*
 The ProcessRedoRecordWithInfo method processes the next redo record and returns it and affected entities.
@@ -2567,34 +2567,34 @@ Output
   - A JSON document with the record that was re-done.
   - A JSON document with affected entities.
 */
-func (client *G2engine) ProcessRedoRecordWithInfo(ctx context.Context, flags int64) (string, string, error) {
-	//  _DLEXPORT int G2_processRedoRecordWithInfo(const long long flags, char **responseBuf, size_t *bufSize, char **infoBuf, size_t *infoBufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
-	runtime.LockOSThread()
-	defer runtime.UnlockOSThread()
-	var err error = nil
-	entryTime := time.Now()
-	var resultResponse string
-	var resultWithInfo string
-	if client.isTrace {
-		client.traceEntry(109, flags)
-		defer func() { client.traceExit(110, flags, resultResponse, resultWithInfo, err, time.Since(entryTime)) }()
-	}
-	result := C.G2_processRedoRecordWithInfo_helper(C.longlong(flags))
-	if result.returnCode != 0 {
-		err = client.newError(ctx, 4052, flags, result.returnCode, result, time.Since(entryTime))
-	}
-	resultResponse = C.GoString(result.response)
-	resultWithInfo = C.GoString(result.withInfo)
-	C.free(unsafe.Pointer(result.response))
-	C.free(unsafe.Pointer(result.withInfo))
-	if client.observers != nil {
-		go func() {
-			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8052, err, details)
-		}()
-	}
-	return resultResponse, resultWithInfo, err
-}
+// func (client *G2engine) ProcessRedoRecordWithInfo(ctx context.Context, flags int64) (string, string, error) {
+// 	//  _DLEXPORT int G2_processRedoRecordWithInfo(const long long flags, char **responseBuf, size_t *bufSize, char **infoBuf, size_t *infoBufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
+// 	runtime.LockOSThread()
+// 	defer runtime.UnlockOSThread()
+// 	var err error = nil
+// 	entryTime := time.Now()
+// 	var resultResponse string
+// 	var resultWithInfo string
+// 	if client.isTrace {
+// 		client.traceEntry(109, flags)
+// 		defer func() { client.traceExit(110, flags, resultResponse, resultWithInfo, err, time.Since(entryTime)) }()
+// 	}
+// 	result := C.G2_processRedoRecordWithInfo_helper(C.longlong(flags))
+// 	if result.returnCode != 0 {
+// 		err = client.newError(ctx, 4052, flags, result.returnCode, result, time.Since(entryTime))
+// 	}
+// 	resultResponse = C.GoString(result.response)
+// 	resultWithInfo = C.GoString(result.withInfo)
+// 	C.free(unsafe.Pointer(result.response))
+// 	C.free(unsafe.Pointer(result.withInfo))
+// 	if client.observers != nil {
+// 		go func() {
+// 			details := map[string]string{}
+// 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8052, err, details)
+// 		}()
+// 	}
+// 	return resultResponse, resultWithInfo, err
+// }
 
 /*
 The ProcessWithInfo method FIXME:
@@ -2647,33 +2647,33 @@ Output
   - A JSON document.
     See the example output.
 */
-func (client *G2engine) ProcessWithResponse(ctx context.Context, record string) (string, error) {
-	//  _DLEXPORT int G2_processWithResponse(const char *record, char *responseBuf, const size_t bufSize);
-	runtime.LockOSThread()
-	defer runtime.UnlockOSThread()
-	var err error = nil
-	entryTime := time.Now()
-	var resultResponse string
-	if client.isTrace {
-		client.traceEntry(113, record)
-		defer func() { client.traceExit(114, record, resultResponse, err, time.Since(entryTime)) }()
-	}
-	recordForC := C.CString(record)
-	defer C.free(unsafe.Pointer(recordForC))
-	result := C.G2_processWithResponse_helper(recordForC)
-	if result.returnCode != 0 {
-		err = client.newError(ctx, 4054, record, result.returnCode, time.Since(entryTime))
-	}
-	resultResponse = C.GoString(result.response)
-	C.free(unsafe.Pointer(result.response))
-	if client.observers != nil {
-		go func() {
-			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8054, err, details)
-		}()
-	}
-	return resultResponse, err
-}
+// func (client *G2engine) ProcessWithResponse(ctx context.Context, record string) (string, error) {
+// 	//  _DLEXPORT int G2_processWithResponse(const char *record, char *responseBuf, const size_t bufSize);
+// 	runtime.LockOSThread()
+// 	defer runtime.UnlockOSThread()
+// 	var err error = nil
+// 	entryTime := time.Now()
+// 	var resultResponse string
+// 	if client.isTrace {
+// 		client.traceEntry(113, record)
+// 		defer func() { client.traceExit(114, record, resultResponse, err, time.Since(entryTime)) }()
+// 	}
+// 	recordForC := C.CString(record)
+// 	defer C.free(unsafe.Pointer(recordForC))
+// 	result := C.G2_processWithResponse_helper(recordForC)
+// 	if result.returnCode != 0 {
+// 		err = client.newError(ctx, 4054, record, result.returnCode, time.Since(entryTime))
+// 	}
+// 	resultResponse = C.GoString(result.response)
+// 	C.free(unsafe.Pointer(result.response))
+// 	if client.observers != nil {
+// 		go func() {
+// 			details := map[string]string{}
+// 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8054, err, details)
+// 		}()
+// 	}
+// 	return resultResponse, err
+// }
 
 /*
 The ProcessWithResponseResize method FIXME:
@@ -2686,33 +2686,33 @@ Output
   - A JSON document.
     See the example output.
 */
-func (client *G2engine) ProcessWithResponseResize(ctx context.Context, record string) (string, error) {
-	//  _DLEXPORT int G2_processWithResponseResize(const char *record, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize) );
-	runtime.LockOSThread()
-	defer runtime.UnlockOSThread()
-	var err error = nil
-	entryTime := time.Now()
-	var resultResponse string
-	if client.isTrace {
-		client.traceEntry(115, record)
-		defer func() { client.traceExit(116, record, resultResponse, err, time.Since(entryTime)) }()
-	}
-	recordForC := C.CString(record)
-	defer C.free(unsafe.Pointer(recordForC))
-	result := C.G2_processWithResponseResize_helper(recordForC)
-	if result.returnCode != 0 {
-		err = client.newError(ctx, 4055, record, result.returnCode, time.Since(entryTime))
-	}
-	resultResponse = C.GoString(result.response)
-	C.free(unsafe.Pointer(result.response))
-	if client.observers != nil {
-		go func() {
-			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8055, err, details)
-		}()
-	}
-	return resultResponse, err
-}
+// func (client *G2engine) ProcessWithResponseResize(ctx context.Context, record string) (string, error) {
+// 	//  _DLEXPORT int G2_processWithResponseResize(const char *record, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize) );
+// 	runtime.LockOSThread()
+// 	defer runtime.UnlockOSThread()
+// 	var err error = nil
+// 	entryTime := time.Now()
+// 	var resultResponse string
+// 	if client.isTrace {
+// 		client.traceEntry(115, record)
+// 		defer func() { client.traceExit(116, record, resultResponse, err, time.Since(entryTime)) }()
+// 	}
+// 	recordForC := C.CString(record)
+// 	defer C.free(unsafe.Pointer(recordForC))
+// 	result := C.G2_processWithResponseResize_helper(recordForC)
+// 	if result.returnCode != 0 {
+// 		err = client.newError(ctx, 4055, record, result.returnCode, time.Since(entryTime))
+// 	}
+// 	resultResponse = C.GoString(result.response)
+// 	C.free(unsafe.Pointer(result.response))
+// 	if client.observers != nil {
+// 		go func() {
+// 			details := map[string]string{}
+// 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8055, err, details)
+// 		}()
+// 	}
+// 	return resultResponse, err
+// }
 
 /*
 The PurgeRepository method removes every record in the Senzing repository.
