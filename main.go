@@ -18,7 +18,6 @@ import (
 	"github.com/senzing/g2-sdk-go/g2api"
 	futil "github.com/senzing/go-common/fileutil"
 	"github.com/senzing/go-common/g2engineconfigurationjson"
-	"github.com/senzing/go-common/truthset"
 	"github.com/senzing/go-logging/logging"
 	"github.com/senzing/go-observing/observer"
 	"github.com/senzing/go-observing/observerpb"
@@ -221,12 +220,12 @@ func demonstrateConfigFunctions(ctx context.Context, g2Config g2api.G2config, g2
 
 	// Using G2Config: Add data source to in-memory configuration.
 
-	for _, testDataSource := range truthset.TruthsetDataSources {
-		_, err := g2Config.AddDataSource(ctx, configHandle, testDataSource.Json)
-		if err != nil {
-			return logger.NewError(5101, err)
-		}
-	}
+	// for _, testDataSource := range truthset.TruthsetDataSources {
+	// 	_, err := g2Config.AddDataSource(ctx, configHandle, testDataSource.Json)
+	// 	if err != nil {
+	// 		return logger.NewError(5101, err)
+	// 	}
+	// }
 
 	// Using G2Config: Persist configuration to a string.
 
