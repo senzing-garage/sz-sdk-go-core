@@ -200,6 +200,9 @@ func (client *G2config) AddDataSource(ctx context.Context, configHandle uintptr,
 	// _DLEXPORT int G2Config_addDataSource(ConfigHandle configHandle, const char *inputJson, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+
+	fmt.Printf("\n\n\n>>>>>>>>>>>>>>>>>>>>>>>> In AddDataSource: %s\n\n\n")
+
 	var err error = nil
 	entryTime := time.Now()
 	var resultResponse string
@@ -225,6 +228,9 @@ func (client *G2config) AddDataSource(ctx context.Context, configHandle uintptr,
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8001, err, details)
 		}()
 	}
+
+	fmt.Printf("\n\n\n>>>>>>>>>>>>>>>>>>>>>>>> Out AddDataSource: %s\n\n\n")
+
 	return resultResponse, err
 }
 
