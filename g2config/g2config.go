@@ -201,7 +201,7 @@ func (client *G2config) AddDataSource(ctx context.Context, configHandle uintptr,
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 
-	fmt.Printf("\n\n\n>>>>>>>>>>>>>>>>>>>>>>>> In AddDataSource: %s\n\n\n")
+	fmt.Printf("\n\n\n>>>>>>>>>>>>>>>>>>>>>>>> In AddDataSource\n\n\n")
 
 	var err error = nil
 	entryTime := time.Now()
@@ -229,7 +229,7 @@ func (client *G2config) AddDataSource(ctx context.Context, configHandle uintptr,
 		}()
 	}
 
-	fmt.Printf("\n\n\n>>>>>>>>>>>>>>>>>>>>>>>> Out AddDataSource: %s\n\n\n")
+	fmt.Printf("\n\n\n>>>>>>>>>>>>>>>>>>>>>>>> Out AddDataSource\n\n\n")
 
 	return resultResponse, err
 }
