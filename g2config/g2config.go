@@ -212,6 +212,7 @@ func (client *G2config) AddDataSource(ctx context.Context, configHandle uintptr,
 	result := C.G2Config_addDataSource_helper(C.uintptr_t(configHandle), inputJsonForC)
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4001, configHandle, inputJson, result.returnCode, result, time.Since(entryTime))
+		fmt.Printf("\n\n\n>>>>>>>>>>>>>>>>>>>>>>>> Error: %s\n\n\n", err)
 	}
 	resultResponse = C.GoString(result.response)
 	C.free(unsafe.Pointer(result.response))
