@@ -19,7 +19,7 @@ jobs:
       matrix:
         senzingapi-version: ["staging"]
         go: ["1.21"]
-    name: Senzing API ${{ matrix.senzingapi-version }} Go ${{ matrix.go }} - linux
+    name: Go ${{ matrix.go }} using Senzing API ${{ matrix.senzingapi-version }} on linux
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -37,13 +37,13 @@ jobs:
         run: sudo cp testdata/senzing-license/g2.lic /etc/opt/senzing
       - name: Copy test database files
         run: mkdir /tmp/sqlite && cp testdata/sqlite/G2C.db /tmp/sqlite/G2C.db
-      # - name: Run go test
-      #   run: go test -v -p 1 ./...
-      - name: Run go test - main
-        run: go test -v -p 1 ./.
-      - name: Run go test - g2config
-        run: go test -v -p 1 ./g2config
-      - name: Run go test - g2configmgr
-        run: go test -v -p 1 ./g2configmgr
-      - name: Run go test - g2product
-        run: go test -v -p 1 ./g2product
+      - name: Run go test
+        run: go test -v -p 1 ./...
+      # - name: Run go test - main
+      #   run: go test -v -p 1 ./.
+      # - name: Run go test - g2config
+      #   run: go test -v -p 1 ./g2config
+      # - name: Run go test - g2configmgr
+      #   run: go test -v -p 1 ./g2configmgr
+      # - name: Run go test - g2product
+      #   run: go test -v -p 1 ./g2product

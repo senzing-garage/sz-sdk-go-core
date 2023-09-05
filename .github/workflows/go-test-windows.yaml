@@ -18,7 +18,7 @@ jobs:
       matrix:
         senzingapi-version: ["staging"]
         go: ["1.21"]
-    name: Senzing API ${{ matrix.senzingapi-version }} Go ${{ matrix.go }} - windows
+    name: Go ${{ matrix.go }} using Senzing API ${{ matrix.senzingapi-version }} on windows
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3

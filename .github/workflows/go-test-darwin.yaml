@@ -20,7 +20,7 @@ jobs:
       matrix:
         senzingapi-version: ["staging"]
         go: ["1.21"]
-    name: Senzing API ${{ matrix.senzingapi-version }} Go ${{ matrix.go }} - darwin
+    name: Go ${{ matrix.go }} using Senzing API ${{ matrix.senzingapi-version }} on darwin
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -38,13 +38,13 @@ jobs:
         run: sudo cp testdata/senzing-license/g2.lic /opt/senzing/g2/etc/g2.lic
       - name: Copy test database files
         run: mkdir /tmp/sqlite && cp testdata/sqlite/G2C.db /tmp/sqlite/G2C.db
-      # - name: Run go test
-      #   run: go test -exec /Users/runner/work/g2-sdk-go-base/g2-sdk-go-base/bin/macos_exec_dyld.sh -v -p 1 ./...
-      - name: Run go test - main
-        run: go test -exec /Users/runner/work/g2-sdk-go-base/g2-sdk-go-base/bin/macos_exec_dyld.sh -v -p 1 ./.
-      - name: Run go test - g2config
-        run: go test -exec /Users/runner/work/g2-sdk-go-base/g2-sdk-go-base/bin/macos_exec_dyld.sh -v -p 1 ./g2config
-      - name: Run go test - g2configmgr
-        run: go test -exec /Users/runner/work/g2-sdk-go-base/g2-sdk-go-base/bin/macos_exec_dyld.sh -v -p 1 ./g2configmgr
-      - name: Run go test - g2product
-        run: go test -exec /Users/runner/work/g2-sdk-go-base/g2-sdk-go-base/bin/macos_exec_dyld.sh -v -p 1 ./g2product
+      - name: Run go test
+        run: go test -exec /Users/runner/work/g2-sdk-go-base/g2-sdk-go-base/bin/macos_exec_dyld.sh -v -p 1 ./...
+      # - name: Run go test - main
+      #   run: go test -exec /Users/runner/work/g2-sdk-go-base/g2-sdk-go-base/bin/macos_exec_dyld.sh -v -p 1 ./.
+      # - name: Run go test - g2config
+      #   run: go test -exec /Users/runner/work/g2-sdk-go-base/g2-sdk-go-base/bin/macos_exec_dyld.sh -v -p 1 ./g2config
+      # - name: Run go test - g2configmgr
+      #   run: go test -exec /Users/runner/work/g2-sdk-go-base/g2-sdk-go-base/bin/macos_exec_dyld.sh -v -p 1 ./g2configmgr
+      # - name: Run go test - g2product
+      #   run: go test -exec /Users/runner/work/g2-sdk-go-base/g2-sdk-go-base/bin/macos_exec_dyld.sh -v -p 1 ./g2product
