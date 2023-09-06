@@ -51,6 +51,13 @@ run:
 # Utility targets
 # -----------------------------------------------------------------------------
 
+.PHONY: clean-platform
+clean-platform:
+	@rm -rf $(TARGET_DIRECTORY) || true
+	@rm -f $(GOPATH)/bin/$(PROGRAM_NAME) || true
+	@rm -rf /tmp/$(PROGRAM_NAME) || true
+
+
 .PHONY: setup
 setup:
 	@rm -rf /tmp/sqlite

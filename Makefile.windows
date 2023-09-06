@@ -29,9 +29,9 @@ build: windows/amd64
 
 .PHONY: test
 test:
-#	@go test -v -p 1 ./...
+	@go test -v -p 1 ./...
 #	@go test -v -p 1 ./.
-	@go test -v -p 1 ./g2config
+#	@go test -v -p 1 ./g2config
 #	@go test -v -p 1 ./g2configmgr
 #	@go test -v -p 1 ./g2diagnostic
 #	@go test -v -p 1 ./g2engine
@@ -41,7 +41,6 @@ test:
 # Run
 # -----------------------------------------------------------------------------
 
-
 .PHONY: run
 run:
 	@go run main.go
@@ -49,6 +48,12 @@ run:
 # -----------------------------------------------------------------------------
 # Utility targets
 # -----------------------------------------------------------------------------
+
+.PHONY: clean-platform
+clean-platform:
+	@del /f /s /q $(TARGET_DIRECTORY)
+	@del /f /s /q $(GOPATH)/bin/$(PROGRAM_NAME)
+
 
 .PHONY: setup
 setup:
