@@ -218,11 +218,11 @@ func (client *G2config) AddDataSource(ctx context.Context, configHandle uintptr,
 		fmt.Printf("\n\n\n>>>>>>>>>>>>>>>>>>>>>>>> Error: %s\n\n\n", err)
 	}
 	resultResponse = C.GoString(result.response)
-	fmt.Printf("\n\n\n>>>>>>>> Test #2\n")
+	fmt.Printf("\n\n\n>>>>>>>> Test #3\n")
 	fmt.Printf(">>>>>>>> result.response: %+v\n", result.response)
 	fmt.Printf(">>>>>>>> result.response string: %s\n\n\n", C.GoString(result.response))
 
-	defer C.free(unsafe.Pointer(result.response))
+	C.free(unsafe.Pointer(result.response))
 	fmt.Printf("\n\n\n>>>>>>>>>>>>>>>>>>>>>>>> after C.Free()\n\n\n")
 
 	if client.observers != nil {
