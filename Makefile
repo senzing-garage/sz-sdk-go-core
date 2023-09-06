@@ -11,10 +11,10 @@ include Makefile.osdetect
 # "Simple expanded" variables (':=')
 
 # PROGRAM_NAME is the name of the GIT repository.
-PROGRAM_NAME := $(notdir $(shell git rev-parse --show-toplevel))
-MAKEFILE_PATH := $(subst /,$(PATH_SEPARATOR),$(abspath $(filter makefile Makefile,$(MAKEFILE_LIST))))
-MAKEFILE_DIRECTORY := $(dir $(MAKEFILE_PATH))
-TARGET_DIRECTORY := $(MAKEFILE_DIRECTORY)target
+PROGRAM_NAME := $(shell basename `git rev-parse --show-toplevel`)
+MAKEFILE_PATH := $(abspath $(lastword $(MAKEFILE_LIST)))
+MAKEFILE_DIRECTORY := $(shell dirname $(MAKEFILE_PATH))
+TARGET_DIRECTORY := $(MAKEFILE_DIRECTORY)/target
 BUILD_VERSION := $(shell git describe --always --tags --abbrev=0 --dirty  | sed 's/v//')
 BUILD_TAG := $(shell git describe --always --tags --abbrev=0  | sed 's/v//')
 BUILD_ITERATION := $(shell git log $(BUILD_TAG)..HEAD --oneline | wc -l | sed 's/^ *//')
