@@ -22,7 +22,7 @@ const (
 	defaultTruncation = 76
 	printResults      = false
 	moduleName        = "Config Test Module"
-	verboseLogging    = 1
+	verboseLogging    = 0
 )
 
 var (
@@ -418,7 +418,7 @@ func TestG2config_Init(test *testing.T) {
 	ctx := context.TODO()
 	g2config := getTestObject(ctx, test)
 	moduleName := "Test module name"
-	verboseLogging := 1
+	verboseLogging := 0
 	iniParams, err := getIniParams()
 	testError(test, ctx, g2config, err)
 	err = g2config.Init(ctx, moduleName, iniParams, verboseLogging)
