@@ -51,8 +51,8 @@ run:
 
 .PHONY: clean-platform
 clean-platform:
-	@del /f /s /q $(TARGET_DIRECTORY)
-	@del /f /s /q $(GOPATH)/bin/$(PROGRAM_NAME)
+#	del /f /s /q $(TARGET_DIRECTORY)
+#	del /f /s /q $(GOPATH)/bin/$(PROGRAM_NAME)
 
 
 .PHONY: setup
