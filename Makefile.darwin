@@ -51,11 +51,16 @@ run:
 # Utility targets
 # -----------------------------------------------------------------------------
 
-.PHONY: clean-platform
-clean-platform:
+.PHONY: clean-osarch-specific
+clean-osarch-specific:
 	@rm -rf $(TARGET_DIRECTORY) || true
 	@rm -f $(GOPATH)/bin/$(PROGRAM_NAME) || true
 	@rm -rf /tmp/$(PROGRAM_NAME) || true
+
+
+.PHONY: mkdir-target
+mkdir-target:
+	@mkdir -p $(TARGET_DIRECTORY)/$(GO_OS)-$(GO_ARCH) || true
 
 
 .PHONY: setup
