@@ -51,8 +51,8 @@ run:
 
 .PHONY: clean-osarch-specific
 clean-osarch-specific:
-#	del /f /s /q $(TARGET_DIRECTORY)
-#	del /f /s /q $(GOPATH)/bin/$(PROGRAM_NAME)
+	del /F /S /Q $(TARGET_DIRECTORY)
+	del /F /S /Q $(GOPATH)/bin/$(PROGRAM_NAME)
 
 .PHONY: mkdir-target
 mkdir-target:
