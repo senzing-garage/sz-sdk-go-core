@@ -200,9 +200,6 @@ func (client *G2config) AddDataSource(ctx context.Context, configHandle uintptr,
 	// _DLEXPORT int G2Config_addDataSource(ConfigHandle configHandle, const char *inputJson, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-
-	fmt.Printf("\n\n\n>>>>>>>>>>>>>>>>>>>>>>>> In AddDataSource\n\n\n")
-
 	var err error = nil
 	entryTime := time.Now()
 	var resultResponse string
@@ -215,16 +212,9 @@ func (client *G2config) AddDataSource(ctx context.Context, configHandle uintptr,
 	result := C.G2Config_addDataSource_helper(C.uintptr_t(configHandle), inputJsonForC)
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4001, configHandle, inputJson, result.returnCode, result, time.Since(entryTime))
-		fmt.Printf("\n\n\n>>>>>>>>>>>>>>>>>>>>>>>> Error: %s\n\n\n", err)
 	}
 	resultResponse = C.GoString(result.response)
-	fmt.Printf("\n\n\n>>>>>>>> Test #3\n")
-	fmt.Printf(">>>>>>>> result.response: %+v\n", result.response)
-	fmt.Printf(">>>>>>>> result.response string: %s\n\n\n", C.GoString(result.response))
-
 	C.free(unsafe.Pointer(result.response))
-	fmt.Printf("\n\n\n>>>>>>>>>>>>>>>>>>>>>>>> after C.Free()\n\n\n")
-
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -234,9 +224,6 @@ func (client *G2config) AddDataSource(ctx context.Context, configHandle uintptr,
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8001, err, details)
 		}()
 	}
-
-	fmt.Printf("\n\n\n>>>>>>>>>>>>>>>>>>>>>>>> Out AddDataSource\n\n\n")
-
 	return resultResponse, err
 }
 
