@@ -4,8 +4,8 @@
 # Variables
 # -----------------------------------------------------------------------------
 
-SENZING_TOOLS_DATABASE_URL := sqlite3://na:na@nowhere/C:\Temp\sqlite\G2C.db
 GO_BUILDMODE := "-buildmode=exe"
+SENZING_TOOLS_DATABASE_URL ?= sqlite3://na:na@nowhere/C:\Temp\sqlite\G2C.db
 
 # -----------------------------------------------------------------------------
 # Makefile targets supported by all platforms.
