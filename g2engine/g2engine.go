@@ -2506,7 +2506,7 @@ func (client *G2engine) Process(ctx context.Context, record string) error {
 		defer func() { client.traceExit(106, record, err, time.Since(entryTime)) }()
 	}
 	recordForC := C.CString(record)
-	defer C.G2GoHelper_free(unsafe.Pointer(recordForC))
+	defer C.free(unsafe.Pointer(recordForC))
 	result := C.G2_process(recordForC)
 	if result != 0 {
 		err = client.newError(ctx, 4050, record, result, time.Since(entryTime))
@@ -2844,7 +2844,7 @@ func (client *G2engine) ReevaluateRecord(ctx context.Context, dataSourceCode str
 	dataSourceCodeForC := C.CString(dataSourceCode)
 	defer C.free(unsafe.Pointer(dataSourceCodeForC))
 	recordIDForC := C.CString(recordID)
-	defer C.G2GoHelper_free(unsafe.Pointer(recordIDForC))
+	defer C.free(unsafe.Pointer(recordIDForC))
 	result := C.G2_reevaluateRecord(dataSourceCodeForC, recordIDForC, C.longlong(flags))
 	if result != 0 {
 		err = client.newError(ctx, 4059, dataSourceCode, recordID, flags, result, time.Since(entryTime))

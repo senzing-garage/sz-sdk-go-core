@@ -477,7 +477,7 @@ func (client *G2config) ListDataSources(ctx context.Context, configHandle uintpt
 		}()
 	}
 	return resultResponse, err
-}
+}C.free
 
 /*
 The Load method initializes the Senzing G2Config object from a JSON string.
