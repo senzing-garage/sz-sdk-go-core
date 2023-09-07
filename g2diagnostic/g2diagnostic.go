@@ -7,6 +7,7 @@ package g2diagnostic
 #include <stdlib.h>
 #include "libg2diagnostic.h"
 #include "gohelpers/golang_helpers.h"
+#include "../g2config/g2config.h"
 #cgo CFLAGS: -g -I/opt/senzing/g2/sdk/c
 #cgo windows CFLAGS: -g -I"C:/Program Files/Senzing/g2/sdk/c"
 #cgo LDFLAGS: -L/opt/senzing/g2/lib -lG2
@@ -210,7 +211,7 @@ func (client *G2diagnostic) CheckDBPerf(ctx context.Context, secondsToRun int) (
 		err = client.newError(ctx, 4001, secondsToRun, result.returnCode, time.Since(entryTime))
 	}
 	resultResponse = C.GoString(result.response)
-	C.free(unsafe.Pointer(result.response))
+	C.G2GoHelper_free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
@@ -421,7 +422,7 @@ Output
 // 		err = client.newError(ctx, 4006, result.returnCode, time.Since(entryTime))
 // 	}
 // 	resultResponse = C.GoString(result.response)
-// 	C.free(unsafe.Pointer(result.response))
+// 	C.G2GoHelper_free(unsafe.Pointer(result.response))
 // 	if client.observers != nil {
 // 		go func() {
 // 			details := map[string]string{}
@@ -457,7 +458,7 @@ func (client *G2diagnostic) GetDBInfo(ctx context.Context) (string, error) {
 		err = client.newError(ctx, 4007, result.returnCode, time.Since(entryTime))
 	}
 	resultResponse = C.GoString(result.response)
-	C.free(unsafe.Pointer(result.response))
+	C.G2GoHelper_free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
@@ -497,7 +498,7 @@ Output
 // 		err = client.newError(ctx, 4008, entityID, includeInternalFeatures, result.returnCode, time.Since(entryTime))
 // 	}
 // 	resultResponse = C.GoString(result.response)
-// 	C.free(unsafe.Pointer(result.response))
+// 	C.G2GoHelper_free(unsafe.Pointer(result.response))
 // 	if client.observers != nil {
 // 		go func() {
 // 			details := map[string]string{}
@@ -572,7 +573,7 @@ Output
 // 		err = client.newError(ctx, 4010, entityID, result.returnCode, time.Since(entryTime))
 // 	}
 // 	resultResponse = C.GoString(result.response)
-// 	C.free(unsafe.Pointer(result.response))
+// 	C.G2GoHelper_free(unsafe.Pointer(result.response))
 // 	if client.observers != nil {
 // 		go func() {
 // 			details := map[string]string{}
@@ -612,7 +613,7 @@ Output
 // 		err = client.newError(ctx, 4011, minimumEntitySize, includeInternalFeatures, result.returnCode, time.Since(entryTime))
 // 	}
 // 	resultResponse = C.GoString(result.response)
-// 	C.free(unsafe.Pointer(result.response))
+// 	C.G2GoHelper_free(unsafe.Pointer(result.response))
 // 	if client.observers != nil {
 // 		go func() {
 // 			details := map[string]string{}
@@ -649,7 +650,7 @@ Output
 // 		err = client.newError(ctx, 4012, libFeatID, result.returnCode, time.Since(entryTime))
 // 	}
 // 	resultResponse = C.GoString(result.response)
-// 	C.free(unsafe.Pointer(result.response))
+// 	C.G2GoHelper_free(unsafe.Pointer(result.response))
 // 	if client.observers != nil {
 // 		go func() {
 // 			details := map[string]string{}
@@ -691,7 +692,7 @@ Output
 // 		err = client.newError(ctx, 4013, featureType, maximumEstimatedCount, result.returnCode, time.Since(entryTime))
 // 	}
 // 	resultResponse = C.GoString(result.response)
-// 	C.free(unsafe.Pointer(result.response))
+// 	C.G2GoHelper_free(unsafe.Pointer(result.response))
 // 	if client.observers != nil {
 // 		go func() {
 // 			details := map[string]string{}
@@ -758,7 +759,7 @@ Output
 // 		err = client.newError(ctx, 4015, includeInternalFeatures, result.returnCode, time.Since(entryTime))
 // 	}
 // 	resultResponse = C.GoString(result.response)
-// 	C.free(unsafe.Pointer(result.response))
+// 	C.G2GoHelper_free(unsafe.Pointer(result.response))
 // 	if client.observers != nil {
 // 		go func() {
 // 			details := map[string]string{}
@@ -841,7 +842,7 @@ Output
 // 		err = client.newError(ctx, 4016, relationshipID, includeInternalFeatures, result.returnCode, time.Since(entryTime))
 // 	}
 // 	resultResponse = C.GoString(result.response)
-// 	C.free(unsafe.Pointer(result.response))
+// 	C.G2GoHelper_free(unsafe.Pointer(result.response))
 // 	if client.observers != nil {
 // 		go func() {
 // 			details := map[string]string{}
@@ -877,7 +878,7 @@ Output
 // 		err = client.newError(ctx, 4017, result.returnCode, time.Since(entryTime))
 // 	}
 // 	resultResponse = C.GoString(result.response)
-// 	C.free(unsafe.Pointer(result.response))
+// 	C.G2GoHelper_free(unsafe.Pointer(result.response))
 // 	if client.observers != nil {
 // 		go func() {
 // 			details := map[string]string{}

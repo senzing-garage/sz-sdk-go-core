@@ -7,6 +7,7 @@ package g2config
 #include <stdlib.h>
 #include "libg2config.h"
 #include "gohelpers/golang_helpers.h"
+#include "g2config.h"
 #cgo CFLAGS: -g -I/opt/senzing/g2/sdk/c
 #cgo windows CFLAGS: -g -I"C:/Program Files/Senzing/g2/sdk/c"
 #cgo LDFLAGS: -L/opt/senzing/g2/lib -lG2
@@ -214,7 +215,7 @@ func (client *G2config) AddDataSource(ctx context.Context, configHandle uintptr,
 		err = client.newError(ctx, 4001, configHandle, inputJson, result.returnCode, result, time.Since(entryTime))
 	}
 	resultResponse = C.GoString(result.response)
-	C.free(unsafe.Pointer(result.response))
+	C.G2GoHelper_free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -468,7 +469,7 @@ func (client *G2config) ListDataSources(ctx context.Context, configHandle uintpt
 		err = client.newError(ctx, 4008, result.returnCode, result, time.Since(entryTime))
 	}
 	resultResponse = C.GoString(result.response)
-	C.free(unsafe.Pointer(result.response))
+	C.G2GoHelper_free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
@@ -571,7 +572,7 @@ func (client *G2config) Save(ctx context.Context, configHandle uintptr) (string,
 		err = client.newError(ctx, 4010, configHandle, result.returnCode, result, time.Since(entryTime))
 	}
 	resultResponse = C.GoString(result.response)
-	C.free(unsafe.Pointer(result.response))
+	C.G2GoHelper_free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
