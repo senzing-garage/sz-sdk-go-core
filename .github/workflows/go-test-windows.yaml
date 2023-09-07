@@ -38,13 +38,17 @@ jobs:
         run: copy testdata/senzing-license/g2.lic "C:\Program Files\Senzing\g2\etc\g2.lic"
       - name: Copy test database files
         run: mkdir "C:\Temp\sqlite" && copy testdata/sqlite/G2C.db "C:\Temp\sqlite\G2C.db"
-      - name: Run go test
-        run: go test -v -p 1 ./...
-      # - name: Run go test - main
-      #   run: go test -v -p 1 ./.
-      # - name: Run go test - g2config
-      #   run: go test -v -p 1 ./g2config
-      # - name: Run go test - g2configmgr
-      #   run: go test -v -p 1 ./g2configmgr
+      # - name: Run go test
+      #   run: go test -v -p 1 ./...
+      - name: Run go test - main
+        run: go test -v -p 1 ./.
+      - name: Run go test - g2config
+        run: go test -v -p 1 ./g2config
+      - name: Run go test - g2configmgr
+        run: go test -v -p 1 ./g2configmgr
+      - name: Run go test - g2diagnostic
+        run: go test -v -p 1 ./g2diagnostic
+      - name: Run go test - g2engine
+        run: go test -v -p 1 ./g2engine
       # - name: Run go test - g2product
       #   run: go test -v -p 1 ./g2product
