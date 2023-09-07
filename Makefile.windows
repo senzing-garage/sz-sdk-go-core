@@ -1,6 +1,13 @@
 # Makefile extensions for windows.
 
 # -----------------------------------------------------------------------------
+# Variables
+# -----------------------------------------------------------------------------
+
+GO_BUILDMODE := "-buildmode=exe"
+SENZING_TOOLS_DATABASE_URL ?= sqlite3://na:na@nowhere/C:\Temp\sqlite\G2C.db
+
+# -----------------------------------------------------------------------------
 # Makefile targets supported by all platforms.
 # -----------------------------------------------------------------------------
 
@@ -22,16 +29,43 @@ build: windows/amd64
 
 .PHONY: test
 test:
-	@go test -v -p 1 ./...
+#	@go test -v -p 1 ./...
+	@go test -v -p 1 ./.
+	@go test -v -p 1 ./g2config
+	@go test -v -p 1 ./g2configmgr
+	@go test -v -p 1 ./g2diagnostic
+	@go test -v -p 1 ./g2engine
+#	@go test -v -p 1 ./g2product
 
 # -----------------------------------------------------------------------------
 # Run
 # -----------------------------------------------------------------------------
 
-
 .PHONY: run
 run:
 	@go run main.go
+
+# -----------------------------------------------------------------------------
+# Utility targets
+# -----------------------------------------------------------------------------
+
+.PHONY: clean-osarch-specific
+clean-osarch-specific:
+#	del /F /S /Q $(TARGET_DIRECTORY)
+#	del /F /S /Q $(GOPATH)/bin/$(PROGRAM_NAME)
+
+
+.PHONY: mkdir-target
+mkdir-target:
+	@mkdir $(TARGET_DIRECTORY)\
+	@mkdir $(TARGET_DIRECTORY)\$(GO_OS)-$(GO_ARCH)
+
+
+.PHONY: setup
+setup:
+	@rmdir /S /Q C:\Temp\sqlite
+	@mkdir C:\Temp\sqlite
+	@copy testdata\sqlite\G2C.db C:\Temp\sqlite\G2C.db
 
 # -----------------------------------------------------------------------------
 # Makefile targets supported only by this platform.

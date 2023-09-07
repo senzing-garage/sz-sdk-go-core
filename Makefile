@@ -15,9 +15,6 @@ PROGRAM_NAME := $(shell basename `git rev-parse --show-toplevel`)
 MAKEFILE_PATH := $(abspath $(lastword $(MAKEFILE_LIST)))
 MAKEFILE_DIRECTORY := $(shell dirname $(MAKEFILE_PATH))
 TARGET_DIRECTORY := $(MAKEFILE_DIRECTORY)/target
-DOCKER_CONTAINER_NAME := $(PROGRAM_NAME)
-DOCKER_IMAGE_NAME := senzing/$(PROGRAM_NAME)
-DOCKER_BUILD_IMAGE_NAME := $(DOCKER_IMAGE_NAME)-build
 BUILD_VERSION := $(shell git describe --always --tags --abbrev=0 --dirty  | sed 's/v//')
 BUILD_TAG := $(shell git describe --always --tags --abbrev=0  | sed 's/v//')
 BUILD_ITERATION := $(shell git log $(BUILD_TAG)..HEAD --oneline | wc -l | sed 's/^ *//')
@@ -27,7 +24,7 @@ PATH := $(MAKEFILE_DIRECTORY)/bin:$(PATH)
 
 # Recursive assignment ('=')
 
-CC = gcc
+# CC = gcc
 GO_OSARCH = $(subst /, ,$@)
 GO_OS = $(word 1, $(GO_OSARCH))
 GO_ARCH = $(word 2, $(GO_OSARCH))
@@ -36,7 +33,7 @@ GO_ARCH = $(word 2, $(GO_OSARCH))
 # Can be overridden with "export"
 # Example: "export LD_LIBRARY_PATH=/path/to/my/senzing/g2/lib"
 
-# Optionally override the database URL for running automated tests.  The 
+# Optionally override the database URL for running automated tests.  The
 # conditional assignment ('?=') can be overridden with with a shell environment
 # variable.  If SENZING_TOOLS_DATABASE_URL is not set then a SQLite3 database
 # in the ./target/test/{test-suite} directory is used for each test suite.
@@ -74,14 +71,12 @@ dependencies:
 # -----------------------------------------------------------------------------
 # Build
 #  - The "build" target is implemented in Makefile.OS.ARCH files.
-#  - docker-build: https://docs.docker.com/engine/reference/commandline/build/
 # -----------------------------------------------------------------------------
 
 PLATFORMS := darwin/amd64 linux/amd64 windows/amd64
-$(PLATFORMS):
+$(PLATFORMS): mkdir-target
 	@echo Building $(TARGET_DIRECTORY)/$(GO_OS)-$(GO_ARCH)/$(PROGRAM_NAME)
-	@mkdir -p $(TARGET_DIRECTORY)/$(GO_OS)-$(GO_ARCH) || true
-	@GOOS=$(GO_OS) GOARCH=$(GO_ARCH) go build -o $(TARGET_DIRECTORY)/$(GO_OS)-$(GO_ARCH)/$(PROGRAM_NAME)
+	GOOS=$(GO_OS) GOARCH=$(GO_ARCH) go build $(GO_BUILDMODE) -o $(TARGET_DIRECTORY)/$(GO_OS)-$(GO_ARCH)/$(PROGRAM_NAME)
 
 # -----------------------------------------------------------------------------
 # Test
@@ -106,14 +101,9 @@ $(PLATFORMS):
 # -----------------------------------------------------------------------------
 
 .PHONY: clean
-clean:
+clean: clean-osarch-specific
 	@go clean -cache
 	@go clean -testcache
-	@docker rm --force $(DOCKER_CONTAINER_NAME) 2> /dev/null || true
-	@docker rmi --force $(DOCKER_IMAGE_NAME) $(DOCKER_BUILD_IMAGE_NAME) 2> /dev/null || true
-	@rm -rf $(TARGET_DIRECTORY) || true
-	@rm -f $(GOPATH)/bin/$(PROGRAM_NAME) || true
-	@rm -rf /tmp/$(PROGRAM_NAME)
 
 
 .PHONY: help
@@ -128,11 +118,6 @@ print-make-variables:
 	@$(foreach V,$(sort $(.VARIABLES)), \
 		$(if $(filter-out environment% default automatic, \
 		$(origin $V)),$(warning $V=$($V) ($(value $V)))))
-
-
-.PHONY: setup
-setup:
-	@echo "No setup required."
 
 
 .PHONY: update-pkg-cache

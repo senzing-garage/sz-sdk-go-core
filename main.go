@@ -102,7 +102,7 @@ func setupDB(preserveDB bool) (string, bool, error) {
 
 		if !preserveDB {
 			// copy the SQLite database file
-			_, _, err := futil.CopyFile(dbFilePath, baseDir, true)
+			_, _, err = futil.CopyFile(dbFilePath, baseDir, true)
 
 			if err != nil {
 				err = fmt.Errorf("setup failed to copy template database (%v) to target path (%v): %w",

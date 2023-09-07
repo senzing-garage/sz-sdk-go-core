@@ -4,7 +4,10 @@ The G2configmgr implementation is a wrapper over the Senzing libg2configmgr libr
 package g2configmgr
 
 /*
-#include "g2configmgr.h"
+#include <stdlib.h>
+#include "libg2configmgr.h"
+#include "gohelpers/golang_helpers.h"
+#include "../g2config/g2config.h"
 #cgo CFLAGS: -g -I/opt/senzing/g2/sdk/c
 #cgo windows CFLAGS: -g -I"C:/Program Files/Senzing/g2/sdk/c"
 #cgo LDFLAGS: -L/opt/senzing/g2/lib -lG2
@@ -279,7 +282,7 @@ func (client *G2configmgr) GetConfig(ctx context.Context, configID int64) (strin
 		err = client.newError(ctx, 4003, configID, result.returnCode, result, time.Since(entryTime))
 	}
 	resultResponse = C.GoString(result.response)
-	C.free(unsafe.Pointer(result.response))
+	C.G2GoHelper_free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
@@ -315,7 +318,7 @@ func (client *G2configmgr) GetConfigList(ctx context.Context) (string, error) {
 		err = client.newError(ctx, 4004, result.returnCode, result, time.Since(entryTime))
 	}
 	resultResponse = C.GoString(result.response)
-	C.free(unsafe.Pointer(result.response))
+	C.G2GoHelper_free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
