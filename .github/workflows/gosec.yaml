@@ -2,6 +2,7 @@
 # - https://github.com/securego/gosec
 
 name: gosec.yaml
+
 on:
   push:
     branches:

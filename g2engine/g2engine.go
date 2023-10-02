@@ -7,7 +7,6 @@ package g2engine
 #include <stdlib.h>
 #include "libg2.h"
 #include "gohelpers/golang_helpers.h"
-#include "../g2config/g2config.h"
 #cgo CFLAGS: -g -I/opt/senzing/g2/sdk/c
 #cgo windows CFLAGS: -g -I"C:/Program Files/Senzing/g2/sdk/c"
 #cgo LDFLAGS: -L/opt/senzing/g2/lib -lG2
