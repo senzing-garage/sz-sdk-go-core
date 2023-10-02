@@ -29,12 +29,12 @@ build: windows/amd64
 
 .PHONY: test
 test:
-#	@go test -v -p 1 ./...
-	@go test -v -p 1 ./.
-	@go test -v -p 1 ./g2config
-	@go test -v -p 1 ./g2configmgr
-	@go test -v -p 1 ./g2diagnostic
-	@go test -v -p 1 ./g2engine
+	@go test -v -p 1 ./...
+#	@go test -v -p 1 ./.
+#	@go test -v -p 1 ./g2config
+#	@go test -v -p 1 ./g2configmgr
+#	@go test -v -p 1 ./g2diagnostic
+#	@go test -v -p 1 ./g2engine
 #	@go test -v -p 1 ./g2product
 
 # -----------------------------------------------------------------------------
