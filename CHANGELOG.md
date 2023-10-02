@@ -15,6 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed in 0.3.0
 
 - Support for SenzingAPI 3.8.0
+- Update dependencies
+  - github.com/senzing/g2-sdk-go v0.7.0
+  - google.golang.org/grpc v1.58.2
 
 ### Removed in 0.3.0
 
@@ -73,11 +76,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Refactor to `template-go`
 - Update dependencies
-- github.com/senzing/g2-sdk-go v0.6.8
-- github.com/senzing/go-common v0.2.11
-- github.com/senzing/go-logging v1.3.2
-- github.com/senzing/go-observing v0.2.7
-- google.golang.org/grpc v1.57.0
+  - github.com/senzing/g2-sdk-go v0.6.8
+  - github.com/senzing/go-common v0.2.11
+  - github.com/senzing/go-logging v1.3.2
+  - github.com/senzing/go-observing v0.2.7
+  - google.golang.org/grpc v1.57.0
 
 ## [0.2.2] - 2023-07-07
 
