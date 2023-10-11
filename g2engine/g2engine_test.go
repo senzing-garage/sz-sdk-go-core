@@ -148,7 +148,7 @@ func TestMain(m *testing.M) {
 		if g2error.Is(err, g2error.G2Retryable) {
 			fmt.Printf("\nRetryable error detected. \n\n")
 		}
-		if g2error.Is(err, g2error.G2BadUserInput) {
+		if g2error.Is(err, g2error.G2BadInput) {
 			fmt.Printf("\nBad user input error detected. \n\n")
 		}
 		fmt.Print(err)
@@ -474,7 +474,7 @@ func TestG2engine_GetObserverOrigin(test *testing.T) {
 	assert.Equal(test, origin, actual)
 }
 
-func TestG2engine_AddRecord_G2Unrecoverable(test *testing.T) {
+func TestG2engine_AddRecord_G2BadInput(test *testing.T) {
 	ctx := context.TODO()
 	g2engine := getTestObject(ctx, test)
 	record1, err := record.NewRecord(`{"DATA_SOURCE": "TEST", "RECORD_ID": "ADD_TEST_ERR_1", "NAME_FULL": "NOBODY NOMATCH"}`)
@@ -489,7 +489,7 @@ func TestG2engine_AddRecord_G2Unrecoverable(test *testing.T) {
 
 	// this one should fail
 	err = g2engine.AddRecord(ctx, "CUSTOMERS", record2.Id, record2.Json, loadId)
-	assert.True(test, g2error.Is(err, g2error.G2Unrecoverable))
+	assert.True(test, g2error.Is(err, g2error.G2BadInput))
 
 	// clean-up the records we inserted
 	err = g2engine.DeleteRecord(ctx, record1.DataSource, record1.Id, loadId)
