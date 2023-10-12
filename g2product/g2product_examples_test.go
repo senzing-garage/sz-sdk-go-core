@@ -1,3 +1,5 @@
+//go:build linux
+
 package g2product
 
 import (
