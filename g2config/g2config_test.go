@@ -245,7 +245,7 @@ func getIniParams() (string, error) {
 	return iniParams, nil
 }
 
-func setupG2config(ctx context.Context, moduleName string, iniParams string, verboseLogging int) error {
+func setupG2config(ctx context.Context, moduleName string, iniParams string, verboseLogging int64) error {
 	if configInitialized {
 		return fmt.Errorf("G2config is already setup and has not been torn down")
 	}
@@ -418,7 +418,7 @@ func TestG2config_Init(test *testing.T) {
 	ctx := context.TODO()
 	g2config := getTestObject(ctx, test)
 	moduleName := "Test module name"
-	verboseLogging := 0
+	verboseLogging := int64(0)
 	iniParams, err := getIniParams()
 	testError(test, ctx, g2config, err)
 	err = g2config.Init(ctx, moduleName, iniParams, verboseLogging)

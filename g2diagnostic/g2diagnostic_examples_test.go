@@ -303,7 +303,7 @@ func ExampleG2diagnostic_Init() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	verboseLogging := 0
+	verboseLogging := int64(0)
 	err = g2diagnostic.Init(ctx, moduleName, iniParams, verboseLogging)
 	if err != nil {
 		fmt.Println(err)
@@ -321,7 +321,7 @@ func ExampleG2diagnostic_InitWithConfigID() {
 		fmt.Println(err)
 	}
 	initConfigID := int64(1)
-	verboseLogging := 0
+	verboseLogging := int64(0)
 	err = g2diagnostic.InitWithConfigID(ctx, moduleName, iniParams, initConfigID, verboseLogging)
 	if err != nil {
 		fmt.Println(err)

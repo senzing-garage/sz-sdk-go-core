@@ -951,7 +951,7 @@ Input
   - iniParams: A JSON string containing configuration parameters.
   - verboseLogging: A flag to enable deeper logging of the G2 processing. 0 for no Senzing logging; 1 for logging.
 */
-func (client *G2diagnostic) Init(ctx context.Context, moduleName string, iniParams string, verboseLogging int) error {
+func (client *G2diagnostic) Init(ctx context.Context, moduleName string, iniParams string, verboseLogging int64) error {
 	// _DLEXPORT int G2Diagnostic_init(const char *moduleName, const char *iniParams, const int verboseLogging);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -965,7 +965,7 @@ func (client *G2diagnostic) Init(ctx context.Context, moduleName string, iniPara
 	defer C.free(unsafe.Pointer(moduleNameForC))
 	iniParamsForC := C.CString(iniParams)
 	defer C.free(unsafe.Pointer(iniParamsForC))
-	result := C.G2Diagnostic_init(moduleNameForC, iniParamsForC, C.int(verboseLogging))
+	result := C.G2Diagnostic_init(moduleNameForC, iniParamsForC, C.longlong(verboseLogging))
 	if result != 0 {
 		err = client.newError(ctx, 4018, moduleName, iniParams, verboseLogging, result, time.Since(entryTime))
 	}
@@ -974,7 +974,7 @@ func (client *G2diagnostic) Init(ctx context.Context, moduleName string, iniPara
 			details := map[string]string{
 				"iniParams":      iniParams,
 				"moduleName":     moduleName,
-				"verboseLogging": strconv.Itoa(verboseLogging),
+				"verboseLogging": strconv.FormatInt(verboseLogging, 10),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8021, err, details)
 		}()
@@ -993,7 +993,7 @@ Input
   - initConfigID: The configuration ID used for the initialization.
   - verboseLogging: A flag to enable deeper logging of the G2 processing. 0 for no Senzing logging; 1 for logging.
 */
-func (client *G2diagnostic) InitWithConfigID(ctx context.Context, moduleName string, iniParams string, initConfigID int64, verboseLogging int) error {
+func (client *G2diagnostic) InitWithConfigID(ctx context.Context, moduleName string, iniParams string, initConfigID int64, verboseLogging int64) error {
 	//  _DLEXPORT int G2Diagnostic_initWithConfigID(const char *moduleName, const char *iniParams, const long long initConfigID, const int verboseLogging);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -1009,7 +1009,7 @@ func (client *G2diagnostic) InitWithConfigID(ctx context.Context, moduleName str
 	defer C.free(unsafe.Pointer(moduleNameForC))
 	iniParamsForC := C.CString(iniParams)
 	defer C.free(unsafe.Pointer(iniParamsForC))
-	result := C.G2Diagnostic_initWithConfigID(moduleNameForC, iniParamsForC, C.longlong(initConfigID), C.int(verboseLogging))
+	result := C.G2Diagnostic_initWithConfigID(moduleNameForC, iniParamsForC, C.longlong(initConfigID), C.longlong(verboseLogging))
 	if result != 0 {
 		err = client.newError(ctx, 4019, moduleName, iniParams, initConfigID, verboseLogging, result, time.Since(entryTime))
 	}
@@ -1019,7 +1019,7 @@ func (client *G2diagnostic) InitWithConfigID(ctx context.Context, moduleName str
 				"iniParams":      iniParams,
 				"initConfigID":   strconv.FormatInt(initConfigID, 10),
 				"moduleName":     moduleName,
-				"verboseLogging": strconv.Itoa(verboseLogging),
+				"verboseLogging": strconv.FormatInt(verboseLogging, 10),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8022, err, details)
 		}()

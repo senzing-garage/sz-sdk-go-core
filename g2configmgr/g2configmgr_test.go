@@ -227,7 +227,7 @@ func getIniParams() (string, error) {
 	return iniParams, nil
 }
 
-func setupG2configmgr(ctx context.Context, moduleName string, iniParams string, verboseLogging int) error {
+func setupG2configmgr(ctx context.Context, moduleName string, iniParams string, verboseLogging int64) error {
 	if configMgrInitialized {
 		return fmt.Errorf("G2configmgr is already setup and has not been torn down")
 	}
@@ -242,7 +242,7 @@ func setupG2configmgr(ctx context.Context, moduleName string, iniParams string, 
 	return err
 }
 
-func setupG2config(ctx context.Context, moduleName string, iniParams string, verboseLogging int) error {
+func setupG2config(ctx context.Context, moduleName string, iniParams string, verboseLogging int64) error {
 	if configInitialized {
 		return fmt.Errorf("G2configmgr is already setup and has not been torn down")
 	}
@@ -270,7 +270,7 @@ func restoreG2configmgr(ctx context.Context) error {
 	return nil
 }
 
-func setupSenzingConfig(ctx context.Context, moduleName string, iniParams string, verboseLogging int) error {
+func setupSenzingConfig(ctx context.Context, moduleName string, iniParams string, verboseLogging int64) error {
 	now := time.Now()
 	aG2config := &g2config.G2config{}
 	err := aG2config.Init(ctx, moduleName, iniParams, verboseLogging)
@@ -545,7 +545,7 @@ func TestG2configmgr_Init(test *testing.T) {
 	ctx := context.TODO()
 	g2configmgr := getTestObject(ctx, test)
 	moduleName := "Test module name"
-	verboseLogging := 0
+	verboseLogging := int64(0)
 	iniParams, err := getIniParams()
 	if err != nil {
 		test.Fatalf("Cannot construct system configuration: %v", err)

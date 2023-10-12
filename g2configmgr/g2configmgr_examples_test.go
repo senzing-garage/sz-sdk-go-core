@@ -162,7 +162,7 @@ func ExampleG2configmgr_Init() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	verboseLogging := 0
+	verboseLogging := int64(0)
 	err = g2configmgr.Init(ctx, moduleName, iniParams, verboseLogging)
 	if err != nil {
 		fmt.Println(err)
