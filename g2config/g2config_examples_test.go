@@ -1,3 +1,5 @@
+//go:build linux
+
 package g2config
 
 import (
@@ -163,7 +165,7 @@ func ExampleG2config_Init() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	verboseLogging := 0
+	verboseLogging := int64(0)
 	err = g2config.Init(ctx, moduleName, iniParams, verboseLogging)
 	if err != nil {
 		fmt.Println(err)

@@ -1,3 +1,5 @@
+//go:build linux
+
 package g2product
 
 import (
@@ -41,7 +43,7 @@ func ExampleG2product_Init() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	verboseLogging := 0
+	verboseLogging := int64(0)
 	g2product.Init(ctx, moduleName, iniParams, verboseLogging)
 	// Output:
 }

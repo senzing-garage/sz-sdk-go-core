@@ -251,7 +251,7 @@ func getIniParams() (string, error) {
 	return iniParams, nil
 }
 
-func setupG2product(ctx context.Context, moduleName string, iniParams string, verboseLogging int) error {
+func setupG2product(ctx context.Context, moduleName string, iniParams string, verboseLogging int64) error {
 	if productInitialized {
 		return fmt.Errorf("G2product is already setup and has not been torn down")
 	}
@@ -289,7 +289,7 @@ func TestG2product_Init(test *testing.T) {
 	ctx := context.TODO()
 	g2product := &G2product{}
 	moduleName := "Test module name"
-	verboseLogging := 0
+	verboseLogging := int64(0)
 	iniParams, err := getIniParams()
 	testError(test, ctx, g2product, err)
 	err = g2product.Init(ctx, moduleName, iniParams, verboseLogging)

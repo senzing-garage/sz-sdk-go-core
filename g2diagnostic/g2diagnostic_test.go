@@ -194,7 +194,7 @@ func getIniParams() (string, error) {
 	return iniParams, nil
 }
 
-func setupSenzingConfig(ctx context.Context, moduleName string, iniParams string, verboseLogging int) error {
+func setupSenzingConfig(ctx context.Context, moduleName string, iniParams string, verboseLogging int64) error {
 	now := time.Now()
 
 	aG2config := &g2config.G2config{}
@@ -259,7 +259,7 @@ func setupSenzingConfig(ctx context.Context, moduleName string, iniParams string
 	return err
 }
 
-func setupAddRecords(ctx context.Context, moduleName string, iniParams string, verboseLogging int, purge bool) error {
+func setupAddRecords(ctx context.Context, moduleName string, iniParams string, verboseLogging int64, purge bool) error {
 
 	aG2engine := &g2engine.G2engine{}
 	err := aG2engine.Init(ctx, moduleName, iniParams, verboseLogging)
@@ -296,7 +296,7 @@ func setup() error {
 	var err error = nil
 	ctx := context.TODO()
 	moduleName := "Test module name"
-	verboseLogging := 0
+	verboseLogging := int64(0)
 	logger, err = logging.NewSenzingSdkLogger(ComponentId, g2diagnosticapi.IdMessages)
 	if err != nil {
 		return createError(5901, err)
@@ -345,7 +345,7 @@ func setup() error {
 	return err
 }
 
-func setupG2diagnostic(ctx context.Context, moduleName string, iniParams string, verboseLogging int) error {
+func setupG2diagnostic(ctx context.Context, moduleName string, iniParams string, verboseLogging int64) error {
 	if diagnosticInitialized {
 		return fmt.Errorf("G2diagnostic is already setup and has not been torn down.")
 	}
@@ -579,7 +579,7 @@ func TestG2diagnostic_Init(test *testing.T) {
 	ctx := context.TODO()
 	g2diagnostic := &G2diagnostic{}
 	moduleName := "Test module name"
-	verboseLogging := 0
+	verboseLogging := int64(0)
 	iniParams, err := getIniParams()
 	testError(test, ctx, g2diagnostic, err)
 	err = g2diagnostic.Init(ctx, moduleName, iniParams, verboseLogging)
@@ -591,7 +591,7 @@ func TestG2diagnostic_InitWithConfigID(test *testing.T) {
 	g2diagnostic := &G2diagnostic{}
 	moduleName := "Test module name"
 	initConfigID := int64(1)
-	verboseLogging := 0
+	verboseLogging := int64(0)
 	iniParams, err := getIniParams()
 	testError(test, ctx, g2diagnostic, err)
 	err = g2diagnostic.InitWithConfigID(ctx, moduleName, iniParams, initConfigID, verboseLogging)

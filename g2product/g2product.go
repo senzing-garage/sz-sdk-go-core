@@ -259,7 +259,7 @@ Input
   - iniParams: A JSON string containing configuration parameters.
   - verboseLogging: A flag to enable deeper logging of the G2 processing. 0 for no Senzing logging; 1 for logging.
 */
-func (client *G2product) Init(ctx context.Context, moduleName string, iniParams string, verboseLogging int) error {
+func (client *G2product) Init(ctx context.Context, moduleName string, iniParams string, verboseLogging int64) error {
 	// _DLEXPORT int G2Config_init(const char *moduleName, const char *iniParams, const int verboseLogging);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -273,7 +273,7 @@ func (client *G2product) Init(ctx context.Context, moduleName string, iniParams 
 	defer C.free(unsafe.Pointer(moduleNameForC))
 	iniParamsForC := C.CString(iniParams)
 	defer C.free(unsafe.Pointer(iniParamsForC))
-	result := C.G2Product_init(moduleNameForC, iniParamsForC, C.int(verboseLogging))
+	result := C.G2Product_init(moduleNameForC, iniParamsForC, C.longlong(verboseLogging))
 	if result != 0 {
 		err = client.newError(ctx, 4003, moduleName, iniParams, verboseLogging, result, time.Since(entryTime))
 	}
@@ -282,7 +282,7 @@ func (client *G2product) Init(ctx context.Context, moduleName string, iniParams 
 			details := map[string]string{
 				"iniParams":      iniParams,
 				"moduleName":     moduleName,
-				"verboseLogging": strconv.Itoa(verboseLogging),
+				"verboseLogging": strconv.FormatInt(verboseLogging, 10),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8002, err, details)
 		}()
