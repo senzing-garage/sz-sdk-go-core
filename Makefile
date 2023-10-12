@@ -24,7 +24,6 @@ PATH := $(MAKEFILE_DIRECTORY)/bin:$(PATH)
 
 # Recursive assignment ('=')
 
-# CC = gcc
 GO_OSARCH = $(subst /, ,$@)
 GO_OS = $(word 1, $(GO_OSARCH))
 GO_ARCH = $(word 2, $(GO_OSARCH))
@@ -32,13 +31,6 @@ GO_ARCH = $(word 2, $(GO_OSARCH))
 # Conditional assignment. ('?=')
 # Can be overridden with "export"
 # Example: "export LD_LIBRARY_PATH=/path/to/my/senzing/g2/lib"
-
-# Optionally override the database URL for running automated tests.  The
-# conditional assignment ('?=') can be overridden with with a shell environment
-# variable.  If SENZING_TOOLS_DATABASE_URL is not set then a SQLite3 database
-# in the ./target/test/{test-suite} directory is used for each test suite.
-
-#SENZING_TOOLS_DATABASE_URL ?= postgresql://username:password@hostname:5432:database/?schema=schemaname
 
 # Export environment variables.
 
@@ -58,6 +50,10 @@ default: help
 -include Makefile.$(OSTYPE)
 -include Makefile.$(OSTYPE)_$(OSARCH)
 
+
+.PHONY: hello-world
+hello-world: hello-world-osarch-specific
+
 # -----------------------------------------------------------------------------
 # Dependency management
 # -----------------------------------------------------------------------------
@@ -70,31 +66,30 @@ dependencies:
 
 # -----------------------------------------------------------------------------
 # Build
-#  - The "build" target is implemented in Makefile.OS.ARCH files.
 # -----------------------------------------------------------------------------
 
 PLATFORMS := darwin/amd64 linux/amd64 windows/amd64
-$(PLATFORMS): mkdir-target
+$(PLATFORMS):
 	@echo Building $(TARGET_DIRECTORY)/$(GO_OS)-$(GO_ARCH)/$(PROGRAM_NAME)
-	GOOS=$(GO_OS) GOARCH=$(GO_ARCH) go build $(GO_BUILDMODE) -o $(TARGET_DIRECTORY)/$(GO_OS)-$(GO_ARCH)/$(PROGRAM_NAME)
+	@GOOS=$(GO_OS) GOARCH=$(GO_ARCH) go build -o $(TARGET_DIRECTORY)/$(GO_OS)-$(GO_ARCH)/$(PROGRAM_NAME)
+
+
+.PHONY: build
+build: build-osarch-specific
 
 # -----------------------------------------------------------------------------
 # Test
-#  - The "test" target is implemented in Makefile.OS.ARCH files.
 # -----------------------------------------------------------------------------
 
+.PHONY: test
+test: test-osarch-specific
 
 # -----------------------------------------------------------------------------
 # Run
-#  - The "run" target is implemented in Makefile.OS.ARCH files.
 # -----------------------------------------------------------------------------
 
-
-# -----------------------------------------------------------------------------
-# Package
-#  - The "package" target is implemented in Makefile.OS.ARCH files.
-# -----------------------------------------------------------------------------
-
+.PHONY: run
+run: run-osarch-specific
 
 # -----------------------------------------------------------------------------
 # Utility targets
@@ -118,6 +113,10 @@ print-make-variables:
 	@$(foreach V,$(sort $(.VARIABLES)), \
 		$(if $(filter-out environment% default automatic, \
 		$(origin $V)),$(warning $V=$($V) ($(value $V)))))
+
+
+.PHONY: setup
+setup: setup-osarch-specific
 
 
 .PHONY: update-pkg-cache

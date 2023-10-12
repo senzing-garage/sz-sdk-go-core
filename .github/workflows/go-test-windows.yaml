@@ -10,15 +10,16 @@ env:
 
 jobs:
   go-test-windows:
-    runs-on: windows-latest
+    runs-on: ${{ matrix.os }}
     env:
       GO111MODULE: on
       CGO_ENABLED: 1
     strategy:
       matrix:
-        senzingapi-version: ["staging"]
+        os: [windows-latest]
+        senzingapi-version: [staging]
         go: ["1.21"]
-    name: Go ${{ matrix.go }} using Senzing API ${{ matrix.senzingapi-version }} on windows
+    name: "Senzing: ${{ matrix.senzingapi-version }}; OS: ${{ matrix.os }}; Go: ${{ matrix.go }}"
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -40,15 +41,3 @@ jobs:
         run: mkdir "C:\Temp\sqlite" && copy testdata/sqlite/G2C.db "C:\Temp\sqlite\G2C.db"
       - name: Run go test
         run: go test -v -p 1 ./...
-      # - name: Run go test - main
-      #   run: go test -v -p 1 ./.
-      # - name: Run go test - g2config
-      #   run: go test -v -p 1 ./g2config
-      # - name: Run go test - g2configmgr
-      #   run: go test -v -p 1 ./g2configmgr
-      # - name: Run go test - g2diagnostic
-      #   run: go test -v -p 1 ./g2diagnostic
-      # - name: Run go test - g2engine
-      #   run: go test -v -p 1 ./g2engine
-      # - name: Run go test - g2product
-      #   run: go test -v -p 1 ./g2product

@@ -8,63 +8,40 @@ LD_LIBRARY_PATH ?= /opt/senzing/g2/lib
 SENZING_TOOLS_DATABASE_URL ?= sqlite3://na:na@/tmp/sqlite/G2C.db
 
 # -----------------------------------------------------------------------------
-# Makefile targets supported by all platforms.
+# OS-ARCH specific targets
 # -----------------------------------------------------------------------------
 
-.PHONY: hello-world
-hello-world:
-	@echo "Hello World, from linux."
+.PHONY: build-osarch-specific
+build-osarch-specific: linux/amd64
 
-# -----------------------------------------------------------------------------
-# Build
-# -----------------------------------------------------------------------------
-
-.PHONY: build
-build: linux/amd64
-
-# -----------------------------------------------------------------------------
-# Test
-# -----------------------------------------------------------------------------
-
-.PHONY: test
-test:
-	@go test -v -p 1 ./...
-#	@go test -v ./.
-#	@go test -v ./g2config
-#	@go test -v ./g2configmgr
-#	@go test -v ./g2diagnostic
-#	@go test -v ./g2engine
-#	@go test -v ./g2product
-
-# -----------------------------------------------------------------------------
-# Run
-# -----------------------------------------------------------------------------
-
-.PHONY: run
-run:
-	@go run main.go
-
-# -----------------------------------------------------------------------------
-# Utility targets
-# -----------------------------------------------------------------------------
 
 .PHONY: clean-osarch-specific
 clean-osarch-specific:
 	@rm -rf $(TARGET_DIRECTORY) || true
 	@rm -f $(GOPATH)/bin/$(PROGRAM_NAME) || true
-	@rm -rf /tmp/$(PROGRAM_NAME) || true
+	@rm -rf /tmp/sqlite || true
 
 
-.PHONY: mkdir-target
-mkdir-target:
+.PHONY: hello-world-osarch-specific
+hello-world-osarch-specific:
+	@echo "Hello World, from linux."
+
+
+.PHONY: run-osarch-specific
+run-osarch-specific:
+	@go run main.go
+
+
+.PHONY: setup-osarch-specific
+setup-osarch-specific:
+	@mkdir /tmp/sqlite
+	@cp testdata/sqlite/G2C.db /tmp/sqlite/G2C.db
 	@mkdir -p $(TARGET_DIRECTORY)/$(GO_OS)-$(GO_ARCH) || true
 
 
-.PHONY: setup
-setup:
-	@rm -rf /tmp/sqlite
-	@mkdir  /tmp/sqlite
-	@cp testdata/sqlite/G2C.db /tmp/sqlite/G2C.db
+.PHONY: test-osarch-specific
+test-osarch-specific:
+	@go test -v -p 1 ./...
 
 # -----------------------------------------------------------------------------
 # Makefile targets supported only by this platform.

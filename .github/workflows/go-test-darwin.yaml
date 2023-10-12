@@ -12,15 +12,16 @@ env:
 
 jobs:
   go-test-darwin:
-    runs-on: macos-latest
+    runs-on: ${{ matrix.os }}
     env:
       GO111MODULE: on
       CGO_ENABLED: 1
     strategy:
       matrix:
-        senzingapi-version: ["staging"]
+        os: [macos-latest]
+        senzingapi-version: [staging]
         go: ["1.21"]
-    name: Go ${{ matrix.go }} using Senzing API ${{ matrix.senzingapi-version }} on darwin
+    name: "Senzing: ${{ matrix.senzingapi-version }}; OS: ${{ matrix.os }}; Go: ${{ matrix.go }}"
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -40,15 +41,3 @@ jobs:
         run: mkdir /tmp/sqlite && cp testdata/sqlite/G2C.db /tmp/sqlite/G2C.db
       - name: Run go test
         run: go test -exec /Users/runner/work/g2-sdk-go-base/g2-sdk-go-base/bin/macos_exec_dyld.sh -v -p 1 ./...
-      # - name: Run go test - main
-      #   run: go test -exec /Users/runner/work/g2-sdk-go-base/g2-sdk-go-base/bin/macos_exec_dyld.sh -v -p 1 ./.
-      # - name: Run go test - g2config
-      #   run: go test -exec /Users/runner/work/g2-sdk-go-base/g2-sdk-go-base/bin/macos_exec_dyld.sh -v -p 1 ./g2config
-      # - name: Run go test - g2configmgr
-      #   run: go test -exec /Users/runner/work/g2-sdk-go-base/g2-sdk-go-base/bin/macos_exec_dyld.sh -v -p 1 ./g2configmgr
-      # - name: Run go test - g2diagnostic
-      #   run: go test -exec /Users/runner/work/g2-sdk-go-base/g2-sdk-go-base/bin/macos_exec_dyld.sh -v -p 1 ./g2diagnostic
-      # - name: Run go test - g2engine
-      #   run: go test -exec /Users/runner/work/g2-sdk-go-base/g2-sdk-go-base/bin/macos_exec_dyld.sh -v -p 1 ./g2engine
-      # - name: Run go test - g2product
-      #   run: go test -exec /Users/runner/work/g2-sdk-go-base/g2-sdk-go-base/bin/macos_exec_dyld.sh -v -p 1 ./g2product
