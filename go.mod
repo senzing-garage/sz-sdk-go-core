@@ -9,7 +9,7 @@ require (
 	github.com/senzing/go-logging v1.3.3
 	github.com/senzing/go-observing v0.2.8
 	github.com/stretchr/testify v1.8.4
-	google.golang.org/grpc v1.58.3
+	google.golang.org/grpc v1.59.0
 )
 
 require (
