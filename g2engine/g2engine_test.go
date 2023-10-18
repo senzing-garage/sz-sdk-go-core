@@ -20,6 +20,7 @@ import (
 	futil "github.com/senzing/go-common/fileutil"
 	"github.com/senzing/go-common/g2engineconfigurationjson"
 	"github.com/senzing/go-common/record"
+	"github.com/senzing/go-common/testfixtures"
 	"github.com/senzing/go-common/truthset"
 	"github.com/senzing/go-logging/logging"
 	"github.com/stretchr/testify/assert"
@@ -592,14 +593,18 @@ func TestG2engine_CountRedoRecords(test *testing.T) {
 	printActual(test, actual)
 }
 
-// FAIL:
 func TestG2engine_ExportJSONEntityReport(test *testing.T) {
 	ctx := context.TODO()
 	g2engine := getTestObject(ctx, test)
+	aRecord := testfixtures.FixtureRecords["65536-periods"]
+	err := g2engine.AddRecord(ctx, aRecord.DataSource, aRecord.Id, aRecord.Json, loadId)
+	testError(test, ctx, g2engine, err)
+	defer g2engine.DeleteRecord(ctx, aRecord.DataSource, aRecord.Id, loadId)
 	flags := int64(0)
 	aHandle, err := g2engine.ExportJSONEntityReport(ctx, flags)
 	testError(test, ctx, g2engine, err)
 	anEntity, err := g2engine.FetchNext(ctx, aHandle)
+	test.Logf(">>>>>>>>>>>>>>>>>> %s", anEntity)
 	testError(test, ctx, g2engine, err)
 	printResult(test, "Entity", anEntity)
 	err = g2engine.CloseExport(ctx, aHandle)
