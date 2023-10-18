@@ -18,9 +18,9 @@ jobs:
       CGO_ENABLED: 1
     strategy:
       matrix:
+        go: ["1.21"]
         os: [macos-latest]
         senzingapi-version: [staging]
-        go: ["1.21"]
     name: "go test with Senzing: ${{ matrix.senzingapi-version }}; OS: ${{ matrix.os }}; Go: ${{ matrix.go }}"
     steps:
       - name: Checkout repository
