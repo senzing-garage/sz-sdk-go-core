@@ -600,7 +600,7 @@ func TestG2engine_ExportJSONEntityReport(test *testing.T) {
 	err := g2engine.AddRecord(ctx, aRecord.DataSource, aRecord.Id, aRecord.Json, loadId)
 	testError(test, ctx, g2engine, err)
 	defer g2engine.DeleteRecord(ctx, aRecord.DataSource, aRecord.Id, loadId)
-	flags := int64(0)
+	flags := int64(-1)
 	aHandle, err := g2engine.ExportJSONEntityReport(ctx, flags)
 	testError(test, ctx, g2engine, err)
 	anEntity, err := g2engine.FetchNext(ctx, aHandle)
