@@ -614,6 +614,7 @@ func TestG2engine_ExportJSONEntityReport(test *testing.T) {
 	test.Logf(">>>>>>>>>>>>>>>>>> length: %d; Entity: %s", len(anEntity), anEntity)
 	testError(test, ctx, g2engine, err)
 	printResult(test, "Entity", anEntity)
+	assert.True(test, len(anEntity) > 0)
 	err = g2engine.CloseExport(ctx, aHandle)
 	testError(test, ctx, g2engine, err)
 }
