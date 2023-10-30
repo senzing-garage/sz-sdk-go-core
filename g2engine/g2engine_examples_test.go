@@ -211,8 +211,23 @@ func ExampleG2engine_FetchNext() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	anEntity, _ := g2engine.FetchNext(ctx, responseHandle)
-	fmt.Println(len(anEntity) >= 0) // Dummy output.
+	defer func() {
+		err = g2engine.CloseExport(ctx, responseHandle)
+	}()
+
+	jsonEntityReport := ""
+	for {
+		jsonEntityReportFragment, err := g2engine.FetchNext(ctx, responseHandle)
+		if err != nil {
+			fmt.Println(err)
+		}
+		if len(jsonEntityReportFragment) == 0 {
+			break
+		}
+		jsonEntityReport += jsonEntityReportFragment
+	}
+
+	fmt.Println(len(jsonEntityReport) >= 0) // Dummy output.
 	// Output: true
 }
 

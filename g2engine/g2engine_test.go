@@ -322,7 +322,7 @@ func setupSenzingConfig(ctx context.Context, moduleName string, iniParams string
 	}
 
 	configComments = fmt.Sprintf("Alternate config created by g2engine_test at %s", now.UTC())
-	configID, err = aG2configmgr.AddConfig(ctx, altConfigStr, configComments)
+	_, err = aG2configmgr.AddConfig(ctx, altConfigStr, configComments)
 	if err != nil {
 		return createError(5913, err)
 	}
@@ -609,14 +609,26 @@ func TestG2engine_ExportJSONEntityReport(test *testing.T) {
 
 	flags := int64(-1)
 	aHandle, err := g2engine.ExportJSONEntityReport(ctx, flags)
+	defer func() {
+		err = g2engine.CloseExport(ctx, aHandle)
+		testError(test, ctx, g2engine, err)
+	}()
 	testError(test, ctx, g2engine, err)
-	anEntity, err := g2engine.FetchNext(ctx, aHandle)
-	test.Logf(">>>>>>>>>>>>>>>>>> length: %d; Entity: %s", len(anEntity), anEntity)
+
+	jsonEntityReport := ""
+	for {
+		jsonEntityReportFragment, err := g2engine.FetchNext(ctx, aHandle)
+		testError(test, ctx, g2engine, err)
+		if len(jsonEntityReportFragment) == 0 {
+			break
+		}
+		jsonEntityReport += jsonEntityReportFragment
+	}
+
+	test.Logf(">>>>>>>>>>>>>>>>>> length: %d; Entity: %s", len(jsonEntityReport), jsonEntityReport)
 	testError(test, ctx, g2engine, err)
-	printResult(test, "Entity", anEntity)
-	assert.True(test, len(anEntity) > 0)
-	err = g2engine.CloseExport(ctx, aHandle)
-	testError(test, ctx, g2engine, err)
+	printResult(test, "Entity", jsonEntityReport)
+	assert.True(test, len(jsonEntityReport) > 0)
 }
 
 func TestG2engine_ExportConfigAndConfigID(test *testing.T) {
