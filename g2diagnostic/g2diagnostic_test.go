@@ -465,13 +465,13 @@ func TestG2diagnostic_GetAvailableMemory(test *testing.T) {
 // }
 
 // TODO: Uncomment after fixed
-// func TestG2diagnostic_GetDBInfo(test *testing.T) {
-// 	ctx := context.TODO()
-// 	g2diagnostic := getTestObject(ctx, test)
-// 	actual, err := g2diagnostic.GetDBInfo(ctx)
-// 	testError(test, ctx, g2diagnostic, err)
-// 	printActual(test, actual)
-// }
+func TestG2diagnostic_GetDBInfo(test *testing.T) {
+	ctx := context.TODO()
+	g2diagnostic := getTestObject(ctx, test)
+	actual, err := g2diagnostic.GetDBInfo(ctx)
+	testError(test, ctx, g2diagnostic, err)
+	printActual(test, actual)
+}
 
 // func TestG2diagnostic_GetEntityDetails(test *testing.T) {
 // 	ctx := context.TODO()
