@@ -75,18 +75,17 @@ func ExampleG2configmgr_GetConfig() {
 	// Output: {"G2_CONFIG":{"CFG_ATTR":[{"ATTR_ID":1001,"ATTR_CODE":"DATA_SOURCE","ATTR...
 }
 
-// TODO: Uncomment after fixed
-// func ExampleG2configmgr_GetConfigList() {
-// 	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2configmgr/g2configmgr_test.go
-// 	ctx := context.TODO()
-// 	g2configmgr := getG2Configmgr(ctx)
-// 	jsonConfigList, err := g2configmgr.GetConfigList(ctx)
-// 	if err != nil {
-// 		fmt.Println(err)
-// 	}
-// 	fmt.Println(truncate(jsonConfigList, 28))
-// 	// Output: {"CONFIGS":[{"CONFIG_ID":...
-// }
+func ExampleG2configmgr_GetConfigList() {
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2configmgr/g2configmgr_test.go
+	ctx := context.TODO()
+	g2configmgr := getG2Configmgr(ctx)
+	jsonConfigList, err := g2configmgr.GetConfigList(ctx)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(truncate(jsonConfigList, 28))
+	// Output: {"CONFIGS":[{"CONFIG_ID":...
+}
 
 func ExampleG2configmgr_GetDefaultConfigID() {
 	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2configmgr/g2configmgr_test.go

@@ -29,8 +29,8 @@ import (
 const (
 	defaultTruncation = 76
 	loadId            = "G2Engine_test"
-	printResults      = false
 	moduleName        = "Engine Test Module"
+	printResults      = false
 	verboseLogging    = 0
 )
 
@@ -43,8 +43,8 @@ type GetEntityByRecordIDResponse struct {
 var (
 	engineInitialized bool     = false
 	globalG2engine    G2engine = G2engine{}
-	senzingConfigId   int64    = 0
 	logger            logging.LoggingInterface
+	senzingConfigId   int64 = 0
 )
 
 // ----------------------------------------------------------------------------
@@ -163,69 +163,6 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
-func setupDB(preserveDB bool) (string, bool, error) {
-	var err error = nil
-
-	// get the base directory
-	baseDir := baseDirectoryPath()
-
-	// get the template database file path
-	dbFilePath := dbTemplatePath()
-
-	dbFilePath, err = filepath.Abs(dbFilePath)
-	if err != nil {
-		err = fmt.Errorf("failed to obtain absolute path to database file (%s): %s",
-			dbFilePath, err.Error())
-		return "", false, err
-	}
-
-	// check the environment for a database URL
-	dbUrl, envUrlExists := os.LookupEnv("SENZING_TOOLS_DATABASE_URL")
-
-	dbTargetPath := filepath.Join(baseDirectoryPath(), "G2C.db")
-
-	dbTargetPath, err = filepath.Abs(dbTargetPath)
-	if err != nil {
-		err = fmt.Errorf("failed to make target database path (%s) absolute: %w",
-			dbTargetPath, err)
-		return "", false, err
-	}
-
-	dbDefaultUrl := fmt.Sprintf("sqlite3://na:na@%s", dbTargetPath)
-
-	dbExternal := envUrlExists && dbDefaultUrl != dbUrl
-
-	if !dbExternal {
-		// set the database URL
-		dbUrl = dbDefaultUrl
-
-		if !preserveDB {
-			// copy the SQLite database file
-			_, _, err := futil.CopyFile(dbFilePath, baseDir, true)
-
-			if err != nil {
-				err = fmt.Errorf("setup failed to copy template database (%v) to target path (%v): %w",
-					dbFilePath, baseDir, err)
-				// fall through to return the error
-			}
-		}
-	}
-
-	return dbUrl, dbExternal, err
-}
-
-func setupIniParams(dbUrl string) (string, error) {
-	configAttrMap := map[string]string{"databaseUrl": dbUrl}
-
-	iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingMap(configAttrMap)
-
-	if err != nil {
-		err = createError(5902, err)
-	}
-
-	return iniParams, err
-}
-
 func getIniParams() (string, error) {
 	dbUrl, _, err := setupDB(true)
 	if err != nil {
@@ -236,6 +173,157 @@ func getIniParams() (string, error) {
 		return "", err
 	}
 	return iniParams, nil
+}
+
+func restoreG2engine(ctx context.Context) error {
+	iniParams, err := getIniParams()
+	if err != nil {
+		return err
+	}
+	err = setupG2engine(ctx, moduleName, iniParams, verboseLogging, false)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func setup() error {
+	var err error = nil
+	ctx := context.TODO()
+	logger, err = logging.NewSenzingSdkLogger(ComponentId, g2engineapi.IdMessages)
+	if err != nil {
+		return createError(5901, err)
+	}
+
+	// Cleanup past runs and prepare for current run.
+
+	baseDir := baseDirectoryPath()
+	err = os.RemoveAll(filepath.Clean(baseDir))
+	if err != nil {
+		return fmt.Errorf("Failed to remove target test directory (%v): %w", baseDir, err)
+	}
+	err = os.MkdirAll(filepath.Clean(baseDir), 0750)
+	if err != nil {
+		return fmt.Errorf("Failed to recreate target test directory (%v): %w", baseDir, err)
+	}
+
+	// Get the database URL and determine if external or a local file just created.
+
+	dbUrl, dbPurge, err := setupDB(false)
+	if err != nil {
+		return err
+	}
+
+	// Create the Senzing engine configuration JSON.
+
+	iniParams, err := setupIniParams(dbUrl)
+	if err != nil {
+		return err
+	}
+
+	// Add Data Sources to Senzing configuration.
+
+	err = setupSenzingConfig(ctx, moduleName, iniParams, verboseLogging)
+	if err != nil {
+		return createError(5920, err)
+	}
+
+	// Setup the engine.
+
+	err = setupG2engine(ctx, moduleName, iniParams, verboseLogging, dbPurge)
+	if err != nil {
+		return err
+	}
+
+	// Preload records.
+
+	custRecords := truthset.CustomerRecords
+	records := []record.Record{custRecords["1001"], custRecords["1002"], custRecords["1003"]}
+	for _, record := range records {
+		err = globalG2engine.AddRecord(ctx, record.DataSource, record.Id, record.Json, loadId)
+		if err != nil {
+			defer teardownG2engine(ctx)
+			return err
+		}
+	}
+
+	return err
+}
+
+func setupDB(preserveDB bool) (string, bool, error) {
+	var err error = nil
+
+	// Get paths.
+
+	baseDir := baseDirectoryPath()
+	dbFilePath, err := filepath.Abs(dbTemplatePath())
+	if err != nil {
+		err = fmt.Errorf("failed to obtain absolute path to database file (%s): %s",
+			dbFilePath, err.Error())
+		return "", false, err
+	}
+	dbTargetPath := filepath.Join(baseDirectoryPath(), "G2C.db")
+	dbTargetPath, err = filepath.Abs(dbTargetPath)
+	if err != nil {
+		err = fmt.Errorf("failed to make target database path (%s) absolute: %w",
+			dbTargetPath, err)
+		return "", false, err
+	}
+
+	// Check the environment for a database URL.
+
+	dbUrl, envUrlExists := os.LookupEnv("SENZING_TOOLS_DATABASE_URL")
+	dbDefaultUrl := fmt.Sprintf("sqlite3://na:na@%s", dbTargetPath)
+	dbExternal := envUrlExists && dbDefaultUrl != dbUrl
+	if !dbExternal {
+		dbUrl = dbDefaultUrl
+		if !preserveDB {
+			_, _, err = futil.CopyFile(dbFilePath, baseDir, true) // Copy the SQLite database file.
+			if err != nil {
+				err = fmt.Errorf("setup failed to copy template database (%v) to target path (%v): %w",
+					dbFilePath, baseDir, err)
+				// Fall through to return the error.
+			}
+		}
+	}
+	return dbUrl, dbExternal, err
+}
+
+func setupG2engine(ctx context.Context, moduleName string, iniParams string, verboseLogging int64, purge bool) error {
+	if engineInitialized {
+		return fmt.Errorf("G2engine is already setup and has not been torn down.")
+	}
+	globalG2engine.SetLogLevel(ctx, logging.LevelInfoName)
+	log.SetFlags(0)
+
+	err := globalG2engine.Init(ctx, moduleName, iniParams, verboseLogging)
+	if err != nil {
+		return createError(5903, err)
+	}
+
+	// In case of an external database (e.g.: PostgreSQL) we need to purge since the database
+	// may be shared across test suites -- this is not ideal since tests are not isolated.
+	// TODO: look for a way to use external databases while still isolating tests.
+
+	if purge {
+		err = globalG2engine.PurgeRepository(ctx)
+		if err != nil {
+			// if an error occurred on purge make sure to destroy the engine
+			defer globalG2engine.Destroy(ctx)
+			return createError(5904, err)
+		}
+	}
+	engineInitialized = true
+	return err // Should be nil if we get here.
+}
+
+func setupIniParams(dbUrl string) (string, error) {
+	configAttrMap := map[string]string{"databaseUrl": dbUrl}
+	iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingMap(configAttrMap)
+	if err != nil {
+		err = createError(5902, err)
+	}
+	return iniParams, err
 }
 
 func setupSenzingConfig(ctx context.Context, moduleName string, iniParams string, verboseLogging int64) error {
@@ -252,6 +340,8 @@ func setupSenzingConfig(ctx context.Context, moduleName string, iniParams string
 		return createError(5907, err)
 	}
 
+	// Add data sources to in-memory Senzing configuration.
+
 	datasourceNames := []string{"CUSTOMERS", "REFERENCE", "WATCHLIST"}
 	for _, datasourceName := range datasourceNames {
 		datasource := truthset.TruthsetDataSources[datasourceName]
@@ -260,6 +350,8 @@ func setupSenzingConfig(ctx context.Context, moduleName string, iniParams string
 			return createError(5908, err)
 		}
 	}
+
+	// Create a string representation of the in-memory configuration.
 
 	configStr, err := aG2config.Save(ctx, configHandle)
 	if err != nil {
@@ -270,6 +362,8 @@ func setupSenzingConfig(ctx context.Context, moduleName string, iniParams string
 	if err != nil {
 		return createError(5910, err)
 	}
+
+	// Create an alternate Senzing configuration.
 
 	configHandle, err = aG2config.Create(ctx)
 	if err != nil {
@@ -300,7 +394,7 @@ func setupSenzingConfig(ctx context.Context, moduleName string, iniParams string
 		return createError(5911, err)
 	}
 
-	// Persist the Senzing configuration to the Senzing repository.
+	// Persist the Senzing configurations to the Senzing repository.
 
 	aG2configmgr := &g2configmgr.G2configmgr{}
 	err = aG2configmgr.Init(ctx, moduleName, iniParams, verboseLogging)
@@ -331,121 +425,6 @@ func setupSenzingConfig(ctx context.Context, moduleName string, iniParams string
 	if err != nil {
 		return createError(5915, err)
 	}
-
-	return err
-}
-
-func setupG2engine(ctx context.Context, moduleName string, iniParams string, verboseLogging int64, purge bool) error {
-	if engineInitialized {
-		return fmt.Errorf("G2engine is already setup and has not been torn down.")
-	}
-	globalG2engine.SetLogLevel(ctx, logging.LevelInfoName)
-	log.SetFlags(0)
-
-	err := globalG2engine.Init(ctx, moduleName, iniParams, verboseLogging)
-	if err != nil {
-		return createError(5903, err)
-	}
-
-	// in case of an external database (e.g.: PostgreSQL) we need to purge since the database
-	// may be shared across test suites -- this is not ideal since tests are not isolated.
-	// todo: look for a way to use external databases while still isolating tests
-	if purge {
-		err = globalG2engine.PurgeRepository(ctx)
-		if err != nil {
-			// if an error occurred on purge make sure to destroy the engine
-			defer globalG2engine.Destroy(ctx)
-			return createError(5904, err)
-		}
-	}
-	engineInitialized = true
-	return err // should be nil if we get here
-}
-
-func restoreG2engine(ctx context.Context) error {
-	iniParams, err := getIniParams()
-	if err != nil {
-		return err
-	}
-
-	err = setupG2engine(ctx, moduleName, iniParams, verboseLogging, false)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func teardownG2engine(ctx context.Context) error {
-	// check if not initialized
-	if !engineInitialized {
-		return nil
-	}
-
-	// destroy the engine
-	err := globalG2engine.Destroy(ctx)
-	if err != nil {
-		return err
-	}
-	engineInitialized = false
-
-	return nil
-}
-
-func setup() error {
-	var err error = nil
-	ctx := context.TODO()
-	logger, err = logging.NewSenzingSdkLogger(ComponentId, g2engineapi.IdMessages)
-	if err != nil {
-		return createError(5901, err)
-	}
-
-	baseDir := baseDirectoryPath()
-	err = os.RemoveAll(filepath.Clean(baseDir)) // cleanup any previous test run
-	if err != nil {
-		return fmt.Errorf("Failed to remove target test directory (%v): %w", baseDir, err)
-	}
-	err = os.MkdirAll(filepath.Clean(baseDir), 0750) // recreate the test target directory
-	if err != nil {
-		return fmt.Errorf("Failed to recreate target test directory (%v): %w", baseDir, err)
-	}
-
-	// get the database URL and determine if external or a local file just created
-	dbUrl, dbPurge, err := setupDB(false)
-	if err != nil {
-		return err
-	}
-
-	// get the INI params
-	iniParams, err := setupIniParams(dbUrl)
-	if err != nil {
-		return err
-	}
-
-	// Add Data Sources to Senzing configuration.
-	err = setupSenzingConfig(ctx, moduleName, iniParams, verboseLogging)
-	if err != nil {
-		return createError(5920, err)
-	}
-
-	// setup the engine
-	err = setupG2engine(ctx, moduleName, iniParams, verboseLogging, dbPurge)
-	if err != nil {
-		return err
-	}
-
-	// preload records
-	custRecords := truthset.CustomerRecords
-	records := []record.Record{custRecords["1001"], custRecords["1002"], custRecords["1003"]}
-	for _, record := range records {
-		err = globalG2engine.AddRecord(ctx, record.DataSource, record.Id, record.Json, loadId)
-		if err != nil {
-			defer teardownG2engine(ctx)
-			return err
-		}
-	}
-
-	// setup complete
 	return err
 }
 
@@ -453,6 +432,18 @@ func teardown() error {
 	ctx := context.TODO()
 	err := teardownG2engine(ctx)
 	return err
+}
+
+func teardownG2engine(ctx context.Context) error {
+	if !engineInitialized {
+		return nil
+	}
+	err := globalG2engine.Destroy(ctx)
+	if err != nil {
+		return err
+	}
+	engineInitialized = false
+	return nil
 }
 
 // ----------------------------------------------------------------------------
@@ -514,7 +505,8 @@ func TestG2engine_AddRecord(test *testing.T) {
 	testError(test, ctx, g2engine, err)
 	defer g2engine.DeleteRecord(ctx, record2.DataSource, record2.Id, loadId)
 
-	// clean-up the records we inserted
+	// Clean-up the records we inserted.
+
 	err = g2engine.DeleteRecord(ctx, record1.DataSource, record1.Id, loadId)
 	testError(test, ctx, g2engine, err)
 
@@ -600,21 +592,13 @@ func TestG2engine_ExportJSONEntityReport(test *testing.T) {
 	err := g2engine.AddRecord(ctx, aRecord.DataSource, aRecord.Id, aRecord.Json, loadId)
 	testError(test, ctx, g2engine, err)
 	defer g2engine.DeleteRecord(ctx, aRecord.DataSource, aRecord.Id, loadId)
-
-	// FIXME: For debugging purposes only.
-
-	actual, err := g2engine.GetRecord(ctx, aRecord.DataSource, aRecord.Id)
-	testError(test, ctx, g2engine, err)
-	test.Logf(">>>>>>>>>>>>>>>>>> Record: %s", actual)
-
 	flags := int64(-1)
 	aHandle, err := g2engine.ExportJSONEntityReport(ctx, flags)
 	defer func() {
-		err = g2engine.CloseExport(ctx, aHandle)
+		err := g2engine.CloseExport(ctx, aHandle)
 		testError(test, ctx, g2engine, err)
 	}()
 	testError(test, ctx, g2engine, err)
-
 	jsonEntityReport := ""
 	for {
 		jsonEntityReportFragment, err := g2engine.FetchNext(ctx, aHandle)
@@ -624,11 +608,8 @@ func TestG2engine_ExportJSONEntityReport(test *testing.T) {
 		}
 		jsonEntityReport += jsonEntityReportFragment
 	}
-
-	test.Logf(">>>>>>>>>>>>>>>>>> length: %d; Entity: %s", len(jsonEntityReport), jsonEntityReport)
 	testError(test, ctx, g2engine, err)
-	printResult(test, "Entity", jsonEntityReport)
-	assert.True(test, len(jsonEntityReport) > 0)
+	assert.True(test, len(jsonEntityReport) > 65536)
 }
 
 func TestG2engine_ExportConfigAndConfigID(test *testing.T) {
