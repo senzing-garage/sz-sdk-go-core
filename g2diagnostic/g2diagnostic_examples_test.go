@@ -114,18 +114,17 @@ func ExampleG2diagnostic_GetAvailableMemory() {
 // 	// Output: [{"DSRC_ID":1001,"DSRC_CODE":"CUSTOMERS","ETYPE_ID":3,"ETYPE_CODE":"GENERIC","OBS_ENT_COUNT":7,"DSRC_RECORD_COUNT":7}]
 // }
 
-// TODO: Uncomment after fixed
-// func ExampleG2diagnostic_GetDBInfo() {
-// 	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2diagnostic/g2diagnostic_test.go
-// 	ctx := context.TODO()
-// 	g2diagnostic := getG2Diagnostic(ctx)
-// 	result, err := g2diagnostic.GetDBInfo(ctx)
-// 	if err != nil {
-// 		fmt.Println(err)
-// 	}
-// 	fmt.Println(truncate(result, 52))
-// 	// Output: {"Hybrid Mode":false,"Database Details":[{"Name":...
-// }
+func ExampleG2diagnostic_GetDBInfo() {
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2diagnostic/g2diagnostic_test.go
+	ctx := context.TODO()
+	g2diagnostic := getG2Diagnostic(ctx)
+	result, err := g2diagnostic.GetDBInfo(ctx)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(truncate(result, 52))
+	// Output: {"Hybrid Mode":false,"Database Details":[{"Name":...
+}
 
 // func ExampleG2diagnostic_GetEntityDetails() {
 // 	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2diagnostic/g2diagnostic_test.go

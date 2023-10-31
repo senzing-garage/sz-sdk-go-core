@@ -245,7 +245,7 @@ func (client *G2config) Close(ctx context.Context, configHandle uintptr) error {
 		client.traceEntry(5, configHandle)
 		defer func() { client.traceExit(6, configHandle, err, time.Since(entryTime)) }()
 	}
-	result := C.G2config_close_helper(C.uintptr_t(configHandle))
+	result := C.G2Config_close_helper(C.uintptr_t(configHandle))
 	if result != 0 {
 		err = client.newError(ctx, 4002, configHandle, result, time.Since(entryTime))
 	}
@@ -282,7 +282,7 @@ func (client *G2config) Create(ctx context.Context) (uintptr, error) {
 		client.traceEntry(7)
 		defer func() { client.traceExit(8, resultResponse, err, time.Since(entryTime)) }()
 	}
-	result := C.G2config_create_helper()
+	result := C.G2Config_create_helper()
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4003, result.returnCode, time.Since(entryTime))
 	}

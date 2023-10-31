@@ -25,15 +25,15 @@ import (
 
 const (
 	defaultTruncation = 76
+	moduleName        = "Diagnostic Test Module"
 	printResults      = false
 	verboseLogging    = 0
-	moduleName        = "Diagnostic Test Module"
 )
 
 var (
+	defaultConfigID       int64
 	diagnosticInitialized bool         = false
 	globalG2diagnostic    G2diagnostic = G2diagnostic{}
-	defaultConfigID       int64
 	logger                logging.LoggingInterface
 )
 
@@ -119,69 +119,6 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
-func setupDB(preserveDB bool) (string, bool, error) {
-	var err error = nil
-
-	// get the base directory
-	baseDir := baseDirectoryPath()
-
-	// get the template database file path
-	dbFilePath := dbTemplatePath()
-
-	dbFilePath, err = filepath.Abs(dbFilePath)
-	if err != nil {
-		err = fmt.Errorf("failed to obtain absolute path to database file (%s): %s",
-			dbFilePath, err.Error())
-		return "", false, err
-	}
-
-	// check the environment for a database URL
-	dbUrl, envUrlExists := os.LookupEnv("SENZING_TOOLS_DATABASE_URL")
-
-	dbTargetPath := filepath.Join(baseDirectoryPath(), "G2C.db")
-
-	dbTargetPath, err = filepath.Abs(dbTargetPath)
-	if err != nil {
-		err = fmt.Errorf("failed to make target database path (%s) absolute: %w",
-			dbTargetPath, err)
-		return "", false, err
-	}
-
-	dbDefaultUrl := fmt.Sprintf("sqlite3://na:na@%s", dbTargetPath)
-
-	dbExternal := envUrlExists && dbDefaultUrl != dbUrl
-
-	if !dbExternal {
-		// set the database URL
-		dbUrl = dbDefaultUrl
-
-		if !preserveDB {
-			// copy the SQLite database file
-			_, _, err := futil.CopyFile(dbFilePath, baseDir, true)
-
-			if err != nil {
-				err = fmt.Errorf("setup failed to copy template database (%v) to target path (%v): %w",
-					dbFilePath, baseDir, err)
-				// fall through to return the error
-			}
-		}
-	}
-
-	return dbUrl, dbExternal, err
-}
-
-func setupIniParams(dbUrl string) (string, error) {
-	configAttrMap := map[string]string{"databaseUrl": dbUrl}
-
-	iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingMap(configAttrMap)
-
-	if err != nil {
-		err = createError(5902, err)
-	}
-
-	return iniParams, err
-}
-
 func getIniParams() (string, error) {
 	dbUrl, _, err := setupDB(true)
 	if err != nil {
@@ -192,6 +129,179 @@ func getIniParams() (string, error) {
 		return "", err
 	}
 	return iniParams, nil
+}
+
+func restoreG2diagnostic(ctx context.Context) error {
+	iniParams, err := getIniParams()
+	if err != nil {
+		return err
+	}
+	err = setupG2diagnostic(ctx, moduleName, iniParams, verboseLogging)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func setup() error {
+	var err error = nil
+	ctx := context.TODO()
+	moduleName := "Test module name"
+	verboseLogging := int64(0)
+	logger, err = logging.NewSenzingSdkLogger(ComponentId, g2diagnosticapi.IdMessages)
+	if err != nil {
+		return createError(5901, err)
+	}
+
+	// Cleanup past runs and prepare for current run.
+
+	baseDir := baseDirectoryPath()
+	err = os.RemoveAll(filepath.Clean(baseDir))
+	if err != nil {
+		return fmt.Errorf("Failed to remove target test directory (%v): %w", baseDir, err)
+	}
+	err = os.MkdirAll(filepath.Clean(baseDir), 0750)
+	if err != nil {
+		return fmt.Errorf("Failed to recreate target test directory (%v): %w", baseDir, err)
+	}
+
+	// Get the database URL and determine if external or a local file just created.
+
+	dbUrl, dbPurge, err := setupDB(false)
+	if err != nil {
+		return err
+	}
+
+	// Create the Senzing engine configuration JSON.
+
+	iniParams, err := setupIniParams(dbUrl)
+	if err != nil {
+		return err
+	}
+
+	// Add Data Sources to Senzing configuration.
+
+	err = setupSenzingConfig(ctx, moduleName, iniParams, verboseLogging)
+	if err != nil {
+		return createError(5920, err)
+	}
+
+	// Add records.
+
+	err = setupAddRecords(ctx, moduleName, iniParams, verboseLogging, dbPurge)
+	if err != nil {
+		return createError(5922, err)
+	}
+
+	// Setup the G2 diagnostic object.
+
+	err = setupG2diagnostic(ctx, moduleName, iniParams, verboseLogging)
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
+func setupAddRecords(ctx context.Context, moduleName string, iniParams string, verboseLogging int64, purge bool) error {
+
+	aG2engine := &g2engine.G2engine{}
+	err := aG2engine.Init(ctx, moduleName, iniParams, verboseLogging)
+	if err != nil {
+		return createError(5916, err)
+	}
+
+	// If requested, purge existing database.
+
+	if purge {
+		err = aG2engine.PurgeRepository(ctx)
+		if err != nil {
+			aG2engine.Destroy(ctx) // If an error occurred on purge make sure to destroy the engine.
+			return createError(5904, err)
+		}
+	}
+
+	// Add records into Senzing.
+
+	testRecordIds := []string{"1001", "1002", "1003", "1004", "1005", "1039", "1040"}
+	for _, testRecordId := range testRecordIds {
+		testRecord := truthset.CustomerRecords[testRecordId]
+		err := aG2engine.AddRecord(ctx, testRecord.DataSource, testRecord.Id, testRecord.Json, "G2Diagnostic_test")
+		if err != nil {
+			return createError(5917, err)
+		}
+	}
+
+	// All done. Destroy Senzing engine
+
+	err = aG2engine.Destroy(ctx)
+	if err != nil {
+		return createError(5905, err)
+	}
+	return err
+}
+
+func setupDB(preserveDB bool) (string, bool, error) {
+	var err error = nil
+
+	// Get paths.
+
+	baseDir := baseDirectoryPath()
+	dbFilePath, err := filepath.Abs(dbTemplatePath())
+	if err != nil {
+		err = fmt.Errorf("failed to obtain absolute path to database file (%s): %s",
+			dbFilePath, err.Error())
+		return "", false, err
+	}
+	dbTargetPath := filepath.Join(baseDirectoryPath(), "G2C.db")
+	dbTargetPath, err = filepath.Abs(dbTargetPath)
+	if err != nil {
+		err = fmt.Errorf("failed to make target database path (%s) absolute: %w",
+			dbTargetPath, err)
+		return "", false, err
+	}
+
+	// Check the environment for a database URL.
+
+	dbUrl, envUrlExists := os.LookupEnv("SENZING_TOOLS_DATABASE_URL")
+	dbDefaultUrl := fmt.Sprintf("sqlite3://na:na@%s", dbTargetPath)
+	dbExternal := envUrlExists && dbDefaultUrl != dbUrl
+	if !dbExternal {
+		dbUrl = dbDefaultUrl
+		if !preserveDB {
+			_, _, err = futil.CopyFile(dbFilePath, baseDir, true) // Copy the SQLite database file.
+			if err != nil {
+				err = fmt.Errorf("setup failed to copy template database (%v) to target path (%v): %w",
+					dbFilePath, baseDir, err)
+				// Fall through to return the error.
+			}
+		}
+	}
+	return dbUrl, dbExternal, err
+}
+
+func setupG2diagnostic(ctx context.Context, moduleName string, iniParams string, verboseLogging int64) error {
+	if diagnosticInitialized {
+		return fmt.Errorf("G2diagnostic is already setup and has not been torn down.")
+	}
+	globalG2diagnostic.SetLogLevel(ctx, logging.LevelInfoName)
+	log.SetFlags(0)
+	err := globalG2diagnostic.Init(ctx, moduleName, iniParams, verboseLogging)
+	if err != nil {
+		return createError(5903, err)
+	}
+
+	diagnosticInitialized = true
+	return err
+}
+
+func setupIniParams(dbUrl string) (string, error) {
+	configAttrMap := map[string]string{"databaseUrl": dbUrl}
+	iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingMap(configAttrMap)
+	if err != nil {
+		err = createError(5902, err)
+	}
+	return iniParams, err
 }
 
 func setupSenzingConfig(ctx context.Context, moduleName string, iniParams string, verboseLogging int64) error {
@@ -208,6 +318,8 @@ func setupSenzingConfig(ctx context.Context, moduleName string, iniParams string
 		return createError(5907, err)
 	}
 
+	// Add data sources to in-memory Senzing configuration.
+
 	datasourceNames := []string{"CUSTOMERS", "REFERENCE", "WATCHLIST"}
 	for _, datasourceName := range datasourceNames {
 		datasource := truthset.TruthsetDataSources[datasourceName]
@@ -216,6 +328,8 @@ func setupSenzingConfig(ctx context.Context, moduleName string, iniParams string
 			return createError(5908, err)
 		}
 	}
+
+	// Create a string representation of the in-memory configuration.
 
 	configStr, err := aG2config.Save(ctx, configHandle)
 	if err != nil {
@@ -259,141 +373,22 @@ func setupSenzingConfig(ctx context.Context, moduleName string, iniParams string
 	return err
 }
 
-func setupAddRecords(ctx context.Context, moduleName string, iniParams string, verboseLogging int64, purge bool) error {
-
-	aG2engine := &g2engine.G2engine{}
-	err := aG2engine.Init(ctx, moduleName, iniParams, verboseLogging)
-	if err != nil {
-		return createError(5916, err)
-	}
-
-	if purge {
-		err = aG2engine.PurgeRepository(ctx)
-		if err != nil {
-			// if an error occurred on purge make sure to destroy the engine
-			defer aG2engine.Destroy(ctx)
-			return createError(5904, err)
-		}
-	}
-
-	testRecordIds := []string{"1001", "1002", "1003", "1004", "1005", "1039", "1040"}
-	for _, testRecordId := range testRecordIds {
-		testRecord := truthset.CustomerRecords[testRecordId]
-		err := aG2engine.AddRecord(ctx, testRecord.DataSource, testRecord.Id, testRecord.Json, "G2Diagnostic_test")
-		if err != nil {
-			return createError(5917, err)
-		}
-	}
-
-	err = aG2engine.Destroy(ctx)
-	if err != nil {
-		return createError(5905, err)
-	}
-	return err
-}
-
-func setup() error {
-	var err error = nil
+func teardown() error {
 	ctx := context.TODO()
-	moduleName := "Test module name"
-	verboseLogging := int64(0)
-	logger, err = logging.NewSenzingSdkLogger(ComponentId, g2diagnosticapi.IdMessages)
-	if err != nil {
-		return createError(5901, err)
-	}
-
-	baseDir := baseDirectoryPath()
-	err = os.RemoveAll(filepath.Clean(baseDir)) // cleanup any previous test run
-	if err != nil {
-		return fmt.Errorf("Failed to remove target test directory (%v): %w", baseDir, err)
-	}
-	err = os.MkdirAll(filepath.Clean(baseDir), 0750) // recreate the test target directory
-	if err != nil {
-		return fmt.Errorf("Failed to recreate target test directory (%v): %w", baseDir, err)
-	}
-
-	// get the database URL and determine if external or a local file just created
-	dbUrl, dbPurge, err := setupDB(false)
-	if err != nil {
-		return err
-	}
-
-	// get the INI params
-	iniParams, err := setupIniParams(dbUrl)
-	if err != nil {
-		return err
-	}
-
-	// Add Data Sources to Senzing configuration.
-	err = setupSenzingConfig(ctx, moduleName, iniParams, verboseLogging)
-	if err != nil {
-		return createError(5920, err)
-	}
-
-	// Add records.
-	err = setupAddRecords(ctx, moduleName, iniParams, verboseLogging, dbPurge)
-	if err != nil {
-		return createError(5922, err)
-	}
-
-	// setup the G2 diagnostic object
-	err = setupG2diagnostic(ctx, moduleName, iniParams, verboseLogging)
-	if err != nil {
-		return err
-	}
-
+	err := teardownG2diagnostic(ctx)
 	return err
-}
-
-func setupG2diagnostic(ctx context.Context, moduleName string, iniParams string, verboseLogging int64) error {
-	if diagnosticInitialized {
-		return fmt.Errorf("G2diagnostic is already setup and has not been torn down.")
-	}
-	globalG2diagnostic.SetLogLevel(ctx, logging.LevelInfoName)
-	log.SetFlags(0)
-	err := globalG2diagnostic.Init(ctx, moduleName, iniParams, verboseLogging)
-	if err != nil {
-		return createError(5903, err)
-	}
-
-	diagnosticInitialized = true
-	return err // should be nil if we get here
-}
-
-func restoreG2diagnostic(ctx context.Context) error {
-	iniParams, err := getIniParams()
-	if err != nil {
-		return err
-	}
-
-	err = setupG2diagnostic(ctx, moduleName, iniParams, verboseLogging)
-	if err != nil {
-		return err
-	}
-
-	return nil
 }
 
 func teardownG2diagnostic(ctx context.Context) error {
-	// check if not initialized
 	if !diagnosticInitialized {
 		return nil
 	}
-
-	// destroy the engine
 	err := globalG2diagnostic.Destroy(ctx)
 	if err != nil {
 		return err
 	}
 	diagnosticInitialized = false
-
 	return nil
-}
-
-func teardown() error {
-	ctx := context.TODO()
-	err := teardownG2diagnostic(ctx)
-	return err
 }
 
 // ----------------------------------------------------------------------------
@@ -464,14 +459,13 @@ func TestG2diagnostic_GetAvailableMemory(test *testing.T) {
 // 	printResult(test, "Data Source counts", actual)
 // }
 
-// TODO: Uncomment after fixed
-// func TestG2diagnostic_GetDBInfo(test *testing.T) {
-// 	ctx := context.TODO()
-// 	g2diagnostic := getTestObject(ctx, test)
-// 	actual, err := g2diagnostic.GetDBInfo(ctx)
-// 	testError(test, ctx, g2diagnostic, err)
-// 	printActual(test, actual)
-// }
+func TestG2diagnostic_GetDBInfo(test *testing.T) {
+	ctx := context.TODO()
+	g2diagnostic := getTestObject(ctx, test)
+	actual, err := g2diagnostic.GetDBInfo(ctx)
+	testError(test, ctx, g2diagnostic, err)
+	printActual(test, actual)
+}
 
 // func TestG2diagnostic_GetEntityDetails(test *testing.T) {
 // 	ctx := context.TODO()

@@ -20,15 +20,15 @@ import (
 
 const (
 	defaultTruncation = 76
-	printResults      = false
 	moduleName        = "Product Test Module"
+	printResults      = false
 	verboseLogging    = 0
 )
 
 var (
-	productInitialized bool      = false
 	globalG2product    G2product = G2product{}
 	logger             logging.LoggingInterface
+	productInitialized bool = false
 )
 
 // ----------------------------------------------------------------------------
@@ -100,66 +100,16 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
-func setup() error {
-	var err error = nil
-	ctx := context.TODO()
-	logger, err = logging.NewSenzingSdkLogger(ComponentId, g2productapi.IdMessages)
+func getIniParams() (string, error) {
+	dbUrl, _, err := setupDB(true)
 	if err != nil {
-		return createError(5901, err)
+		return "", err
 	}
-
-	baseDir := baseDirectoryPath()
-	err = os.RemoveAll(filepath.Clean(baseDir)) // cleanup any previous test run
-	if err != nil {
-		return fmt.Errorf("Failed to remove target test directory (%v): %w", baseDir, err)
-	}
-	err = os.MkdirAll(filepath.Clean(baseDir), 0750) // recreate the test target directory
-	if err != nil {
-		return fmt.Errorf("Failed to recreate target test directory (%v): %w", baseDir, err)
-	}
-
-	// get the database URL and determine if external or a local file just created
-	dbUrl, _, err := setupDB(false)
-	if err != nil {
-		return err
-	}
-
-	// get the INI params
 	iniParams, err := setupIniParams(dbUrl)
 	if err != nil {
-		return err
+		return "", err
 	}
-
-	// setup the config
-	err = setupG2product(ctx, moduleName, iniParams, verboseLogging)
-	if err != nil {
-		return err
-	}
-
-	// get the tem
-	return err
-}
-
-func teardownG2product(ctx context.Context) error {
-	// check if not initialized
-	if !productInitialized {
-		return nil
-	}
-
-	// destroy the G2product
-	err := globalG2product.Destroy(ctx)
-	if err != nil {
-		return err
-	}
-	productInitialized = false
-
-	return nil
-}
-
-func teardown() error {
-	ctx := context.TODO()
-	err := teardownG2product(ctx)
-	return err
+	return iniParams, nil
 }
 
 func restoreG2product(ctx context.Context) error {
@@ -172,31 +122,64 @@ func restoreG2product(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-
 	return nil
+}
+
+func setup() error {
+	var err error = nil
+	ctx := context.TODO()
+	logger, err = logging.NewSenzingSdkLogger(ComponentId, g2productapi.IdMessages)
+	if err != nil {
+		return createError(5901, err)
+	}
+
+	// Cleanup past runs and prepare for current run.
+
+	baseDir := baseDirectoryPath()
+	err = os.RemoveAll(filepath.Clean(baseDir))
+	if err != nil {
+		return fmt.Errorf("Failed to remove target test directory (%v): %w", baseDir, err)
+	}
+	err = os.MkdirAll(filepath.Clean(baseDir), 0750)
+	if err != nil {
+		return fmt.Errorf("Failed to recreate target test directory (%v): %w", baseDir, err)
+	}
+
+	// Get the database URL and determine if external or a local file just created.
+
+	dbUrl, _, err := setupDB(false)
+	if err != nil {
+		return err
+	}
+
+	// Create the Senzing engine configuration JSON.
+
+	iniParams, err := setupIniParams(dbUrl)
+	if err != nil {
+		return err
+	}
+
+	err = setupG2product(ctx, moduleName, iniParams, verboseLogging)
+	if err != nil {
+		return err
+	}
+
+	return err
 }
 
 func setupDB(preserveDB bool) (string, bool, error) {
 	var err error = nil
 
-	// get the base directory
+	// Get paths.
+
 	baseDir := baseDirectoryPath()
-
-	// get the template database file path
-	dbFilePath := dbTemplatePath()
-
-	dbFilePath, err = filepath.Abs(dbFilePath)
+	dbFilePath, err := filepath.Abs(dbTemplatePath())
 	if err != nil {
 		err = fmt.Errorf("failed to obtain absolute path to database file (%s): %s",
 			dbFilePath, err.Error())
 		return "", false, err
 	}
-
-	// check the environment for a database URL
-	dbUrl, envUrlExists := os.LookupEnv("SENZING_TOOLS_DATABASE_URL")
-
 	dbTargetPath := filepath.Join(baseDirectoryPath(), "G2C.db")
-
 	dbTargetPath, err = filepath.Abs(dbTargetPath)
 	if err != nil {
 		err = fmt.Errorf("failed to make target database path (%s) absolute: %w",
@@ -204,51 +187,23 @@ func setupDB(preserveDB bool) (string, bool, error) {
 		return "", false, err
 	}
 
+	// Check the environment for a database URL.
+
+	dbUrl, envUrlExists := os.LookupEnv("SENZING_TOOLS_DATABASE_URL")
 	dbDefaultUrl := fmt.Sprintf("sqlite3://na:na@%s", dbTargetPath)
-
 	dbExternal := envUrlExists && dbDefaultUrl != dbUrl
-
 	if !dbExternal {
-		// set the database URL
 		dbUrl = dbDefaultUrl
-
 		if !preserveDB {
-			// copy the SQLite database file
-			_, _, err = futil.CopyFile(dbFilePath, baseDir, true)
-
+			_, _, err = futil.CopyFile(dbFilePath, baseDir, true) // Copy the SQLite database file.
 			if err != nil {
 				err = fmt.Errorf("setup failed to copy template database (%v) to target path (%v): %w",
 					dbFilePath, baseDir, err)
-				// fall through to return the error
+				// Fall through to return the error.
 			}
 		}
 	}
-
 	return dbUrl, dbExternal, err
-}
-
-func setupIniParams(dbUrl string) (string, error) {
-	configAttrMap := map[string]string{"databaseUrl": dbUrl}
-
-	iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingMap(configAttrMap)
-
-	if err != nil {
-		err = createError(5902, err)
-	}
-
-	return iniParams, err
-}
-
-func getIniParams() (string, error) {
-	dbUrl, _, err := setupDB(true)
-	if err != nil {
-		return "", err
-	}
-	iniParams, err := setupIniParams(dbUrl)
-	if err != nil {
-		return "", err
-	}
-	return iniParams, nil
 }
 
 func setupG2product(ctx context.Context, moduleName string, iniParams string, verboseLogging int64) error {
@@ -263,6 +218,33 @@ func setupG2product(ctx context.Context, moduleName string, iniParams string, ve
 	}
 	productInitialized = true
 	return err
+}
+
+func setupIniParams(dbUrl string) (string, error) {
+	configAttrMap := map[string]string{"databaseUrl": dbUrl}
+	iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingMap(configAttrMap)
+	if err != nil {
+		err = createError(5902, err)
+	}
+	return iniParams, err
+}
+
+func teardown() error {
+	ctx := context.TODO()
+	err := teardownG2product(ctx)
+	return err
+}
+
+func teardownG2product(ctx context.Context) error {
+	if !productInitialized {
+		return nil
+	}
+	err := globalG2product.Destroy(ctx)
+	if err != nil {
+		return err
+	}
+	productInitialized = false
+	return nil
 }
 
 // ----------------------------------------------------------------------------
