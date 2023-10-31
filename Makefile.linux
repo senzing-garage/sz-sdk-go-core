@@ -41,8 +41,7 @@ setup-osarch-specific:
 
 .PHONY: test-osarch-specific
 test-osarch-specific:
-#	@go test -v -p 1 ./...
-	@go test -v -p 1 ./g2engine
+	@go test -v -p 1 ./...
 
 # -----------------------------------------------------------------------------
 # Makefile targets supported only by this platform.
