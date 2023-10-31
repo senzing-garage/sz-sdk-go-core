@@ -10,6 +10,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 -
 
+## [0.3.3] - 2023-10-31
+
+### Changed in 0.3.3
+
+- Support for changed method signatures in Senzing G2Config API
+- Update dependencies
+  - github.com/senzing/go-common v0.3.2-0.20231018174900-c1895fb44c30
+
 ## [0.3.2] - 2023-10-18
 
 ### Changed in 0.3.2
