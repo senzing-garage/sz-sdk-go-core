@@ -15,10 +15,6 @@ SENZING_TOOLS_DATABASE_URL ?= sqlite3://na:na@/tmp/sqlite/G2C.db
 # OS-ARCH specific targets
 # -----------------------------------------------------------------------------
 
-.PHONY: build-osarch-specific
-build-osarch-specific: darwin/amd64
-
-
 .PHONY: clean-osarch-specific
 clean-osarch-specific:
 	@rm -rf $(TARGET_DIRECTORY) || true
