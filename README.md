@@ -15,8 +15,12 @@ Senzing C SDK APIs.
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/senzing/g2-sdk-go-base.svg)](https://pkg.go.dev/github.com/senzing/g2-sdk-go-base)
 [![Go Report Card](https://goreportcard.com/badge/github.com/senzing/g2-sdk-go-base)](https://goreportcard.com/report/github.com/senzing/g2-sdk-go-base)
-[![go-test.yaml](https://github.com/Senzing/g2-sdk-go-base/actions/workflows/go-test.yaml/badge.svg)](https://github.com/Senzing/g2-sdk-go-base/actions/workflows/go-test.yaml)
 [![License](https://img.shields.io/badge/License-Apache2-brightgreen.svg)](https://github.com/Senzing/g2-sdk-go-base/blob/main/LICENSE)
+
+[![gosec.yaml](https://github.com/Senzing/g2-sdk-go-base/actions/workflows/gosec.yaml/badge.svg)](https://github.com/Senzing/g2-sdk-go-base/actions/workflows/gosec.yaml)
+[![go-test-linux.yaml](https://github.com/Senzing/g2-sdk-go-base/actions/workflows/go-test-linux.yaml/badge.svg)](https://github.com/Senzing/g2-sdk-go-base/actions/workflows/go-test-linux.yaml)
+[![go-test-darwin.yaml](https://github.com/Senzing/g2-sdk-go-base/actions/workflows/go-test-darwin.yaml/badge.svg)](https://github.com/Senzing/g2-sdk-go-base/actions/workflows/go-test-darwin.yaml)
+[![go-test-windows.yaml](https://github.com/Senzing/g2-sdk-go-base/actions/workflows/go-test-windows.yaml/badge.svg)](https://github.com/Senzing/g2-sdk-go-base/actions/workflows/go-test-windows.yaml)
 
 ## Overview
 

@@ -479,13 +479,14 @@ func (client *G2config) ListDataSources(ctx context.Context, configHandle uintpt
 }
 
 /*
-The Load method initializes the Senzing G2Config object from a JSON string.
-The configHandle is created by the Create() method.
+The Load method initializes the in-memory Senzing G2Config object from a JSON string.
 
 Input
   - ctx: A context to control lifecycle.
-  - configHandle: An identifier of an in-memory configuration.
   - jsonConfig: A JSON document containing the Senzing configuration.
+
+Output
+  - An identifier of an in-memory configuration.
 */
 func (client *G2config) Load(ctx context.Context, jsonConfig string) (uintptr, error) {
 	// _DLEXPORT int G2Config_load(const char *jsonConfig,ConfigHandle* configHandle);
