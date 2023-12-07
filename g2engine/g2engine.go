@@ -3645,3 +3645,102 @@ func (client *G2engine) WhyRecords_V2(ctx context.Context, dataSourceCode1 strin
 	}
 	return resultResponse, err
 }
+
+// ----------------------------------------------------------------------------
+// Non-interface methods
+// ----------------------------------------------------------------------------
+
+// func (client *G2engine) reportIterator(ctx context.Context, reportHandle uintptr) chan string {
+// 	stringChannel := make(chan string)
+// 	go func() {
+// 		defer func() {
+// 			close(stringChannel)
+// 		}()
+
+// 		for {
+// 			entityReportFragment, err := client.FetchNext(ctx, reportHandle)
+// 			if err != nil {
+// 				panic(err)
+// 			}
+// 			if len(entityReportFragment) == 0 {
+// 				break
+// 			}
+// 			stringChannel <- entityReportFragment
+// 		}
+// 	}()
+// 	return stringChannel
+// }
+
+// func (client *G2engine) ExportCSVEntityReportIterator(ctx context.Context, csvColumnList string, flags int64) chan string {
+// 	reportHandle, err := client.ExportCSVEntityReport(ctx, csvColumnList, flags)
+// 	if err != nil {
+// 		panic(err)
+// 	}
+// 	defer func() {
+// 		client.CloseExport(ctx, reportHandle)
+// 	}()
+// 	return client.reportIterator(ctx, reportHandle)
+// }
+
+// func (client *G2engine) ExportJSONEntityReportIterator(ctx context.Context, flags int64) chan string {
+// 	reportHandle, err := client.ExportJSONEntityReport(ctx, flags)
+// 	if err != nil {
+// 		panic(err)
+// 	}
+// 	defer func() {
+// 		client.CloseExport(ctx, reportHandle)
+// 	}()
+// 	return client.reportIterator(ctx, reportHandle)
+// }
+
+func (client *G2engine) ExportCSVEntityReportIterator(ctx context.Context, csvColumnList string, flags int64) chan string {
+	stringChannel := make(chan string)
+	go func() {
+		reportHandle, err := client.ExportCSVEntityReport(ctx, csvColumnList, flags)
+		if err != nil {
+			panic(err)
+		}
+		defer func() {
+			client.CloseExport(ctx, reportHandle)
+			close(stringChannel)
+		}()
+
+		for {
+			entityReportFragment, err := client.FetchNext(ctx, reportHandle)
+			if err != nil {
+				panic(err)
+			}
+			if len(entityReportFragment) == 0 {
+				break
+			}
+			stringChannel <- entityReportFragment
+		}
+	}()
+	return stringChannel
+}
+
+func (client *G2engine) ExportJSONEntityReportIterator(ctx context.Context, flags int64) chan string {
+	stringChannel := make(chan string)
+	go func() {
+		reportHandle, err := client.ExportJSONEntityReport(ctx, flags)
+		if err != nil {
+			panic(err)
+		}
+		defer func() {
+			client.CloseExport(ctx, reportHandle)
+			close(stringChannel)
+		}()
+
+		for {
+			entityReportFragment, err := client.FetchNext(ctx, reportHandle)
+			if err != nil {
+				panic(err)
+			}
+			if len(entityReportFragment) == 0 {
+				break
+			}
+			stringChannel <- entityReportFragment
+		}
+	}()
+	return stringChannel
+}

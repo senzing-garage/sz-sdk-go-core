@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"testing"
 	"time"
 
@@ -30,7 +31,7 @@ const (
 	defaultTruncation = 76
 	loadId            = "G2Engine_test"
 	moduleName        = "Engine Test Module"
-	printResults      = false
+	printResults      = true
 	verboseLogging    = 0
 )
 
@@ -62,6 +63,10 @@ func getTestObject(ctx context.Context, test *testing.T) g2api.G2engine {
 func getG2Engine(ctx context.Context) g2api.G2engine {
 	return &globalG2engine
 
+}
+
+func getG2EngineRaw(ctx context.Context) *G2engine {
+	return &globalG2engine
 }
 
 func getEntityIdForRecord(datasource string, id string) int64 {
@@ -1233,6 +1238,65 @@ func TestG2engine_WhyRecords_V2(test *testing.T) {
 	actual, err := g2engine.WhyRecords_V2(ctx, record1.DataSource, record1.Id, record2.DataSource, record2.Id, flags)
 	testError(test, ctx, g2engine, err)
 	printActual(test, actual)
+}
+
+func TestG2engine_ExportJSONEntityReportIterator(test *testing.T) {
+	ctx := context.TODO()
+	g2engine := getG2EngineRaw(ctx)
+
+	// Add records.
+
+	// customer_ids := []string{"1001", "1002", "1003"}
+	// for _, customer_id := range customer_ids {
+	// 	aRecord := truthset.CustomerRecords[customer_id]
+	// 	err := g2engine.AddRecord(ctx, aRecord.DataSource, aRecord.Id, aRecord.Json, loadId)
+	// 	testError(test, ctx, g2engine, err)
+	// 	defer g2engine.DeleteRecord(ctx, aRecord.DataSource, aRecord.Id, loadId)
+	// }
+
+	// Test Export
+
+	flags := int64(-1)
+	actualCount := 0
+	for actual := range g2engine.ExportJSONEntityReportIterator(ctx, flags) {
+		printActual(test, actual)
+		actualCount += 1
+	}
+	assert.Equal(test, 1, actualCount)
+
+}
+
+func TestG2engine_ExportCSVEntityReportIterator(test *testing.T) {
+	ctx := context.TODO()
+	g2engine := getG2EngineRaw(ctx)
+
+	// Add records.
+
+	// customer_ids := []string{"1001", "1002", "1003"}
+	// for _, customer_id := range customer_ids {
+	// 	aRecord := truthset.CustomerRecords[customer_id]
+	// 	err := g2engine.AddRecord(ctx, aRecord.DataSource, aRecord.Id, aRecord.Json, loadId)
+	// 	testError(test, ctx, g2engine, err)
+	// 	defer g2engine.DeleteRecord(ctx, aRecord.DataSource, aRecord.Id, loadId)
+	// }
+
+	// Test Export
+
+	expected := []string{
+		`RESOLVED_ENTITY_ID,RELATED_ENTITY_ID,MATCH_LEVEL,MATCH_KEY,DATA_SOURCE,RECORD_ID`,
+		`1,0,0,"","CUSTOMERS","1002"`,
+		`1,0,1,"+NAME+DOB+EMAIL","CUSTOMERS","1003"`,
+		`1,0,1,"+NAME+DOB+ADDRESS+PHONE+EMAIL","CUSTOMERS","1001"`,
+	}
+
+	csvColumnList := ""
+	flags := int64(-1)
+	actualCount := 0
+	for actual := range g2engine.ExportCSVEntityReportIterator(ctx, csvColumnList, flags) {
+		assert.Equal(test, expected[actualCount], strings.TrimSpace(actual))
+		actualCount += 1
+	}
+	assert.Equal(test, len(expected), actualCount)
 }
 
 func TestG2engine_Init(test *testing.T) {
