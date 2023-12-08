@@ -515,9 +515,7 @@ func TestG2configmgr_Init(test *testing.T) {
 	moduleName := "Test module name"
 	verboseLogging := int64(0)
 	iniParams, err := getIniParams()
-	if err != nil {
-		test.Fatalf("Cannot construct system configuration: %v", err)
-	}
+	testError(test, ctx, g2configmgr, err)
 	err = g2configmgr.Init(ctx, moduleName, iniParams, verboseLogging)
 	testError(test, ctx, g2configmgr, err)
 }
