@@ -107,8 +107,8 @@ Input
 func (client *G2product) clearLastException(ctx context.Context) error {
 	// _DLEXPORT void G2Config_clearLastException();
 	var err error = nil
+	entryTime := time.Now()
 	if client.isTrace {
-		entryTime := time.Now()
 		client.traceEntry(1)
 		defer func() { client.traceExit(2, err, time.Since(entryTime)) }()
 	}
@@ -129,8 +129,8 @@ func (client *G2product) getLastException(ctx context.Context) (string, error) {
 	// _DLEXPORT int G2Config_getLastException(char *buffer, const size_t bufSize);
 	var err error = nil
 	var result string
+	entryTime := time.Now()
 	if client.isTrace {
-		entryTime := time.Now()
 		client.traceEntry(5)
 		defer func() { client.traceExit(6, result, err, time.Since(entryTime)) }()
 	}
@@ -156,8 +156,8 @@ func (client *G2product) getLastExceptionCode(ctx context.Context) (int, error) 
 	//  _DLEXPORT int G2Config_getLastExceptionCode();
 	var err error = nil
 	var result int
+	entryTime := time.Now()
 	if client.isTrace {
-		entryTime := time.Now()
 		client.traceEntry(7)
 		defer func() { client.traceExit(8, result, err, time.Since(entryTime)) }()
 	}
@@ -235,8 +235,8 @@ Input
 */
 func (client *G2product) GetSdkId(ctx context.Context) string {
 	var err error = nil
+	entryTime := time.Now()
 	if client.isTrace {
-		entryTime := time.Now()
 		client.traceEntry(25)
 		defer func() { client.traceExit(26, err, time.Since(entryTime)) }()
 	}
@@ -305,8 +305,8 @@ func (client *G2product) License(ctx context.Context) (string, error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error = nil
-	entryTime := time.Now()
 	var resultResponse string
+	entryTime := time.Now()
 	if client.isTrace {
 		client.traceEntry(11)
 		defer func() { client.traceExit(12, resultResponse, err, time.Since(entryTime)) }()
@@ -331,8 +331,8 @@ Input
 */
 func (client *G2product) RegisterObserver(ctx context.Context, observer observer.Observer) error {
 	var err error = nil
+	entryTime := time.Now()
 	if client.isTrace {
-		entryTime := time.Now()
 		client.traceEntry(21, observer.GetObserverId(ctx))
 		defer func() { client.traceExit(22, observer.GetObserverId(ctx), err, time.Since(entryTime)) }()
 	}
@@ -362,8 +362,8 @@ func (client *G2product) SetLogLevel(ctx context.Context, logLevelName string) e
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error = nil
+	entryTime := time.Now()
 	if client.isTrace {
-		entryTime := time.Now()
 		client.traceEntry(13, logLevelName)
 		defer func() { client.traceExit(14, logLevelName, err, time.Since(entryTime)) }()
 	}
@@ -403,8 +403,8 @@ Input
 */
 func (client *G2product) UnregisterObserver(ctx context.Context, observer observer.Observer) error {
 	var err error = nil
+	entryTime := time.Now()
 	if client.isTrace {
-		entryTime := time.Now()
 		client.traceEntry(23, observer.GetObserverId(ctx))
 		defer func() { client.traceExit(24, observer.GetObserverId(ctx), err, time.Since(entryTime)) }()
 	}
@@ -440,8 +440,8 @@ func (client *G2product) Version(ctx context.Context) (string, error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error = nil
-	entryTime := time.Now()
 	var resultResponse string
+	entryTime := time.Now()
 	if client.isTrace {
 		client.traceEntry(19)
 		defer func() { client.traceExit(20, resultResponse, err, time.Since(entryTime)) }()

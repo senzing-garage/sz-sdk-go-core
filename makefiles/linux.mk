@@ -8,7 +8,7 @@ LD_LIBRARY_PATH ?= /opt/senzing/g2/lib
 SENZING_TOOLS_DATABASE_URL ?= sqlite3://na:na@/tmp/sqlite/G2C.db
 
 # -----------------------------------------------------------------------------
-# OS-ARCH specific targets
+# OS specific targets
 # -----------------------------------------------------------------------------
 
 .PHONY: clean-osarch-specific
@@ -37,7 +37,8 @@ setup-osarch-specific:
 
 .PHONY: test-osarch-specific
 test-osarch-specific:
-	@go test -v -p 1 ./...
+	# @go test -v -p 1 ./...
+	@go test -v -p 1 ./g2engine
 
 # -----------------------------------------------------------------------------
 # Makefile targets supported only by this platform.

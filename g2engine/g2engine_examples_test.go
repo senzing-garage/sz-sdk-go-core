@@ -151,20 +151,6 @@ func ExampleG2engine_CountRedoRecords() {
 	// Output: 1
 }
 
-func ExampleG2engine_ExportCSVEntityReport() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
-	ctx := context.TODO()
-	g2engine := getG2Engine(ctx)
-	csvColumnList := ""
-	flags := int64(0)
-	responseHandle, err := g2engine.ExportCSVEntityReport(ctx, csvColumnList, flags)
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println(responseHandle > 0) // Dummy output.
-	// Output: true
-}
-
 func ExampleG2engine_ExportConfig() {
 	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
 	ctx := context.TODO()
@@ -189,6 +175,32 @@ func ExampleG2engine_ExportConfigAndConfigID() {
 	// Output: true
 }
 
+func ExampleG2engine_ExportCSVEntityReport() {
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	ctx := context.TODO()
+	g2engine := getG2Engine(ctx)
+	csvColumnList := ""
+	flags := int64(0)
+	responseHandle, err := g2engine.ExportCSVEntityReport(ctx, csvColumnList, flags)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(responseHandle > 0) // Dummy output.
+	// Output: true
+}
+
+func ExampleG2engine_ExportCSVEntityReportIterator() {
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	ctx := context.TODO()
+	g2engine := getG2Engine(ctx)
+	csvColumnList := ""
+	flags := int64(0)
+	for result := range g2engine.ExportCSVEntityReportIterator(ctx, csvColumnList, flags) {
+		fmt.Println(result)
+	}
+	// Output: RESOLVED_ENTITY_ID,RELATED_ENTITY_ID,MATCH_LEVEL,MATCH_KEY,DATA_SOURCE,RECORD_ID
+}
+
 func ExampleG2engine_ExportJSONEntityReport() {
 	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
 	ctx := context.TODO()
@@ -200,6 +212,17 @@ func ExampleG2engine_ExportJSONEntityReport() {
 	}
 	fmt.Println(responseHandle > 0) // Dummy output.
 	// Output: true
+}
+
+func ExampleG2engine_ExportJSONEntityReportIterator() {
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	ctx := context.TODO()
+	g2engine := getG2Engine(ctx)
+	flags := int64(0)
+	for result := range g2engine.ExportJSONEntityReportIterator(ctx, flags) {
+		fmt.Println(result)
+	}
+	// Output:
 }
 
 func ExampleG2engine_FetchNext() {
