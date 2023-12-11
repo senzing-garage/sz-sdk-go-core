@@ -15,7 +15,7 @@ import (
 // ----------------------------------------------------------------------------
 
 func ExampleG2configmgr_SetObserverOrigin() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2configmgr/g2configmgr_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2configmgr/g2configmgr_examples_test.go
 	ctx := context.TODO()
 	g2configmgr := getG2Configmgr(ctx)
 	origin := "Machine: nn; Task: UnitTest"
@@ -35,7 +35,7 @@ func ExampleG2configmgr_GetObserverOrigin() {
 }
 
 func ExampleG2configmgr_AddConfig() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2configmgr/g2configmgr_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2configmgr/g2configmgr_examples_test.go
 	ctx := context.TODO()
 	g2config := getG2Config(ctx)
 	configHandle, err := g2config.Create(ctx)
@@ -60,7 +60,7 @@ func ExampleG2configmgr_AddConfig() {
 }
 
 func ExampleG2configmgr_GetConfig() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2configmgr/g2configmgr_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2configmgr/g2configmgr_examples_test.go
 	ctx := context.TODO()
 	g2configmgr := getG2Configmgr(ctx)
 	configID, err := g2configmgr.GetDefaultConfigID(ctx)
@@ -76,7 +76,7 @@ func ExampleG2configmgr_GetConfig() {
 }
 
 func ExampleG2configmgr_GetConfigList() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2configmgr/g2configmgr_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2configmgr/g2configmgr_examples_test.go
 	ctx := context.TODO()
 	g2configmgr := getG2Configmgr(ctx)
 	jsonConfigList, err := g2configmgr.GetConfigList(ctx)
@@ -88,7 +88,7 @@ func ExampleG2configmgr_GetConfigList() {
 }
 
 func ExampleG2configmgr_GetDefaultConfigID() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2configmgr/g2configmgr_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2configmgr/g2configmgr_examples_test.go
 	ctx := context.TODO()
 	g2configmgr := getG2Configmgr(ctx)
 	configID, err := g2configmgr.GetDefaultConfigID(ctx)
@@ -100,7 +100,7 @@ func ExampleG2configmgr_GetDefaultConfigID() {
 }
 
 func ExampleG2configmgr_ReplaceDefaultConfigID() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2configmgr/g2configmgr_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2configmgr/g2configmgr_examples_test.go
 	ctx := context.TODO()
 	g2configmgr := getG2Configmgr(ctx)
 	oldConfigID, err := g2configmgr.GetDefaultConfigID(ctx)
@@ -129,7 +129,7 @@ func ExampleG2configmgr_ReplaceDefaultConfigID() {
 }
 
 func ExampleG2configmgr_SetDefaultConfigID() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2configmgr/g2configmgr_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2configmgr/g2configmgr_examples_test.go
 	ctx := context.TODO()
 	g2configmgr := getG2Configmgr(ctx)
 	configID, err := g2configmgr.GetDefaultConfigID(ctx) // For example purposes only. Normally would use output from GetConfigList()
@@ -144,7 +144,7 @@ func ExampleG2configmgr_SetDefaultConfigID() {
 }
 
 func ExampleG2configmgr_SetLogLevel() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2configmgr/g2configmgr_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2configmgr/g2configmgr_examples_test.go
 	ctx := context.TODO()
 	g2configmgr := getG2Configmgr(ctx)
 	err := g2configmgr.SetLogLevel(ctx, logging.LevelInfoName)
@@ -155,7 +155,7 @@ func ExampleG2configmgr_SetLogLevel() {
 }
 
 func ExampleG2configmgr_Init() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2configmgr/g2configmgr_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2configmgr/g2configmgr_examples_test.go
 	ctx := context.TODO()
 	g2configmgr := &G2configmgr{}
 	moduleName := "Test module name"
@@ -172,7 +172,7 @@ func ExampleG2configmgr_Init() {
 }
 
 func ExampleG2configmgr_Destroy() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2configmgr/g2configmgr_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2configmgr/g2configmgr_examples_test.go
 	ctx := context.TODO()
 	g2configmgr := getG2Configmgr(ctx)
 	err := g2configmgr.Destroy(ctx)
