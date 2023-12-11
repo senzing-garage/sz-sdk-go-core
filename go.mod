@@ -4,7 +4,7 @@ go 1.21
 
 require (
 	github.com/aquilax/truncate v1.0.0
-	github.com/senzing/g2-sdk-go v0.7.4
+	github.com/senzing/g2-sdk-go v0.7.5
 	github.com/senzing/go-common v0.3.2-0.20231018174900-c1895fb44c30
 	github.com/senzing/go-logging v1.3.3
 	github.com/senzing/go-observing v0.2.8
@@ -25,5 +25,3 @@ require (
 	google.golang.org/protobuf v1.31.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
-
-replace github.com/senzing/g2-sdk-go => /home/senzing/senzing.git/g2-sdk-go
