@@ -107,8 +107,8 @@ Input
 func (client *G2diagnostic) clearLastException(ctx context.Context) error {
 	// _DLEXPORT void G2Diagnostic_clearLastException();
 	var err error = nil
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(3)
 		defer func() { client.traceExit(4, err, time.Since(entryTime)) }()
 	}
@@ -129,8 +129,8 @@ func (client *G2diagnostic) getLastException(ctx context.Context) (string, error
 	// _DLEXPORT int G2Config_getLastException(char *buffer, const size_t bufSize);
 	var err error = nil
 	var result string
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(31)
 		defer func() { client.traceExit(32, result, err, time.Since(entryTime)) }()
 	}
@@ -156,8 +156,8 @@ func (client *G2diagnostic) getLastExceptionCode(ctx context.Context) (int, erro
 	//  _DLEXPORT int G2Diagnostic_getLastExceptionCode();
 	var err error = nil
 	var result int
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(33)
 		defer func() { client.traceExit(34, result, err, time.Since(entryTime)) }()
 	}
@@ -380,8 +380,8 @@ func (client *G2diagnostic) GetAvailableMemory(ctx context.Context) (int64, erro
 	defer runtime.UnlockOSThread()
 	var err error = nil
 	var result int64
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(13)
 		defer func() { client.traceExit(14, result, err, time.Since(entryTime)) }()
 	}
@@ -716,8 +716,8 @@ func (client *G2diagnostic) GetLogicalCores(ctx context.Context) (int, error) {
 	defer runtime.UnlockOSThread()
 	var err error = nil
 	var result int
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(35)
 		defer func() { client.traceExit(36, result, err, time.Since(entryTime)) }()
 	}
@@ -796,8 +796,8 @@ func (client *G2diagnostic) GetPhysicalCores(ctx context.Context) (int, error) {
 	defer runtime.UnlockOSThread()
 	var err error = nil
 	var result int
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(39)
 		defer func() { client.traceExit(40, result, err, time.Since(entryTime)) }()
 	}
@@ -897,8 +897,8 @@ Input
 */
 func (client *G2diagnostic) GetSdkId(ctx context.Context) string {
 	var err error = nil
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(59)
 		defer func() { client.traceExit(60, err, time.Since(entryTime)) }()
 	}
@@ -926,8 +926,8 @@ func (client *G2diagnostic) GetTotalSystemMemory(ctx context.Context) (int64, er
 	defer runtime.UnlockOSThread()
 	var err error = nil
 	var result int64
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(57)
 		defer func() { client.traceExit(46, result, err, time.Since(entryTime)) }()
 	}
@@ -1036,8 +1036,8 @@ Input
 */
 func (client *G2diagnostic) RegisterObserver(ctx context.Context, observer observer.Observer) error {
 	var err error = nil
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(55, observer.GetObserverId(ctx))
 		defer func() { client.traceExit(56, observer.GetObserverId(ctx), err, time.Since(entryTime)) }()
 	}
@@ -1099,8 +1099,8 @@ func (client *G2diagnostic) SetLogLevel(ctx context.Context, logLevelName string
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error = nil
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(53, logLevelName)
 		defer func() { client.traceExit(54, logLevelName, err, time.Since(entryTime)) }()
 	}
@@ -1140,8 +1140,8 @@ Input
 */
 func (client *G2diagnostic) UnregisterObserver(ctx context.Context, observer observer.Observer) error {
 	var err error = nil
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(57, observer.GetObserverId(ctx))
 		defer func() { client.traceExit(58, observer.GetObserverId(ctx), err, time.Since(entryTime)) }()
 	}

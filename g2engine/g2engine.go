@@ -107,8 +107,8 @@ Input
 func (client *G2engine) clearLastException(ctx context.Context) error {
 	// _DLEXPORT void G2_clearLastException();
 	var err error = nil
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(11)
 		defer func() { client.traceExit(12, err, time.Since(entryTime)) }()
 	}
@@ -129,8 +129,8 @@ func (client *G2engine) getLastException(ctx context.Context) (string, error) {
 	// _DLEXPORT int G2_getLastException(char *buffer, const size_t bufSize);
 	var err error = nil
 	var result string
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(79)
 		defer func() { client.traceExit(80, result, err, time.Since(entryTime)) }()
 	}
@@ -156,8 +156,8 @@ func (client *G2engine) getLastExceptionCode(ctx context.Context) (int, error) {
 	//  _DLEXPORT int G2_getLastExceptionCode();
 	var err error = nil
 	var result int
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(81)
 		defer func() { client.traceExit(82, result, err, time.Since(entryTime)) }()
 	}
@@ -480,8 +480,8 @@ func (client *G2engine) CountRedoRecords(ctx context.Context) (int64, error) {
 	defer runtime.UnlockOSThread()
 	var err error = nil
 	var result int64
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(15)
 		defer func() { client.traceExit(16, result, err, time.Since(entryTime)) }()
 	}
@@ -757,8 +757,8 @@ func (client *G2engine) ExportCSVEntityReportIterator(ctx context.Context, csvCo
 		runtime.LockOSThread()
 		defer runtime.UnlockOSThread()
 		var err error = nil
-		entryTime := time.Now()
 		if client.isTrace {
+			entryTime := time.Now()
 			client.traceEntry(163, csvColumnList, flags)
 			defer func() { client.traceExit(164, csvColumnList, flags, err, time.Since(entryTime)) }()
 		}
@@ -770,7 +770,6 @@ func (client *G2engine) ExportCSVEntityReportIterator(ctx context.Context, csvCo
 			client.CloseExport(ctx, reportHandle)
 			close(stringChannel)
 		}()
-
 		for {
 			entityReportFragment, err := client.FetchNext(ctx, reportHandle)
 			if err != nil {
@@ -847,11 +846,10 @@ func (client *G2engine) ExportJSONEntityReportIterator(ctx context.Context, flag
 		runtime.LockOSThread()
 		defer runtime.UnlockOSThread()
 		var err error = nil
-		var resultExportHandle uintptr
-		entryTime := time.Now()
 		if client.isTrace {
+			entryTime := time.Now()
 			client.traceEntry(165, flags)
-			defer func() { client.traceExit(166, flags, resultExportHandle, err, time.Since(entryTime)) }()
+			defer func() { client.traceExit(166, flags, err, time.Since(entryTime)) }()
 		}
 		reportHandle, err := client.ExportJSONEntityReport(ctx, flags)
 		if err != nil {
@@ -861,7 +859,6 @@ func (client *G2engine) ExportJSONEntityReportIterator(ctx context.Context, flag
 			client.CloseExport(ctx, reportHandle)
 			close(stringChannel)
 		}()
-
 		for {
 			entityReportFragment, err := client.FetchNext(ctx, reportHandle)
 			if err != nil {
@@ -2298,8 +2295,8 @@ Input
 */
 func (client *G2engine) GetSdkId(ctx context.Context) string {
 	var err error = nil
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(161)
 		defer func() { client.traceExit(162, err, time.Since(entryTime)) }()
 	}
@@ -3027,8 +3024,8 @@ Input
 */
 func (client *G2engine) RegisterObserver(ctx context.Context, observer observer.Observer) error {
 	var err error = nil
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(157, observer.GetObserverId(ctx))
 		defer func() { client.traceExit(158, observer.GetObserverId(ctx), err, time.Since(entryTime)) }()
 	}
@@ -3273,8 +3270,8 @@ func (client *G2engine) SetLogLevel(ctx context.Context, logLevelName string) er
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error = nil
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(137, logLevelName)
 		defer func() { client.traceExit(138, logLevelName, err, time.Since(entryTime)) }()
 	}
@@ -3351,8 +3348,8 @@ Input
 */
 func (client *G2engine) UnregisterObserver(ctx context.Context, observer observer.Observer) error {
 	var err error = nil
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(159, observer.GetObserverId(ctx))
 		defer func() { client.traceExit(160, observer.GetObserverId(ctx), err, time.Since(entryTime)) }()
 	}
