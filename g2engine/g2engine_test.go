@@ -31,7 +31,7 @@ const (
 	defaultTruncation = 76
 	loadId            = "G2Engine_test"
 	moduleName        = "Engine Test Module"
-	printResults      = true
+	printResults      = false
 	verboseLogging    = 0
 )
 
