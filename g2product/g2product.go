@@ -107,8 +107,8 @@ Input
 func (client *G2product) clearLastException(ctx context.Context) error {
 	// _DLEXPORT void G2Config_clearLastException();
 	var err error = nil
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(1)
 		defer func() { client.traceExit(2, err, time.Since(entryTime)) }()
 	}
