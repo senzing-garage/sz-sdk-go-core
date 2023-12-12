@@ -305,9 +305,9 @@ func (client *G2product) License(ctx context.Context) (string, error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error = nil
-	entryTime := time.Now()
 	var resultResponse string
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(11)
 		defer func() { client.traceExit(12, resultResponse, err, time.Since(entryTime)) }()
 	}
@@ -440,9 +440,9 @@ func (client *G2product) Version(ctx context.Context) (string, error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error = nil
-	entryTime := time.Now()
 	var resultResponse string
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(19)
 		defer func() { client.traceExit(20, resultResponse, err, time.Since(entryTime)) }()
 	}

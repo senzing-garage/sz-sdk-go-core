@@ -195,14 +195,13 @@ Output
   - A string containing a JSON document listing the newly created data source.
     See the example output.
 */
-
 func (client *G2config) AddDataSource(ctx context.Context, configHandle uintptr, inputJson string) (string, error) {
 	// _DLEXPORT int G2Config_addDataSource(ConfigHandle configHandle, const char *inputJson, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error = nil
-	entryTime := time.Now()
 	var resultResponse string
+	entryTime := time.Now()
 	if client.isTrace {
 		client.traceEntry(1, configHandle, inputJson)
 		defer func() { client.traceExit(2, configHandle, inputJson, resultResponse, err, time.Since(entryTime)) }()
@@ -276,8 +275,8 @@ func (client *G2config) Create(ctx context.Context) (uintptr, error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error = nil
-	entryTime := time.Now()
 	var resultResponse uintptr
+	entryTime := time.Now()
 	if client.isTrace {
 		client.traceEntry(7)
 		defer func() { client.traceExit(8, resultResponse, err, time.Since(entryTime)) }()
@@ -457,8 +456,8 @@ func (client *G2config) ListDataSources(ctx context.Context, configHandle uintpt
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error = nil
-	entryTime := time.Now()
 	var resultResponse string
+	entryTime := time.Now()
 	if client.isTrace {
 		client.traceEntry(19, configHandle)
 		defer func() { client.traceExit(20, configHandle, resultResponse, err, time.Since(entryTime)) }()
@@ -493,8 +492,8 @@ func (client *G2config) Load(ctx context.Context, jsonConfig string) (uintptr, e
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error = nil
-	entryTime := time.Now()
 	var resultResponse uintptr
+	entryTime := time.Now()
 	if client.isTrace {
 		client.traceEntry(21, jsonConfig)
 		defer func() { client.traceExit(22, jsonConfig, resultResponse, err, time.Since(entryTime)) }()
@@ -561,8 +560,8 @@ func (client *G2config) Save(ctx context.Context, configHandle uintptr) (string,
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error = nil
-	entryTime := time.Now()
 	var resultResponse string
+	entryTime := time.Now()
 	if client.isTrace {
 		client.traceEntry(23, configHandle)
 		defer func() { client.traceExit(24, configHandle, resultResponse, err, time.Since(entryTime)) }()

@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"testing"
 	"time"
 
@@ -585,6 +586,73 @@ func TestG2engine_CountRedoRecords(test *testing.T) {
 	printActual(test, actual)
 }
 
+func TestG2engine_ExportConfigAndConfigID(test *testing.T) {
+	ctx := context.TODO()
+	g2engine := getTestObject(ctx, test)
+	actualConfig, actualConfigId, err := g2engine.ExportConfigAndConfigID(ctx)
+	testError(test, ctx, g2engine, err)
+	printResult(test, "Actual Config", actualConfig)
+	printResult(test, "Actual Config ID", actualConfigId)
+}
+
+func TestG2engine_ExportConfig(test *testing.T) {
+	ctx := context.TODO()
+	g2engine := getTestObject(ctx, test)
+	actual, err := g2engine.ExportConfig(ctx)
+	testError(test, ctx, g2engine, err)
+	printActual(test, actual)
+}
+
+func TestG2engine_ExportCSVEntityReport(test *testing.T) {
+	ctx := context.TODO()
+	g2engine := getTestObject(ctx, test)
+	expected := []string{
+		`RESOLVED_ENTITY_ID,RELATED_ENTITY_ID,MATCH_LEVEL,MATCH_KEY,DATA_SOURCE,RECORD_ID`,
+		`1,0,0,"","CUSTOMERS","1001"`,
+		`1,0,1,"+NAME+DOB+PHONE","CUSTOMERS","1002"`,
+		`1,0,1,"+NAME+DOB+EMAIL","CUSTOMERS","1003"`,
+	}
+	csvColumnList := ""
+	flags := int64(-1)
+	aHandle, err := g2engine.ExportCSVEntityReport(ctx, csvColumnList, flags)
+	defer func() {
+		err := g2engine.CloseExport(ctx, aHandle)
+		testError(test, ctx, g2engine, err)
+	}()
+	testError(test, ctx, g2engine, err)
+	actualCount := 0
+	for {
+		actual, err := g2engine.FetchNext(ctx, aHandle)
+		testError(test, ctx, g2engine, err)
+		if len(actual) == 0 {
+			break
+		}
+		assert.Equal(test, expected[actualCount], strings.TrimSpace(actual))
+		actualCount += 1
+	}
+	assert.Equal(test, len(expected), actualCount)
+}
+
+func TestG2engine_ExportCSVEntityReportIterator(test *testing.T) {
+	ctx := context.TODO()
+	g2engine := getTestObject(ctx, test)
+	expected := []string{
+		`RESOLVED_ENTITY_ID,RELATED_ENTITY_ID,MATCH_LEVEL,MATCH_KEY,DATA_SOURCE,RECORD_ID`,
+		`1,0,0,"","CUSTOMERS","1001"`,
+		`1,0,1,"+NAME+DOB+PHONE","CUSTOMERS","1002"`,
+		`1,0,1,"+NAME+DOB+EMAIL","CUSTOMERS","1003"`,
+	}
+	csvColumnList := ""
+	flags := int64(-1)
+	actualCount := 0
+	for actual := range g2engine.ExportCSVEntityReportIterator(ctx, csvColumnList, flags) {
+		testError(test, ctx, g2engine, actual.Error)
+		assert.Equal(test, expected[actualCount], strings.TrimSpace(actual.Value))
+		actualCount += 1
+	}
+	assert.Equal(test, len(expected), actualCount)
+}
+
 func TestG2engine_ExportJSONEntityReport(test *testing.T) {
 	ctx := context.TODO()
 	g2engine := getTestObject(ctx, test)
@@ -612,32 +680,18 @@ func TestG2engine_ExportJSONEntityReport(test *testing.T) {
 	assert.True(test, len(jsonEntityReport) > 65536)
 }
 
-func TestG2engine_ExportConfigAndConfigID(test *testing.T) {
+func TestG2engine_ExportJSONEntityReportIterator(test *testing.T) {
 	ctx := context.TODO()
 	g2engine := getTestObject(ctx, test)
-	actualConfig, actualConfigId, err := g2engine.ExportConfigAndConfigID(ctx)
-	testError(test, ctx, g2engine, err)
-	printResult(test, "Actual Config", actualConfig)
-	printResult(test, "Actual Config ID", actualConfigId)
+	flags := int64(-1)
+	actualCount := 0
+	for actual := range g2engine.ExportJSONEntityReportIterator(ctx, flags) {
+		testError(test, ctx, g2engine, actual.Error)
+		printActual(test, actual.Value)
+		actualCount += 1
+	}
+	assert.Equal(test, 1, actualCount)
 }
-
-func TestG2engine_ExportConfig(test *testing.T) {
-	ctx := context.TODO()
-	g2engine := getTestObject(ctx, test)
-	actual, err := g2engine.ExportConfig(ctx)
-	testError(test, ctx, g2engine, err)
-	printActual(test, actual)
-}
-
-//func TestG2engine_ExportCSVEntityReport(test *testing.T) {
-//	ctx := context.TODO()
-//	g2engine := getTestObject(ctx, test)
-//	csvColumnList := ""
-//	flags := int64(0)
-//	actual, err := g2engine.ExportCSVEntityReport(ctx, csvColumnList, flags)
-//	testError(test, ctx, g2engine, err)
-//	test.Log("Actual:", actual)
-//}
 
 func TestG2engine_FindInterestingEntitiesByEntityID(test *testing.T) {
 	ctx := context.TODO()
@@ -1095,7 +1149,6 @@ func TestG2engine_ReevaluateRecordWithInfo(test *testing.T) {
 	printActual(test, actual)
 }
 
-// FIXME: Remove after GDEV-3576 is fixed
 func TestG2engine_ReplaceRecord(test *testing.T) {
 	ctx := context.TODO()
 	g2engine := getTestObject(ctx, test)

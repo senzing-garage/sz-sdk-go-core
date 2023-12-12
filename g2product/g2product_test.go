@@ -68,11 +68,11 @@ func testError(test *testing.T, ctx context.Context, g2product g2api.G2product, 
 	}
 }
 
-func testErrorNoFail(test *testing.T, ctx context.Context, g2product g2api.G2product, err error) {
-	if err != nil {
-		test.Log("Error:", err.Error())
-	}
-}
+// func testErrorNoFail(test *testing.T, ctx context.Context, g2product g2api.G2product, err error) {
+// 	if err != nil {
+// 		test.Log("Error:", err.Error())
+// 	}
+// }
 
 func baseDirectoryPath() string {
 	return filepath.FromSlash("../target/test/g2product")

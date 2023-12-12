@@ -15,7 +15,7 @@ import (
 // ----------------------------------------------------------------------------
 
 func ExampleG2engine_SetObserverOrigin() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	origin := "Machine: nn; Task: UnitTest"
@@ -35,7 +35,7 @@ func ExampleG2engine_GetObserverOrigin() {
 }
 
 func ExampleG2engine_AddRecord() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	dataSourceCode := "CUSTOMERS"
@@ -50,7 +50,7 @@ func ExampleG2engine_AddRecord() {
 }
 
 func ExampleG2engine_AddRecord_secondRecord() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	dataSourceCode := "CUSTOMERS"
@@ -65,7 +65,7 @@ func ExampleG2engine_AddRecord_secondRecord() {
 }
 
 func ExampleG2engine_AddRecordWithInfo() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	dataSourceCode := "TEST"
@@ -82,7 +82,7 @@ func ExampleG2engine_AddRecordWithInfo() {
 }
 
 // func ExampleG2engine_AddRecordWithInfoWithReturnedRecordID() {
-// 	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+// 	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 // 	ctx := context.TODO()
 // 	g2engine := getG2Engine(ctx)
 // 	dataSourceCode := "TEST"
@@ -98,7 +98,7 @@ func ExampleG2engine_AddRecordWithInfo() {
 // }
 
 // func ExampleG2engine_AddRecordWithReturnedRecordID() {
-// 	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+// 	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 // 	ctx := context.TODO()
 // 	g2engine := getG2Engine(ctx)
 // 	dataSourceCode := "TEST"
@@ -113,7 +113,7 @@ func ExampleG2engine_AddRecordWithInfo() {
 // }
 
 // func ExampleG2engine_CheckRecord() {
-// 	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+// 	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 // 	ctx := context.TODO()
 // 	g2engine := getG2Engine(ctx)
 // 	record := `{"DATA_SOURCE": "CUSTOMERS", "RECORD_ID": "1001", "RECORD_TYPE": "PERSON", "PRIMARY_NAME_LAST": "Smith", "PRIMARY_NAME_FIRST": "Robert", "DATE_OF_BIRTH": "12/11/1978", "ADDR_TYPE": "MAILING", "ADDR_LINE1": "123 Main Street, Las Vegas NV 89132", "PHONE_TYPE": "HOME", "PHONE_NUMBER": "702-919-1300", "EMAIL_ADDRESS": "bsmith@work.com", "DATE": "1/2/18", "STATUS": "Active", "AMOUNT": "100"}`
@@ -127,7 +127,7 @@ func ExampleG2engine_AddRecordWithInfo() {
 // }
 
 func ExampleG2engine_CloseExport() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	flags := int64(0)
@@ -140,7 +140,7 @@ func ExampleG2engine_CloseExport() {
 }
 
 func ExampleG2engine_CountRedoRecords() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	result, err := g2engine.CountRedoRecords(ctx)
@@ -151,8 +151,32 @@ func ExampleG2engine_CountRedoRecords() {
 	// Output: 1
 }
 
+func ExampleG2engine_ExportConfig() {
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
+	ctx := context.TODO()
+	g2engine := getG2Engine(ctx)
+	result, err := g2engine.ExportConfig(ctx)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(truncate(result, 42))
+	// Output: {"G2_CONFIG":{"CFG_ETYPE":[{"ETYPE_ID":...
+}
+
+func ExampleG2engine_ExportConfigAndConfigID() {
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
+	ctx := context.TODO()
+	g2engine := getG2Engine(ctx)
+	_, configId, err := g2engine.ExportConfigAndConfigID(ctx)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(configId > 0) // Dummy output.
+	// Output: true
+}
+
 func ExampleG2engine_ExportCSVEntityReport() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	csvColumnList := ""
@@ -165,32 +189,24 @@ func ExampleG2engine_ExportCSVEntityReport() {
 	// Output: true
 }
 
-func ExampleG2engine_ExportConfig() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+func ExampleG2engine_ExportCSVEntityReportIterator() {
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
-	result, err := g2engine.ExportConfig(ctx)
-	if err != nil {
-		fmt.Println(err)
+	csvColumnList := ""
+	flags := int64(0)
+	for result := range g2engine.ExportCSVEntityReportIterator(ctx, csvColumnList, flags) {
+		if result.Error != nil {
+			fmt.Println(result.Error)
+			break
+		}
+		fmt.Println(result.Value)
 	}
-	fmt.Println(truncate(result, 42))
-	// Output: {"G2_CONFIG":{"CFG_ETYPE":[{"ETYPE_ID":...
-}
-
-func ExampleG2engine_ExportConfigAndConfigID() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
-	ctx := context.TODO()
-	g2engine := getG2Engine(ctx)
-	_, configId, err := g2engine.ExportConfigAndConfigID(ctx)
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println(configId > 0) // Dummy output.
-	// Output: true
+	// Output: RESOLVED_ENTITY_ID,RELATED_ENTITY_ID,MATCH_LEVEL,MATCH_KEY,DATA_SOURCE,RECORD_ID
 }
 
 func ExampleG2engine_ExportJSONEntityReport() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	flags := int64(0)
@@ -202,8 +218,23 @@ func ExampleG2engine_ExportJSONEntityReport() {
 	// Output: true
 }
 
+func ExampleG2engine_ExportJSONEntityReportIterator() {
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
+	ctx := context.TODO()
+	g2engine := getG2Engine(ctx)
+	flags := int64(0)
+	for result := range g2engine.ExportJSONEntityReportIterator(ctx, flags) {
+		if result.Error != nil {
+			fmt.Println(result.Error)
+			break
+		}
+		fmt.Println(result.Value)
+	}
+	// Output:
+}
+
 func ExampleG2engine_FetchNext() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	flags := int64(0)
@@ -232,7 +263,7 @@ func ExampleG2engine_FetchNext() {
 }
 
 func ExampleG2engine_FindInterestingEntitiesByEntityID() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	entityID := getEntityIdForRecord("CUSTOMERS", "1001")
@@ -246,7 +277,7 @@ func ExampleG2engine_FindInterestingEntitiesByEntityID() {
 }
 
 func ExampleG2engine_FindInterestingEntitiesByRecordID() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	dataSourceCode := "CUSTOMERS"
@@ -261,7 +292,7 @@ func ExampleG2engine_FindInterestingEntitiesByRecordID() {
 }
 
 func ExampleG2engine_FindNetworkByEntityID() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	entityList := `{"ENTITIES": [{"ENTITY_ID": ` + getEntityIdStringForRecord("CUSTOMERS", "1001") + `}, {"ENTITY_ID": ` + getEntityIdStringForRecord("CUSTOMERS", "1002") + `}]}`
@@ -277,7 +308,7 @@ func ExampleG2engine_FindNetworkByEntityID() {
 }
 
 func ExampleG2engine_FindNetworkByEntityID_V2() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	entityList := `{"ENTITIES": [{"ENTITY_ID": ` + getEntityIdStringForRecord("CUSTOMERS", "1001") + `}, {"ENTITY_ID": ` + getEntityIdStringForRecord("CUSTOMERS", "1002") + `}]}`
@@ -294,7 +325,7 @@ func ExampleG2engine_FindNetworkByEntityID_V2() {
 }
 
 func ExampleG2engine_FindNetworkByRecordID() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	recordList := `{"RECORDS": [{"DATA_SOURCE": "CUSTOMERS", "RECORD_ID": "1001"}, {"DATA_SOURCE": "CUSTOMERS", "RECORD_ID": "1002"}]}`
@@ -310,7 +341,7 @@ func ExampleG2engine_FindNetworkByRecordID() {
 }
 
 func ExampleG2engine_FindNetworkByRecordID_V2() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	recordList := `{"RECORDS": [{"DATA_SOURCE": "CUSTOMERS", "RECORD_ID": "1001"}, {"DATA_SOURCE": "CUSTOMERS", "RECORD_ID": "1002"}]}`
@@ -327,7 +358,7 @@ func ExampleG2engine_FindNetworkByRecordID_V2() {
 }
 
 func ExampleG2engine_FindPathByEntityID() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	entityID1 := getEntityIdForRecord("CUSTOMERS", "1001")
@@ -342,7 +373,7 @@ func ExampleG2engine_FindPathByEntityID() {
 }
 
 func ExampleG2engine_FindPathByEntityID_V2() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	entityID1 := getEntityIdForRecord("CUSTOMERS", "1001")
@@ -358,7 +389,7 @@ func ExampleG2engine_FindPathByEntityID_V2() {
 }
 
 func ExampleG2engine_FindPathByRecordID() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	dataSourceCode1 := "CUSTOMERS"
@@ -375,7 +406,7 @@ func ExampleG2engine_FindPathByRecordID() {
 }
 
 func ExampleG2engine_FindPathByRecordID_V2() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	dataSourceCode1 := "CUSTOMERS"
@@ -393,7 +424,7 @@ func ExampleG2engine_FindPathByRecordID_V2() {
 }
 
 func ExampleG2engine_FindPathExcludingByEntityID() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	entityID1 := getEntityIdForRecord("CUSTOMERS", "1001")
@@ -409,7 +440,7 @@ func ExampleG2engine_FindPathExcludingByEntityID() {
 }
 
 func ExampleG2engine_FindPathExcludingByEntityID_V2() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	entityID1 := getEntityIdForRecord("CUSTOMERS", "1001")
@@ -426,7 +457,7 @@ func ExampleG2engine_FindPathExcludingByEntityID_V2() {
 }
 
 func ExampleG2engine_FindPathExcludingByRecordID() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	dataSourceCode1 := "CUSTOMERS"
@@ -444,7 +475,7 @@ func ExampleG2engine_FindPathExcludingByRecordID() {
 }
 
 func ExampleG2engine_FindPathExcludingByRecordID_V2() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	dataSourceCode1 := "CUSTOMERS"
@@ -463,7 +494,7 @@ func ExampleG2engine_FindPathExcludingByRecordID_V2() {
 }
 
 func ExampleG2engine_FindPathIncludingSourceByEntityID() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	entityID1 := getEntityIdForRecord("CUSTOMERS", "1001")
@@ -480,7 +511,7 @@ func ExampleG2engine_FindPathIncludingSourceByEntityID() {
 }
 
 func ExampleG2engine_FindPathIncludingSourceByEntityID_V2() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	entityID1 := getEntityIdForRecord("CUSTOMERS", "1001")
@@ -498,7 +529,7 @@ func ExampleG2engine_FindPathIncludingSourceByEntityID_V2() {
 }
 
 func ExampleG2engine_FindPathIncludingSourceByRecordID() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	dataSourceCode1 := "CUSTOMERS"
@@ -517,7 +548,7 @@ func ExampleG2engine_FindPathIncludingSourceByRecordID() {
 }
 
 func ExampleG2engine_FindPathIncludingSourceByRecordID_V2() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	dataSourceCode1 := "CUSTOMERS"
@@ -537,7 +568,7 @@ func ExampleG2engine_FindPathIncludingSourceByRecordID_V2() {
 }
 
 func ExampleG2engine_GetActiveConfigID() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	result, err := g2engine.GetActiveConfigID(ctx)
@@ -549,7 +580,7 @@ func ExampleG2engine_GetActiveConfigID() {
 }
 
 func ExampleG2engine_GetEntityByEntityID() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	entityID := getEntityIdForRecord("CUSTOMERS", "1001")
@@ -562,7 +593,7 @@ func ExampleG2engine_GetEntityByEntityID() {
 }
 
 func ExampleG2engine_GetEntityByEntityID_V2() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	entityID := getEntityIdForRecord("CUSTOMERS", "1001")
@@ -576,7 +607,7 @@ func ExampleG2engine_GetEntityByEntityID_V2() {
 }
 
 func ExampleG2engine_GetEntityByRecordID() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	dataSourceCode := "CUSTOMERS"
@@ -590,7 +621,7 @@ func ExampleG2engine_GetEntityByRecordID() {
 }
 
 func ExampleG2engine_GetEntityByRecordID_V2() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	dataSourceCode := "CUSTOMERS"
@@ -605,7 +636,7 @@ func ExampleG2engine_GetEntityByRecordID_V2() {
 }
 
 func ExampleG2engine_GetRecord() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	dataSourceCode := "CUSTOMERS"
@@ -619,7 +650,7 @@ func ExampleG2engine_GetRecord() {
 }
 
 func ExampleG2engine_GetRecord_V2() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	dataSourceCode := "CUSTOMERS"
@@ -634,7 +665,7 @@ func ExampleG2engine_GetRecord_V2() {
 }
 
 func ExampleG2engine_GetRedoRecord() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	result, err := g2engine.GetRedoRecord(ctx)
@@ -646,7 +677,7 @@ func ExampleG2engine_GetRedoRecord() {
 }
 
 func ExampleG2engine_GetRepositoryLastModifiedTime() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	result, err := g2engine.GetRepositoryLastModifiedTime(ctx)
@@ -658,7 +689,7 @@ func ExampleG2engine_GetRepositoryLastModifiedTime() {
 }
 
 func ExampleG2engine_GetVirtualEntityByRecordID() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	recordList := `{"RECORDS": [{"DATA_SOURCE": "CUSTOMERS","RECORD_ID": "1001"},{"DATA_SOURCE": "CUSTOMERS","RECORD_ID": "1002"}]}`
@@ -671,7 +702,7 @@ func ExampleG2engine_GetVirtualEntityByRecordID() {
 }
 
 func ExampleG2engine_GetVirtualEntityByRecordID_V2() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	recordList := `{"RECORDS": [{"DATA_SOURCE": "CUSTOMERS","RECORD_ID": "1001"},{"DATA_SOURCE": "CUSTOMERS","RECORD_ID": "1002"}]}`
@@ -685,7 +716,7 @@ func ExampleG2engine_GetVirtualEntityByRecordID_V2() {
 }
 
 func ExampleG2engine_HowEntityByEntityID() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	entityID := getEntityIdForRecord("CUSTOMERS", "1001")
@@ -698,7 +729,7 @@ func ExampleG2engine_HowEntityByEntityID() {
 }
 
 func ExampleG2engine_HowEntityByEntityID_V2() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	entityID := getEntityIdForRecord("CUSTOMERS", "1001")
@@ -712,7 +743,7 @@ func ExampleG2engine_HowEntityByEntityID_V2() {
 }
 
 func ExampleG2engine_PrimeEngine() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	err := g2engine.PrimeEngine(ctx)
@@ -723,7 +754,7 @@ func ExampleG2engine_PrimeEngine() {
 }
 
 func ExampleG2engine_SearchByAttributes() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	jsonData := `{"NAMES": [{"NAME_TYPE": "PRIMARY", "NAME_LAST": "Smith"}], "EMAIL_ADDRESS": "bsmith@work.com"}`
@@ -736,7 +767,7 @@ func ExampleG2engine_SearchByAttributes() {
 }
 
 func ExampleG2engine_SearchByAttributes_V2() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	jsonData := `{"NAMES": [{"NAME_TYPE": "PRIMARY", "NAME_LAST": "Smith"}], "EMAIL_ADDRESS": "bsmith@work.com"}`
@@ -750,7 +781,7 @@ func ExampleG2engine_SearchByAttributes_V2() {
 }
 
 func ExampleG2engine_SetLogLevel() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	err := g2engine.SetLogLevel(ctx, logging.LevelInfoName)
@@ -761,7 +792,7 @@ func ExampleG2engine_SetLogLevel() {
 }
 
 func ExampleG2engine_Stats() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	result, err := g2engine.Stats(ctx)
@@ -772,39 +803,37 @@ func ExampleG2engine_Stats() {
 	// Output: { "workload":...
 }
 
-// FIXME: Remove after GDEV-3576 is fixed
-// func ExampleG2engine_WhyEntities() {
-// 	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
-// 	ctx := context.TODO()
-// 	g2engine := &G2engine{}
-// 	var entityID1 int64 = 1
-// 	var entityID2 int64 = 4
-// 	result, err := g2engine.WhyEntities(ctx, entityID1, entityID2)
-// 	if err != nil {
-// 		fmt.Println(err)
-// 	}
-// 	fmt.Println(truncate(result, 74))
-// 	// Output: {"WHY_RESULTS":[{"ENTITY_ID":1,"ENTITY_ID_2":4,"MATCH_INFO":{"WHY_KEY":...
-// }
+func ExampleG2engine_WhyEntities() {
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
+	ctx := context.TODO()
+	g2engine := &G2engine{}
+	var entityID1 int64 = 1
+	var entityID2 int64 = 100003
+	result, err := g2engine.WhyEntities(ctx, entityID1, entityID2)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(truncate(result, 74))
+	// Output: {"WHY_RESULTS":[{"ENTITY_ID":1,"ENTITY_ID_2":100003,"MATCH_INFO":{"WHY_...
+}
 
-// FIXME: Remove after GDEV-3576 is fixed
-// func ExampleG2engine_WhyEntities_V2() {
-// 	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
-// 	ctx := context.TODO()
-// 	g2engine := &G2engine{}
-// 	var entityID1 int64 = 1
-// 	var entityID2 int64 = 4
-// 	flags := int64(0)
-// 	result, err := g2engine.WhyEntities_V2(ctx, entityID1, entityID2, flags)
-// 	if err != nil {
-// 		fmt.Println(err)
-// 	}
-// 	fmt.Println(result)
-// 	// Output: {"WHY_RESULTS":[{"ENTITY_ID":1,"ENTITY_ID_2":4,"MATCH_INFO":{"WHY_KEY":"","WHY_ERRULE_CODE":"","MATCH_LEVEL_CODE":""}}],"ENTITIES":[{"RESOLVED_ENTITY":{"ENTITY_ID":4}}]}
-// }
+func ExampleG2engine_WhyEntities_V2() {
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
+	ctx := context.TODO()
+	g2engine := &G2engine{}
+	var entityID1 int64 = 1
+	var entityID2 int64 = 100003
+	flags := int64(0)
+	result, err := g2engine.WhyEntities_V2(ctx, entityID1, entityID2, flags)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(result)
+	// Output: {"WHY_RESULTS":[{"ENTITY_ID":1,"ENTITY_ID_2":100003,"MATCH_INFO":{"WHY_KEY":"+DOB","WHY_ERRULE_CODE":"","MATCH_LEVEL_CODE":""}}],"ENTITIES":[{"RESOLVED_ENTITY":{"ENTITY_ID":1}},{"RESOLVED_ENTITY":{"ENTITY_ID":100003}}]}
+}
 
 func ExampleG2engine_WhyEntityByEntityID() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	entityID := getEntityIdForRecord("CUSTOMERS", "1001")
@@ -817,7 +846,7 @@ func ExampleG2engine_WhyEntityByEntityID() {
 }
 
 func ExampleG2engine_WhyEntityByEntityID_V2() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	entityID := getEntityIdForRecord("CUSTOMERS", "1001")
@@ -831,7 +860,7 @@ func ExampleG2engine_WhyEntityByEntityID_V2() {
 }
 
 func ExampleG2engine_WhyEntityByRecordID() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	dataSourceCode := "CUSTOMERS"
@@ -845,7 +874,7 @@ func ExampleG2engine_WhyEntityByRecordID() {
 }
 
 func ExampleG2engine_WhyEntityByRecordID_V2() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	dataSourceCode := "CUSTOMERS"
@@ -860,7 +889,7 @@ func ExampleG2engine_WhyEntityByRecordID_V2() {
 }
 
 func ExampleG2engine_WhyRecords() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	dataSourceCode1 := "CUSTOMERS"
@@ -876,7 +905,7 @@ func ExampleG2engine_WhyRecords() {
 }
 
 func ExampleG2engine_WhyRecords_V2() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	dataSourceCode1 := "CUSTOMERS"
@@ -893,7 +922,7 @@ func ExampleG2engine_WhyRecords_V2() {
 }
 
 func ExampleG2engine_Process() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	record := `{"DATA_SOURCE": "CUSTOMERS", "RECORD_ID": "1001", "RECORD_TYPE": "PERSON", "PRIMARY_NAME_LAST": "Smith", "PRIMARY_NAME_FIRST": "Robert", "DATE_OF_BIRTH": "12/11/1978", "ADDR_TYPE": "MAILING", "ADDR_LINE1": "123 Main Street, Las Vegas NV 89132", "PHONE_TYPE": "HOME", "PHONE_NUMBER": "702-919-1300", "EMAIL_ADDRESS": "bsmith@work.com", "DATE": "1/2/18", "STATUS": "Active", "AMOUNT": "100"}`
@@ -905,7 +934,7 @@ func ExampleG2engine_Process() {
 }
 
 // func ExampleG2engine_ProcessRedoRecord() {
-// 	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+// 	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 // 	ctx := context.TODO()
 // 	g2engine := getG2Engine(ctx)
 // 	result, err := g2engine.ProcessRedoRecord(ctx)
@@ -917,7 +946,7 @@ func ExampleG2engine_Process() {
 // }
 
 // func ExampleG2engine_ProcessRedoRecordWithInfo() {
-// 	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+// 	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 // 	ctx := context.TODO()
 // 	g2engine := getG2Engine(ctx)
 // 	flags := int64(0)
@@ -930,7 +959,7 @@ func ExampleG2engine_Process() {
 // }
 
 func ExampleG2engine_ProcessWithInfo() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	record := `{"DATA_SOURCE": "CUSTOMERS", "RECORD_ID": "1001", "RECORD_TYPE": "PERSON", "PRIMARY_NAME_LAST": "Smith", "PRIMARY_NAME_FIRST": "Robert", "DATE_OF_BIRTH": "12/11/1978", "ADDR_TYPE": "MAILING", "ADDR_LINE1": "123 Main Street, Las Vegas NV 89132", "PHONE_TYPE": "HOME", "PHONE_NUMBER": "702-919-1300", "EMAIL_ADDRESS": "bsmith@work.com", "DATE": "1/2/18", "STATUS": "Active", "AMOUNT": "100"}`
@@ -944,7 +973,7 @@ func ExampleG2engine_ProcessWithInfo() {
 }
 
 // func ExampleG2engine_ProcessWithResponse() {
-// 	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+// 	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 // 	ctx := context.TODO()
 // 	g2engine := getG2Engine(ctx)
 // 	record := `{"DATA_SOURCE": "CUSTOMERS", "RECORD_ID": "1001", "RECORD_TYPE": "PERSON", "PRIMARY_NAME_LAST": "Smith", "PRIMARY_NAME_FIRST": "Robert", "DATE_OF_BIRTH": "12/11/1978", "ADDR_TYPE": "MAILING", "ADDR_LINE1": "123 Main Street, Las Vegas NV 89132", "PHONE_TYPE": "HOME", "PHONE_NUMBER": "702-919-1300", "EMAIL_ADDRESS": "bsmith@work.com", "DATE": "1/2/18", "STATUS": "Active", "AMOUNT": "100"}`
@@ -957,7 +986,7 @@ func ExampleG2engine_ProcessWithInfo() {
 // }
 
 // func ExampleG2engine_ProcessWithResponseResize() {
-// 	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+// 	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 // 	ctx := context.TODO()
 // 	g2engine := getG2Engine(ctx)
 // 	record := `{"DATA_SOURCE": "CUSTOMERS", "RECORD_ID": "1001", "RECORD_TYPE": "PERSON", "PRIMARY_NAME_LAST": "Smith", "PRIMARY_NAME_FIRST": "Robert", "DATE_OF_BIRTH": "12/11/1978", "ADDR_TYPE": "MAILING", "ADDR_LINE1": "123 Main Street, Las Vegas NV 89132", "PHONE_TYPE": "HOME", "PHONE_NUMBER": "702-919-1300", "EMAIL_ADDRESS": "bsmith@work.com", "DATE": "1/2/18", "STATUS": "Active", "AMOUNT": "100"}`
@@ -970,7 +999,7 @@ func ExampleG2engine_ProcessWithInfo() {
 // }
 
 func ExampleG2engine_ReevaluateEntity() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	entityID := getEntityIdForRecord("CUSTOMERS", "1001")
@@ -982,7 +1011,7 @@ func ExampleG2engine_ReevaluateEntity() {
 	// Output:
 }
 func ExampleG2engine_ReevaluateEntityWithInfo() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	entityID := getEntityIdForRecord("CUSTOMERS", "1001")
@@ -996,7 +1025,7 @@ func ExampleG2engine_ReevaluateEntityWithInfo() {
 }
 
 func ExampleG2engine_ReevaluateRecord() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	dataSourceCode := "CUSTOMERS"
@@ -1010,7 +1039,7 @@ func ExampleG2engine_ReevaluateRecord() {
 }
 
 func ExampleG2engine_ReevaluateRecordWithInfo() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	dataSourceCode := "CUSTOMERS"
@@ -1025,7 +1054,7 @@ func ExampleG2engine_ReevaluateRecordWithInfo() {
 }
 
 func ExampleG2engine_ReplaceRecord() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	dataSourceCode := "CUSTOMERS"
@@ -1040,7 +1069,7 @@ func ExampleG2engine_ReplaceRecord() {
 }
 
 func ExampleG2engine_ReplaceRecordWithInfo() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	dataSourceCode := "CUSTOMERS"
@@ -1057,7 +1086,7 @@ func ExampleG2engine_ReplaceRecordWithInfo() {
 }
 
 func ExampleG2engine_DeleteRecord() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	dataSourceCode := "CUSTOMERS"
@@ -1071,7 +1100,7 @@ func ExampleG2engine_DeleteRecord() {
 }
 
 func ExampleG2engine_DeleteRecordWithInfo() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	dataSourceCode := "CUSTOMERS"
@@ -1087,7 +1116,7 @@ func ExampleG2engine_DeleteRecordWithInfo() {
 }
 
 func ExampleG2engine_Init() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	moduleName := "Test module name"
@@ -1104,7 +1133,7 @@ func ExampleG2engine_Init() {
 }
 
 func ExampleG2engine_InitWithConfigID() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	moduleName := "Test module name"
@@ -1122,7 +1151,7 @@ func ExampleG2engine_InitWithConfigID() {
 }
 
 func ExampleG2engine_Reinit() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	initConfigID, _ := g2engine.GetActiveConfigID(ctx) // Example initConfigID.
@@ -1134,7 +1163,7 @@ func ExampleG2engine_Reinit() {
 }
 
 func ExampleG2engine_PurgeRepository() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	err := g2engine.PurgeRepository(ctx)
@@ -1145,7 +1174,7 @@ func ExampleG2engine_PurgeRepository() {
 }
 
 func ExampleG2engine_Destroy() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	err := g2engine.Destroy(ctx)

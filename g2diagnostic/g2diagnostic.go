@@ -199,8 +199,8 @@ func (client *G2diagnostic) CheckDBPerf(ctx context.Context, secondsToRun int) (
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error = nil
-	entryTime := time.Now()
 	var resultResponse string
+	entryTime := time.Now()
 	if client.isTrace {
 		client.traceEntry(1, secondsToRun)
 		defer func() { client.traceExit(2, secondsToRun, resultResponse, err, time.Since(entryTime)) }()
@@ -302,8 +302,8 @@ Output
 // 	runtime.LockOSThread()
 // 	defer runtime.UnlockOSThread()
 // 	var err error = nil
-// 	entryTime := time.Now()
 // 	var responseResult string
+// 	entryTime := time.Now()
 // 	if client.isTrace {
 // 		client.traceEntry(9)
 // 		defer func() { client.traceExit(10, responseResult, err, time.Since(entryTime)) }()
@@ -342,8 +342,8 @@ Output
 // 	runtime.LockOSThread()
 // 	defer runtime.UnlockOSThread()
 // 	var err error = nil
-// 	entryTime := time.Now()
 // 	var resultResponse string
+// 	entryTime := time.Now()
 // 	if client.isTrace {
 // 		client.traceEntry(11, features)
 // 		defer func() { client.traceExit(12, features, resultResponse, err, time.Since(entryTime)) }()
@@ -410,8 +410,8 @@ Output
 // 	runtime.LockOSThread()
 // 	defer runtime.UnlockOSThread()
 // 	var err error = nil
-// 	entryTime := time.Now()
 // 	var resultResponse string
+// 	entryTime := time.Now()
 // 	if client.isTrace {
 // 		client.traceEntry(15)
 // 		defer func() { client.traceExit(16, resultResponse, err, time.Since(entryTime)) }()
@@ -446,8 +446,8 @@ func (client *G2diagnostic) GetDBInfo(ctx context.Context) (string, error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error = nil
-	entryTime := time.Now()
 	var resultResponse string
+	entryTime := time.Now()
 	if client.isTrace {
 		client.traceEntry(17)
 		defer func() { client.traceExit(18, resultResponse, err, time.Since(entryTime)) }()
@@ -484,8 +484,8 @@ Output
 // 	runtime.LockOSThread()
 // 	defer runtime.UnlockOSThread()
 // 	var err error = nil
-// 	entryTime := time.Now()
 // 	var resultResponse string
+// 	entryTime := time.Now()
 // 	if client.isTrace {
 // 		client.traceEntry(19, entityID, includeInternalFeatures)
 // 		defer func() {
@@ -525,8 +525,8 @@ Output
 // 	runtime.LockOSThread()
 // 	defer runtime.UnlockOSThread()
 // 	var err error = nil
-// 	entryTime := time.Now()
 // 	var resultResponse uintptr
+// 	entryTime := time.Now()
 // 	if client.isTrace {
 // 		client.traceEntry(21, entitySize)
 // 		defer func() { client.traceExit(22, entitySize, resultResponse, err, time.Since(entryTime)) }()
@@ -561,8 +561,8 @@ Output
 // 	runtime.LockOSThread()
 // 	defer runtime.UnlockOSThread()
 // 	var err error = nil
-// 	entryTime := time.Now()
 // 	var resultResponse string
+// 	entryTime := time.Now()
 // 	if client.isTrace {
 // 		client.traceEntry(23, entityID)
 // 		defer func() { client.traceExit(24, entityID, resultResponse, err, time.Since(entryTime)) }()
@@ -599,8 +599,8 @@ Output
 // 	runtime.LockOSThread()
 // 	defer runtime.UnlockOSThread()
 // 	var err error = nil
-// 	entryTime := time.Now()
 // 	var resultResponse string
+// 	entryTime := time.Now()
 // 	if client.isTrace {
 // 		client.traceEntry(25, minimumEntitySize, includeInternalFeatures)
 // 		defer func() {
@@ -638,8 +638,8 @@ Output
 // 	runtime.LockOSThread()
 // 	defer runtime.UnlockOSThread()
 // 	var err error = nil
-// 	entryTime := time.Now()
 // 	var resultResponse string
+// 	entryTime := time.Now()
 // 	if client.isTrace {
 // 		client.traceEntry(27, libFeatID)
 // 		defer func() { client.traceExit(28, libFeatID, resultResponse, err, time.Since(entryTime)) }()
@@ -676,8 +676,8 @@ Output
 // 	runtime.LockOSThread()
 // 	defer runtime.UnlockOSThread()
 // 	var err error = nil
-// 	entryTime := time.Now()
 // 	var resultResponse string
+// 	entryTime := time.Now()
 // 	if client.isTrace {
 // 		client.traceEntry(29, featureType, maximumEstimatedCount)
 // 		defer func() {
@@ -747,8 +747,8 @@ Output
 // 	runtime.LockOSThread()
 // 	defer runtime.UnlockOSThread()
 // 	var err error = nil
-// 	entryTime := time.Now()
 // 	var resultResponse string
+// 	entryTime := time.Now()
 // 	if client.isTrace {
 // 		client.traceEntry(37, includeInternalFeatures)
 // 		defer func() { client.traceExit(38, includeInternalFeatures, resultResponse, err, time.Since(entryTime)) }()
@@ -828,8 +828,8 @@ Output
 // 	runtime.LockOSThread()
 // 	defer runtime.UnlockOSThread()
 // 	var err error = nil
-// 	entryTime := time.Now()
 // 	var resultResponse string
+// 	entryTime := time.Now()
 // 	if client.isTrace {
 // 		client.traceEntry(41, relationshipID, includeInternalFeatures)
 // 		defer func() {
@@ -866,8 +866,8 @@ Output
 // 	runtime.LockOSThread()
 // 	defer runtime.UnlockOSThread()
 // 	var err error = nil
-// 	entryTime := time.Now()
 // 	var resultResponse string
+// 	entryTime := time.Now()
 // 	if client.isTrace {
 // 		client.traceEntry(43)
 // 		defer func() { client.traceExit(44, resultResponse, err, time.Since(entryTime)) }()

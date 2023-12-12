@@ -198,8 +198,8 @@ func (client *G2configmgr) AddConfig(ctx context.Context, configStr string, conf
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error = nil
-	entryTime := time.Now()
 	var resultConfigID int64
+	entryTime := time.Now()
 	if client.isTrace {
 		client.traceEntry(1, configStr, configComments)
 		defer func() { client.traceExit(2, configStr, configComments, resultConfigID, err, time.Since(entryTime)) }()
@@ -270,8 +270,8 @@ func (client *G2configmgr) GetConfig(ctx context.Context, configID int64) (strin
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error = nil
-	entryTime := time.Now()
 	var resultResponse string
+	entryTime := time.Now()
 	if client.isTrace {
 		client.traceEntry(7, configID)
 		defer func() { client.traceExit(8, configID, resultResponse, err, time.Since(entryTime)) }()
@@ -306,8 +306,8 @@ func (client *G2configmgr) GetConfigList(ctx context.Context) (string, error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error = nil
-	entryTime := time.Now()
 	var resultResponse string
+	entryTime := time.Now()
 	if client.isTrace {
 		client.traceEntry(9)
 		defer func() { client.traceExit(10, resultResponse, err, time.Since(entryTime)) }()
@@ -341,8 +341,8 @@ func (client *G2configmgr) GetDefaultConfigID(ctx context.Context) (int64, error
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error = nil
-	entryTime := time.Now()
 	var resultConfigID int64
+	entryTime := time.Now()
 	if client.isTrace {
 		client.traceEntry(11)
 		defer func() { client.traceExit(12, resultConfigID, err, time.Since(entryTime)) }()

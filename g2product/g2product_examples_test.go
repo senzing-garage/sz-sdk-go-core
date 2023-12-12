@@ -15,7 +15,7 @@ import (
 // ----------------------------------------------------------------------------
 
 func ExampleG2product_SetObserverOrigin() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2product/g2product_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2product/g2product_examples_test.go
 	ctx := context.TODO()
 	g2product := getG2Product(ctx)
 	origin := "Machine: nn; Task: UnitTest"
@@ -35,7 +35,7 @@ func ExampleG2product_GetObserverOrigin() {
 }
 
 func ExampleG2product_Init() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2product/g2product_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2product/g2product_examples_test.go
 	ctx := context.TODO()
 	g2product := getG2Product(ctx)
 	moduleName := "Test module name"
@@ -49,7 +49,7 @@ func ExampleG2product_Init() {
 }
 
 func ExampleG2product_License() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2product/g2product_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2product/g2product_examples_test.go
 	ctx := context.TODO()
 	g2product := getG2Product(ctx)
 	result, err := g2product.License(ctx)
@@ -62,7 +62,7 @@ func ExampleG2product_License() {
 }
 
 func ExampleG2product_SetLogLevel() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2product/g2product_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2product/g2product_examples_test.go
 	ctx := context.TODO()
 	g2product := getG2Product(ctx)
 	err := g2product.SetLogLevel(ctx, logging.LevelInfoName)
@@ -73,7 +73,7 @@ func ExampleG2product_SetLogLevel() {
 }
 
 func ExampleG2product_Version() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2product/g2product_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2product/g2product_examples_test.go
 	ctx := context.TODO()
 	g2product := getG2Product(ctx)
 	result, err := g2product.Version(ctx)
@@ -85,7 +85,7 @@ func ExampleG2product_Version() {
 }
 
 func ExampleG2product_Destroy() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2product/g2product_test.go
+	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2product/g2product_examples_test.go
 	ctx := context.TODO()
 	g2product := getG2Product(ctx)
 	err := g2product.Destroy(ctx)
