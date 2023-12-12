@@ -16,6 +16,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `ExportCSVEntityReportIterator` and `ExportJSONEntityReportIterator`
 
+### Changed in 0.3.4
+
+- Update dependencies
+  - github.com/senzing/g2-sdk-go v0.7.6
+  - google.golang.org/grpc v1.60.0
+
 ## [0.3.3] - 2023-10-31
 
 ### Changed in 0.3.3
