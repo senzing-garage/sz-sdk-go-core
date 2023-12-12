@@ -24,6 +24,7 @@ import (
 	"time"
 	"unsafe"
 
+	"github.com/senzing/g2-sdk-go/g2api"
 	g2engineapi "github.com/senzing/g2-sdk-go/g2engine"
 	"github.com/senzing/g2-sdk-go/g2error"
 	"github.com/senzing/go-logging/logging"
@@ -750,12 +751,13 @@ Input
 Output
   - A channel of strings that can be iterated over.
 */
-func (client *G2engine) ExportCSVEntityReportIterator(ctx context.Context, csvColumnList string, flags int64) chan string {
-	stringChannel := make(chan string)
+func (client *G2engine) ExportCSVEntityReportIterator(ctx context.Context, csvColumnList string, flags int64) chan g2api.StringFragment {
+	stringChannel := make(chan g2api.StringFragment)
 
 	go func() {
 		runtime.LockOSThread()
 		defer runtime.UnlockOSThread()
+		defer close(stringChannel)
 		var err error = nil
 		if client.isTrace {
 			entryTime := time.Now()
@@ -764,21 +766,40 @@ func (client *G2engine) ExportCSVEntityReportIterator(ctx context.Context, csvCo
 		}
 		reportHandle, err := client.ExportCSVEntityReport(ctx, csvColumnList, flags)
 		if err != nil {
-			panic(err)
+			result := g2api.StringFragment{
+				Error: err,
+				Done:  true,
+			}
+			stringChannel <- result
+			return
 		}
 		defer func() {
 			client.CloseExport(ctx, reportHandle)
-			close(stringChannel)
 		}()
 		for {
 			entityReportFragment, err := client.FetchNext(ctx, reportHandle)
 			if err != nil {
-				panic(err)
+				stringChannel <- g2api.StringFragment{
+					Error: err,
+					Done:  true,
+				}
+				break
 			}
 			if len(entityReportFragment) == 0 {
 				break
 			}
-			stringChannel <- entityReportFragment
+			select {
+			case <-ctx.Done():
+				stringChannel <- g2api.StringFragment{
+					Error: ctx.Err(),
+					Done:  true,
+				}
+				break
+			default:
+				stringChannel <- g2api.StringFragment{
+					Value: entityReportFragment,
+				}
+			}
 		}
 		if client.observers != nil {
 			go func() {
@@ -840,8 +861,8 @@ Input
 Output
   - A channel of strings that can be iterated over.
 */
-func (client *G2engine) ExportJSONEntityReportIterator(ctx context.Context, flags int64) chan string {
-	stringChannel := make(chan string)
+func (client *G2engine) ExportJSONEntityReportIterator(ctx context.Context, flags int64) chan g2api.StringFragment {
+	stringChannel := make(chan g2api.StringFragment)
 	go func() {
 		runtime.LockOSThread()
 		defer runtime.UnlockOSThread()
