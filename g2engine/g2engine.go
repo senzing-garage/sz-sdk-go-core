@@ -776,6 +776,7 @@ func (client *G2engine) ExportCSVEntityReportIterator(ctx context.Context, csvCo
 		defer func() {
 			client.CloseExport(ctx, reportHandle)
 		}()
+	forLoop:
 		for {
 			entityReportFragment, err := client.FetchNext(ctx, reportHandle)
 			if err != nil {
@@ -783,10 +784,10 @@ func (client *G2engine) ExportCSVEntityReportIterator(ctx context.Context, csvCo
 					Error: err,
 					Done:  true,
 				}
-				break
+				break forLoop
 			}
 			if len(entityReportFragment) == 0 {
-				break
+				break forLoop
 			}
 			select {
 			case <-ctx.Done():
@@ -794,7 +795,7 @@ func (client *G2engine) ExportCSVEntityReportIterator(ctx context.Context, csvCo
 					Error: ctx.Err(),
 					Done:  true,
 				}
-				break
+				break forLoop
 			default:
 				stringChannel <- g2api.StringFragment{
 					Value: entityReportFragment,
@@ -866,6 +867,7 @@ func (client *G2engine) ExportJSONEntityReportIterator(ctx context.Context, flag
 	go func() {
 		runtime.LockOSThread()
 		defer runtime.UnlockOSThread()
+		defer close(stringChannel)
 		var err error = nil
 		if client.isTrace {
 			entryTime := time.Now()
@@ -874,21 +876,41 @@ func (client *G2engine) ExportJSONEntityReportIterator(ctx context.Context, flag
 		}
 		reportHandle, err := client.ExportJSONEntityReport(ctx, flags)
 		if err != nil {
-			panic(err)
+			result := g2api.StringFragment{
+				Error: err,
+				Done:  true,
+			}
+			stringChannel <- result
+			return
 		}
 		defer func() {
 			client.CloseExport(ctx, reportHandle)
-			close(stringChannel)
 		}()
+	forLoop:
 		for {
 			entityReportFragment, err := client.FetchNext(ctx, reportHandle)
 			if err != nil {
-				panic(err)
+				stringChannel <- g2api.StringFragment{
+					Error: err,
+					Done:  true,
+				}
+				break forLoop
 			}
 			if len(entityReportFragment) == 0 {
-				break
+				break forLoop
 			}
-			stringChannel <- entityReportFragment
+			select {
+			case <-ctx.Done():
+				stringChannel <- g2api.StringFragment{
+					Error: ctx.Err(),
+					Done:  true,
+				}
+				break forLoop
+			default:
+				stringChannel <- g2api.StringFragment{
+					Value: entityReportFragment,
+				}
+			}
 		}
 		if client.observers != nil {
 			go func() {
