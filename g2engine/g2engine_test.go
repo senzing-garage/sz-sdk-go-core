@@ -621,9 +621,13 @@ func TestG2engine_ExportCSVEntityReport(test *testing.T) {
 	}()
 	testError(test, ctx, g2engine, err)
 	actualCount := 0
-	for actual := range g2engine.ExportCSVEntityReportIterator(ctx, csvColumnList, flags) {
-		testError(test, ctx, g2engine, actual.Error)
-		assert.Equal(test, expected[actualCount], strings.TrimSpace(actual.Value))
+	for {
+		actual, err := g2engine.FetchNext(ctx, aHandle)
+		testError(test, ctx, g2engine, err)
+		if len(actual) == 0 {
+			break
+		}
+		assert.Equal(test, expected[actualCount], strings.TrimSpace(actual))
 		actualCount += 1
 	}
 	assert.Equal(test, len(expected), actualCount)
@@ -644,7 +648,6 @@ func TestG2engine_ExportCSVEntityReportIterator(test *testing.T) {
 	for actual := range g2engine.ExportCSVEntityReportIterator(ctx, csvColumnList, flags) {
 		testError(test, ctx, g2engine, actual.Error)
 		assert.Equal(test, expected[actualCount], strings.TrimSpace(actual.Value))
-		assert.False(test, actual.Done)
 		actualCount += 1
 	}
 	assert.Equal(test, len(expected), actualCount)
@@ -685,7 +688,6 @@ func TestG2engine_ExportJSONEntityReportIterator(test *testing.T) {
 	for actual := range g2engine.ExportJSONEntityReportIterator(ctx, flags) {
 		testError(test, ctx, g2engine, actual.Error)
 		printActual(test, actual.Value)
-		assert.False(test, actual.Done)
 		actualCount += 1
 	}
 	assert.Equal(test, 1, actualCount)

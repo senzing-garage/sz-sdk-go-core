@@ -752,12 +752,12 @@ Output
   - A channel of strings that can be iterated over.
 */
 func (client *G2engine) ExportCSVEntityReportIterator(ctx context.Context, csvColumnList string, flags int64) chan g2api.StringFragment {
-	stringChannel := make(chan g2api.StringFragment)
+	stringFragmentChannel := make(chan g2api.StringFragment)
 
 	go func() {
 		runtime.LockOSThread()
 		defer runtime.UnlockOSThread()
-		defer close(stringChannel)
+		defer close(stringFragmentChannel)
 		var err error = nil
 		if client.isTrace {
 			entryTime := time.Now()
@@ -768,9 +768,8 @@ func (client *G2engine) ExportCSVEntityReportIterator(ctx context.Context, csvCo
 		if err != nil {
 			result := g2api.StringFragment{
 				Error: err,
-				Done:  true,
 			}
-			stringChannel <- result
+			stringFragmentChannel <- result
 			return
 		}
 		defer func() {
@@ -778,26 +777,24 @@ func (client *G2engine) ExportCSVEntityReportIterator(ctx context.Context, csvCo
 		}()
 	forLoop:
 		for {
-			entityReportFragment, err := client.FetchNext(ctx, reportHandle)
-			if err != nil {
-				stringChannel <- g2api.StringFragment{
-					Error: err,
-					Done:  true,
-				}
-				break forLoop
-			}
-			if len(entityReportFragment) == 0 {
-				break forLoop
-			}
 			select {
 			case <-ctx.Done():
-				stringChannel <- g2api.StringFragment{
+				stringFragmentChannel <- g2api.StringFragment{
 					Error: ctx.Err(),
-					Done:  true,
 				}
 				break forLoop
 			default:
-				stringChannel <- g2api.StringFragment{
+				entityReportFragment, err := client.FetchNext(ctx, reportHandle)
+				if err != nil {
+					stringFragmentChannel <- g2api.StringFragment{
+						Error: err,
+					}
+					break forLoop
+				}
+				if len(entityReportFragment) == 0 {
+					break forLoop
+				}
+				stringFragmentChannel <- g2api.StringFragment{
 					Value: entityReportFragment,
 				}
 			}
@@ -809,7 +806,7 @@ func (client *G2engine) ExportCSVEntityReportIterator(ctx context.Context, csvCo
 			}()
 		}
 	}()
-	return stringChannel
+	return stringFragmentChannel
 }
 
 /*
@@ -863,11 +860,11 @@ Output
   - A channel of strings that can be iterated over.
 */
 func (client *G2engine) ExportJSONEntityReportIterator(ctx context.Context, flags int64) chan g2api.StringFragment {
-	stringChannel := make(chan g2api.StringFragment)
+	stringFragmentChannel := make(chan g2api.StringFragment)
 	go func() {
 		runtime.LockOSThread()
 		defer runtime.UnlockOSThread()
-		defer close(stringChannel)
+		defer close(stringFragmentChannel)
 		var err error = nil
 		if client.isTrace {
 			entryTime := time.Now()
@@ -878,9 +875,8 @@ func (client *G2engine) ExportJSONEntityReportIterator(ctx context.Context, flag
 		if err != nil {
 			result := g2api.StringFragment{
 				Error: err,
-				Done:  true,
 			}
-			stringChannel <- result
+			stringFragmentChannel <- result
 			return
 		}
 		defer func() {
@@ -888,26 +884,24 @@ func (client *G2engine) ExportJSONEntityReportIterator(ctx context.Context, flag
 		}()
 	forLoop:
 		for {
-			entityReportFragment, err := client.FetchNext(ctx, reportHandle)
-			if err != nil {
-				stringChannel <- g2api.StringFragment{
-					Error: err,
-					Done:  true,
-				}
-				break forLoop
-			}
-			if len(entityReportFragment) == 0 {
-				break forLoop
-			}
 			select {
 			case <-ctx.Done():
-				stringChannel <- g2api.StringFragment{
+				stringFragmentChannel <- g2api.StringFragment{
 					Error: ctx.Err(),
-					Done:  true,
 				}
 				break forLoop
 			default:
-				stringChannel <- g2api.StringFragment{
+				entityReportFragment, err := client.FetchNext(ctx, reportHandle)
+				if err != nil {
+					stringFragmentChannel <- g2api.StringFragment{
+						Error: err,
+					}
+					break forLoop
+				}
+				if len(entityReportFragment) == 0 {
+					break forLoop
+				}
+				stringFragmentChannel <- g2api.StringFragment{
 					Value: entityReportFragment,
 				}
 			}
@@ -919,7 +913,7 @@ func (client *G2engine) ExportJSONEntityReportIterator(ctx context.Context, flag
 			}()
 		}
 	}()
-	return stringChannel
+	return stringFragmentChannel
 }
 
 /*
