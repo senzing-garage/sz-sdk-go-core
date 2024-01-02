@@ -10,6 +10,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 -
 
+## [0.4.0] - 2024-01-02
+
+### Changed in 0.4.0
+
+- Refactor to [template-go](https://github.com/senzing-garage/template-go)
+- Update dependencies
+  - github.com/aquilax/truncate v1.0.0
+  - github.com/senzing-garage/go-common v0.4.0
+  - github.com/senzing-garage/go-logging v1.4.0
+  - github.com/senzing-garage/go-observing v0.3.0
+  - github.com/senzing/g2-sdk-go v0.8.0
+  - github.com/stretchr/testify v1.8.4
+  - google.golang.org/grpc v1.60.1
+
 ## [0.3.4] - 2023-12-12
 
 ### Added in 0.3.4
@@ -28,7 +42,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Support for changed method signatures in Senzing G2Config API
 - Update dependencies
-  - github.com/senzing/go-common v0.3.2-0.20231018174900-c1895fb44c30
+  - github.com/senzing-garage/go-common v0.3.2-0.20231018174900-c1895fb44c30
 
 ## [0.3.2] - 2023-10-18
 
@@ -36,9 +50,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Update dependencies
   - github.com/senzing/g2-sdk-go v0.7.4
-  - github.com/senzing/go-common v0.3.1
-  - github.com/senzing/go-logging v1.3.3
-  - github.com/senzing/go-observing v0.2.8
+  - github.com/senzing-garage/go-common v0.3.1
+  - github.com/senzing-garage/go-logging v1.3.3
+  - github.com/senzing-garage/go-observing v0.2.8
   - google.golang.org/grpc v1.59.0
 
 ## [0.3.1] - 2023-10-12
@@ -122,9 +136,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Refactor to `template-go`
 - Update dependencies
   - github.com/senzing/g2-sdk-go v0.6.8
-  - github.com/senzing/go-common v0.2.11
-  - github.com/senzing/go-logging v1.3.2
-  - github.com/senzing/go-observing v0.2.7
+  - github.com/senzing-garage/go-common v0.2.11
+  - github.com/senzing-garage/go-logging v1.3.2
+  - github.com/senzing-garage/go-observing v0.2.7
   - google.golang.org/grpc v1.57.0
 
 ## [0.2.2] - 2023-07-07
@@ -133,8 +147,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Update dependencies
   - github.com/senzing/g2-sdk-go v0.6.7
-  - github.com/senzing/go-common v0.1.4
-  - github.com/senzing/go-logging v1.2.6
+  - github.com/senzing-garage/go-common v0.1.4
+  - github.com/senzing-garage/go-logging v1.2.6
   - google.golang.org/grpc v1.56.2
 
 ## [0.2.1] - 2023-06-16
@@ -143,9 +157,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Update dependencies
   - github.com/senzing/g2-sdk-go v0.6.5
-  - github.com/senzing/go-common v0.1.4
-  - github.com/senzing/go-logging v1.2.6
-  - github.com/senzing/go-observing v0.2.6
+  - github.com/senzing-garage/go-common v0.1.4
+  - github.com/senzing-garage/go-logging v1.2.6
+  - github.com/senzing-garage/go-observing v0.2.6
   - github.com/stretchr/testify v1.8.4
   - google.golang.org/grpc v1.56.0
 
@@ -163,15 +177,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fixed go/CGO memory issues
 - Update dependencies
-  - github.com/senzing/go-observing v0.2.5
+  - github.com/senzing-garage/go-observing v0.2.5
 
 ## [0.1.10] - 2023-05-11
 
 ### Changed in 0.1.10
 
 - Update dependencies
-  - github.com/senzing/go-common v0.1.3
-  - github.com/senzing/go-logging v1.2.3
+  - github.com/senzing-garage/go-common v0.1.3
+  - github.com/senzing-garage/go-logging v1.2.3
 
 ## [0.1.9] - 2023-05-10
 
@@ -180,7 +194,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added GetObserverOrigin() and SetObserverOrigin() to g2* packages
 - Update dependencies
   - github.com/senzing/g2-sdk-go v0.6.2
-  - github.com/senzing/go-observing v0.2.2
+  - github.com/senzing-garage/go-observing v0.2.2
 
 ## [0.1.8] - 2023-04-21
 
@@ -194,7 +208,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed in 0.1.7
 
 - Updated dependencies
-- Migrated from `github.com/senzing/go-logging/logger` to `github.com/senzing/go-logging/logging`
+- Migrated from `github.com/senzing-garage/go-logging/logger` to `github.com/senzing-garage/go-logging/logging`
 
 ## [0.1.6] - 2023-04-18
 

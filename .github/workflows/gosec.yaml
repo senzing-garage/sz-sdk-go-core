@@ -2,7 +2,6 @@
 # - https://github.com/securego/gosec
 
 name: gosec.yaml
-
 on:
   push:
     branches:
@@ -10,10 +9,8 @@ on:
   pull_request:
     branches:
       - main
-
 env:
   LD_LIBRARY_PATH: /opt/senzing/g2/lib
-
 jobs:
   gosec:
     runs-on: ubuntu-latest
