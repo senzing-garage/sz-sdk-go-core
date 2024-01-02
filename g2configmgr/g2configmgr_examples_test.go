@@ -7,7 +7,7 @@ import (
 	"fmt"
 
 	"github.com/senzing/g2-sdk-go-base/g2config"
-	"github.com/senzing/go-logging/logging"
+	"github.com/senzing-garage/go-logging/logging"
 )
 
 // ----------------------------------------------------------------------------

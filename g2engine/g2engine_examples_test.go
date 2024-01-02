@@ -6,8 +6,8 @@ import (
 	"context"
 	"fmt"
 
-	jutil "github.com/senzing/go-common/jsonutil"
-	"github.com/senzing/go-logging/logging"
+	jutil "github.com/senzing-garage/go-common/jsonutil"
+	"github.com/senzing-garage/go-logging/logging"
 )
 
 // ----------------------------------------------------------------------------
