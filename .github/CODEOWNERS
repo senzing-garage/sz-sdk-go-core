@@ -1,3 +1,5 @@
 # Default code owner
 
 * @Senzing/go-developers
+
+/.github/ @Senzing/senzing-devsecops
