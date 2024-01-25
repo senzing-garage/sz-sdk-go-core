@@ -36,162 +36,162 @@ Prefixes:
 ### senzing-60010001
 
 - Trace the entering of `g2config.AddDataSource`
-- See `AddDataSource` in <https://github.com/Senzing/g2-sdk-go-base/blob/main/g2config/g2config.go>
+- See `AddDataSource` in <https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2config/g2config.go>
 
 ### senzing-60010002
 
 - Trace the exiting of `g2config.AddDataSource`
-- See `AddDataSource` in <https://github.com/Senzing/g2-sdk-go-base/blob/main/g2config/g2config.go>
+- See `AddDataSource` in <https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2config/g2config.go>
 
 ### senzing-60010003
 
 - Trace the entering of `g2config.ClearLastException`
-- See `ClearLastException` in <https://github.com/Senzing/g2-sdk-go-base/blob/main/g2config/g2config.go>
+- See `ClearLastException` in <https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2config/g2config.go>
 
 ### senzing-60010004
 
 - Trace the exiting of `g2config.ClearLastException`
-- See `ClearLastException` in <https://github.com/Senzing/g2-sdk-go-base/blob/main/g2config/g2config.go>
+- See `ClearLastException` in <https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2config/g2config.go>
 
 ### senzing-60010005
 
 - Trace the entering of `g2config.Close`
-- See `Close` in <https://github.com/Senzing/g2-sdk-go-base/blob/main/g2config/g2config.go>
+- See `Close` in <https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2config/g2config.go>
 
 ### senzing-60010006
 
 - Trace the exiting of `g2config.Close`
-- See `Close` in <https://github.com/Senzing/g2-sdk-go-base/blob/main/g2config/g2config.go>
+- See `Close` in <https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2config/g2config.go>
 
 ### senzing-60010007
 
 - Trace the entering of `g2config.Create`
-- See `Create` in <https://github.com/Senzing/g2-sdk-go-base/blob/main/g2config/g2config.go>
+- See `Create` in <https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2config/g2config.go>
 
 ### senzing-60010008
 
 - Trace the exiting of `g2config.Create`
-- See `Create` in <https://github.com/Senzing/g2-sdk-go-base/blob/main/g2config/g2config.go>
+- See `Create` in <https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2config/g2config.go>
 
 ### senzing-60010009
 
 - Trace the entering of `g2config.DeleteDataSource`
-- See `DeleteDataSource` in <https://github.com/Senzing/g2-sdk-go-base/blob/main/g2config/g2config.go>
+- See `DeleteDataSource` in <https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2config/g2config.go>
 
 ### senzing-60010010
 
 - Trace the exiting of `g2config.DeleteDataSource`
-- See `DeleteDataSource` in <https://github.com/Senzing/g2-sdk-go-base/blob/main/g2config/g2config.go>
+- See `DeleteDataSource` in <https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2config/g2config.go>
 
 ### senzing-60010011
 
 - Trace the entering of `g2config.Destroy`
-- See `Destroy` in <https://github.com/Senzing/g2-sdk-go-base/blob/main/g2config/g2config.go>
+- See `Destroy` in <https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2config/g2config.go>
 
 ### senzing-60010012
 
 - Trace the exiting of `g2config.Destroy`
-- See `Destroy` in <https://github.com/Senzing/g2-sdk-go-base/blob/main/g2config/g2config.go>
+- See `Destroy` in <https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2config/g2config.go>
 
 ### senzing-60010013
 
 - Trace the entering of `g2config.GetLastException`
-- See `GetLastException` in <https://github.com/Senzing/g2-sdk-go-base/blob/main/g2config/g2config.go>
+- See `GetLastException` in <https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2config/g2config.go>
 
 ### senzing-60010014
 
 - Trace the exiting of `g2config.GetLastException`
-- See `GetLastException` in <https://github.com/Senzing/g2-sdk-go-base/blob/main/g2config/g2config.go>
+- See `GetLastException` in <https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2config/g2config.go>
 
 ### senzing-60010015
 
 - Trace the entering of `g2config.GetLastExceptionCode`
-- See `GetLastExceptionCode` in <https://github.com/Senzing/g2-sdk-go-base/blob/main/g2config/g2config.go>
+- See `GetLastExceptionCode` in <https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2config/g2config.go>
 
 ### senzing-60010016
 
 - Trace the exiting of `g2config.GetLastExceptionCode`
-- See `GetLastExceptionCode` in <https://github.com/Senzing/g2-sdk-go-base/blob/main/g2config/g2config.go>
+- See `GetLastExceptionCode` in <https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2config/g2config.go>
 
 ### senzing-60010017
 
 - Trace the entering of `g2config.Init`
-- See `Init` in <https://github.com/Senzing/g2-sdk-go-base/blob/main/g2config/g2config.go>
+- See `Init` in <https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2config/g2config.go>
 
 ### senzing-60010018
 
 - Trace the exiting of `g2config.Init`
-- See `Init` in <https://github.com/Senzing/g2-sdk-go-base/blob/main/g2config/g2config.go>
+- See `Init` in <https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2config/g2config.go>
 
 ### senzing-60010019
 
 - Trace the entering of `g2config.ListDataSources`
-- See `ListDataSources` in <https://github.com/Senzing/g2-sdk-go-base/blob/main/g2config/g2config.go>
+- See `ListDataSources` in <https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2config/g2config.go>
 
 ### senzing-60010020
 
 - Trace the exiting of `g2config.ListDataSources`
-- See `ListDataSources` in <https://github.com/Senzing/g2-sdk-go-base/blob/main/g2config/g2config.go>
+- See `ListDataSources` in <https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2config/g2config.go>
 
 ### senzing-60010021
 
 - Trace the entering of `g2config.Load`
-- See `` in <https://github.com/Senzing/g2-sdk-go-base/blob/main/g2config/g2config.go>
+- See `` in <https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2config/g2config.go>
 
 ### senzing-60010022
 
 - Trace the exiting of `g2config.Load`
-- See `Load` in <https://github.com/Senzing/g2-sdk-go-base/blob/main/g2config/g2config.go>
+- See `Load` in <https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2config/g2config.go>
 
 ### senzing-60010023
 
 - Trace the entering of `g2config.Save`
-- See `Load` in <https://github.com/Senzing/g2-sdk-go-base/blob/main/g2config/g2config.go>
+- See `Load` in <https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2config/g2config.go>
 
 ### senzing-60010024
 
 - Trace the exiting of `g2config.Save`
-- See `Save` in <https://github.com/Senzing/g2-sdk-go-base/blob/main/g2config/g2config.go>
+- See `Save` in <https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2config/g2config.go>
 
 ### senzing-60010025
 
 - Trace the entering of `g2config.SetLogLevel`
-- See `SetLogLevel` in <https://github.com/Senzing/g2-sdk-go-base/blob/main/g2config/g2config.go>
+- See `SetLogLevel` in <https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2config/g2config.go>
 
 ### senzing-60010026
 
 - Trace the exiting of `g2config.SetLogLevel`
-- See `SetLogLevel` in <https://github.com/Senzing/g2-sdk-go-base/blob/main/g2config/g2config.go>
+- See `SetLogLevel` in <https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2config/g2config.go>
 
 ### senzing-60010027
 
 - Trace the entering of `g2config.RegisterObserver`
-- See `RegisterObserver` in <https://github.com/Senzing/g2-sdk-go-base/blob/main/g2config/g2config.go>
+- See `RegisterObserver` in <https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2config/g2config.go>
 
 ### senzing-60010028
 
 - Trace the exiting of `g2config.RegisterObserver`
-- See `RegisterObserver` in <https://github.com/Senzing/g2-sdk-go-base/blob/main/g2config/g2config.go>
+- See `RegisterObserver` in <https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2config/g2config.go>
 
 ### senzing-60010029
 
 - Trace the entering of `g2config.UnregisterObserver`
-- See `UnregisterObserver` in <https://github.com/Senzing/g2-sdk-go-base/blob/main/g2config/g2config.go>
+- See `UnregisterObserver` in <https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2config/g2config.go>
 
 ### senzing-60010030
 
 - Trace the exiting of `g2config.UnregisterObserver`
-- See `UnregisterObserver` in <https://github.com/Senzing/g2-sdk-go-base/blob/main/g2config/g2config.go>
+- See `UnregisterObserver` in <https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2config/g2config.go>
 
 ### senzing-60010031
 
 - Trace the entering of `g2config.GetSdkId`
-- See `GetSdkId` in <https://github.com/Senzing/g2-sdk-go-base/blob/main/g2config/g2config.go>
+- See `GetSdkId` in <https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2config/g2config.go>
 
 ### senzing-60010032
 
 - Trace the exiting of `g2config.GetSdkId`
-- See `GetSdkId` in <https://github.com/Senzing/g2-sdk-go-base/blob/main/g2config/g2config.go>
+- See `GetSdkId` in <https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2config/g2config.go>
 
 ### senzing-60014001
 

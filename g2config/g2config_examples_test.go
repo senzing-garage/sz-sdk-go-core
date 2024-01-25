@@ -14,7 +14,7 @@ import (
 // ----------------------------------------------------------------------------
 
 func ExampleG2config_SetObserverOrigin() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2config/g2config_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2config/g2config_examples_test.go
 	ctx := context.TODO()
 	g2config := getG2Config(ctx)
 	origin := "Machine: nn; Task: UnitTest"
@@ -23,7 +23,7 @@ func ExampleG2config_SetObserverOrigin() {
 }
 
 func ExampleG2config_GetObserverOrigin() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2config/g2config_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2config/g2config_examples_test.go
 	ctx := context.TODO()
 	g2config := getG2Config(ctx)
 	origin := "Machine: nn; Task: UnitTest"
@@ -34,7 +34,7 @@ func ExampleG2config_GetObserverOrigin() {
 }
 
 func ExampleG2config_AddDataSource() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2config/g2config_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2config/g2config_examples_test.go
 	ctx := context.TODO()
 	g2config := getG2Config(ctx)
 	configHandle, err := g2config.Create(ctx)
@@ -51,7 +51,7 @@ func ExampleG2config_AddDataSource() {
 }
 
 func ExampleG2config_Close() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2config/g2config_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2config/g2config_examples_test.go
 	ctx := context.TODO()
 	g2config := getG2Config(ctx)
 	configHandle, err := g2config.Create(ctx)
@@ -66,7 +66,7 @@ func ExampleG2config_Close() {
 }
 
 func ExampleG2config_Create() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2config/g2config_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2config/g2config_examples_test.go
 	ctx := context.TODO()
 	g2config := getG2Config(ctx)
 	configHandle, err := g2config.Create(ctx)
@@ -78,7 +78,7 @@ func ExampleG2config_Create() {
 }
 
 func ExampleG2config_DeleteDataSource() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2config/g2config_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2config/g2config_examples_test.go
 	ctx := context.TODO()
 	g2config := getG2Config(ctx)
 	configHandle, err := g2config.Create(ctx)
@@ -94,7 +94,7 @@ func ExampleG2config_DeleteDataSource() {
 }
 
 func ExampleG2config_ListDataSources() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2config/g2config_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2config/g2config_examples_test.go
 	ctx := context.TODO()
 	g2config := getG2Config(ctx)
 	configHandle, err := g2config.Create(ctx)
@@ -110,7 +110,7 @@ func ExampleG2config_ListDataSources() {
 }
 
 func ExampleG2config_Load() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2config/g2config_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2config/g2config_examples_test.go
 	ctx := context.TODO()
 	g2config := getG2Config(ctx)
 	mockConfigHandle, err := g2config.Create(ctx)
@@ -130,7 +130,7 @@ func ExampleG2config_Load() {
 }
 
 func ExampleG2config_Save() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2config/g2config_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2config/g2config_examples_test.go
 	ctx := context.TODO()
 	g2config := getG2Config(ctx)
 	configHandle, err := g2config.Create(ctx)
@@ -146,7 +146,7 @@ func ExampleG2config_Save() {
 }
 
 func ExampleG2config_SetLogLevel() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2config/g2config_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2config/g2config_examples_test.go
 	ctx := context.TODO()
 	g2config := getG2Config(ctx)
 	err := g2config.SetLogLevel(ctx, logging.LevelInfoName)
@@ -157,7 +157,7 @@ func ExampleG2config_SetLogLevel() {
 }
 
 func ExampleG2config_Init() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2config/g2config_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2config/g2config_examples_test.go
 	ctx := context.TODO()
 	g2config := getG2Config(ctx)
 	moduleName := "Test module name"
@@ -174,7 +174,7 @@ func ExampleG2config_Init() {
 }
 
 func ExampleG2config_Destroy() {
-	// For more information, visit https://github.com/Senzing/g2-sdk-go-base/blob/main/g2config/g2config_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2config/g2config_examples_test.go
 	ctx := context.TODO()
 	g2config := getG2Config(ctx)
 	err := g2config.Destroy(ctx)
