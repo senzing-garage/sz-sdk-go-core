@@ -10,6 +10,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 -
 
+## [0.5.0] - 2024-01-26
+
+### Changed in 0.5.0
+
+- Renamed module to github.com/senzing-garage/g2-sdk-go-base
+- Refactor to [template-go](https://github.com/senzing-garage/template-go)
+
 ## [0.4.0] - 2024-01-02
 
 ### Changed in 0.4.0
