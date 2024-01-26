@@ -4,10 +4,10 @@ go 1.21
 
 require (
 	github.com/aquilax/truncate v1.0.0
+	github.com/senzing-garage/g2-sdk-go v0.9.0
 	github.com/senzing-garage/go-common v0.4.0
 	github.com/senzing-garage/go-logging v1.4.0
 	github.com/senzing-garage/go-observing v0.3.0
-	github.com/senzing/g2-sdk-go v0.8.0
 	github.com/stretchr/testify v1.8.4
 	google.golang.org/grpc v1.61.0
 )
