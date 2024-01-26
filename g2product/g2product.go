@@ -24,12 +24,12 @@ import (
 	"time"
 	"unsafe"
 
+	"github.com/senzing-garage/g2-sdk-go/g2error"
+	g2productapi "github.com/senzing-garage/g2-sdk-go/g2product"
 	"github.com/senzing-garage/go-logging/logging"
 	"github.com/senzing-garage/go-observing/notifier"
 	"github.com/senzing-garage/go-observing/observer"
 	"github.com/senzing-garage/go-observing/subject"
-	"github.com/senzing/g2-sdk-go/g2error"
-	g2productapi "github.com/senzing/g2-sdk-go/g2product"
 )
 
 // ----------------------------------------------------------------------------

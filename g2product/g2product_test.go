@@ -9,12 +9,12 @@ import (
 	"testing"
 
 	truncator "github.com/aquilax/truncate"
+	"github.com/senzing-garage/g2-sdk-go/g2api"
+	"github.com/senzing-garage/g2-sdk-go/g2error"
+	g2productapi "github.com/senzing-garage/g2-sdk-go/g2product"
 	futil "github.com/senzing-garage/go-common/fileutil"
 	"github.com/senzing-garage/go-common/g2engineconfigurationjson"
 	"github.com/senzing-garage/go-logging/logging"
-	"github.com/senzing/g2-sdk-go/g2api"
-	"github.com/senzing/g2-sdk-go/g2error"
-	g2productapi "github.com/senzing/g2-sdk-go/g2product"
 	"github.com/stretchr/testify/assert"
 )
 
