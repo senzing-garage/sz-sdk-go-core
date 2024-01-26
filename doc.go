@@ -9,7 +9,7 @@ The Senzing g2-sdk-go-base packages enable Go programs to call Senzing library f
 Under the covers, Golang's CGO is used by the g2-sdk-go-base packages to make the calls
 to the Senzing functions.
 
-More information at https://github.com/senzing/g2-sdk-go-base
+More information at https://github.com/senzing-garage/g2-sdk-go-base
 
 # Installing Senzing library
 
@@ -34,7 +34,7 @@ Using Docker, build an installer:
 
 	curl -X GET \
 	    --output /tmp/senzing-versions-latest.sh \
-	    https://raw.githubusercontent.com/Senzing/knowledge-base/main/lists/senzing-versions-latest.sh
+	    https://raw.githubusercontent.com/senzing-garage/knowledge-base/main/lists/senzing-versions-latest.sh
 	source /tmp/senzing-versions-latest.sh
 
 	sudo docker build \
@@ -43,7 +43,7 @@ Using Docker, build an installer:
 	    --build-arg SENZING_DATA_VERSION=${SENZING_VERSION_SENZINGDATA} \
 	    --no-cache \
 	    --tag senzing/installer:${SENZING_VERSION_SENZINGAPI} \
-	    https://github.com/senzing/docker-installer.git#main
+	    https://github.com/senzing-garage/docker-installer.git#main
 
 Using Docker, install Senzing:
 
