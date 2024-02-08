@@ -1,7 +1,4 @@
-# Based on
-# - https://github.com/securego/gosec
-
-name: gosec.yaml
+name: gosec
 
 on:
   push:
@@ -23,13 +20,16 @@ jobs:
     env:
       GO111MODULE: on
       CGO_ENABLED: 1
+
     steps:
-      - name: Checkout Source
+      - name: checkout repository
         uses: actions/checkout@v4
+
       - name: Install Senzing API
-        uses: senzing-factory/github-action-install-senzing-api@latest
+        uses: senzing-factory/github-action-install-senzing-api@v1
         with:
           senzingapi-version: latest
+
       - run: |
           mkdir ./g2config/gohelpers
           cp /opt/senzing/g2/sdk/c/*.h ./g2config/
@@ -46,7 +46,8 @@ jobs:
           mkdir ./g2product/gohelpers
           cp /opt/senzing/g2/sdk/c/*.h ./g2product/
           cp /opt/senzing/g2/sdk/c/gohelpers/*.h ./g2product/gohelpers
-      - name: Run Gosec Security Scanner
+
+      - name: run Gosec Security Scanner
         uses: securego/gosec@master
         with:
           args: -exclude=G103 -verbose text ./...
