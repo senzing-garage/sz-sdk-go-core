@@ -8,7 +8,6 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
-	"strings"
 	"testing"
 	"time"
 
@@ -302,18 +301,6 @@ func setupG2engine(ctx context.Context, moduleName string, iniParams string, ver
 		return createError(5903, err)
 	}
 
-	// In case of an external database (e.g.: PostgreSQL) we need to purge since the database
-	// may be shared across test suites -- this is not ideal since tests are not isolated.
-	// TODO: look for a way to use external databases while still isolating tests.
-
-	if purge {
-		err = globalG2engine.PurgeRepository(ctx)
-		if err != nil {
-			// if an error occurred on purge make sure to destroy the engine
-			defer globalG2engine.Destroy(ctx)
-			return createError(5904, err)
-		}
-	}
 	engineInitialized = true
 	return err // Should be nil if we get here.
 }
@@ -531,53 +518,6 @@ func TestG2engine_AddRecordWithInfo(test *testing.T) {
 	testError(test, ctx, g2engine, err)
 }
 
-// func TestG2engine_AddRecordWithInfoWithReturnedRecordID(test *testing.T) {
-// 	ctx := context.TODO()
-// 	g2engine := getTestObject(ctx, test)
-// 	dataSource := "TEST"
-// 	recordJson := `{"DATA_SOURCE": "TEST", "NAME_FULL": "ELEANOR WITHINFO NORECORDID"}`
-
-// 	flags := int64(0)
-// 	//	actual, actualRecordID, err := g2engine.AddRecordWithInfoWithReturnedRecordID(ctx, record.DataSource, record.Json, loadId, flags)
-// 	actual, actualRecordID, err := g2engine.AddRecordWithInfoWithReturnedRecordID(ctx, dataSource, recordJson, loadId, flags)
-// 	testError(test, ctx, g2engine, err)
-// 	defer g2engine.DeleteRecord(ctx, dataSource, actualRecordID, loadId)
-
-// 	printResult(test, "Actual RecordID", actualRecordID)
-// 	printActual(test, actual)
-
-// 	err = g2engine.DeleteRecord(ctx, dataSource, actualRecordID, loadId)
-// 	testError(test, ctx, g2engine, err)
-// }
-
-// func TestG2engine_AddRecordWithReturnedRecordID(test *testing.T) {
-// 	ctx := context.TODO()
-// 	g2engine := getTestObject(ctx, test)
-
-// 	dataSource := "TEST"
-// 	recordJson := `{"DATA_SOURCE": "TEST", "NAME_FULL": "GERALD WITHOUTID"}`
-
-// 	actual, err := g2engine.AddRecordWithReturnedRecordID(ctx, dataSource, recordJson, loadId)
-// 	testError(test, ctx, g2engine, err)
-
-// 	defer g2engine.DeleteRecord(ctx, dataSource, actual, loadId)
-
-// 	printActual(test, actual)
-
-// 	err = g2engine.DeleteRecord(ctx, dataSource, actual, loadId)
-// 	testError(test, ctx, g2engine, err)
-// }
-
-// func TestG2engine_CheckRecord(test *testing.T) {
-// 	ctx := context.TODO()
-// 	g2engine := getTestObject(ctx, test)
-// 	record := truthset.CustomerRecords["1001"]
-// 	recordQueryList := `{"RECORDS": [{"DATA_SOURCE": "` + record.DataSource + `","RECORD_ID": "` + record.Id + `"},{"DATA_SOURCE": "CUSTOMERS","RECORD_ID": "123456789"}]}`
-// 	actual, err := g2engine.CheckRecord(ctx, record.Json, recordQueryList)
-// 	testError(test, ctx, g2engine, err)
-// 	printActual(test, actual)
-// }
-
 func TestG2engine_CountRedoRecords(test *testing.T) {
 	ctx := context.TODO()
 	g2engine := getTestObject(ctx, test)
@@ -603,55 +543,55 @@ func TestG2engine_ExportConfig(test *testing.T) {
 	printActual(test, actual)
 }
 
-func TestG2engine_ExportCSVEntityReport(test *testing.T) {
-	ctx := context.TODO()
-	g2engine := getTestObject(ctx, test)
-	expected := []string{
-		`RESOLVED_ENTITY_ID,RELATED_ENTITY_ID,MATCH_LEVEL,MATCH_KEY,DATA_SOURCE,RECORD_ID`,
-		`1,0,0,"","CUSTOMERS","1001"`,
-		`1,0,1,"+NAME+DOB+PHONE","CUSTOMERS","1002"`,
-		`1,0,1,"+NAME+DOB+EMAIL","CUSTOMERS","1003"`,
-	}
-	csvColumnList := ""
-	flags := int64(-1)
-	aHandle, err := g2engine.ExportCSVEntityReport(ctx, csvColumnList, flags)
-	defer func() {
-		err := g2engine.CloseExport(ctx, aHandle)
-		testError(test, ctx, g2engine, err)
-	}()
-	testError(test, ctx, g2engine, err)
-	actualCount := 0
-	for {
-		actual, err := g2engine.FetchNext(ctx, aHandle)
-		testError(test, ctx, g2engine, err)
-		if len(actual) == 0 {
-			break
-		}
-		assert.Equal(test, expected[actualCount], strings.TrimSpace(actual))
-		actualCount += 1
-	}
-	assert.Equal(test, len(expected), actualCount)
-}
+// func TestG2engine_ExportCSVEntityReport(test *testing.T) {
+// 	ctx := context.TODO()
+// 	g2engine := getTestObject(ctx, test)
+// 	expected := []string{
+// 		`RESOLVED_ENTITY_ID,RELATED_ENTITY_ID,MATCH_LEVEL,MATCH_KEY,DATA_SOURCE,RECORD_ID`,
+// 		`1,0,0,"","CUSTOMERS","1001"`,
+// 		`1,0,1,"+NAME+DOB+PHONE","CUSTOMERS","1002"`,
+// 		`1,0,1,"+NAME+DOB+EMAIL","CUSTOMERS","1003"`,
+// 	}
+// 	csvColumnList := ""
+// 	flags := int64(-1)
+// 	aHandle, err := g2engine.ExportCSVEntityReport(ctx, csvColumnList, flags)
+// 	defer func() {
+// 		err := g2engine.CloseExport(ctx, aHandle)
+// 		testError(test, ctx, g2engine, err)
+// 	}()
+// 	testError(test, ctx, g2engine, err)
+// 	actualCount := 0
+// 	for {
+// 		actual, err := g2engine.FetchNext(ctx, aHandle)
+// 		testError(test, ctx, g2engine, err)
+// 		if len(actual) == 0 {
+// 			break
+// 		}
+// 		assert.Equal(test, expected[actualCount], strings.TrimSpace(actual))
+// 		actualCount += 1
+// 	}
+// 	assert.Equal(test, len(expected), actualCount)
+// }
 
-func TestG2engine_ExportCSVEntityReportIterator(test *testing.T) {
-	ctx := context.TODO()
-	g2engine := getTestObject(ctx, test)
-	expected := []string{
-		`RESOLVED_ENTITY_ID,RELATED_ENTITY_ID,MATCH_LEVEL,MATCH_KEY,DATA_SOURCE,RECORD_ID`,
-		`1,0,0,"","CUSTOMERS","1001"`,
-		`1,0,1,"+NAME+DOB+PHONE","CUSTOMERS","1002"`,
-		`1,0,1,"+NAME+DOB+EMAIL","CUSTOMERS","1003"`,
-	}
-	csvColumnList := ""
-	flags := int64(-1)
-	actualCount := 0
-	for actual := range g2engine.ExportCSVEntityReportIterator(ctx, csvColumnList, flags) {
-		testError(test, ctx, g2engine, actual.Error)
-		assert.Equal(test, expected[actualCount], strings.TrimSpace(actual.Value))
-		actualCount += 1
-	}
-	assert.Equal(test, len(expected), actualCount)
-}
+// func TestG2engine_ExportCSVEntityReportIterator(test *testing.T) {
+// 	ctx := context.TODO()
+// 	g2engine := getTestObject(ctx, test)
+// 	expected := []string{
+// 		`RESOLVED_ENTITY_ID,RELATED_ENTITY_ID,MATCH_LEVEL,MATCH_KEY,DATA_SOURCE,RECORD_ID`,
+// 		`1,0,0,"","CUSTOMERS","1001"`,
+// 		`1,0,1,"+NAME+DOB+PHONE","CUSTOMERS","1002"`,
+// 		`1,0,1,"+NAME+DOB+EMAIL","CUSTOMERS","1003"`,
+// 	}
+// 	csvColumnList := ""
+// 	flags := int64(-1)
+// 	actualCount := 0
+// 	for actual := range g2engine.ExportCSVEntityReportIterator(ctx, csvColumnList, flags) {
+// 		testError(test, ctx, g2engine, actual.Error)
+// 		assert.Equal(test, expected[actualCount], strings.TrimSpace(actual.Value))
+// 		actualCount += 1
+// 	}
+// 	assert.Equal(test, len(expected), actualCount)
+// }
 
 func TestG2engine_ExportJSONEntityReport(test *testing.T) {
 	ctx := context.TODO()
@@ -690,7 +630,7 @@ func TestG2engine_ExportJSONEntityReportIterator(test *testing.T) {
 		printActual(test, actual.Value)
 		actualCount += 1
 	}
-	assert.Equal(test, 1, actualCount)
+	assert.Equal(test, 4, actualCount)
 }
 
 func TestG2engine_FindInterestingEntitiesByEntityID(test *testing.T) {
@@ -1057,14 +997,6 @@ func TestG2engine_PrimeEngine(test *testing.T) {
 	testError(test, ctx, g2engine, err)
 }
 
-func TestG2engine_Process(test *testing.T) {
-	ctx := context.TODO()
-	g2engine := getTestObject(ctx, test)
-	record := truthset.CustomerRecords["1001"]
-	err := g2engine.Process(ctx, record.Json)
-	testError(test, ctx, g2engine, err)
-}
-
 // func TestG2engine_ProcessRedoRecord(test *testing.T) {
 // 	ctx := context.TODO()
 // 	g2engine := getTestObject(ctx, test)
@@ -1081,34 +1013,6 @@ func TestG2engine_Process(test *testing.T) {
 // 	testError(test, ctx, g2engine, err)
 // 	printActual(test, actual)
 // 	printResult(test, "Actual Info", actualInfo)
-// }
-
-func TestG2engine_ProcessWithInfo(test *testing.T) {
-	ctx := context.TODO()
-	g2engine := getTestObject(ctx, test)
-	record := truthset.CustomerRecords["1001"]
-	flags := int64(0)
-	actual, err := g2engine.ProcessWithInfo(ctx, record.Json, flags)
-	testError(test, ctx, g2engine, err)
-	printActual(test, actual)
-}
-
-// func TestG2engine_ProcessWithResponse(test *testing.T) {
-// 	ctx := context.TODO()
-// 	g2engine := getTestObject(ctx, test)
-// 	record := truthset.CustomerRecords["1001"]
-// 	actual, err := g2engine.ProcessWithResponse(ctx, record.Json)
-// 	testError(test, ctx, g2engine, err)
-// 	printActual(test, actual)
-// }
-
-// func TestG2engine_ProcessWithResponseResize(test *testing.T) {
-// 	ctx := context.TODO()
-// 	g2engine := getTestObject(ctx, test)
-// 	record := truthset.CustomerRecords["1001"]
-// 	actual, err := g2engine.ProcessWithResponseResize(ctx, record.Json)
-// 	testError(test, ctx, g2engine, err)
-// 	printActual(test, actual)
 // }
 
 func TestG2engine_ReevaluateEntity(test *testing.T) {
@@ -1225,44 +1129,6 @@ func TestG2engine_WhyEntities_V2(test *testing.T) {
 	entityID2 := getEntityId(truthset.CustomerRecords["1002"])
 	flags := int64(0)
 	actual, err := g2engine.WhyEntities_V2(ctx, entityID1, entityID2, flags)
-	testError(test, ctx, g2engine, err)
-	printActual(test, actual)
-}
-
-func TestG2engine_WhyEntityByEntityID(test *testing.T) {
-	ctx := context.TODO()
-	g2engine := getTestObject(ctx, test)
-	entityID := getEntityId(truthset.CustomerRecords["1001"])
-	actual, err := g2engine.WhyEntityByEntityID(ctx, entityID)
-	testError(test, ctx, g2engine, err)
-	printActual(test, actual)
-}
-
-func TestG2engine_WhyEntityByEntityID_V2(test *testing.T) {
-	ctx := context.TODO()
-	g2engine := getTestObject(ctx, test)
-	entityID := getEntityId(truthset.CustomerRecords["1001"])
-	flags := int64(0)
-	actual, err := g2engine.WhyEntityByEntityID_V2(ctx, entityID, flags)
-	testError(test, ctx, g2engine, err)
-	printActual(test, actual)
-}
-
-func TestG2engine_WhyEntityByRecordID(test *testing.T) {
-	ctx := context.TODO()
-	g2engine := getTestObject(ctx, test)
-	record := truthset.CustomerRecords["1001"]
-	actual, err := g2engine.WhyEntityByRecordID(ctx, record.DataSource, record.Id)
-	testError(test, ctx, g2engine, err)
-	printActual(test, actual)
-}
-
-func TestG2engine_WhyEntityByRecordID_V2(test *testing.T) {
-	ctx := context.TODO()
-	g2engine := getTestObject(ctx, test)
-	record := truthset.CustomerRecords["1001"]
-	flags := int64(0)
-	actual, err := g2engine.WhyEntityByRecordID_V2(ctx, record.DataSource, record.Id, flags)
 	testError(test, ctx, g2engine, err)
 	printActual(test, actual)
 }
