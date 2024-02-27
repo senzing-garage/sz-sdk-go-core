@@ -103,7 +103,7 @@ func ExampleG2engine_CountRedoRecords() {
 		fmt.Println(err)
 	}
 	fmt.Println(result)
-	// Output: 1
+	// Output: 2
 }
 
 func ExampleG2engine_ExportConfig() {
@@ -357,7 +357,7 @@ func ExampleG2engine_FindPathByRecordID() {
 		fmt.Println(err)
 	}
 	fmt.Println(truncate(result, 87))
-	// Output: {"ENTITY_PATHS":[{"START_ENTITY_ID":1,"END_ENTITY_ID":1,"ENTITIES":[1]}],"ENTITIES":...
+	// Output: {"ENTITY_PATHS":[{"START_ENTITY_ID":100001,"END_ENTITY_ID":100001,"ENTITIES":[100001...
 }
 
 func ExampleG2engine_FindPathByRecordID_V2() {
@@ -375,7 +375,7 @@ func ExampleG2engine_FindPathByRecordID_V2() {
 		fmt.Println(err)
 	}
 	fmt.Println(result)
-	// Output: {"ENTITY_PATHS":[{"START_ENTITY_ID":1,"END_ENTITY_ID":1,"ENTITIES":[1]}],"ENTITIES":[{"RESOLVED_ENTITY":{"ENTITY_ID":1}}]}
+	// Output: {"ENTITY_PATHS":[{"START_ENTITY_ID":100001,"END_ENTITY_ID":100001,"ENTITIES":[100001]}],"ENTITIES":[{"RESOLVED_ENTITY":{"ENTITY_ID":100001}}]}
 }
 
 func ExampleG2engine_FindPathExcludingByEntityID() {
@@ -391,7 +391,7 @@ func ExampleG2engine_FindPathExcludingByEntityID() {
 		fmt.Println(err)
 	}
 	fmt.Println(truncate(result, 107))
-	// Output: {"ENTITY_PATHS":[{"START_ENTITY_ID":1,"END_ENTITY_ID":1,"ENTITIES":[1]}],"ENTITIES":[{"RESOLVED_ENTITY":...
+	// Output: {"ENTITY_PATHS":[{"START_ENTITY_ID":100001,"END_ENTITY_ID":100001,"ENTITIES":[100001]}],"ENTITIES":[{"RE...
 }
 
 func ExampleG2engine_FindPathExcludingByEntityID_V2() {
@@ -408,7 +408,7 @@ func ExampleG2engine_FindPathExcludingByEntityID_V2() {
 		fmt.Println(err)
 	}
 	fmt.Println(result)
-	// Output: {"ENTITY_PATHS":[{"START_ENTITY_ID":1,"END_ENTITY_ID":1,"ENTITIES":[1]}],"ENTITIES":[{"RESOLVED_ENTITY":{"ENTITY_ID":1}}]}
+	// Output: {"ENTITY_PATHS":[{"START_ENTITY_ID":100001,"END_ENTITY_ID":100001,"ENTITIES":[100001]}],"ENTITIES":[{"RESOLVED_ENTITY":{"ENTITY_ID":100001}}]}
 }
 
 func ExampleG2engine_FindPathExcludingByRecordID() {
@@ -426,7 +426,7 @@ func ExampleG2engine_FindPathExcludingByRecordID() {
 		fmt.Println(err)
 	}
 	fmt.Println(truncate(result, 107))
-	// Output: {"ENTITY_PATHS":[{"START_ENTITY_ID":1,"END_ENTITY_ID":1,"ENTITIES":[1]}],"ENTITIES":[{"RESOLVED_ENTITY":...
+	// Output: {"ENTITY_PATHS":[{"START_ENTITY_ID":100001,"END_ENTITY_ID":100001,"ENTITIES":[100001]}],"ENTITIES":[{"RE...
 }
 
 func ExampleG2engine_FindPathExcludingByRecordID_V2() {
@@ -445,7 +445,7 @@ func ExampleG2engine_FindPathExcludingByRecordID_V2() {
 		fmt.Println(err)
 	}
 	fmt.Println(result)
-	// Output: {"ENTITY_PATHS":[{"START_ENTITY_ID":1,"END_ENTITY_ID":1,"ENTITIES":[1]}],"ENTITIES":[{"RESOLVED_ENTITY":{"ENTITY_ID":1}}]}
+	// Output: {"ENTITY_PATHS":[{"START_ENTITY_ID":100001,"END_ENTITY_ID":100001,"ENTITIES":[100001]}],"ENTITIES":[{"RESOLVED_ENTITY":{"ENTITY_ID":100001}}]}
 }
 
 func ExampleG2engine_FindPathIncludingSourceByEntityID() {
@@ -462,7 +462,7 @@ func ExampleG2engine_FindPathIncludingSourceByEntityID() {
 		fmt.Println(err)
 	}
 	fmt.Println(truncate(result, 106))
-	// Output: {"ENTITY_PATHS":[{"START_ENTITY_ID":1,"END_ENTITY_ID":1,"ENTITIES":[]}],"ENTITIES":[{"RESOLVED_ENTITY":...
+	// Output: {"ENTITY_PATHS":[{"START_ENTITY_ID":100001,"END_ENTITY_ID":100001,"ENTITIES":[]}],"ENTITIES":[{"RESOLVE...
 }
 
 func ExampleG2engine_FindPathIncludingSourceByEntityID_V2() {
@@ -480,7 +480,7 @@ func ExampleG2engine_FindPathIncludingSourceByEntityID_V2() {
 		fmt.Println(err)
 	}
 	fmt.Println(result)
-	// Output: {"ENTITY_PATHS":[{"START_ENTITY_ID":1,"END_ENTITY_ID":1,"ENTITIES":[]}],"ENTITIES":[{"RESOLVED_ENTITY":{"ENTITY_ID":1}}]}
+	// Output: {"ENTITY_PATHS":[{"START_ENTITY_ID":100001,"END_ENTITY_ID":100001,"ENTITIES":[]}],"ENTITIES":[{"RESOLVED_ENTITY":{"ENTITY_ID":100001}}]}
 }
 
 func ExampleG2engine_FindPathIncludingSourceByRecordID() {
@@ -499,7 +499,7 @@ func ExampleG2engine_FindPathIncludingSourceByRecordID() {
 		fmt.Println(err)
 	}
 	fmt.Println(truncate(result, 119))
-	// Output: {"ENTITY_PATHS":[{"START_ENTITY_ID":1,"END_ENTITY_ID":1,"ENTITIES":[]}],"ENTITIES":[{"RESOLVED_ENTITY":{"ENTITY_ID":...
+	// Output: {"ENTITY_PATHS":[{"START_ENTITY_ID":100001,"END_ENTITY_ID":100001,"ENTITIES":[]}],"ENTITIES":[{"RESOLVED_ENTITY":{"E...
 }
 
 func ExampleG2engine_FindPathIncludingSourceByRecordID_V2() {
@@ -519,7 +519,7 @@ func ExampleG2engine_FindPathIncludingSourceByRecordID_V2() {
 		fmt.Println(err)
 	}
 	fmt.Println(result)
-	// Output: {"ENTITY_PATHS":[{"START_ENTITY_ID":1,"END_ENTITY_ID":1,"ENTITIES":[]}],"ENTITIES":[{"RESOLVED_ENTITY":{"ENTITY_ID":1}}]}
+	// Output: {"ENTITY_PATHS":[{"START_ENTITY_ID":100001,"END_ENTITY_ID":100001,"ENTITIES":[]}],"ENTITIES":[{"RESOLVED_ENTITY":{"ENTITY_ID":100001}}]}
 }
 
 func ExampleG2engine_GetActiveConfigID() {
@@ -544,7 +544,7 @@ func ExampleG2engine_GetEntityByEntityID() {
 		fmt.Println(err)
 	}
 	fmt.Println(truncate(result, 51))
-	// Output: {"RESOLVED_ENTITY":{"ENTITY_ID":1,"ENTITY_NAME":...
+	// Output: {"RESOLVED_ENTITY":{"ENTITY_ID":100001,"ENTITY_N...
 }
 
 func ExampleG2engine_GetEntityByEntityID_V2() {
@@ -558,7 +558,7 @@ func ExampleG2engine_GetEntityByEntityID_V2() {
 		fmt.Println(err)
 	}
 	fmt.Println(result)
-	// Output: {"RESOLVED_ENTITY":{"ENTITY_ID":1}}
+	// Output: {"RESOLVED_ENTITY":{"ENTITY_ID":100001}}
 }
 
 func ExampleG2engine_GetEntityByRecordID() {
@@ -587,7 +587,7 @@ func ExampleG2engine_GetEntityByRecordID_V2() {
 		fmt.Println(err)
 	}
 	fmt.Println(result)
-	// Output: {"RESOLVED_ENTITY":{"ENTITY_ID":1}}
+	// Output: {"RESOLVED_ENTITY":{"ENTITY_ID":100001}}
 }
 
 func ExampleG2engine_GetRecord() {
@@ -732,7 +732,7 @@ func ExampleG2engine_SearchByAttributes_V2() {
 		fmt.Println(err)
 	}
 	fmt.Println(jutil.Flatten(jutil.NormalizeAndSort(result)))
-	// Output: {"RESOLVED_ENTITIES":[{"ENTITY":{"RESOLVED_ENTITY":{"ENTITY_ID":1}},"MATCH_INFO":{"ERRULE_CODE":"SF1","MATCH_KEY":"+PNAME+EMAIL","MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED"}}]}
+	// Output: {"RESOLVED_ENTITIES":[{"ENTITY":{"RESOLVED_ENTITY":{"ENTITY_ID":100001}},"MATCH_INFO":{"ERRULE_CODE":"SF1","MATCH_KEY":"+PNAME+EMAIL","MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED"}}]}
 }
 
 func ExampleG2engine_SetLogLevel() {
@@ -763,13 +763,13 @@ func ExampleG2engine_WhyEntities() {
 	ctx := context.TODO()
 	g2engine := &G2engine{}
 	var entityID1 int64 = 1
-	var entityID2 int64 = 100003
+	var entityID2 int64 = 100006
 	result, err := g2engine.WhyEntities(ctx, entityID1, entityID2)
 	if err != nil {
 		fmt.Println(err)
 	}
 	fmt.Println(truncate(result, 74))
-	// Output: {"WHY_RESULTS":[{"ENTITY_ID":1,"ENTITY_ID_2":100003,"MATCH_INFO":{"WHY_...
+	// Output: {"WHY_RESULTS":[{"ENTITY_ID":1,"ENTITY_ID_2":100006,"MATCH_INFO":{"WHY_...
 }
 
 func ExampleG2engine_WhyEntities_V2() {
@@ -777,14 +777,14 @@ func ExampleG2engine_WhyEntities_V2() {
 	ctx := context.TODO()
 	g2engine := &G2engine{}
 	var entityID1 int64 = 1
-	var entityID2 int64 = 100003
+	var entityID2 int64 = 100006
 	flags := int64(0)
 	result, err := g2engine.WhyEntities_V2(ctx, entityID1, entityID2, flags)
 	if err != nil {
 		fmt.Println(err)
 	}
 	fmt.Println(result)
-	// Output: {"WHY_RESULTS":[{"ENTITY_ID":1,"ENTITY_ID_2":100003,"MATCH_INFO":{"WHY_KEY":"+DOB","WHY_ERRULE_CODE":"","MATCH_LEVEL_CODE":""}}],"ENTITIES":[{"RESOLVED_ENTITY":{"ENTITY_ID":1}},{"RESOLVED_ENTITY":{"ENTITY_ID":100003}}]}
+	// Output: {"WHY_RESULTS":[{"ENTITY_ID":1,"ENTITY_ID_2":100006,"MATCH_INFO":{"WHY_KEY":"","WHY_ERRULE_CODE":"","MATCH_LEVEL_CODE":""}}],"ENTITIES":[{"RESOLVED_ENTITY":{"ENTITY_ID":1}},{"RESOLVED_ENTITY":{"ENTITY_ID":100006}}]}
 }
 
 func ExampleG2engine_WhyRecords() {
