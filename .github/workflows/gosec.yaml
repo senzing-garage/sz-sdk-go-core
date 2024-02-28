@@ -26,7 +26,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install Senzing API
-        uses: senzing-factory/github-action-install-senzing-api@v1
+        uses: senzing-factory/github-action-install-senzing-api@v2
         with:
           senzingapi-version: latest
 
