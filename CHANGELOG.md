@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 -
+-
+
+## [0.6.1] - 2024-02-29
+
+### Changed in 0.6.1
+
+- Added `G2Diagnostic.PurgeRepository()`
 
 ## [0.6.0] - 2024-02-27
 
