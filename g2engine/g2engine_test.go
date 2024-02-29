@@ -14,6 +14,8 @@ import (
 	truncator "github.com/aquilax/truncate"
 	"github.com/senzing-garage/g2-sdk-go-base/g2config"
 	"github.com/senzing-garage/g2-sdk-go-base/g2configmgr"
+	"github.com/senzing-garage/g2-sdk-go-base/g2diagnostic"
+
 	"github.com/senzing-garage/g2-sdk-go/g2api"
 	g2engineapi "github.com/senzing-garage/g2-sdk-go/g2engine"
 	"github.com/senzing-garage/g2-sdk-go/g2error"
@@ -41,10 +43,11 @@ type GetEntityByRecordIDResponse struct {
 }
 
 var (
-	engineInitialized bool     = false
-	globalG2engine    G2engine = G2engine{}
-	logger            logging.LoggingInterface
-	senzingConfigId   int64 = 0
+	engineInitialized  bool                      = false
+	globalG2engine     G2engine                  = G2engine{}
+	globalG2Diagnostic g2diagnostic.G2diagnostic = g2diagnostic.G2diagnostic{}
+	logger             logging.LoggingInterface
+	senzingConfigId    int64 = 0
 )
 
 // ----------------------------------------------------------------------------
@@ -56,12 +59,19 @@ func createError(errorId int, err error) error {
 }
 
 func getTestObject(ctx context.Context, test *testing.T) g2api.G2engine {
+	_ = ctx
+	_ = test
 	return &globalG2engine
 }
 
-func getG2Engine(ctx context.Context) g2api.G2engine {
-	return &globalG2engine
+func getG2Diagnostic(ctx context.Context) g2api.G2diagnostic {
+	_ = ctx
+	return &globalG2Diagnostic
+}
 
+func getG2Engine(ctx context.Context) g2api.G2engine {
+	_ = ctx
+	return &globalG2engine
 }
 
 func getEntityIdForRecord(datasource string, id string) int64 {
@@ -301,6 +311,18 @@ func setupG2engine(ctx context.Context, moduleName string, iniParams string, ver
 		return createError(5903, err)
 	}
 
+	// In case of an external database (e.g.: PostgreSQL) we need to purge since the database
+	// may be shared across test suites -- this is not ideal since tests are not isolated.
+	// TODO: look for a way to use external databases while still isolating tests.
+
+	if purge {
+		err = globalG2Diagnostic.PurgeRepository(ctx)
+		if err != nil {
+			// if an error occurred on purge make sure to destroy the engine
+			defer globalG2engine.Destroy(ctx)
+			return createError(5904, err)
+		}
+	}
 	engineInitialized = true
 	return err // Should be nil if we get here.
 }
@@ -630,7 +652,7 @@ func TestG2engine_ExportJSONEntityReportIterator(test *testing.T) {
 		printActual(test, actual.Value)
 		actualCount += 1
 	}
-	assert.Equal(test, 4, actualCount)
+	assert.Equal(test, 1, actualCount)
 }
 
 func TestG2engine_FindInterestingEntitiesByEntityID(test *testing.T) {
