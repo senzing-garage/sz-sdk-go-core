@@ -46,10 +46,13 @@ func createError(errorId int, err error) error {
 }
 
 func getTestObject(ctx context.Context, test *testing.T) g2api.G2diagnostic {
+	_ = ctx
+	_ = test
 	return &globalG2diagnostic
 }
 
 func getG2Diagnostic(ctx context.Context) g2api.G2diagnostic {
+	_ = ctx
 	return &globalG2diagnostic
 }
 
@@ -68,6 +71,8 @@ func printActual(test *testing.T, actual interface{}) {
 }
 
 func testError(test *testing.T, ctx context.Context, g2diagnostic g2api.G2diagnostic, err error) {
+	_ = ctx
+	_ = g2diagnostic
 	if err != nil {
 		test.Log("Error:", err.Error())
 		assert.FailNow(test, err.Error())
@@ -75,6 +80,8 @@ func testError(test *testing.T, ctx context.Context, g2diagnostic g2api.G2diagno
 }
 
 func testErrorNoFail(test *testing.T, ctx context.Context, g2diagnostic g2api.G2diagnostic, err error) {
+	_ = ctx
+	_ = g2diagnostic
 	if err != nil {
 		test.Log("Error:", err.Error())
 	}
@@ -209,6 +216,22 @@ func setupAddRecords(ctx context.Context, moduleName string, iniParams string, v
 	err := aG2engine.Init(ctx, moduleName, iniParams, verboseLogging)
 	if err != nil {
 		return createError(5916, err)
+	}
+
+	aG2diagnostic := getG2Diagnostic(ctx)
+	err = aG2diagnostic.Init(ctx, moduleName, iniParams, verboseLogging)
+	if err != nil {
+		return createError(5916, err)
+	}
+
+	// If requested, purge existing database.
+
+	if purge {
+		err = aG2diagnostic.PurgeRepository(ctx)
+		if err != nil {
+			aG2engine.Destroy(ctx) // If an error occurred on purge make sure to destroy the engine.
+			return createError(5904, err)
+		}
 	}
 
 	// Add records into Senzing.

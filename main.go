@@ -200,7 +200,7 @@ func getG2product(ctx context.Context) (g2api.G2product, error) {
 }
 
 func getLogger(ctx context.Context) (logging.LoggingInterface, error) {
-
+	_ = ctx
 	logger, err := logging.NewSenzingLogger("my-unique-%04d", Messages)
 	if err != nil {
 		fmt.Println(err)
@@ -275,6 +275,11 @@ func demonstrateAddRecord(ctx context.Context, g2Engine g2api.G2engine) (string,
 
 func demonstrateAdditionalFunctions(ctx context.Context, g2Diagnostic g2api.G2diagnostic, g2Engine g2api.G2engine, g2Product g2api.G2product) error {
 
+	err := g2Diagnostic.PurgeRepository(ctx)
+	if err != nil {
+		failOnError(5301, err)
+	}
+
 	// Using G2Engine: Add records with information returned.
 
 	withInfo, err := demonstrateAddRecord(ctx, g2Engine)
@@ -290,6 +295,13 @@ func demonstrateAdditionalFunctions(ctx context.Context, g2Diagnostic g2api.G2di
 		failOnError(5303, err)
 	}
 	logger.Log(2004, license)
+
+	// Using G2Engine: Purge repository again.
+
+	err = g2Diagnostic.PurgeRepository(ctx)
+	if err != nil {
+		failOnError(5304, err)
+	}
 
 	return err
 }

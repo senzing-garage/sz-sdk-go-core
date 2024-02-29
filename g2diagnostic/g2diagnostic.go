@@ -6,6 +6,7 @@ package g2diagnostic
 /*
 #include <stdlib.h>
 #include "libg2diagnostic.h"
+#include "libg2.h"
 #include "gohelpers/golang_helpers.h"
 #cgo CFLAGS: -g -I/opt/senzing/g2/sdk/c
 #cgo windows CFLAGS: -g -I"C:/Program Files/Senzing/g2/sdk/c"
@@ -106,6 +107,7 @@ Input
 */
 func (client *G2diagnostic) clearLastException(ctx context.Context) error {
 	// _DLEXPORT void G2Diagnostic_clearLastException();
+	_ = ctx
 	var err error = nil
 	if client.isTrace {
 		entryTime := time.Now()
@@ -127,6 +129,7 @@ Output
 */
 func (client *G2diagnostic) getLastException(ctx context.Context) (string, error) {
 	// _DLEXPORT int G2Config_getLastException(char *buffer, const size_t bufSize);
+	_ = ctx
 	var err error = nil
 	var result string
 	if client.isTrace {
@@ -154,6 +157,7 @@ Output:
 */
 func (client *G2diagnostic) getLastExceptionCode(ctx context.Context) (int, error) {
 	//  _DLEXPORT int G2Diagnostic_getLastExceptionCode();
+	_ = ctx
 	var err error = nil
 	var result int
 	if client.isTrace {
@@ -315,6 +319,14 @@ func (client *G2diagnostic) Init(ctx context.Context, moduleName string, iniPara
 	if result != 0 {
 		err = client.newError(ctx, 4018, moduleName, iniParams, verboseLogging, result, time.Since(entryTime))
 	}
+
+	// TODO: Temporary code until G2Diagnosis_purgeRepository() is available.
+	result = C.G2_init(moduleNameForC, iniParamsForC, C.longlong(verboseLogging))
+	if result != 0 {
+		err = client.newError(ctx, 4018, moduleName, iniParams, verboseLogging, result, time.Since(entryTime))
+	}
+	// End of TODO:
+
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -368,6 +380,40 @@ func (client *G2diagnostic) InitWithConfigID(ctx context.Context, moduleName str
 				"verboseLogging": strconv.FormatInt(verboseLogging, 10),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8022, err, details)
+		}()
+	}
+	return err
+}
+
+/*
+The PurgeRepository method removes every record in the Senzing repository.
+Before calling purgeRepository() all other instances of the Senzing API
+(whether in custom code, REST API, stream-loader, redoer, G2Loader, etc)
+MUST be destroyed or shutdown.
+Input
+  - ctx: A context to control lifecycle.
+*/
+func (client *G2diagnostic) PurgeRepository(ctx context.Context) error {
+	//  _DLEXPORT int G2Diagnostic_purgeRepository();
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	var err error = nil
+	entryTime := time.Now()
+	if client.isTrace {
+		client.traceEntry(117)
+		defer func() { client.traceExit(118, err, time.Since(entryTime)) }()
+	}
+	// TODO: Change to following when appropriate.
+	// result := C.G2Diagnostic_purgeRepository()
+	result := C.G2_purgeRepository()
+
+	if result != 0 {
+		err = client.newError(ctx, 4056, result, time.Since(entryTime))
+	}
+	if client.observers != nil {
+		go func() {
+			details := map[string]string{}
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8056, err, details)
 		}()
 	}
 	return err
