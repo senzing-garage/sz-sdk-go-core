@@ -19,7 +19,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        go: [1.21]
+        go: [1.22]
         os: [macos-latest]
         senzingapi-version: [production-v3]
 
