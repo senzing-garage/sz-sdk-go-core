@@ -127,7 +127,7 @@ func setupIniParams(dbUrl string) (string, error) {
 	return iniParams, err
 }
 
-func getIniParams() (string, error) {
+func getSettings() (string, error) {
 	dbUrl, _, err := setupDB(true)
 	if err != nil {
 		return "", err
@@ -141,37 +141,37 @@ func getIniParams() (string, error) {
 
 func getG2config(ctx context.Context) (g2api.G2config, error) {
 	result := g2config.G2config{}
-	moduleName := "Test module name"
+	instanceName := "Test module name"
 	verboseLogging := int64(0) // 0 for no Senzing logging; 1 for logging
-	iniParams, err := getIniParams()
+	settings, err := getSettings()
 	if err != nil {
 		return &result, err
 	}
-	err = result.Init(ctx, moduleName, iniParams, verboseLogging)
+	err = result.Initialize(ctx, instanceName, settings, verboseLogging)
 	return &result, err
 }
 
 func getG2configmgr(ctx context.Context) (g2api.G2configmgr, error) {
 	result := g2configmgr.G2configmgr{}
-	moduleName := "Test module name"
+	instanceName := "Test module name"
 	verboseLogging := int64(0)
-	iniParams, err := getIniParams()
+	settings, err := getSettings()
 	if err != nil {
 		return &result, err
 	}
-	err = result.Init(ctx, moduleName, iniParams, verboseLogging)
+	err = result.Initialize(ctx, instanceName, settings, verboseLogging)
 	return &result, err
 }
 
 func getG2diagnostic(ctx context.Context) (g2api.G2diagnostic, error) {
 	result := g2diagnostic.G2diagnostic{}
-	moduleName := "Test module name"
+	instanceName := "Test module name"
 	verboseLogging := int64(0)
-	iniParams, err := getIniParams()
+	settings, err := getSettings()
 	if err != nil {
 		return &result, err
 	}
-	err = result.Init(ctx, moduleName, iniParams, verboseLogging)
+	err = result.Initialize(ctx, instanceName, settings, verboseLogging, 0)
 	return &result, err
 }
 
@@ -179,7 +179,7 @@ func getG2engine(ctx context.Context) (g2api.G2engine, error) {
 	result := g2engine.G2engine{}
 	moduleName := "Test module name"
 	verboseLogging := int64(0)
-	iniParams, err := getIniParams()
+	iniParams, err := getSettings()
 	if err != nil {
 		return &result, err
 	}
@@ -191,7 +191,7 @@ func getG2product(ctx context.Context) (g2api.G2product, error) {
 	result := g2product.G2product{}
 	moduleName := "Test module name"
 	verboseLogging := int64(0)
-	iniParams, err := getIniParams()
+	iniParams, err := getSettings()
 	if err != nil {
 		return &result, err
 	}
@@ -230,7 +230,7 @@ func demonstrateConfigFunctions(ctx context.Context, g2Config g2api.G2config, g2
 
 	// Using G2Config: Persist configuration to a string.
 
-	configStr, err := g2Config.Save(ctx, configHandle)
+	configStr, err := g2Config.GetJsonString(ctx, configHandle)
 	if err != nil {
 		return logger.NewError(5102, err)
 	}
@@ -238,14 +238,14 @@ func demonstrateConfigFunctions(ctx context.Context, g2Config g2api.G2config, g2
 	// Using G2Configmgr: Persist configuration string to database.
 
 	configComments := fmt.Sprintf("Created by g2diagnostic_test at %s", now.UTC())
-	configID, err := g2Configmgr.AddConfig(ctx, configStr, configComments)
+	configId, err := g2Configmgr.AddConfig(ctx, configStr, configComments)
 	if err != nil {
 		return logger.NewError(5103, err)
 	}
 
 	// Using G2Configmgr: Set new configuration as the default.
 
-	err = g2Configmgr.SetDefaultConfigID(ctx, configID)
+	err = g2Configmgr.SetDefaultConfigId(ctx, configId)
 	if err != nil {
 		return logger.NewError(5104, err)
 	}
@@ -259,18 +259,17 @@ func demonstrateAddRecord(ctx context.Context, g2Engine g2api.G2engine) (string,
 	if err != nil {
 		panic(err)
 	}
-	recordID := randomNumber.String()
+	recordId := randomNumber.String()
 	jsonData := fmt.Sprintf(
 		"%s%s%s",
 		`{"SOCIAL_HANDLE": "flavorh", "DATE_OF_BIRTH": "4/8/1983", "ADDR_STATE": "LA", "ADDR_POSTAL_CODE": "71232", "SSN_NUMBER": "053-39-3251", "ENTITY_TYPE": "TEST", "GENDER": "F", "srccode": "MDMPER", "CC_ACCOUNT_NUMBER": "5534202208773608", "RECORD_ID": "`,
-		recordID,
+		recordId,
 		`", "DSRC_ACTION": "A", "ADDR_CITY": "Delhi", "DRIVERS_LICENSE_STATE": "DE", "PHONE_NUMBER": "225-671-0796", "NAME_LAST": "SEAMAN", "entityid": "284430058", "ADDR_LINE1": "772 Armstrong RD"}`)
-	loadID := dataSourceCode
-	var flags int64 = 0
+	var flags int64 = g2api.G2_RETURN_INFO
 
 	// Using G2Engine: Add record and return "withInfo".
 
-	return g2Engine.AddRecordWithInfo(ctx, dataSourceCode, recordID, jsonData, loadID, flags)
+	return g2Engine.AddRecord(ctx, dataSourceCode, recordId, jsonData, flags)
 }
 
 func demonstrateAdditionalFunctions(ctx context.Context, g2Diagnostic g2api.G2diagnostic, g2Engine g2api.G2engine, g2Product g2api.G2product) error {

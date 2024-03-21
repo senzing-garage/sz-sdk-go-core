@@ -145,7 +145,7 @@ func dbUrl() (string, bool, error) {
 	return dbUrl, dbExternal, err
 }
 
-func getIniParams() (string, error) {
+func getSettings() (string, error) {
 	dbUrl, _, err := setupDB(true)
 	if err != nil {
 		return "", err
@@ -244,14 +244,14 @@ func setupDB(preserveDB bool) (string, bool, error) {
 	return dbUrl, dbExternal, err
 }
 
-func setupG2configmgr(ctx context.Context, moduleName string, iniParams string, verboseLogging int64) error {
+func setupG2configmgr(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
 	if configMgrInitialized {
 		return fmt.Errorf("G2configmgr is already setup and has not been torn down")
 	}
 
 	globalG2configmgr.SetLogLevel(ctx, logging.LevelInfoName)
 	log.SetFlags(0)
-	err := globalG2configmgr.Init(ctx, moduleName, iniParams, verboseLogging)
+	err := globalG2configmgr.Initialize(ctx, instanceName, settings, verboseLogging)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -259,13 +259,13 @@ func setupG2configmgr(ctx context.Context, moduleName string, iniParams string, 
 	return err
 }
 
-func setupG2config(ctx context.Context, moduleName string, iniParams string, verboseLogging int64) error {
+func setupG2config(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
 	if configInitialized {
 		return fmt.Errorf("G2configmgr is already setup and has not been torn down")
 	}
 	globalG2config.SetLogLevel(ctx, logging.LevelInfoName)
 	log.SetFlags(0)
-	err := globalG2config.Init(ctx, moduleName, iniParams, verboseLogging)
+	err := globalG2config.Initialize(ctx, instanceName, settings, verboseLogging)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -282,10 +282,10 @@ func setupIniParams(dbUrl string) (string, error) {
 	return iniParams, err
 }
 
-func setupSenzingConfig(ctx context.Context, moduleName string, iniParams string, verboseLogging int64) error {
+func setupSenzingConfig(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
 	now := time.Now()
 	aG2config := &g2config.G2config{}
-	err := aG2config.Init(ctx, moduleName, iniParams, verboseLogging)
+	err := aG2config.Initialize(ctx, instanceName, settings, verboseLogging)
 	if err != nil {
 		return createError(5906, err)
 	}
@@ -303,7 +303,7 @@ func setupSenzingConfig(ctx context.Context, moduleName string, iniParams string
 		}
 	}
 
-	configStr, err := aG2config.Save(ctx, configHandle)
+	configStr, err := aG2config.GetJsonString(ctx, configHandle)
 	if err != nil {
 		return createError(5909, err)
 	}
@@ -322,19 +322,19 @@ func setupSenzingConfig(ctx context.Context, moduleName string, iniParams string
 	// Persist the Senzing configuration to the Senzing repository.
 
 	aG2configmgr := &G2configmgr{}
-	err = aG2configmgr.Init(ctx, moduleName, iniParams, verboseLogging)
+	err = aG2configmgr.Initialize(ctx, instanceName, settings, verboseLogging)
 	if err != nil {
 		return createError(5912, err)
 	}
 
 	configComments := fmt.Sprintf("Created by g2diagnostic_test at %s", now.UTC())
-	configID, err := aG2configmgr.AddConfig(ctx, configStr, configComments)
+	configId, err := aG2configmgr.AddConfig(ctx, configStr, configComments)
 
 	if err != nil {
 		return createError(5913, err)
 	}
 
-	err = aG2configmgr.SetDefaultConfigID(ctx, configID)
+	err = aG2configmgr.SetDefaultConfigId(ctx, configId)
 	if err != nil {
 		return createError(5914, err)
 	}
@@ -347,7 +347,7 @@ func setupSenzingConfig(ctx context.Context, moduleName string, iniParams string
 }
 
 func restoreG2configmgr(ctx context.Context) error {
-	iniParams, err := getIniParams()
+	iniParams, err := getSettings()
 	if err != nil {
 		return err
 	}
@@ -436,7 +436,7 @@ func TestG2configmgr_AddConfig(test *testing.T) {
 		test.Log("Error:", err2.Error())
 		assert.FailNow(test, "g2config.AddDataSource()")
 	}
-	configStr, err3 := g2config.Save(ctx, configHandle)
+	configStr, err3 := g2config.GetJsonString(ctx, configHandle)
 	if err3 != nil {
 		test.Log("Error:", err3.Error())
 		assert.FailNow(test, configStr)
@@ -450,12 +450,12 @@ func TestG2configmgr_AddConfig(test *testing.T) {
 func TestG2configmgr_GetConfig(test *testing.T) {
 	ctx := context.TODO()
 	g2configmgr := getTestObject(ctx, test)
-	configID, err1 := g2configmgr.GetDefaultConfigID(ctx)
+	configId, err1 := g2configmgr.GetDefaultConfigId(ctx)
 	if err1 != nil {
 		test.Log("Error:", err1.Error())
-		assert.FailNow(test, "g2configmgr.GetDefaultConfigID()")
+		assert.FailNow(test, "g2configmgr.GetDefaultConfigId()")
 	}
-	actual, err := g2configmgr.GetConfig(ctx, configID)
+	actual, err := g2configmgr.GetConfig(ctx, configId)
 	testError(test, ctx, g2configmgr, err)
 	printActual(test, actual)
 }
@@ -468,55 +468,55 @@ func TestG2configmgr_GetConfigList(test *testing.T) {
 	printActual(test, actual)
 }
 
-func TestG2configmgr_GetDefaultConfigID(test *testing.T) {
+func TestG2configmgr_GetDefaultConfigId(test *testing.T) {
 	ctx := context.TODO()
 	g2configmgr := getTestObject(ctx, test)
-	actual, err := g2configmgr.GetDefaultConfigID(ctx)
+	actual, err := g2configmgr.GetDefaultConfigId(ctx)
 	testError(test, ctx, g2configmgr, err)
 	printActual(test, actual)
 }
 
-func TestG2configmgr_ReplaceDefaultConfigID(test *testing.T) {
+func TestG2configmgr_ReplaceDefaultConfigId(test *testing.T) {
 	ctx := context.TODO()
 	g2configmgr := getTestObject(ctx, test)
-	oldConfigID, err1 := g2configmgr.GetDefaultConfigID(ctx)
+	oldConfigId, err1 := g2configmgr.GetDefaultConfigId(ctx)
 	if err1 != nil {
 		test.Log("Error:", err1.Error())
-		assert.FailNow(test, "g2configmgr.GetDefaultConfigID()")
+		assert.FailNow(test, "g2configmgr.GetDefaultConfigId()")
 	}
 
 	// FIXME: This is kind of a cheater.
 
-	newConfigID, err2 := g2configmgr.GetDefaultConfigID(ctx)
+	newConfigId, err2 := g2configmgr.GetDefaultConfigId(ctx)
 	if err2 != nil {
 		test.Log("Error:", err2.Error())
-		assert.FailNow(test, "g2configmgr.GetDefaultConfigID()-2")
+		assert.FailNow(test, "g2configmgr.GetDefaultConfigId()-2")
 	}
 
-	err := g2configmgr.ReplaceDefaultConfigID(ctx, oldConfigID, newConfigID)
+	err := g2configmgr.ReplaceDefaultConfigId(ctx, oldConfigId, newConfigId)
 	testError(test, ctx, g2configmgr, err)
 }
 
-func TestG2configmgr_SetDefaultConfigID(test *testing.T) {
+func TestG2configmgr_SetDefaultConfigId(test *testing.T) {
 	ctx := context.TODO()
 	g2configmgr := getTestObject(ctx, test)
-	configID, err1 := g2configmgr.GetDefaultConfigID(ctx)
+	configId, err1 := g2configmgr.GetDefaultConfigId(ctx)
 	if err1 != nil {
 		test.Log("Error:", err1.Error())
-		assert.FailNow(test, "g2configmgr.GetDefaultConfigID()")
+		assert.FailNow(test, "g2configmgr.GetDefaultConfigId()")
 	}
-	err := g2configmgr.SetDefaultConfigID(ctx, configID)
+	err := g2configmgr.SetDefaultConfigId(ctx, configId)
 	testError(test, ctx, g2configmgr, err)
 }
 
 func TestG2configmgr_Init(test *testing.T) {
 	ctx := context.TODO()
 	g2configmgr := getTestObject(ctx, test)
-	moduleName := "Test module name"
+	instanceName := "Test module name"
 	verboseLogging := int64(0)
-	iniParams, err := getIniParams()
+	settings, err := getSettings()
 	testError(test, ctx, g2configmgr, err)
-	err = g2configmgr.Init(ctx, moduleName, iniParams, verboseLogging)
+	err = g2configmgr.Initialize(ctx, instanceName, settings, verboseLogging)
 	testError(test, ctx, g2configmgr, err)
 }
 

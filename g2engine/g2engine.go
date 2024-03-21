@@ -193,7 +193,7 @@ Input
   - jsonData: A JSON document containing the record to be added to the Senzing repository.
   - loadID: An identifier used to distinguish different load batches/sessions. An empty string is acceptable.
 */
-func (client *G2engine) AddRecord(ctx context.Context, dataSourceCode string, recordID string, jsonData string, loadID string) error {
+func (client *G2engine) AddRecord(ctx context.Context, dataSourceCode string, recordID string, jsonData string, loadID string) (string, error) {
 	//  _DLEXPORT int G2_addRecord(const char* dataSourceCode, const char* recordID, const char* jsonData, const char *loadID);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -225,7 +225,7 @@ func (client *G2engine) AddRecord(ctx context.Context, dataSourceCode string, re
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8001, err, details)
 		}()
 	}
-	return err
+	return "{}", err
 }
 
 /*
@@ -243,7 +243,7 @@ Output
   - A JSON document.
     See the example output.
 */
-func (client *G2engine) AddRecordWithInfo(ctx context.Context, dataSourceCode string, recordID string, jsonData string, loadID string, flags int64) (string, error) {
+func (client *G2engine) addRecordWithInfo(ctx context.Context, dataSourceCode string, recordID string, jsonData string, loadID string, flags int64) (string, error) {
 	//  _DLEXPORT int G2_addRecordWithInfo(const char* dataSourceCode, const char* recordID, const char* jsonData, const char *loadID, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()

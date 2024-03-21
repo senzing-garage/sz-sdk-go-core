@@ -6,6 +6,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/senzing-garage/g2-sdk-go/g2api"
 	jutil "github.com/senzing-garage/go-common/jsonutil"
 	"github.com/senzing-garage/go-logging/logging"
 )
@@ -39,10 +40,10 @@ func ExampleG2engine_AddRecord() {
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	dataSourceCode := "CUSTOMERS"
-	recordID := "1001"
+	recordId := "1001"
 	jsonData := `{"DATA_SOURCE": "CUSTOMERS", "RECORD_ID": "1001", "RECORD_TYPE": "PERSON", "PRIMARY_NAME_LAST": "Smith", "PRIMARY_NAME_FIRST": "Robert", "DATE_OF_BIRTH": "12/11/1978", "ADDR_TYPE": "MAILING", "ADDR_LINE1": "123 Main Street, Las Vegas NV 89132", "PHONE_TYPE": "HOME", "PHONE_NUMBER": "702-919-1300", "EMAIL_ADDRESS": "bsmith@work.com", "DATE": "1/2/18", "STATUS": "Active", "AMOUNT": "100"}`
-	loadID := "G2Engine_test"
-	err := g2engine.AddRecord(ctx, dataSourceCode, recordID, jsonData, loadID)
+	flags := int64(0)
+	err := g2engine.AddRecord(ctx, dataSourceCode, recordId, jsonData, flags)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -54,26 +55,25 @@ func ExampleG2engine_AddRecord_secondRecord() {
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	dataSourceCode := "CUSTOMERS"
-	recordID := "1002"
+	recordId := "1002"
 	jsonData := `{"DATA_SOURCE": "CUSTOMERS", "RECORD_ID": "1002", "RECORD_TYPE": "PERSON", "PRIMARY_NAME_LAST": "Smith", "PRIMARY_NAME_FIRST": "Bob", "DATE_OF_BIRTH": "11/12/1978", "ADDR_TYPE": "HOME", "ADDR_LINE1": "1515 Adela Lane", "ADDR_CITY": "Las Vegas", "ADDR_STATE": "NV", "ADDR_POSTAL_CODE": "89111", "PHONE_TYPE": "MOBILE", "PHONE_NUMBER": "702-919-1300", "DATE": "3/10/17", "STATUS": "Inactive", "AMOUNT": "200"}`
-	loadID := "G2Engine_test"
-	err := g2engine.AddRecord(ctx, dataSourceCode, recordID, jsonData, loadID)
+	flags := int64(0)
+	err := g2engine.AddRecord(ctx, dataSourceCode, recordId, jsonData, flags)
 	if err != nil {
 		fmt.Println(err)
 	}
 	// Output:
 }
 
-func ExampleG2engine_AddRecordWithInfo() {
+func ExampleG2engine_AddRecord_withInfo() {
 	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	dataSourceCode := "TEST"
-	recordID := "ABC123"
+	recordId := "ABC123"
 	jsonData := `{"DATA_SOURCE": "TEST", "RECORD_ID": "ABC123", "NAME_FULL": "JOE SCHMOE", "DATE_OF_BIRTH": "12/11/1978", "EMAIL_ADDRESS": "joeschmoe@nowhere.com"}`
-	loadID := "G2Engine_test"
-	flags := int64(0)
-	result, err := g2engine.AddRecordWithInfo(ctx, dataSourceCode, recordID, jsonData, loadID, flags)
+	flags := g2api.G2_RETURN_INFO
+	result, err := g2engine.AddRecord(ctx, dataSourceCode, recordId, jsonData, flags)
 	if err != nil {
 		fmt.Println(err)
 	}

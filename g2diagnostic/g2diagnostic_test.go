@@ -31,7 +31,7 @@ const (
 )
 
 var (
-	defaultConfigID       int64
+	defaultConfigId       int64
 	diagnosticInitialized bool         = false
 	globalG2diagnostic    G2diagnostic = G2diagnostic{}
 	logger                logging.LoggingInterface
@@ -95,8 +95,8 @@ func dbTemplatePath() string {
 	return filepath.FromSlash("../testdata/sqlite/G2C.db")
 }
 
-func getDefaultConfigID() int64 {
-	return defaultConfigID
+func getDefaultConfigId() int64 {
+	return defaultConfigId
 }
 
 // ----------------------------------------------------------------------------
@@ -126,7 +126,7 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
-func getIniParams() (string, error) {
+func getSettings() (string, error) {
 	dbUrl, _, err := setupDB(true)
 	if err != nil {
 		return "", err
@@ -139,7 +139,7 @@ func getIniParams() (string, error) {
 }
 
 func restoreG2diagnostic(ctx context.Context) error {
-	iniParams, err := getIniParams()
+	iniParams, err := getSettings()
 	if err != nil {
 		return err
 	}
@@ -210,16 +210,16 @@ func setup() error {
 	return err
 }
 
-func setupAddRecords(ctx context.Context, moduleName string, iniParams string, verboseLogging int64, purge bool) error {
+func setupAddRecords(ctx context.Context, instancename string, settings string, verboseLogging int64, purge bool) error {
 
 	aG2engine := &g2engine.G2engine{}
-	err := aG2engine.Init(ctx, moduleName, iniParams, verboseLogging)
+	err := aG2engine.Init(ctx, instancename, settings, verboseLogging)
 	if err != nil {
 		return createError(5916, err)
 	}
 
 	aG2diagnostic := getG2Diagnostic(ctx)
-	err = aG2diagnostic.Init(ctx, moduleName, iniParams, verboseLogging)
+	err = aG2diagnostic.Initialize(ctx, instancename, settings, verboseLogging, 0)
 	if err != nil {
 		return createError(5916, err)
 	}
@@ -299,7 +299,7 @@ func setupG2diagnostic(ctx context.Context, moduleName string, iniParams string,
 	}
 	globalG2diagnostic.SetLogLevel(ctx, logging.LevelInfoName)
 	log.SetFlags(0)
-	err := globalG2diagnostic.Init(ctx, moduleName, iniParams, verboseLogging)
+	err := globalG2diagnostic.Initialize(ctx, moduleName, iniParams, verboseLogging, 0)
 	if err != nil {
 		return createError(5903, err)
 	}
@@ -321,7 +321,7 @@ func setupSenzingConfig(ctx context.Context, moduleName string, iniParams string
 	now := time.Now()
 
 	aG2config := &g2config.G2config{}
-	err := aG2config.Init(ctx, moduleName, iniParams, verboseLogging)
+	err := aG2config.Initialize(ctx, moduleName, iniParams, verboseLogging)
 	if err != nil {
 		return createError(5906, err)
 	}
@@ -344,7 +344,7 @@ func setupSenzingConfig(ctx context.Context, moduleName string, iniParams string
 
 	// Create a string representation of the in-memory configuration.
 
-	configStr, err := aG2config.Save(ctx, configHandle)
+	configStr, err := aG2config.GetJsonString(ctx, configHandle)
 	if err != nil {
 		return createError(5909, err)
 	}
@@ -362,22 +362,22 @@ func setupSenzingConfig(ctx context.Context, moduleName string, iniParams string
 	// Persist the Senzing configuration to the Senzing repository.
 
 	aG2configmgr := &g2configmgr.G2configmgr{}
-	err = aG2configmgr.Init(ctx, moduleName, iniParams, verboseLogging)
+	err = aG2configmgr.Initialize(ctx, moduleName, iniParams, verboseLogging)
 	if err != nil {
 		return createError(5912, err)
 	}
 
 	configComments := fmt.Sprintf("Created by g2diagnostic_test at %s", now.UTC())
-	configID, err := aG2configmgr.AddConfig(ctx, configStr, configComments)
+	configId, err := aG2configmgr.AddConfig(ctx, configStr, configComments)
 	if err != nil {
 		return createError(5913, err)
 	}
 
-	err = aG2configmgr.SetDefaultConfigID(ctx, configID)
+	err = aG2configmgr.SetDefaultConfigId(ctx, configId)
 	if err != nil {
 		return createError(5914, err)
 	}
-	defaultConfigID = configID
+	defaultConfigId = configId
 
 	err = aG2configmgr.Destroy(ctx)
 	if err != nil {
@@ -424,43 +424,43 @@ func TestG2diagnostic_GetObserverOrigin(test *testing.T) {
 	assert.Equal(test, origin, actual)
 }
 
-func TestG2diagnostic_CheckDBPerf(test *testing.T) {
+func TestG2diagnostic_CheckDatabasePerformance(test *testing.T) {
 	ctx := context.TODO()
 	g2diagnostic := getTestObject(ctx, test)
 	secondsToRun := 1
-	actual, err := g2diagnostic.CheckDBPerf(ctx, secondsToRun)
+	actual, err := g2diagnostic.CheckDatabasePerformance(ctx, secondsToRun)
 	testError(test, ctx, g2diagnostic, err)
 	printActual(test, actual)
 }
 
-func TestG2diagnostic_Init(test *testing.T) {
+func TestG2diagnostic_Initialize(test *testing.T) {
 	ctx := context.TODO()
 	g2diagnostic := &G2diagnostic{}
-	moduleName := "Test module name"
+	instanceName := "Test module name"
 	verboseLogging := int64(0)
-	iniParams, err := getIniParams()
+	settings, err := getSettings()
 	testError(test, ctx, g2diagnostic, err)
-	err = g2diagnostic.Init(ctx, moduleName, iniParams, verboseLogging)
+	err = g2diagnostic.Initialize(ctx, instanceName, settings, verboseLogging, 0)
 	testError(test, ctx, g2diagnostic, err)
 }
 
-func TestG2diagnostic_InitWithConfigID(test *testing.T) {
+func TestG2diagnostic_InitWithConfigId(test *testing.T) {
 	ctx := context.TODO()
 	g2diagnostic := &G2diagnostic{}
-	moduleName := "Test module name"
-	initConfigID := int64(1)
+	instanceName := "Test module name"
+	configId := int64(1)
 	verboseLogging := int64(0)
-	iniParams, err := getIniParams()
+	settings, err := getSettings()
 	testError(test, ctx, g2diagnostic, err)
-	err = g2diagnostic.InitWithConfigID(ctx, moduleName, iniParams, initConfigID, verboseLogging)
+	err = g2diagnostic.Initialize(ctx, instanceName, settings, verboseLogging, configId)
 	testError(test, ctx, g2diagnostic, err)
 }
 
 func TestG2diagnostic_Reinit(test *testing.T) {
 	ctx := context.TODO()
 	g2diagnostic := getTestObject(ctx, test)
-	initConfigID := getDefaultConfigID()
-	err := g2diagnostic.Reinit(ctx, initConfigID)
+	configId := getDefaultConfigId()
+	err := g2diagnostic.Reinitialize(ctx, configId)
 	testErrorNoFail(test, ctx, g2diagnostic, err)
 }
 

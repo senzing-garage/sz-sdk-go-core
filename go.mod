@@ -4,7 +4,7 @@ go 1.22
 
 require (
 	github.com/aquilax/truncate v1.0.0
-	github.com/senzing-garage/g2-sdk-go v0.10.1
+	github.com/senzing-garage/g2-sdk-go v0.10.2-0.20240320162651-d0bc047cb370
 	github.com/senzing-garage/go-common v0.4.0
 	github.com/senzing-garage/go-logging v1.4.0
 	github.com/senzing-garage/go-observing v0.3.0

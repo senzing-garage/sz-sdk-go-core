@@ -93,7 +93,7 @@ func ExampleG2config_DeleteDataSource() {
 	// Output:
 }
 
-func ExampleG2config_ListDataSources() {
+func ExampleG2config_GetDataSources() {
 	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2config/g2config_examples_test.go
 	ctx := context.TODO()
 	g2config := getG2Config(ctx)
@@ -101,7 +101,7 @@ func ExampleG2config_ListDataSources() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	result, err := g2config.ListDataSources(ctx, configHandle)
+	result, err := g2config.GetDataSources(ctx, configHandle)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -117,7 +117,7 @@ func ExampleG2config_Load() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	jsonConfig, err := g2config.Save(ctx, mockConfigHandle)
+	jsonConfig, err := g2config.GetJsonString(ctx, mockConfigHandle)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -129,7 +129,7 @@ func ExampleG2config_Load() {
 	// Output: true
 }
 
-func ExampleG2config_Save() {
+func ExampleG2config_GetJsonString() {
 	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2config/g2config_examples_test.go
 	ctx := context.TODO()
 	g2config := getG2Config(ctx)
@@ -137,7 +137,7 @@ func ExampleG2config_Save() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	jsonConfig, err := g2config.Save(ctx, configHandle)
+	jsonConfig, err := g2config.GetJsonString(ctx, configHandle)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -166,7 +166,7 @@ func ExampleG2config_Init() {
 		fmt.Println(err)
 	}
 	verboseLogging := int64(0)
-	err = g2config.Init(ctx, moduleName, iniParams, verboseLogging)
+	err = g2config.Initialize(ctx, moduleName, iniParams, verboseLogging)
 	if err != nil {
 		fmt.Println(err)
 	}

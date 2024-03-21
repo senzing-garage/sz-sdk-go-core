@@ -44,18 +44,18 @@ func ExampleG2configmgr_AddConfig() {
 		fmt.Println(text[len(text)-40:])
 	}
 	g2configmgr := getG2Configmgr(ctx)
-	configStr, err := g2config.Save(ctx, configHandle)
+	configStr, err := g2config.GetJsonString(ctx, configHandle)
 	if err != nil {
 		text := err.Error()
 		fmt.Println(text[len(text)-40:])
 	}
 	configComments := "Example configuration"
-	configID, err := g2configmgr.AddConfig(ctx, configStr, configComments)
+	configId, err := g2configmgr.AddConfig(ctx, configStr, configComments)
 	if err != nil {
 		text := err.Error()
 		fmt.Println(text[len(text)-40:])
 	}
-	fmt.Println(configID > 0) // Dummy output.
+	fmt.Println(configId > 0) // Dummy output.
 	// Output: true
 }
 
@@ -63,11 +63,11 @@ func ExampleG2configmgr_GetConfig() {
 	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2configmgr/g2configmgr_examples_test.go
 	ctx := context.TODO()
 	g2configmgr := getG2Configmgr(ctx)
-	configID, err := g2configmgr.GetDefaultConfigID(ctx)
+	configId, err := g2configmgr.GetDefaultConfigId(ctx)
 	if err != nil {
 		fmt.Println(err)
 	}
-	configStr, err := g2configmgr.GetConfig(ctx, configID)
+	configStr, err := g2configmgr.GetConfig(ctx, configId)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -91,11 +91,11 @@ func ExampleG2configmgr_GetDefaultConfigID() {
 	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2configmgr/g2configmgr_examples_test.go
 	ctx := context.TODO()
 	g2configmgr := getG2Configmgr(ctx)
-	configID, err := g2configmgr.GetDefaultConfigID(ctx)
+	configId, err := g2configmgr.GetDefaultConfigId(ctx)
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println(configID > 0) // Dummy output.
+	fmt.Println(configId > 0) // Dummy output.
 	// Output: true
 }
 
@@ -103,7 +103,7 @@ func ExampleG2configmgr_ReplaceDefaultConfigID() {
 	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2configmgr/g2configmgr_examples_test.go
 	ctx := context.TODO()
 	g2configmgr := getG2Configmgr(ctx)
-	oldConfigID, err := g2configmgr.GetDefaultConfigID(ctx)
+	oldConfigId, err := g2configmgr.GetDefaultConfigId(ctx)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -112,31 +112,31 @@ func ExampleG2configmgr_ReplaceDefaultConfigID() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	configStr, err := g2config.Save(ctx, configHandle)
+	configStr, err := g2config.GetJsonString(ctx, configHandle)
 	if err != nil {
 		fmt.Println(err)
 	}
 	configComments := "Example configuration"
-	newConfigID, err := g2configmgr.AddConfig(ctx, configStr, configComments)
+	newConfigId, err := g2configmgr.AddConfig(ctx, configStr, configComments)
 	if err != nil {
 		fmt.Println(err)
 	}
-	err = g2configmgr.ReplaceDefaultConfigID(ctx, oldConfigID, newConfigID)
+	err = g2configmgr.ReplaceDefaultConfigId(ctx, oldConfigId, newConfigId)
 	if err != nil {
 		fmt.Println(err)
 	}
 	// Output:
 }
 
-func ExampleG2configmgr_SetDefaultConfigID() {
+func ExampleG2configmgr_SetDefaultConfigId() {
 	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2configmgr/g2configmgr_examples_test.go
 	ctx := context.TODO()
 	g2configmgr := getG2Configmgr(ctx)
-	configID, err := g2configmgr.GetDefaultConfigID(ctx) // For example purposes only. Normally would use output from GetConfigList()
+	configId, err := g2configmgr.GetDefaultConfigId(ctx) // For example purposes only. Normally would use output from GetConfigList()
 	if err != nil {
 		fmt.Println(err)
 	}
-	err = g2configmgr.SetDefaultConfigID(ctx, configID)
+	err = g2configmgr.SetDefaultConfigId(ctx, configId)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -159,12 +159,12 @@ func ExampleG2configmgr_Init() {
 	ctx := context.TODO()
 	g2configmgr := &G2configmgr{}
 	moduleName := "Test module name"
-	iniParams, err := getIniParams()
+	iniParams, err := getSettings()
 	if err != nil {
 		fmt.Println(err)
 	}
 	verboseLogging := int64(0)
-	err = g2configmgr.Init(ctx, moduleName, iniParams, verboseLogging)
+	err = g2configmgr.Initialize(ctx, moduleName, iniParams, verboseLogging)
 	if err != nil {
 		fmt.Println(err)
 	}

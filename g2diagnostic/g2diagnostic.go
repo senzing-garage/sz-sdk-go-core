@@ -187,7 +187,7 @@ func (client *G2diagnostic) getByteArray(size int) []byte {
 // ----------------------------------------------------------------------------
 
 /*
-The CheckDBPerf method performs inserts to determine rate of insertion.
+The CheckDatabasePerformance method performs inserts to determine rate of insertion.
 
 Input
   - ctx: A context to control lifecycle.
@@ -198,7 +198,7 @@ Output
   - A string containing a JSON document.
     Example: `{"numRecordsInserted":0,"insertTime":0}`
 */
-func (client *G2diagnostic) CheckDBPerf(ctx context.Context, secondsToRun int) (string, error) {
+func (client *G2diagnostic) CheckDatabasePerformance(ctx context.Context, secondsToRun int) (string, error) {
 	// _DLEXPORT int G2Diagnostic_checkDBPerf(int secondsToRun, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize) );
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -301,37 +301,38 @@ Input
   - iniParams: A JSON string containing configuration parameters.
   - verboseLogging: A flag to enable deeper logging of the G2 processing. 0 for no Senzing logging; 1 for logging.
 */
-func (client *G2diagnostic) Init(ctx context.Context, moduleName string, iniParams string, verboseLogging int64) error {
+func (client *G2diagnostic) Initialize(ctx context.Context, instanceName string, settings string, verboseLogging int64, initConfigI int64) error {
+	// TODO: Functionality for initConfigId
 	// _DLEXPORT int G2Diagnostic_init(const char *moduleName, const char *iniParams, const int verboseLogging);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error = nil
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(47, moduleName, iniParams, verboseLogging)
-		defer func() { client.traceExit(48, moduleName, iniParams, verboseLogging, err, time.Since(entryTime)) }()
+		client.traceEntry(47, instanceName, settings, verboseLogging)
+		defer func() { client.traceExit(48, instanceName, settings, verboseLogging, err, time.Since(entryTime)) }()
 	}
-	moduleNameForC := C.CString(moduleName)
+	moduleNameForC := C.CString(instanceName)
 	defer C.free(unsafe.Pointer(moduleNameForC))
-	iniParamsForC := C.CString(iniParams)
+	iniParamsForC := C.CString(settings)
 	defer C.free(unsafe.Pointer(iniParamsForC))
 	result := C.G2Diagnostic_init(moduleNameForC, iniParamsForC, C.longlong(verboseLogging))
 	if result != 0 {
-		err = client.newError(ctx, 4018, moduleName, iniParams, verboseLogging, result, time.Since(entryTime))
+		err = client.newError(ctx, 4018, instanceName, settings, verboseLogging, result, time.Since(entryTime))
 	}
 
 	// TODO: Temporary code until G2Diagnosis_purgeRepository() is available.
 	result = C.G2_init(moduleNameForC, iniParamsForC, C.longlong(verboseLogging))
 	if result != 0 {
-		err = client.newError(ctx, 4018, moduleName, iniParams, verboseLogging, result, time.Since(entryTime))
+		err = client.newError(ctx, 4018, instanceName, settings, verboseLogging, result, time.Since(entryTime))
 	}
 	// End of TODO:
 
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
-				"iniParams":      iniParams,
-				"moduleName":     moduleName,
+				"iniParams":      settings,
+				"moduleName":     instanceName,
 				"verboseLogging": strconv.FormatInt(verboseLogging, 10),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8021, err, details)
@@ -341,41 +342,41 @@ func (client *G2diagnostic) Init(ctx context.Context, moduleName string, iniPara
 }
 
 /*
-The InitWithConfigID method initializes the Senzing G2Diagnosis object with a non-default configuration ID.
+The InitWithConfigId method initializes the Senzing G2Diagnosis object with a non-default configuration ID.
 It must be called prior to any other calls.
 
 Input
   - ctx: A context to control lifecycle.
   - moduleName: A name for the auditing node, to help identify it within system logs.
   - iniParams: A JSON string containing configuration parameters.
-  - initConfigID: The configuration ID used for the initialization.
+  - initConfigId: The configuration ID used for the initialization.
   - verboseLogging: A flag to enable deeper logging of the G2 processing. 0 for no Senzing logging; 1 for logging.
 */
-func (client *G2diagnostic) InitWithConfigID(ctx context.Context, moduleName string, iniParams string, initConfigID int64, verboseLogging int64) error {
+func (client *G2diagnostic) initWithConfigId(ctx context.Context, moduleName string, iniParams string, initConfigId int64, verboseLogging int64) error {
 	//  _DLEXPORT int G2Diagnostic_initWithConfigID(const char *moduleName, const char *iniParams, const long long initConfigID, const int verboseLogging);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error = nil
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(49, moduleName, iniParams, initConfigID, verboseLogging)
+		client.traceEntry(49, moduleName, iniParams, initConfigId, verboseLogging)
 		defer func() {
-			client.traceExit(50, moduleName, iniParams, initConfigID, verboseLogging, err, time.Since(entryTime))
+			client.traceExit(50, moduleName, iniParams, initConfigId, verboseLogging, err, time.Since(entryTime))
 		}()
 	}
 	moduleNameForC := C.CString(moduleName)
 	defer C.free(unsafe.Pointer(moduleNameForC))
 	iniParamsForC := C.CString(iniParams)
 	defer C.free(unsafe.Pointer(iniParamsForC))
-	result := C.G2Diagnostic_initWithConfigID(moduleNameForC, iniParamsForC, C.longlong(initConfigID), C.longlong(verboseLogging))
+	result := C.G2Diagnostic_initWithConfigID(moduleNameForC, iniParamsForC, C.longlong(initConfigId), C.longlong(verboseLogging))
 	if result != 0 {
-		err = client.newError(ctx, 4019, moduleName, iniParams, initConfigID, verboseLogging, result, time.Since(entryTime))
+		err = client.newError(ctx, 4019, moduleName, iniParams, initConfigId, verboseLogging, result, time.Since(entryTime))
 	}
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
 				"iniParams":      iniParams,
-				"initConfigID":   strconv.FormatInt(initConfigID, 10),
+				"initConfigID":   strconv.FormatInt(initConfigId, 10),
 				"moduleName":     moduleName,
 				"verboseLogging": strconv.FormatInt(verboseLogging, 10),
 			}
@@ -453,26 +454,26 @@ The Reinit method re-initializes the Senzing G2Diagnosis object.
 
 Input
   - ctx: A context to control lifecycle.
-  - initConfigID: The configuration ID used for the initialization.
+  - configId: The configuration ID used for the initialization.
 */
-func (client *G2diagnostic) Reinit(ctx context.Context, initConfigID int64) error {
+func (client *G2diagnostic) Reinitialize(ctx context.Context, configId int64) error {
 	//  _DLEXPORT int G2Diagnostic_reinit(const long long initConfigID);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error = nil
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(51, initConfigID)
-		defer func() { client.traceExit(52, initConfigID, err, time.Since(entryTime)) }()
+		client.traceEntry(51, configId)
+		defer func() { client.traceExit(52, configId, err, time.Since(entryTime)) }()
 	}
-	result := C.G2Diagnostic_reinit(C.longlong(initConfigID))
+	result := C.G2Diagnostic_reinit(C.longlong(configId))
 	if result != 0 {
-		err = client.newError(ctx, 4020, initConfigID, result, time.Since(entryTime))
+		err = client.newError(ctx, 4020, configId, result, time.Since(entryTime))
 	}
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
-				"initConfigID": strconv.FormatInt(initConfigID, 10),
+				"initConfigID": strconv.FormatInt(configId, 10),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8023, err, details)
 		}()

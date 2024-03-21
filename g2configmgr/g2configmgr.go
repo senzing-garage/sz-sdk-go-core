@@ -193,26 +193,28 @@ Input
 Output
   - A configuration identifier.
 */
-func (client *G2configmgr) AddConfig(ctx context.Context, configStr string, configComments string) (int64, error) {
+func (client *G2configmgr) AddConfig(ctx context.Context, configDefinition string, configComments string) (int64, error) {
 	// _DLEXPORT int G2ConfigMgr_addConfig(const char* configStr, const char* configComments, long long* configID);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error = nil
-	var resultConfigID int64
+	var resultConfigId int64
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(1, configStr, configComments)
-		defer func() { client.traceExit(2, configStr, configComments, resultConfigID, err, time.Since(entryTime)) }()
+		client.traceEntry(1, configDefinition, configComments)
+		defer func() {
+			client.traceExit(2, configDefinition, configComments, resultConfigId, err, time.Since(entryTime))
+		}()
 	}
-	configStrForC := C.CString(configStr)
+	configStrForC := C.CString(configDefinition)
 	defer C.free(unsafe.Pointer(configStrForC))
 	configCommentsForC := C.CString(configComments)
 	defer C.free(unsafe.Pointer(configCommentsForC))
 	result := C.G2ConfigMgr_addConfig_helper(configStrForC, configCommentsForC)
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4001, configStr, configComments, result.returnCode, result, time.Since(entryTime))
+		err = client.newError(ctx, 4001, configDefinition, configComments, result.returnCode, result, time.Since(entryTime))
 	}
-	resultConfigID = int64(C.longlong(result.configID))
+	resultConfigId = int64(C.longlong(result.configID))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -221,7 +223,7 @@ func (client *G2configmgr) AddConfig(ctx context.Context, configStr string, conf
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8001, err, details)
 		}()
 	}
-	return resultConfigID, err
+	return resultConfigId, err
 }
 
 /*
@@ -265,7 +267,7 @@ Output
   - A JSON document containing the Senzing configuration.
     See the example output.
 */
-func (client *G2configmgr) GetConfig(ctx context.Context, configID int64) (string, error) {
+func (client *G2configmgr) GetConfig(ctx context.Context, configId int64) (string, error) {
 	// _DLEXPORT int G2ConfigMgr_getConfig(const long long configID, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -273,12 +275,12 @@ func (client *G2configmgr) GetConfig(ctx context.Context, configID int64) (strin
 	var resultResponse string
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(7, configID)
-		defer func() { client.traceExit(8, configID, resultResponse, err, time.Since(entryTime)) }()
+		client.traceEntry(7, configId)
+		defer func() { client.traceExit(8, configId, resultResponse, err, time.Since(entryTime)) }()
 	}
-	result := C.G2ConfigMgr_getConfig_helper(C.longlong(configID))
+	result := C.G2ConfigMgr_getConfig_helper(C.longlong(configId))
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4003, configID, result.returnCode, result, time.Since(entryTime))
+		err = client.newError(ctx, 4003, configId, result.returnCode, result, time.Since(entryTime))
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
@@ -328,7 +330,7 @@ func (client *G2configmgr) GetConfigList(ctx context.Context) (string, error) {
 }
 
 /*
-The GetDefaultConfigID method retrieves from the Senzing database the configuration identifier of the default Senzing configuration.
+The GetDefaultConfigId method retrieves from the Senzing database the configuration identifier of the default Senzing configuration.
 
 Input
   - ctx: A context to control lifecycle.
@@ -336,29 +338,29 @@ Input
 Output
   - A configuration identifier which identifies the current configuration in use.
 */
-func (client *G2configmgr) GetDefaultConfigID(ctx context.Context) (int64, error) {
+func (client *G2configmgr) GetDefaultConfigId(ctx context.Context) (int64, error) {
 	//  _DLEXPORT int G2ConfigMgr_getDefaultConfigID(long long* configID);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error = nil
-	var resultConfigID int64
+	var resultConfigId int64
 	entryTime := time.Now()
 	if client.isTrace {
 		client.traceEntry(11)
-		defer func() { client.traceExit(12, resultConfigID, err, time.Since(entryTime)) }()
+		defer func() { client.traceExit(12, resultConfigId, err, time.Since(entryTime)) }()
 	}
 	result := C.G2ConfigMgr_getDefaultConfigID_helper()
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4005, result.returnCode, result, time.Since(entryTime))
 	}
-	resultConfigID = int64(C.longlong(result.configID))
+	resultConfigId = int64(C.longlong(result.configID))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8005, err, details)
 		}()
 	}
-	return resultConfigID, err
+	return resultConfigId, err
 }
 
 /*
@@ -408,29 +410,29 @@ Input
   - iniParams: A JSON string containing configuration parameters.
   - verboseLogging: A flag to enable deeper logging of the G2 processing. 0 for no Senzing logging; 1 for logging.
 */
-func (client *G2configmgr) Init(ctx context.Context, moduleName string, iniParams string, verboseLogging int64) error {
+func (client *G2configmgr) Initialize(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
 	// _DLEXPORT int G2Config_init(const char *moduleName, const char *iniParams, const int verboseLogging);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error = nil
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(17, moduleName, iniParams, verboseLogging)
-		defer func() { client.traceExit(18, moduleName, iniParams, verboseLogging, err, time.Since(entryTime)) }()
+		client.traceEntry(17, instanceName, settings, verboseLogging)
+		defer func() { client.traceExit(18, instanceName, settings, verboseLogging, err, time.Since(entryTime)) }()
 	}
-	moduleNameForC := C.CString(moduleName)
+	moduleNameForC := C.CString(instanceName)
 	defer C.free(unsafe.Pointer(moduleNameForC))
-	iniParamsForC := C.CString(iniParams)
+	iniParamsForC := C.CString(settings)
 	defer C.free(unsafe.Pointer(iniParamsForC))
 	result := C.G2ConfigMgr_init(moduleNameForC, iniParamsForC, C.longlong(verboseLogging))
 	if result != 0 {
-		err = client.newError(ctx, 4007, moduleName, iniParams, verboseLogging, result, time.Since(entryTime))
+		err = client.newError(ctx, 4007, instanceName, settings, verboseLogging, result, time.Since(entryTime))
 	}
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
-				"iniParams":      iniParams,
-				"moduleName":     moduleName,
+				"iniParams":      settings,
+				"moduleName":     instanceName,
 				"verboseLogging": strconv.FormatInt(verboseLogging, 10),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8006, err, details)
@@ -472,31 +474,31 @@ func (client *G2configmgr) RegisterObserver(ctx context.Context, observer observ
 The ReplaceDefaultConfigID method replaces the old configuration identifier with a new configuration identifier in the Senzing database.
 It is like a "compare-and-swap" instruction to serialize concurrent editing of configuration.
 If oldConfigID is no longer the "old configuration identifier", the operation will fail.
-To simply set the default configuration ID, use SetDefaultConfigID().
+To simply set the default configuration ID, use SetDefaultConfigId().
 
 Input
   - ctx: A context to control lifecycle.
   - oldConfigID: The configuration identifier to replace.
   - newConfigID: The configuration identifier to use as the default.
 */
-func (client *G2configmgr) ReplaceDefaultConfigID(ctx context.Context, oldConfigID int64, newConfigID int64) error {
+func (client *G2configmgr) ReplaceDefaultConfigId(ctx context.Context, currentDefaultConfigId int64, newDefaultConfigId int64) error {
 	// _DLEXPORT int G2ConfigMgr_replaceDefaultConfigID(const long long oldConfigID, const long long newConfigID);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error = nil
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(19, oldConfigID, newConfigID)
-		defer func() { client.traceExit(20, oldConfigID, newConfigID, err, time.Since(entryTime)) }()
+		client.traceEntry(19, currentDefaultConfigId, newDefaultConfigId)
+		defer func() { client.traceExit(20, currentDefaultConfigId, newDefaultConfigId, err, time.Since(entryTime)) }()
 	}
-	result := C.G2ConfigMgr_replaceDefaultConfigID(C.longlong(oldConfigID), C.longlong(newConfigID))
+	result := C.G2ConfigMgr_replaceDefaultConfigID(C.longlong(currentDefaultConfigId), C.longlong(newDefaultConfigId))
 	if result != 0 {
-		err = client.newError(ctx, 4008, oldConfigID, newConfigID, result, time.Since(entryTime))
+		err = client.newError(ctx, 4008, currentDefaultConfigId, newDefaultConfigId, result, time.Since(entryTime))
 	}
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
-				"newConfigID": strconv.FormatInt(newConfigID, 10),
+				"newConfigID": strconv.FormatInt(newDefaultConfigId, 10),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8007, err, details)
 		}()
@@ -505,31 +507,31 @@ func (client *G2configmgr) ReplaceDefaultConfigID(ctx context.Context, oldConfig
 }
 
 /*
-The SetDefaultConfigID method replaces the sets a new configuration identifier in the Senzing database.
+The SetDefaultConfigId method replaces the sets a new configuration identifier in the Senzing database.
 To serialize modifying of the configuration identifier, see ReplaceDefaultConfigID().
 
 Input
   - ctx: A context to control lifecycle.
   - configID: The configuration identifier of the Senzing Engine configuration to use as the default.
 */
-func (client *G2configmgr) SetDefaultConfigID(ctx context.Context, configID int64) error {
+func (client *G2configmgr) SetDefaultConfigId(ctx context.Context, configId int64) error {
 	// _DLEXPORT int G2ConfigMgr_setDefaultConfigID(const long long configID);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error = nil
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(21, configID)
-		defer func() { client.traceExit(22, configID, err, time.Since(entryTime)) }()
+		client.traceEntry(21, configId)
+		defer func() { client.traceExit(22, configId, err, time.Since(entryTime)) }()
 	}
-	result := C.G2ConfigMgr_setDefaultConfigID(C.longlong(configID))
+	result := C.G2ConfigMgr_setDefaultConfigID(C.longlong(configId))
 	if result != 0 {
-		err = client.newError(ctx, 4009, configID, result, time.Since(entryTime))
+		err = client.newError(ctx, 4009, configId, result, time.Since(entryTime))
 	}
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
-				"configID": strconv.FormatInt(configID, 10),
+				"configID": strconv.FormatInt(configId, 10),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8008, err, details)
 		}()

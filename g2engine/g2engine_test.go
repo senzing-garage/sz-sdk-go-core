@@ -420,7 +420,7 @@ func setupSenzingConfig(ctx context.Context, moduleName string, iniParams string
 
 	senzingConfigId = configID
 
-	err = aG2configmgr.SetDefaultConfigID(ctx, configID)
+	err = aG2configmgr.SetDefaultConfigId(ctx, configID)
 	if err != nil {
 		return createError(5914, err)
 	}

@@ -33,12 +33,12 @@ func ExampleG2diagnostic_GetObserverOrigin() {
 	// Output: Machine: nn; Task: UnitTest
 }
 
-func ExampleG2diagnostic_CheckDBPerf() {
+func ExampleG2diagnostic_CheckDatabasePerformance() {
 	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2diagnostic/g2diagnostic_examples_test.go
 	ctx := context.TODO()
 	g2diagnostic := getG2Diagnostic(ctx)
 	secondsToRun := 1
-	result, err := g2diagnostic.CheckDBPerf(ctx, secondsToRun)
+	result, err := g2diagnostic.CheckDatabasePerformance(ctx, secondsToRun)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -57,47 +57,48 @@ func ExampleG2diagnostic_SetLogLevel() {
 	// Output:
 }
 
-func ExampleG2diagnostic_Init() {
+func ExampleG2diagnostic_Initialize() {
 	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2diagnostic/g2diagnostic_examples_test.go
 	ctx := context.TODO()
 	g2diagnostic := &G2diagnostic{}
-	moduleName := "Test module name"
-	iniParams, err := getIniParams()
+	instanceName := "Test module name"
+	configId := int64(0)
+	settings, err := getSettings()
 	if err != nil {
 		fmt.Println(err)
 	}
 	verboseLogging := int64(0)
-	err = g2diagnostic.Init(ctx, moduleName, iniParams, verboseLogging)
+	err = g2diagnostic.Initialize(ctx, instanceName, settings, verboseLogging, configId)
 	if err != nil {
 		fmt.Println(err)
 	}
 	// Output:
 }
 
-func ExampleG2diagnostic_InitWithConfigID() {
+func ExampleG2diagnostic_Initialize_withConfigId() {
 	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2diagnostic/g2diagnostic_examples_test.go
 	ctx := context.TODO()
 	g2diagnostic := &G2diagnostic{}
 	moduleName := "Test module name"
-	iniParams, err := getIniParams()
+	iniParams, err := getSettings()
 	if err != nil {
 		fmt.Println(err)
 	}
-	initConfigID := int64(1)
+	initConfigId := int64(1)
 	verboseLogging := int64(0)
-	err = g2diagnostic.InitWithConfigID(ctx, moduleName, iniParams, initConfigID, verboseLogging)
+	err = g2diagnostic.Initialize(ctx, moduleName, iniParams, initConfigId, verboseLogging)
 	if err != nil {
 		fmt.Println(err)
 	}
 	// Output:
 }
 
-func ExampleG2diagnostic_Reinit() {
+func ExampleG2diagnostic_Reinitialize() {
 	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2diagnostic/g2diagnostic_examples_test.go
 	ctx := context.TODO()
 	g2diagnostic := getG2Diagnostic(ctx)
-	configID := getDefaultConfigID()
-	err := g2diagnostic.Reinit(ctx, configID)
+	configId := getDefaultConfigId()
+	err := g2diagnostic.Reinitialize(ctx, configId)
 	if err != nil {
 		fmt.Println(err)
 	}
