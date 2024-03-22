@@ -193,34 +193,34 @@ Input
   - jsonData: A JSON document containing the record to be added to the Senzing repository.
   - loadID: An identifier used to distinguish different load batches/sessions. An empty string is acceptable.
 */
-func (client *G2engine) AddRecord(ctx context.Context, dataSourceCode string, recordID string, jsonData string, loadID string) (string, error) {
+func (client *G2engine) AddRecord(ctx context.Context, dataSourceCode string, recordId string, recordDefinition string, flags int64) (string, error) {
 	//  _DLEXPORT int G2_addRecord(const char* dataSourceCode, const char* recordID, const char* jsonData, const char *loadID);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error = nil
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(1, dataSourceCode, recordID, jsonData, loadID)
-		defer func() { client.traceExit(2, dataSourceCode, recordID, jsonData, loadID, err, time.Since(entryTime)) }()
+		client.traceEntry(1, dataSourceCode, recordId, recordDefinition, flags)
+		defer func() {
+			client.traceExit(2, dataSourceCode, recordId, recordDefinition, flags, err, time.Since(entryTime))
+		}()
 	}
 	dataSourceCodeForC := C.CString(dataSourceCode)
 	defer C.free(unsafe.Pointer(dataSourceCodeForC))
-	recordIDForC := C.CString(recordID)
+	recordIDForC := C.CString(recordId)
 	defer C.free(unsafe.Pointer(recordIDForC))
-	jsonDataForC := C.CString(jsonData)
+	jsonDataForC := C.CString(recordDefinition)
 	defer C.free(unsafe.Pointer(jsonDataForC))
-	loadIDForC := C.CString(loadID)
-	defer C.free(unsafe.Pointer(loadIDForC))
-	result := C.G2_addRecord(dataSourceCodeForC, recordIDForC, jsonDataForC, loadIDForC)
+	result := C.G2_addRecord(dataSourceCodeForC, recordIDForC, jsonDataForC)
 	if result != 0 {
-		err = client.newError(ctx, 4001, dataSourceCode, recordID, jsonData, loadID, result, time.Since(entryTime))
+		err = client.newError(ctx, 4001, dataSourceCode, recordId, recordDefinition, flags, result, time.Since(entryTime))
 	}
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
 				"dataSourceCode": dataSourceCode,
-				"recordID":       recordID,
-				"loadID":         loadID,
+				"recordId":       recordId,
+				"flags":          strconv.FormatInt(flags, 10),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8001, err, details)
 		}()
@@ -2372,29 +2372,29 @@ Input
   - iniParams: A JSON string containing configuration parameters.
   - verboseLogging: A flag to enable deeper logging of the G2 processing. 0 for no Senzing logging; 1 for logging.
 */
-func (client *G2engine) Init(ctx context.Context, moduleName string, iniParams string, verboseLogging int64) error {
+func (client *G2engine) Initialize(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
 	// _DLEXPORT int G2_init(const char *moduleName, const char *iniParams, const int verboseLogging);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error = nil
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(99, moduleName, iniParams, verboseLogging)
-		defer func() { client.traceExit(100, moduleName, iniParams, verboseLogging, err, time.Since(entryTime)) }()
+		client.traceEntry(99, instanceName, settings, verboseLogging)
+		defer func() { client.traceExit(100, instanceName, settings, verboseLogging, err, time.Since(entryTime)) }()
 	}
-	moduleNameForC := C.CString(moduleName)
+	moduleNameForC := C.CString(instanceName)
 	defer C.free(unsafe.Pointer(moduleNameForC))
-	iniParamsForC := C.CString(iniParams)
+	iniParamsForC := C.CString(settings)
 	defer C.free(unsafe.Pointer(iniParamsForC))
 	result := C.G2_init(moduleNameForC, iniParamsForC, C.longlong(verboseLogging))
 	if result != 0 {
-		err = client.newError(ctx, 4047, moduleName, iniParams, verboseLogging, result, time.Since(entryTime))
+		err = client.newError(ctx, 4047, instanceName, settings, verboseLogging, result, time.Since(entryTime))
 	}
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
-				"iniParams":      iniParams,
-				"moduleName":     moduleName,
+				"instanceName":   instanceName,
+				"settings":       settings,
 				"verboseLogging": strconv.FormatInt(verboseLogging, 10),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8047, err, details)

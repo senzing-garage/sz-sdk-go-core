@@ -78,7 +78,7 @@ func getEntityIdForRecord(datasource string, id string) int64 {
 	ctx := context.TODO()
 	var result int64 = 0
 	g2engine := getG2Engine(ctx)
-	response, err := g2engine.GetEntityByRecordID(ctx, datasource, id)
+	response, err := g2engine.GetEntityByRecordId(ctx, datasource, id)
 	if err != nil {
 		return result
 	}
@@ -250,7 +250,7 @@ func setup() error {
 	custRecords := truthset.CustomerRecords
 	records := []record.Record{custRecords["1001"], custRecords["1002"], custRecords["1003"]}
 	for _, record := range records {
-		err = globalG2engine.AddRecord(ctx, record.DataSource, record.Id, record.Json, loadId)
+		_, err = globalG2engine.AddRecord(ctx, record.DataSource, record.Id, record.Json, loadId)
 		if err != nil {
 			defer teardownG2engine(ctx)
 			return err
@@ -507,20 +507,20 @@ func TestG2engine_AddRecord(test *testing.T) {
 	record2, err := record.NewRecord(`{"DATA_SOURCE": "TEST", "RECORD_ID": "ADD_TEST_2", "NAME_FULL": "SOMEBODY NOTFOUND"}`)
 	testErrorBasic(test, err)
 
-	err = g2engine.AddRecord(ctx, record1.DataSource, record1.Id, record1.Json, loadId)
+	_, err = g2engine.AddRecord(ctx, record1.DataSource, record1.Id, record1.Json, loadId)
 	testError(test, ctx, g2engine, err)
 	defer g2engine.DeleteRecord(ctx, record1.DataSource, record1.Id, loadId)
 
-	err = g2engine.AddRecord(ctx, record2.DataSource, record2.Id, record2.Json, loadId)
+	_, err = g2engine.AddRecord(ctx, record2.DataSource, record2.Id, record2.Json, loadId)
 	testError(test, ctx, g2engine, err)
 	defer g2engine.DeleteRecord(ctx, record2.DataSource, record2.Id, loadId)
 
 	// Clean-up the records we inserted.
 
-	err = g2engine.DeleteRecord(ctx, record1.DataSource, record1.Id, loadId)
+	_, err = g2engine.DeleteRecord(ctx, record1.DataSource, record1.Id, loadId)
 	testError(test, ctx, g2engine, err)
 
-	err = g2engine.DeleteRecord(ctx, record2.DataSource, record2.Id, loadId)
+	_, err = g2engine.DeleteRecord(ctx, record2.DataSource, record2.Id, loadId)
 	testError(test, ctx, g2engine, err)
 }
 
@@ -536,7 +536,7 @@ func TestG2engine_AddRecordWithInfo(test *testing.T) {
 	defer g2engine.DeleteRecord(ctx, record.DataSource, record.Id, loadId)
 	printActual(test, actual)
 
-	err = g2engine.DeleteRecord(ctx, record.DataSource, record.Id, loadId)
+	_, err = g2engine.DeleteRecord(ctx, record.DataSource, record.Id, loadId)
 	testError(test, ctx, g2engine, err)
 }
 

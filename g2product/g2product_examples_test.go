@@ -34,25 +34,25 @@ func ExampleG2product_GetObserverOrigin() {
 	// Output: Machine: nn; Task: UnitTest
 }
 
-func ExampleG2product_Init() {
+func ExampleG2product_Initialize() {
 	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2product/g2product_examples_test.go
 	ctx := context.TODO()
 	g2product := getG2Product(ctx)
-	moduleName := "Test module name"
-	iniParams, err := getIniParams()
+	instanceName := "Test module name"
+	settings, err := getIniParams()
 	if err != nil {
 		fmt.Println(err)
 	}
 	verboseLogging := int64(0)
-	g2product.Init(ctx, moduleName, iniParams, verboseLogging)
+	g2product.Initialize(ctx, instanceName, settings, verboseLogging)
 	// Output:
 }
 
-func ExampleG2product_License() {
+func ExampleG2product_GetLicense() {
 	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2product/g2product_examples_test.go
 	ctx := context.TODO()
 	g2product := getG2Product(ctx)
-	result, err := g2product.License(ctx)
+	result, err := g2product.GetLicense(ctx)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -72,11 +72,11 @@ func ExampleG2product_SetLogLevel() {
 	// Output:
 }
 
-func ExampleG2product_Version() {
+func ExampleG2product_GetVersion() {
 	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2product/g2product_examples_test.go
 	ctx := context.TODO()
 	g2product := getG2Product(ctx)
-	result, err := g2product.Version(ctx)
+	result, err := g2product.GetVersion(ctx)
 	if err != nil {
 		fmt.Println(err)
 	}

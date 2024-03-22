@@ -40,10 +40,13 @@ func createError(errorId int, err error) error {
 }
 
 func getTestObject(ctx context.Context, test *testing.T) g2api.G2product {
+	_ = ctx
+	_ = test
 	return &globalG2product
 }
 
 func getG2Product(ctx context.Context) g2api.G2product {
+	_ = ctx
 	return &globalG2product
 }
 
@@ -62,6 +65,8 @@ func printActual(test *testing.T, actual interface{}) {
 }
 
 func testError(test *testing.T, ctx context.Context, g2product g2api.G2product, err error) {
+	_ = ctx
+	_ = g2product
 	if err != nil {
 		test.Log("Error:", err.Error())
 		assert.FailNow(test, err.Error())
@@ -212,7 +217,7 @@ func setupG2product(ctx context.Context, moduleName string, iniParams string, ve
 	}
 	globalG2product.SetLogLevel(ctx, logging.LevelInfoName)
 	log.SetFlags(0)
-	err := globalG2product.Init(ctx, moduleName, iniParams, verboseLogging)
+	err := globalG2product.Initialize(ctx, moduleName, iniParams, verboseLogging)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -267,29 +272,29 @@ func TestG2product_GetObserverOrigin(test *testing.T) {
 	assert.Equal(test, origin, actual)
 }
 
-func TestG2product_Init(test *testing.T) {
+func TestG2product_Initialize(test *testing.T) {
 	ctx := context.TODO()
 	g2product := &G2product{}
-	moduleName := "Test module name"
+	instanceName := "Test module name"
 	verboseLogging := int64(0)
-	iniParams, err := getIniParams()
+	settings, err := getIniParams()
 	testError(test, ctx, g2product, err)
-	err = g2product.Init(ctx, moduleName, iniParams, verboseLogging)
+	err = g2product.Initialize(ctx, instanceName, settings, verboseLogging)
 	testError(test, ctx, g2product, err)
 }
 
-func TestG2product_License(test *testing.T) {
+func TestG2product_GetLicense(test *testing.T) {
 	ctx := context.TODO()
 	g2product := getTestObject(ctx, test)
-	actual, err := g2product.License(ctx)
+	actual, err := g2product.GetLicense(ctx)
 	testError(test, ctx, g2product, err)
 	printActual(test, actual)
 }
 
-func TestG2product_Version(test *testing.T) {
+func TestG2product_GetVersion(test *testing.T) {
 	ctx := context.TODO()
 	g2product := getTestObject(ctx, test)
-	actual, err := g2product.Version(ctx)
+	actual, err := g2product.GetVersion(ctx)
 	testError(test, ctx, g2product, err)
 	printActual(test, actual)
 }

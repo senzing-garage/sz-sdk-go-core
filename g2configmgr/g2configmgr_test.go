@@ -46,14 +46,18 @@ func createError(errorId int, err error) error {
 }
 
 func getTestObject(ctx context.Context, test *testing.T) g2api.G2configmgr {
+	_ = ctx
+	_ = test
 	return &globalG2configmgr
 }
 
 func getG2Configmgr(ctx context.Context) g2api.G2configmgr {
+	_ = ctx
 	return &globalG2configmgr
 }
 
 func getG2Config(ctx context.Context) g2api.G2config {
+	_ = ctx
 	return &globalG2config
 }
 
@@ -72,6 +76,8 @@ func printActual(test *testing.T, actual interface{}) {
 }
 
 func testError(test *testing.T, ctx context.Context, g2configmgr g2api.G2configmgr, err error) {
+	_ = ctx
+	_ = g2configmgr
 	if err != nil {
 		test.Log("Error:", err.Error())
 		assert.FailNow(test, err.Error())
@@ -111,38 +117,6 @@ func TestMain(m *testing.M) {
 		fmt.Print(err)
 	}
 	os.Exit(code)
-}
-
-func dbUrl() (string, bool, error) {
-	var err error = nil
-
-	// Get paths.
-
-	baseDir := baseDirectoryPath()
-	dbFilePath, err := filepath.Abs(dbTemplatePath())
-	if err != nil {
-		err = fmt.Errorf("failed to obtain absolute path to database file (%s): %s",
-			dbFilePath, err.Error())
-		return "", false, err
-	}
-	dbTargetPath := filepath.Join(baseDir, "G2C.db")
-	dbTargetPath, err = filepath.Abs(dbTargetPath)
-	if err != nil {
-		err = fmt.Errorf("failed to make target database path (%s) absolute: %w",
-			dbTargetPath, err)
-		return "", false, err
-	}
-
-	// Check the environment for a database URL.
-
-	dbUrl, envUrlExists := os.LookupEnv("SENZING_TOOLS_DATABASE_URL")
-	dbDefaultUrl := fmt.Sprintf("sqlite3://na:na@%s", dbTargetPath)
-	dbExternal := envUrlExists && dbDefaultUrl != dbUrl
-	if !dbExternal {
-		dbUrl = dbDefaultUrl
-	}
-
-	return dbUrl, dbExternal, err
 }
 
 func getSettings() (string, error) {
@@ -430,19 +404,19 @@ func TestG2configmgr_AddConfig(test *testing.T) {
 		test.Log("Error:", err1.Error())
 		assert.FailNow(test, "g2config.Create()")
 	}
-	inputJson := `{"DSRC_CODE": "GO_TEST_` + strconv.FormatInt(now.Unix(), 10) + `"}`
-	_, err2 := g2config.AddDataSource(ctx, configHandle, inputJson)
+	dataSourceCode := `{"DSRC_CODE": "GO_TEST_` + strconv.FormatInt(now.Unix(), 10) + `"}`
+	_, err2 := g2config.AddDataSource(ctx, configHandle, dataSourceCode)
 	if err2 != nil {
 		test.Log("Error:", err2.Error())
 		assert.FailNow(test, "g2config.AddDataSource()")
 	}
-	configStr, err3 := g2config.GetJsonString(ctx, configHandle)
+	configDefinition, err3 := g2config.GetJsonString(ctx, configHandle)
 	if err3 != nil {
 		test.Log("Error:", err3.Error())
-		assert.FailNow(test, configStr)
+		assert.FailNow(test, configDefinition)
 	}
 	configComments := fmt.Sprintf("g2configmgr_test at %s", now.UTC())
-	actual, err := g2configmgr.AddConfig(ctx, configStr, configComments)
+	actual, err := g2configmgr.AddConfig(ctx, configDefinition, configComments)
 	testError(test, ctx, g2configmgr, err)
 	printActual(test, actual)
 }
@@ -479,7 +453,7 @@ func TestG2configmgr_GetDefaultConfigId(test *testing.T) {
 func TestG2configmgr_ReplaceDefaultConfigId(test *testing.T) {
 	ctx := context.TODO()
 	g2configmgr := getTestObject(ctx, test)
-	oldConfigId, err1 := g2configmgr.GetDefaultConfigId(ctx)
+	currentDefaultConfigId, err1 := g2configmgr.GetDefaultConfigId(ctx)
 	if err1 != nil {
 		test.Log("Error:", err1.Error())
 		assert.FailNow(test, "g2configmgr.GetDefaultConfigId()")
@@ -487,13 +461,13 @@ func TestG2configmgr_ReplaceDefaultConfigId(test *testing.T) {
 
 	// FIXME: This is kind of a cheater.
 
-	newConfigId, err2 := g2configmgr.GetDefaultConfigId(ctx)
+	newDefaultConfigId, err2 := g2configmgr.GetDefaultConfigId(ctx)
 	if err2 != nil {
 		test.Log("Error:", err2.Error())
 		assert.FailNow(test, "g2configmgr.GetDefaultConfigId()-2")
 	}
 
-	err := g2configmgr.ReplaceDefaultConfigId(ctx, oldConfigId, newConfigId)
+	err := g2configmgr.ReplaceDefaultConfigId(ctx, currentDefaultConfigId, newDefaultConfigId)
 	testError(test, ctx, g2configmgr, err)
 }
 
@@ -509,7 +483,7 @@ func TestG2configmgr_SetDefaultConfigId(test *testing.T) {
 	testError(test, ctx, g2configmgr, err)
 }
 
-func TestG2configmgr_Init(test *testing.T) {
+func TestG2configmgr_Initialize(test *testing.T) {
 	ctx := context.TODO()
 	g2configmgr := getTestObject(ctx, test)
 	instanceName := "Test module name"

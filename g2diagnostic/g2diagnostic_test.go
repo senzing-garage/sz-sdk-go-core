@@ -213,7 +213,7 @@ func setup() error {
 func setupAddRecords(ctx context.Context, instancename string, settings string, verboseLogging int64, purge bool) error {
 
 	aG2engine := &g2engine.G2engine{}
-	err := aG2engine.Init(ctx, instancename, settings, verboseLogging)
+	err := aG2engine.Initialize(ctx, instancename, settings, verboseLogging)
 	if err != nil {
 		return createError(5916, err)
 	}
@@ -237,9 +237,10 @@ func setupAddRecords(ctx context.Context, instancename string, settings string, 
 	// Add records into Senzing.
 
 	testRecordIds := []string{"1001", "1002", "1003", "1004", "1005", "1039", "1040"}
+	flags := int64(0)
 	for _, testRecordId := range testRecordIds {
 		testRecord := truthset.CustomerRecords[testRecordId]
-		err := aG2engine.AddRecord(ctx, testRecord.DataSource, testRecord.Id, testRecord.Json, "G2Diagnostic_test")
+		_, err := aG2engine.AddRecord(ctx, testRecord.DataSource, testRecord.Id, testRecord.Json, flags)
 		if err != nil {
 			return createError(5917, err)
 		}

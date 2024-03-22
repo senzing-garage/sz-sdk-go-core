@@ -40,10 +40,13 @@ func createError(errorId int, err error) error {
 }
 
 func getTestObject(ctx context.Context, test *testing.T) g2api.G2config {
+	_ = ctx
+	_ = test
 	return &globalG2config
 }
 
 func getG2Config(ctx context.Context) g2api.G2config {
+	_ = ctx
 	return &globalG2config
 }
 
@@ -62,6 +65,8 @@ func printActual(test *testing.T, actual interface{}) {
 }
 
 func testError(test *testing.T, ctx context.Context, g2config g2api.G2config, err error) {
+	_ = ctx
+	_ = g2config
 	if err != nil {
 		test.Log("Error:", err.Error())
 		assert.FailNow(test, err.Error())
@@ -362,7 +367,7 @@ func TestG2config_DeleteDataSource_WithLoad(test *testing.T) {
 	testError(test, ctx, g2config, err)
 }
 
-func TestG2config_ListDataSources(test *testing.T) {
+func TestG2config_GetDataSources(test *testing.T) {
 	ctx := context.TODO()
 	g2config := getTestObject(ctx, test)
 	configHandle, err := g2config.Create(ctx)
@@ -372,6 +377,16 @@ func TestG2config_ListDataSources(test *testing.T) {
 	printActual(test, actual)
 	err = g2config.Close(ctx, configHandle)
 	testError(test, ctx, g2config, err)
+}
+
+func TestG2config_GetJsonString(test *testing.T) {
+	ctx := context.TODO()
+	g2config := getTestObject(ctx, test)
+	configHandle, err := g2config.Create(ctx)
+	testError(test, ctx, g2config, err)
+	actual, err := g2config.GetJsonString(ctx, configHandle)
+	testError(test, ctx, g2config, err)
+	printActual(test, actual)
 }
 
 func TestG2config_Load(test *testing.T) {
@@ -386,17 +401,7 @@ func TestG2config_Load(test *testing.T) {
 	printActual(test, actual)
 }
 
-func TestG2config_Save(test *testing.T) {
-	ctx := context.TODO()
-	g2config := getTestObject(ctx, test)
-	configHandle, err := g2config.Create(ctx)
-	testError(test, ctx, g2config, err)
-	actual, err := g2config.GetJsonString(ctx, configHandle)
-	testError(test, ctx, g2config, err)
-	printActual(test, actual)
-}
-
-func TestG2config_Init(test *testing.T) {
+func TestG2config_Initialize(test *testing.T) {
 	ctx := context.TODO()
 	g2config := getTestObject(ctx, test)
 	instanceName := "Test module name"

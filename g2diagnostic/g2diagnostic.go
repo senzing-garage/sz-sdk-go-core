@@ -331,8 +331,8 @@ func (client *G2diagnostic) Initialize(ctx context.Context, instanceName string,
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
-				"iniParams":      settings,
-				"moduleName":     instanceName,
+				"instanceName":   instanceName,
+				"settings":       settings,
 				"verboseLogging": strconv.FormatInt(verboseLogging, 10),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8021, err, details)

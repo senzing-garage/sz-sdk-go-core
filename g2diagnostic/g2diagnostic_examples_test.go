@@ -62,31 +62,13 @@ func ExampleG2diagnostic_Initialize() {
 	ctx := context.TODO()
 	g2diagnostic := &G2diagnostic{}
 	instanceName := "Test module name"
-	configId := int64(0)
+	configId := int64(0) // "0" means use the current default configuration ID.
 	settings, err := getSettings()
 	if err != nil {
 		fmt.Println(err)
 	}
 	verboseLogging := int64(0)
 	err = g2diagnostic.Initialize(ctx, instanceName, settings, verboseLogging, configId)
-	if err != nil {
-		fmt.Println(err)
-	}
-	// Output:
-}
-
-func ExampleG2diagnostic_Initialize_withConfigId() {
-	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2diagnostic/g2diagnostic_examples_test.go
-	ctx := context.TODO()
-	g2diagnostic := &G2diagnostic{}
-	moduleName := "Test module name"
-	iniParams, err := getSettings()
-	if err != nil {
-		fmt.Println(err)
-	}
-	initConfigId := int64(1)
-	verboseLogging := int64(0)
-	err = g2diagnostic.Initialize(ctx, moduleName, iniParams, initConfigId, verboseLogging)
 	if err != nil {
 		fmt.Println(err)
 	}

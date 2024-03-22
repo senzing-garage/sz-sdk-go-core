@@ -106,6 +106,7 @@ Input
 */
 func (client *G2config) clearLastException(ctx context.Context) error {
 	// _DLEXPORT void G2Config_clearLastException();
+	_ = ctx
 	var err error = nil
 	if client.isTrace {
 		entryTime := time.Now()
@@ -127,6 +128,7 @@ Output
 */
 func (client *G2config) getLastException(ctx context.Context) (string, error) {
 	// _DLEXPORT int G2Config_getLastException(char *buffer, const size_t bufSize);
+	_ = ctx
 	var err error = nil
 	var result string
 	if client.isTrace {
@@ -154,6 +156,7 @@ Output:
 */
 func (client *G2config) getLastExceptionCode(ctx context.Context) (int, error) {
 	//  _DLEXPORT int G2Config_getLastExceptionCode();
+	_ = ctx
 	var err error = nil
 	var result int
 	if client.isTrace {
@@ -189,7 +192,7 @@ The configHandle is created by the Create() method.
 Input
   - ctx: A context to control lifecycle.
   - configHandle: An identifier of an in-memory configuration.
-  - inputJson: A JSON document in the format `{"DSRC_CODE": "NAME_OF_DATASOURCE"}`.
+  - dataSourceCode: A JSON document in the format `{"DSRC_CODE": "NAME_OF_DATASOURCE"}`.
 
 Output
   - A string containing a JSON document listing the newly created data source.
@@ -302,10 +305,11 @@ The configHandle is created by the Create() method.
 Input
   - ctx: A context to control lifecycle.
   - configHandle: An identifier of an in-memory configuration.
-  - inputJson: A JSON document in the format `{"DSRC_CODE": "NAME_OF_DATASOURCE"}`.
+  - dataSourceCode: A JSON document in the format `{"DSRC_CODE": "NAME_OF_DATASOURCE"}`.  TODO:
 */
 func (client *G2config) DeleteDataSource(ctx context.Context, configHandle uintptr, dataSourceCode string) error {
 	// _DLEXPORT int G2Config_deleteDataSource(ConfigHandle configHandle, const char *inputJson);
+	// TODO:  dataSourceCode is just the ID;  Make into a JSON string.
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error = nil
@@ -480,8 +484,8 @@ It must be called prior to any other calls.
 
 Input
   - ctx: A context to control lifecycle.
-  - moduleName: A name for the auditing node, to help identify it within system logs.
-  - iniParams: A JSON string containing configuration parameters.
+  - instanceName: A name for the auditing node, to help identify it within system logs.
+  - settings: A JSON string containing configuration parameters.
   - verboseLogging: A flag to enable deeper logging of the G2 processing. 0 for no Senzing logging; 1 for logging.
 */
 func (client *G2config) Initialize(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
@@ -494,19 +498,19 @@ func (client *G2config) Initialize(ctx context.Context, instanceName string, set
 		client.traceEntry(17, instanceName, settings, verboseLogging)
 		defer func() { client.traceExit(18, instanceName, settings, verboseLogging, err, time.Since(entryTime)) }()
 	}
-	moduleNameForC := C.CString(instanceName)
-	defer C.free(unsafe.Pointer(moduleNameForC))
-	iniParamsForC := C.CString(settings)
-	defer C.free(unsafe.Pointer(iniParamsForC))
-	result := C.G2Config_init(moduleNameForC, iniParamsForC, C.longlong(verboseLogging))
+	instanceNameForC := C.CString(instanceName)
+	defer C.free(unsafe.Pointer(instanceNameForC))
+	settingsForC := C.CString(settings)
+	defer C.free(unsafe.Pointer(settingsForC))
+	result := C.G2Config_init(instanceNameForC, settingsForC, C.longlong(verboseLogging))
 	if result != 0 {
 		err = client.newError(ctx, 4007, instanceName, settings, verboseLogging, result, time.Since(entryTime))
 	}
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
-				"iniParams":      settings,
-				"moduleName":     instanceName,
+				"instancename":   instanceName,
+				"settings":       settings,
 				"verboseLogging": strconv.FormatInt(verboseLogging, 10),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8006, err, details)
@@ -520,7 +524,7 @@ The Load method initializes the in-memory Senzing G2Config object from a JSON st
 
 Input
   - ctx: A context to control lifecycle.
-  - jsonConfig: A JSON document containing the Senzing configuration.
+  - configDefinition: A JSON document containing the Senzing configuration.
 
 Output
   - An identifier of an in-memory configuration.

@@ -105,6 +105,7 @@ Input
   - ctx: A context to control lifecycle.
 */
 func (client *G2product) clearLastException(ctx context.Context) error {
+	_ = ctx
 	// _DLEXPORT void G2Config_clearLastException();
 	var err error = nil
 	if client.isTrace {
@@ -127,6 +128,7 @@ Output
 */
 func (client *G2product) getLastException(ctx context.Context) (string, error) {
 	// _DLEXPORT int G2Config_getLastException(char *buffer, const size_t bufSize);
+	_ = ctx
 	var err error = nil
 	var result string
 	if client.isTrace {
@@ -154,6 +156,7 @@ Output:
 */
 func (client *G2product) getLastExceptionCode(ctx context.Context) (int, error) {
 	//  _DLEXPORT int G2Config_getLastExceptionCode();
+	_ = ctx
 	var err error = nil
 	var result int
 	if client.isTrace {
@@ -213,6 +216,38 @@ func (client *G2product) Destroy(ctx context.Context) error {
 }
 
 /*
+The GetLicense method retrieves information about the currently used license by the Senzing API.
+
+Input
+  - ctx: A context to control lifecycle.
+
+Output
+  - A JSON document containing Senzing license metadata.
+    See the example output.
+*/
+func (client *G2product) GetLicense(ctx context.Context) (string, error) {
+	// _DLEXPORT char* G2Product_license();
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	var err error = nil
+	var resultResponse string
+	if client.isTrace {
+		entryTime := time.Now()
+		client.traceEntry(11)
+		defer func() { client.traceExit(12, resultResponse, err, time.Since(entryTime)) }()
+	}
+	result := C.G2Product_license()
+	resultResponse = C.GoString(result)
+	if client.observers != nil {
+		go func() {
+			details := map[string]string{}
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8003, err, details)
+		}()
+	}
+	return resultResponse, err
+}
+
+/*
 The GetObserverOrigin method returns the "origin" value of past Observer messages.
 
 Input
@@ -250,57 +285,16 @@ func (client *G2product) GetSdkId(ctx context.Context) string {
 }
 
 /*
-The Init method initializes the Senzing G2Product object.
-It must be called prior to any other calls.
-
-Input
-  - ctx: A context to control lifecycle.
-  - moduleName: A name for the auditing node, to help identify it within system logs.
-  - iniParams: A JSON string containing configuration parameters.
-  - verboseLogging: A flag to enable deeper logging of the G2 processing. 0 for no Senzing logging; 1 for logging.
-*/
-func (client *G2product) Init(ctx context.Context, moduleName string, iniParams string, verboseLogging int64) error {
-	// _DLEXPORT int G2Config_init(const char *moduleName, const char *iniParams, const int verboseLogging);
-	runtime.LockOSThread()
-	defer runtime.UnlockOSThread()
-	var err error = nil
-	entryTime := time.Now()
-	if client.isTrace {
-		client.traceEntry(9, moduleName, iniParams, verboseLogging)
-		defer func() { client.traceExit(10, moduleName, iniParams, verboseLogging, err, time.Since(entryTime)) }()
-	}
-	moduleNameForC := C.CString(moduleName)
-	defer C.free(unsafe.Pointer(moduleNameForC))
-	iniParamsForC := C.CString(iniParams)
-	defer C.free(unsafe.Pointer(iniParamsForC))
-	result := C.G2Product_init(moduleNameForC, iniParamsForC, C.longlong(verboseLogging))
-	if result != 0 {
-		err = client.newError(ctx, 4003, moduleName, iniParams, verboseLogging, result, time.Since(entryTime))
-	}
-	if client.observers != nil {
-		go func() {
-			details := map[string]string{
-				"iniParams":      iniParams,
-				"moduleName":     moduleName,
-				"verboseLogging": strconv.FormatInt(verboseLogging, 10),
-			}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8002, err, details)
-		}()
-	}
-	return err
-}
-
-/*
-The License method retrieves information about the currently used license by the Senzing API.
+The GetVersion method returns the version of the Senzing API.
 
 Input
   - ctx: A context to control lifecycle.
 
 Output
-  - A JSON document containing Senzing license metadata.
+  - A JSON document containing metadata about the Senzing Engine version being used.
     See the example output.
 */
-func (client *G2product) License(ctx context.Context) (string, error) {
+func (client *G2product) GetVersion(ctx context.Context) (string, error) {
 	// _DLEXPORT char* G2Product_license();
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -308,18 +302,59 @@ func (client *G2product) License(ctx context.Context) (string, error) {
 	var resultResponse string
 	if client.isTrace {
 		entryTime := time.Now()
-		client.traceEntry(11)
-		defer func() { client.traceExit(12, resultResponse, err, time.Since(entryTime)) }()
+		client.traceEntry(19)
+		defer func() { client.traceExit(20, resultResponse, err, time.Since(entryTime)) }()
 	}
-	result := C.G2Product_license()
+	result := C.G2Product_version()
 	resultResponse = C.GoString(result)
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8003, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8006, err, details)
 		}()
 	}
 	return resultResponse, err
+}
+
+/*
+The Init method initializes the Senzing G2Product object.
+It must be called prior to any other calls.
+
+Input
+  - ctx: A context to control lifecycle.
+  - instanceName: A name for the auditing node, to help identify it within system logs.
+  - settings: A JSON string containing configuration parameters.
+  - verboseLogging: A flag to enable deeper logging of the G2 processing. 0 for no Senzing logging; 1 for logging.
+*/
+func (client *G2product) Initialize(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
+	// _DLEXPORT int G2Config_init(const char *moduleName, const char *iniParams, const int verboseLogging);
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	var err error = nil
+	entryTime := time.Now()
+	if client.isTrace {
+		client.traceEntry(9, instanceName, settings, verboseLogging)
+		defer func() { client.traceExit(10, instanceName, settings, verboseLogging, err, time.Since(entryTime)) }()
+	}
+	moduleNameForC := C.CString(instanceName)
+	defer C.free(unsafe.Pointer(moduleNameForC))
+	iniParamsForC := C.CString(settings)
+	defer C.free(unsafe.Pointer(iniParamsForC))
+	result := C.G2Product_init(moduleNameForC, iniParamsForC, C.longlong(verboseLogging))
+	if result != 0 {
+		err = client.newError(ctx, 4003, instanceName, settings, verboseLogging, result, time.Since(entryTime))
+	}
+	if client.observers != nil {
+		go func() {
+			details := map[string]string{
+				"instanceName":   instanceName,
+				"settings":       settings,
+				"verboseLogging": strconv.FormatInt(verboseLogging, 10),
+			}
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8002, err, details)
+		}()
+	}
+	return err
 }
 
 /*
@@ -423,36 +458,4 @@ func (client *G2product) UnregisterObserver(ctx context.Context, observer observ
 		client.observers = nil
 	}
 	return err
-}
-
-/*
-The Version method returns the version of the Senzing API.
-
-Input
-  - ctx: A context to control lifecycle.
-
-Output
-  - A JSON document containing metadata about the Senzing Engine version being used.
-    See the example output.
-*/
-func (client *G2product) Version(ctx context.Context) (string, error) {
-	// _DLEXPORT char* G2Product_license();
-	runtime.LockOSThread()
-	defer runtime.UnlockOSThread()
-	var err error = nil
-	var resultResponse string
-	if client.isTrace {
-		entryTime := time.Now()
-		client.traceEntry(19)
-		defer func() { client.traceExit(20, resultResponse, err, time.Since(entryTime)) }()
-	}
-	result := C.G2Product_version()
-	resultResponse = C.GoString(result)
-	if client.observers != nil {
-		go func() {
-			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8006, err, details)
-		}()
-	}
-	return resultResponse, err
 }

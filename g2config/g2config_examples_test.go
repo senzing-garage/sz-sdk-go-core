@@ -109,6 +109,22 @@ func ExampleG2config_GetDataSources() {
 	// Output: {"DATA_SOURCES":[{"DSRC_ID":1,"DSRC_CODE":"TEST"},{"DSRC_ID":2,"DSRC_CODE":"SEARCH"}]}
 }
 
+func ExampleG2config_GetJsonString() {
+	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2config/g2config_examples_test.go
+	ctx := context.TODO()
+	g2config := getG2Config(ctx)
+	configHandle, err := g2config.Create(ctx)
+	if err != nil {
+		fmt.Println(err)
+	}
+	jsonConfig, err := g2config.GetJsonString(ctx, configHandle)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(truncate(jsonConfig, 207))
+	// Output: {"G2_CONFIG":{"CFG_ATTR":[{"ATTR_ID":1001,"ATTR_CODE":"DATA_SOURCE","ATTR_CLASS":"OBSERVATION","FTYPE_CODE":null,"FELEM_CODE":null,"FELEM_REQ":"Yes","DEFAULT_VALUE":null,"ADVANCED":"Yes","INTERNAL":"No"},...
+}
+
 func ExampleG2config_Load() {
 	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2config/g2config_examples_test.go
 	ctx := context.TODO()
@@ -129,22 +145,6 @@ func ExampleG2config_Load() {
 	// Output: true
 }
 
-func ExampleG2config_GetJsonString() {
-	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2config/g2config_examples_test.go
-	ctx := context.TODO()
-	g2config := getG2Config(ctx)
-	configHandle, err := g2config.Create(ctx)
-	if err != nil {
-		fmt.Println(err)
-	}
-	jsonConfig, err := g2config.GetJsonString(ctx, configHandle)
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println(truncate(jsonConfig, 207))
-	// Output: {"G2_CONFIG":{"CFG_ATTR":[{"ATTR_ID":1001,"ATTR_CODE":"DATA_SOURCE","ATTR_CLASS":"OBSERVATION","FTYPE_CODE":null,"FELEM_CODE":null,"FELEM_REQ":"Yes","DEFAULT_VALUE":null,"ADVANCED":"Yes","INTERNAL":"No"},...
-}
-
 func ExampleG2config_SetLogLevel() {
 	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2config/g2config_examples_test.go
 	ctx := context.TODO()
@@ -156,7 +156,7 @@ func ExampleG2config_SetLogLevel() {
 	// Output:
 }
 
-func ExampleG2config_Init() {
+func ExampleG2config_Initialize() {
 	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2config/g2config_examples_test.go
 	ctx := context.TODO()
 	g2config := getG2Config(ctx)

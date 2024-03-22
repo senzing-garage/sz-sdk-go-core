@@ -106,6 +106,7 @@ Input
 */
 func (client *G2configmgr) clearLastException(ctx context.Context) error {
 	// _DLEXPORT void G2Config_clearLastException()
+	_ = ctx
 	var err error = nil
 	if client.isTrace {
 		entryTime := time.Now()
@@ -127,6 +128,7 @@ Output
 */
 func (client *G2configmgr) getLastException(ctx context.Context) (string, error) {
 	// _DLEXPORT int G2Config_getLastException(char *buffer, const size_t bufSize);
+	_ = ctx
 	var err error = nil
 	var result string
 	if client.isTrace {
@@ -154,6 +156,7 @@ Output:
 */
 func (client *G2configmgr) getLastExceptionCode(ctx context.Context) (int, error) {
 	//  _DLEXPORT int G2Config_getLastExceptionCode();
+	_ = ctx
 	var err error = nil
 	var result int
 	if client.isTrace {
@@ -431,8 +434,8 @@ func (client *G2configmgr) Initialize(ctx context.Context, instanceName string, 
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
-				"iniParams":      settings,
-				"moduleName":     instanceName,
+				"instanceName":   instanceName,
+				"settings":       settings,
 				"verboseLogging": strconv.FormatInt(verboseLogging, 10),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8006, err, details)
