@@ -406,7 +406,7 @@ func (client *G2diagnostic) PurgeRepository(ctx context.Context) error {
 	}
 	// TODO: Change to following when appropriate.
 	// result := C.G2Diagnostic_purgeRepository()
-	result := C.G2_purgeRepository()
+	result := C.G2Diagnostic_purgeRepository()
 
 	if result != 0 {
 		err = client.newError(ctx, 4056, result, time.Since(entryTime))

@@ -183,7 +183,7 @@ func getG2engine(ctx context.Context) (g2api.G2engine, error) {
 	if err != nil {
 		return &result, err
 	}
-	err = result.Init(ctx, moduleName, iniParams, verboseLogging)
+	err = result.Initialize(ctx, moduleName, iniParams, verboseLogging, 0)
 	return &result, err
 }
 
@@ -195,7 +195,7 @@ func getG2product(ctx context.Context) (g2api.G2product, error) {
 	if err != nil {
 		return &result, err
 	}
-	err = result.Init(ctx, moduleName, iniParams, verboseLogging)
+	err = result.Initialize(ctx, moduleName, iniParams, verboseLogging)
 	return &result, err
 }
 
@@ -289,7 +289,7 @@ func demonstrateAdditionalFunctions(ctx context.Context, g2Diagnostic g2api.G2di
 
 	// Using G2Product: Show license metadata.
 
-	license, err := g2Product.License(ctx)
+	license, err := g2Product.GetLicense(ctx)
 	if err != nil {
 		failOnError(5303, err)
 	}
