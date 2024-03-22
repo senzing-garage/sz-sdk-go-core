@@ -213,7 +213,7 @@ func setup() error {
 func setupAddRecords(ctx context.Context, instancename string, settings string, verboseLogging int64, purge bool) error {
 
 	aG2engine := &g2engine.G2engine{}
-	err := aG2engine.Initialize(ctx, instancename, settings, verboseLogging)
+	err := aG2engine.Initialize(ctx, instancename, settings, verboseLogging, 0)
 	if err != nil {
 		return createError(5916, err)
 	}

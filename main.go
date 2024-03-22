@@ -265,7 +265,7 @@ func demonstrateAddRecord(ctx context.Context, g2Engine g2api.G2engine) (string,
 		`{"SOCIAL_HANDLE": "flavorh", "DATE_OF_BIRTH": "4/8/1983", "ADDR_STATE": "LA", "ADDR_POSTAL_CODE": "71232", "SSN_NUMBER": "053-39-3251", "ENTITY_TYPE": "TEST", "GENDER": "F", "srccode": "MDMPER", "CC_ACCOUNT_NUMBER": "5534202208773608", "RECORD_ID": "`,
 		recordId,
 		`", "DSRC_ACTION": "A", "ADDR_CITY": "Delhi", "DRIVERS_LICENSE_STATE": "DE", "PHONE_NUMBER": "225-671-0796", "NAME_LAST": "SEAMAN", "entityid": "284430058", "ADDR_LINE1": "772 Armstrong RD"}`)
-	var flags int64 = g2api.G2_RETURN_INFO
+	var flags int64 = g2api.G2_WITH_INFO
 
 	// Using G2Engine: Add record and return "withInfo".
 

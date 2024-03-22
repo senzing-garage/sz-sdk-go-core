@@ -16,6 +16,14 @@ github.com/rogpeppe/go-internal v1.10.0 h1:TMyTOH3F/DB16zRVcYyreMH6GnZZrwQVAoYjR
 github.com/rogpeppe/go-internal v1.10.0/go.mod h1:UQnix2H7Ngw/k4C5ijL5+65zddjncjaFoBhdsK/akog=
 github.com/senzing-garage/g2-sdk-go v0.10.2-0.20240320162651-d0bc047cb370 h1:NWUjI+H0YHgESmLEOnEY/peyfAB+zj4LJ2KXppdcRhs=
 github.com/senzing-garage/g2-sdk-go v0.10.2-0.20240320162651-d0bc047cb370/go.mod h1:YDfDklfnaWTl8DlFFvVZd8kTgBlMwb/IyUnwZz7ha3Q=
+github.com/senzing-garage/g2-sdk-go v0.10.2-0.20240322192507-ad009e033d08 h1:ym58Mfb1NK8SvVwOBbGyfG3VupwrR1tihNZ3YNbJMdk=
+github.com/senzing-garage/g2-sdk-go v0.10.2-0.20240322192507-ad009e033d08/go.mod h1:YDfDklfnaWTl8DlFFvVZd8kTgBlMwb/IyUnwZz7ha3Q=
+github.com/senzing-garage/g2-sdk-go v0.10.2-0.20240322193140-03082113b667 h1:QJOusfCO6Sh+RIcXiFAE4Ql+Mn4BQcGfXAZXDd64WzU=
+github.com/senzing-garage/g2-sdk-go v0.10.2-0.20240322193140-03082113b667/go.mod h1:YDfDklfnaWTl8DlFFvVZd8kTgBlMwb/IyUnwZz7ha3Q=
+github.com/senzing-garage/g2-sdk-go v0.10.2-0.20240322194702-730ec1fd5a56 h1:8jsWuRDRt8J8o+ckNwI/sp/I+W8X9+N1fpV1w1NByQU=
+github.com/senzing-garage/g2-sdk-go v0.10.2-0.20240322194702-730ec1fd5a56/go.mod h1:YDfDklfnaWTl8DlFFvVZd8kTgBlMwb/IyUnwZz7ha3Q=
+github.com/senzing-garage/g2-sdk-go v0.10.2-0.20240322215355-ee0d699d204f h1:eeLkuQuUoKsF+PugyEWROvZ1ljdLhYM3B2hOshclj60=
+github.com/senzing-garage/g2-sdk-go v0.10.2-0.20240322215355-ee0d699d204f/go.mod h1:YDfDklfnaWTl8DlFFvVZd8kTgBlMwb/IyUnwZz7ha3Q=
 github.com/senzing-garage/go-common v0.4.0 h1:/6/5yNY80udkbOzSAX0Vvx2+0kD9JF7fhqNUlRj2Vho=
 github.com/senzing-garage/go-common v0.4.0/go.mod h1:f2EIjPzAcULG8eKUVebIUNS2qgMVcJRgmQY9fpBDF9E=
 github.com/senzing-garage/go-logging v1.4.0 h1:i+mLVKmD26I2Dy1GBSd7O5MexHyVJoHak2joWn7oq+4=

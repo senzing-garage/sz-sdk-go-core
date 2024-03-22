@@ -72,7 +72,7 @@ func ExampleG2engine_AddRecord_withInfo() {
 	dataSourceCode := "TEST"
 	recordId := "ABC123"
 	jsonData := `{"DATA_SOURCE": "TEST", "RECORD_ID": "ABC123", "NAME_FULL": "JOE SCHMOE", "DATE_OF_BIRTH": "12/11/1978", "EMAIL_ADDRESS": "joeschmoe@nowhere.com"}`
-	flags := g2api.G2_RETURN_INFO
+	flags := g2api.G2_WITH_INFO
 	result, err := g2engine.AddRecord(ctx, dataSourceCode, recordId, jsonData, flags)
 	if err != nil {
 		fmt.Println(err)
@@ -345,7 +345,7 @@ func ExampleG2engine_GetRepositoryLastModifiedTime() {
 	// Output: true
 }
 
-func ExampleG2engine_Stats() {
+func ExampleG2engine_GetStats() {
 	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
@@ -428,7 +428,8 @@ func ExampleG2engine_WhyEntities() {
 	g2engine := &G2engine{}
 	var entityId1 int64 = 1
 	var entityId2 int64 = 100003
-	result, err := g2engine.WhyEntities(ctx, entityId1, entityId2)
+	var flags int64 = 0
+	result, err := g2engine.WhyEntities(ctx, entityId1, entityId2, flags)
 	if err != nil {
 		fmt.Println(err)
 	}

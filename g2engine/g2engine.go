@@ -107,6 +107,7 @@ Input
 */
 func (client *G2engine) clearLastException(ctx context.Context) error {
 	// _DLEXPORT void G2_clearLastException();
+	_ = ctx
 	var err error = nil
 	if client.isTrace {
 		entryTime := time.Now()
@@ -128,6 +129,7 @@ Output
 */
 func (client *G2engine) getLastException(ctx context.Context) (string, error) {
 	// _DLEXPORT int G2_getLastException(char *buffer, const size_t bufSize);
+	_ = ctx
 	var err error = nil
 	var result string
 	if client.isTrace {
@@ -155,6 +157,7 @@ Output:
 */
 func (client *G2engine) getLastExceptionCode(ctx context.Context) (int, error) {
 	//  _DLEXPORT int G2_getLastExceptionCode();
+	_ = ctx
 	var err error = nil
 	var result int
 	if client.isTrace {
