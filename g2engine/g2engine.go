@@ -400,7 +400,7 @@ Output
   - A JSON document.
     See the example output.
 */
-func (client *G2engine) DeleteRecordWithInfo(ctx context.Context, dataSourceCode string, recordID string, flags int64) (string, error) {
+func (client *G2engine) deleteRecordWithInfo(ctx context.Context, dataSourceCode string, recordID string, flags int64) (string, error) {
 	//  _DLEXPORT int G2_deleteRecordWithInfo(const char* dataSourceCode, const char* recordID, const char* loadID, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -466,83 +466,8 @@ func (client *G2engine) Destroy(ctx context.Context) error {
 }
 
 /*
-The ExportConfig method returns the Senzing engine configuration.
-
-Input
-  - ctx: A context to control lifecycle.
-
-Output
-  - A JSON document containing the current Senzing Engine configuration.
-*/
-func (client *G2engine) ExportConfig(ctx context.Context) (string, error) {
-	//  _DLEXPORT int G2_exportConfig(char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize) );
-	runtime.LockOSThread()
-	defer runtime.UnlockOSThread()
-	var err error = nil
-	var resultResponse string
-	entryTime := time.Now()
-	if client.isTrace {
-		client.traceEntry(25)
-		defer func() { client.traceExit(26, resultResponse, err, time.Since(entryTime)) }()
-	}
-	result := C.G2_exportConfig_helper()
-	if result.returnCode != 0 {
-		err = client.newError(ctx, 4011, result.returnCode, time.Since(entryTime))
-	}
-	resultResponse = C.GoString(result.response)
-	C.G2GoHelper_free(unsafe.Pointer(result.response))
-	if client.observers != nil {
-		go func() {
-			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8011, err, details)
-		}()
-	}
-	return resultResponse, err
-}
-
-/*
-Similar to ExportConfig(), the ExportConfigAndConfigID method returns the Senzing engine configuration and it's identifier.
-
-Input
-  - ctx: A context to control lifecycle.
-
-Output
-  - A JSON document containing the current Senzing Engine configuration.
-  - The unique identifier of the Senzing Engine configuration.
-*/
-func (client *G2engine) ExportConfigAndConfigID(ctx context.Context) (string, int64, error) {
-	//  _DLEXPORT int G2_exportConfigAndConfigID(char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize), long long* configID );
-	runtime.LockOSThread()
-	defer runtime.UnlockOSThread()
-	var err error = nil
-	var resultConfig string
-	var resultConfigID int64
-	entryTime := time.Now()
-	if client.isTrace {
-		client.traceEntry(23)
-		defer func() { client.traceExit(24, resultConfig, resultConfigID, err, time.Since(entryTime)) }()
-	}
-	result := C.G2_exportConfigAndConfigID_helper()
-	if result.returnCode != 0 {
-		err = client.newError(ctx, 4010, result.returnCode, result, time.Since(entryTime))
-	}
-	resultConfigID = int64(C.longlong(result.configID))
-	resultConfig = C.GoString(result.config)
-	C.G2GoHelper_free(unsafe.Pointer(result.config))
-	if client.observers != nil {
-		go func() {
-			details := map[string]string{
-				"configID": strconv.FormatInt(resultConfigID, 10),
-			}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8012, err, details)
-		}()
-	}
-	return resultConfig, resultConfigID, err
-}
-
-/*
-The ExportCSVEntityReport method initializes a cursor over a document of exported entities.
-It is part of the ExportCSVEntityReport(), FetchNext(), CloseExport()
+The ExportCsvEntityReport method initializes a cursor over a document of exported entities.
+It is part of the ExportCsvEntityReport(), FetchNext(), CloseExport()
 lifecycle of a list of entities to export.
 
 Input
@@ -581,7 +506,7 @@ func (client *G2engine) ExportCsvEntityReport(ctx context.Context, csvColumnList
 }
 
 /*
-The ExportCSVEntityReportIterator method creates an Iterator that can be used in a for-loop
+The ExportCsvEntityReportIterator method creates an Iterator that can be used in a for-loop
 to scroll through a document of exported entities.
 It is a convenience method for the ExportCSVEntityReport(), FetchNext(), CloseExport()
 lifecycle of a list of entities to export.
@@ -653,7 +578,7 @@ func (client *G2engine) ExportCsvEntityReportIterator(ctx context.Context, csvCo
 }
 
 /*
-The ExportJSONEntityReport method initializes a cursor over a document of exported entities.
+The ExportJsonEntityReport method initializes a cursor over a document of exported entities.
 It is part of the ExportJSONEntityReport(), FetchNext(), CloseExport()
 lifecycle of a list of entities to export.
 
@@ -690,7 +615,7 @@ func (client *G2engine) ExportJsonEntityReport(ctx context.Context, flags int64)
 }
 
 /*
-The ExportJSONEntityReportIterator method creates an Iterator that can be used in a for-loop
+The ExportJsonEntityReportIterator method creates an Iterator that can be used in a for-loop
 to scroll through a document of exported entities.
 It is a convenience method for the ExportJSONEntityReport(), FetchNext(), CloseExport()
 lifecycle of a list of entities to export.
@@ -798,97 +723,8 @@ func (client *G2engine) FetchNext(ctx context.Context, responseHandle uintptr) (
 }
 
 /*
-The FindInterestingEntitiesByEntityID method FIXME:
-
-Input
-  - ctx: A context to control lifecycle.
-  - entityID: The unique identifier of an entity.
-  - flags: Flags used to control information returned.
-
-Output
-  - A JSON document.
-    See the example output.
-*/
-func (client *G2engine) FindInterestingEntitiesByEntityID(ctx context.Context, entityID int64, flags int64) (string, error) {
-	//  _DLEXPORT int G2_findInterestingEntitiesByEntityID(const long long entityID, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
-	runtime.LockOSThread()
-	defer runtime.UnlockOSThread()
-	var err error = nil
-	var resultResponse string
-	entryTime := time.Now()
-	if client.isTrace {
-		client.traceEntry(33, entityID, flags)
-		defer func() { client.traceExit(34, entityID, flags, resultResponse, err, time.Since(entryTime)) }()
-	}
-	result := C.G2_findInterestingEntitiesByEntityID_helper(C.longlong(entityID), C.longlong(flags))
-	if result.returnCode != 0 {
-		err = client.newError(ctx, 4015, entityID, flags, result.returnCode, time.Since(entryTime))
-	}
-	resultResponse = C.GoString(result.response)
-	C.G2GoHelper_free(unsafe.Pointer(result.response))
-	if client.observers != nil {
-		go func() {
-			details := map[string]string{
-				"entityID": strconv.FormatInt(entityID, 10),
-			}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8016, err, details)
-		}()
-	}
-	return resultResponse, err
-}
-
-/*
-The FindInterestingEntitiesByRecordID method FIXME:
-
-Input
-  - ctx: A context to control lifecycle.
-  - dataSourceCode: Identifies the provenance of the data.
-  - recordID: The unique identifier within the records of the same data source.
-  - flags: Flags used to control information returned.
-
-Output
-  - A JSON document.
-    See the example output.
-*/
-func (client *G2engine) FindInterestingEntitiesByRecordID(ctx context.Context, dataSourceCode string, recordID string, flags int64) (string, error) {
-	//  _DLEXPORT int G2_findInterestingEntitiesByRecordID(const char* dataSourceCode, const char* recordID, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
-	runtime.LockOSThread()
-	defer runtime.UnlockOSThread()
-	var err error = nil
-	var resultResponse string
-	entryTime := time.Now()
-	if client.isTrace {
-		client.traceEntry(35, dataSourceCode, recordID, flags)
-		defer func() {
-			client.traceExit(36, dataSourceCode, recordID, flags, resultResponse, err, time.Since(entryTime))
-		}()
-	}
-	dataSourceCodeForC := C.CString(dataSourceCode)
-	defer C.free(unsafe.Pointer(dataSourceCodeForC))
-	recordIDForC := C.CString(recordID)
-	defer C.free(unsafe.Pointer(recordIDForC))
-	result := C.G2_findInterestingEntitiesByRecordID_helper(dataSourceCodeForC, recordIDForC, C.longlong(flags))
-	if result.returnCode != 0 {
-		err = client.newError(ctx, 4016, dataSourceCode, recordID, flags, result.returnCode, time.Since(entryTime))
-	}
-	resultResponse = C.GoString(result.response)
-	C.G2GoHelper_free(unsafe.Pointer(result.response))
-	if client.observers != nil {
-		go func() {
-			details := map[string]string{
-				"dataSourceCode": dataSourceCode,
-				"recordID":       recordID,
-			}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8017, err, details)
-		}()
-	}
-	return resultResponse, err
-}
-
-/*
-The FindNetworkByEntityID method finds all entities surrounding a requested set of entities.
+The FindNetworkByEntityId method finds all entities surrounding a requested set of entities.
 This includes the requested entities, paths between them, and relations to other nearby entities.
-To control output, use FindNetworkByEntityID_V2() instead.
 
 Input
   - ctx: A context to control lifecycle.
@@ -935,59 +771,8 @@ func (client *G2engine) FindNetworkByEntityId(ctx context.Context, entityList st
 }
 
 /*
-The FindNetworkByEntityID_V2 method finds all entities surrounding a requested set of entities.
+The FindNetworkByRecordId method finds all entities surrounding a requested set of entities identified by record identifiers.
 This includes the requested entities, paths between them, and relations to other nearby entities.
-It extends FindNetworkByEntityID() by adding output control flags.
-
-Input
-  - ctx: A context to control lifecycle.
-  - entityList: A JSON document listing entities.
-    Example: `{"ENTITIES": [{"ENTITY_ID": 1}, {"ENTITY_ID": 2}, {"ENTITY_ID": 3}]}`
-  - maxDegree: The maximum number of degrees in paths between search entities.
-  - buildOutDegree: The number of degrees of relationships to show around each search entity.
-  - maxEntities: The maximum number of entities to return in the discovered network.
-  - flags: Flags used to control information returned.
-
-Output
-  - A JSON document.
-    See the example output.
-*/
-func (client *G2engine) FindNetworkByEntityID_V2(ctx context.Context, entityList string, maxDegree int64, buildOutDegree int64, maxEntities int64, flags int64) (string, error) {
-	//  _DLEXPORT int G2_findNetworkByEntityID_V2(const char* entityList, const int maxDegree, const int buildOutDegree, const int maxEntities, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
-	runtime.LockOSThread()
-	defer runtime.UnlockOSThread()
-	var err error = nil
-	var resultResponse string
-	entryTime := time.Now()
-	if client.isTrace {
-		client.traceEntry(39, entityList, maxDegree, buildOutDegree, maxDegree, flags)
-		defer func() {
-			client.traceExit(40, entityList, maxDegree, buildOutDegree, maxDegree, flags, resultResponse, err, time.Since(entryTime))
-		}()
-	}
-	entityListForC := C.CString(entityList)
-	defer C.free(unsafe.Pointer(entityListForC))
-	result := C.G2_findNetworkByEntityID_V2_helper(entityListForC, C.longlong(maxDegree), C.longlong(buildOutDegree), C.longlong(maxEntities), C.longlong(flags))
-	if result.returnCode != 0 {
-		err = client.newError(ctx, 4018, entityList, maxDegree, buildOutDegree, maxEntities, flags, result.returnCode, time.Since(entryTime))
-	}
-	resultResponse = C.GoString(result.response)
-	C.G2GoHelper_free(unsafe.Pointer(result.response))
-	if client.observers != nil {
-		go func() {
-			details := map[string]string{
-				"entityList": entityList,
-			}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8019, err, details)
-		}()
-	}
-	return resultResponse, err
-}
-
-/*
-The FindNetworkByRecordID method finds all entities surrounding a requested set of entities identified by record identifiers.
-This includes the requested entities, paths between them, and relations to other nearby entities.
-To control output, use FindNetworkByRecordID_V2() instead.
 
 Input
   - ctx: A context to control lifecycle.
@@ -1034,59 +819,8 @@ func (client *G2engine) FindNetworkByRecordId(ctx context.Context, recordList st
 }
 
 /*
-The FindNetworkByRecordID_V2 method finds all entities surrounding a requested set of entities identified by record identifiers.
-This includes the requested entities, paths between them, and relations to other nearby entities.
-It extends FindNetworkByRecordID() by adding output control flags.
-
-Input
-  - ctx: A context to control lifecycle.
-  - entityList: A JSON document listing entities.
-    Example: `{"ENTITIES": [{"ENTITY_ID": 1}, {"ENTITY_ID": 2}, {"ENTITY_ID": 3}]}`
-  - maxDegree: The maximum number of degrees in paths between search entities.
-  - buildOutDegree: The number of degrees of relationships to show around each search entity.
-  - maxEntities: The maximum number of entities to return in the discovered network.
-  - flags: Flags used to control information returned.
-
-Output
-  - A JSON document.
-    See the example output.
-*/
-func (client *G2engine) FindNetworkByRecordID_V2(ctx context.Context, recordList string, maxDegree int64, buildOutDegree int64, maxEntities int64, flags int64) (string, error) {
-	//  _DLEXPORT int G2_findNetworkByRecordID_V2(const char* recordList, const int maxDegree, const int buildOutDegree, const int maxEntities, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
-	runtime.LockOSThread()
-	defer runtime.UnlockOSThread()
-	var err error = nil
-	var resultResponse string
-	entryTime := time.Now()
-	if client.isTrace {
-		client.traceEntry(43, recordList, maxDegree, buildOutDegree, maxDegree, flags)
-		defer func() {
-			client.traceExit(44, recordList, maxDegree, buildOutDegree, maxDegree, flags, resultResponse, err, time.Since(entryTime))
-		}()
-	}
-	recordListForC := C.CString(recordList)
-	defer C.free(unsafe.Pointer(recordListForC))
-	result := C.G2_findNetworkByRecordID_V2_helper(recordListForC, C.longlong(maxDegree), C.longlong(buildOutDegree), C.longlong(maxEntities), C.longlong(flags))
-	if result.returnCode != 0 {
-		err = client.newError(ctx, 4020, recordList, maxDegree, buildOutDegree, maxEntities, flags, result.returnCode, time.Since(entryTime))
-	}
-	resultResponse = C.GoString(result.response)
-	C.G2GoHelper_free(unsafe.Pointer(result.response))
-	if client.observers != nil {
-		go func() {
-			details := map[string]string{
-				"recordList": recordList,
-			}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8021, err, details)
-		}()
-	}
-	return resultResponse, err
-}
-
-/*
-The FindPathByEntityID method finds single relationship paths between two entities.
+The FindPathByEntityId method finds single relationship paths between two entities.
 Paths are found using known relationships with other entities.
-To control output, use FindPathByEntityID_V2() instead.
 
 Input
   - ctx: A context to control lifecycle.
@@ -1130,57 +864,9 @@ func (client *G2engine) FindPathByEntityId(ctx context.Context, entityID1 int64,
 }
 
 /*
-The FindPathByEntityID_V2 method finds single relationship paths between two entities.
-Paths are found using known relationships with other entities.
-It extends FindPathByEntityID() by adding output control flags.
-
-Input
-  - ctx: A context to control lifecycle.
-  - entityID1: The entity ID for the starting entity of the search path.
-  - entityID2: The entity ID for the ending entity of the search path.
-  - maxDegree: The maximum number of degrees in paths between search entities.
-  - flags: Flags used to control information returned.
-
-Output
-  - A JSON document.
-    See the example output.
-*/
-func (client *G2engine) FindPathByEntityID_V2(ctx context.Context, entityID1 int64, entityID2 int64, maxDegree int64, flags int64) (string, error) {
-	//  _DLEXPORT int G2_findPathByEntityID_V2(const long long entityID1, const long long entityID2, const int maxDegree, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
-	runtime.LockOSThread()
-	defer runtime.UnlockOSThread()
-	var err error = nil
-	var resultResponse string
-	entryTime := time.Now()
-	if client.isTrace {
-		client.traceEntry(47, entityID1, entityID2, maxDegree, flags)
-		defer func() {
-			client.traceExit(48, entityID1, entityID2, maxDegree, flags, resultResponse, err, time.Since(entryTime))
-		}()
-	}
-	result := C.G2_findPathByEntityID_V2_helper(C.longlong(entityID1), C.longlong(entityID2), C.longlong(maxDegree), C.longlong(flags))
-	if result.returnCode != 0 {
-		err = client.newError(ctx, 4022, entityID1, entityID2, maxDegree, flags, result.returnCode, time.Since(entryTime))
-	}
-	resultResponse = C.GoString(result.response)
-	C.G2GoHelper_free(unsafe.Pointer(result.response))
-	if client.observers != nil {
-		go func() {
-			details := map[string]string{
-				"entityID1": strconv.FormatInt(entityID1, 10),
-				"entityID2": strconv.FormatInt(entityID2, 10),
-			}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8023, err, details)
-		}()
-	}
-	return resultResponse, err
-}
-
-/*
-The FindPathByRecordID method finds single relationship paths between two entities.
+The FindPathByRecordId method finds single relationship paths between two entities.
 The entities are identified by starting and ending records.
 Paths are found using known relationships with other entities.
-To control output, use FindPathByRecordID_V2() instead.
 
 Input
   - ctx: A context to control lifecycle.
@@ -1237,66 +923,6 @@ func (client *G2engine) FindPathByRecordId(ctx context.Context, dataSourceCode1 
 }
 
 /*
-The FindPathByRecordID_V2 method finds single relationship paths between two entities.
-The entities are identified by starting and ending records.
-Paths are found using known relationships with other entities.
-It extends FindPathByRecordID() by adding output control flags.
-
-Input
-  - ctx: A context to control lifecycle.
-  - dataSourceCode1: Identifies the provenance of the record for the starting entity of the search path.
-  - recordID1: The unique identifier within the records of the same data source for the starting entity of the search path.
-  - dataSourceCode2: Identifies the provenance of the record for the ending entity of the search path.
-  - recordID2: The unique identifier within the records of the same data source for the ending entity of the search path.
-  - maxDegree: The maximum number of degrees in paths between search entities.
-  - flags: Flags used to control information returned.
-
-Output
-  - A JSON document.
-    See the example output.
-*/
-func (client *G2engine) FindPathByRecordID_V2(ctx context.Context, dataSourceCode1 string, recordID1 string, dataSourceCode2 string, recordID2 string, maxDegree int64, flags int64) (string, error) {
-	//  _DLEXPORT int G2_findPathByRecordID_V2(const char* dataSourceCode1, const char* recordID1, const char* dataSourceCode2, const char* recordID2, const int maxDegree, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
-	runtime.LockOSThread()
-	defer runtime.UnlockOSThread()
-	var err error = nil
-	var resultResponse string
-	entryTime := time.Now()
-	if client.isTrace {
-		client.traceEntry(51, dataSourceCode1, recordID1, dataSourceCode2, recordID2, maxDegree, flags)
-		defer func() {
-			client.traceExit(52, dataSourceCode1, recordID1, dataSourceCode2, recordID2, maxDegree, flags, resultResponse, err, time.Since(entryTime))
-		}()
-	}
-	dataSource1CodeForC := C.CString(dataSourceCode1)
-	defer C.free(unsafe.Pointer(dataSource1CodeForC))
-	recordID1ForC := C.CString(recordID1)
-	defer C.free(unsafe.Pointer(recordID1ForC))
-	dataSource2CodeForC := C.CString(dataSourceCode2)
-	defer C.free(unsafe.Pointer(dataSource2CodeForC))
-	recordID2ForC := C.CString(recordID2)
-	defer C.free(unsafe.Pointer(recordID2ForC))
-	result := C.G2_findPathByRecordID_V2_helper(dataSource1CodeForC, recordID1ForC, dataSource2CodeForC, recordID2ForC, C.longlong(maxDegree), C.longlong(flags))
-	if result.returnCode != 0 {
-		err = client.newError(ctx, 4024, dataSourceCode1, recordID1, dataSourceCode2, recordID2, maxDegree, flags, result.returnCode, time.Since(entryTime))
-	}
-	resultResponse = C.GoString(result.response)
-	C.G2GoHelper_free(unsafe.Pointer(result.response))
-	if client.observers != nil {
-		go func() {
-			details := map[string]string{
-				"dataSourceCode1": dataSourceCode1,
-				"recordID1":       recordID1,
-				"dataSourceCode2": dataSourceCode2,
-				"recordID2":       recordID2,
-			}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8025, err, details)
-		}()
-	}
-	return resultResponse, err
-}
-
-/*
 The FindPathExcludingByEntityID method finds single relationship paths between two entities.
 Paths are found using known relationships with other entities.
 In addition, it will find paths that exclude certain entities from being on the path.
@@ -1313,7 +939,7 @@ Output
   - A JSON document.
     Example: `{"ENTITY_PATHS":[{"START_ENTITY_ID":1,"END_ENTITY_ID":2,"ENTITIES":[1,2]}],"ENTITIES":[{"RESOLVED_ENTITY":{"ENTITY_ID":1,"ENTITY_NAME":"JOHNSON","RECORD_SUMMARY":[{"DATA_SOURCE":"TEST","RECORD_COUNT":2,"FIRST_SEEN_DT":"2022-12-06 14:50:49.222","LAST_SEEN_DT":"2022-12-06 14:50:49.356"}],"LAST_SEEN_DT":"2022-12-06 14:50:49.356"},"RELATED_ENTITIES":[{"ENTITY_ID":2,"MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED","MATCH_KEY":"+PHONE+ACCT_NUM-SSN","ERRULE_CODE":"SF1","IS_DISCLOSED":0,"IS_AMBIGUOUS":0},{"ENTITY_ID":3,"MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED","MATCH_KEY":"+PHONE+ACCT_NUM-DOB-SSN","ERRULE_CODE":"SF1","IS_DISCLOSED":0,"IS_AMBIGUOUS":0}]},{"RESOLVED_ENTITY":{"ENTITY_ID":2,"ENTITY_NAME":"OCEANGUY","RECORD_SUMMARY":[{"DATA_SOURCE":"TEST","RECORD_COUNT":1,"FIRST_SEEN_DT":"2022-12-06 14:50:49.295","LAST_SEEN_DT":"2022-12-06 14:50:49.295"}],"LAST_SEEN_DT":"2022-12-06 14:50:49.295"},"RELATED_ENTITIES":[{"ENTITY_ID":1,"MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED","MATCH_KEY":"+PHONE+ACCT_NUM-SSN","ERRULE_CODE":"SF1","IS_DISCLOSED":0,"IS_AMBIGUOUS":0},{"ENTITY_ID":3,"MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED","MATCH_KEY":"+ADDRESS+PHONE+ACCT_NUM-DOB-SSN","ERRULE_CODE":"SF1","IS_DISCLOSED":0,"IS_AMBIGUOUS":0}]}]}`
 */
-func (client *G2engine) FindPathExcludingByEntityID(ctx context.Context, entityID1 int64, entityID2 int64, maxDegree int64, excludedEntities string) (string, error) {
+func (client *G2engine) findPathExcludingByEntityID(ctx context.Context, entityID1 int64, entityID2 int64, maxDegree int64, excludedEntities string) (string, error) {
 	//  _DLEXPORT int G2_findPathExcludingByEntityID(const long long entityID1, const long long entityID2, const int maxDegree, const char* excludedEntities, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -1369,7 +995,7 @@ Output
   - A JSON document.
     See the example output.
 */
-func (client *G2engine) FindPathExcludingByEntityID_V2(ctx context.Context, entityID1 int64, entityID2 int64, maxDegree int64, excludedEntities string, flags int64) (string, error) {
+func (client *G2engine) findPathExcludingByEntityID_V2(ctx context.Context, entityID1 int64, entityID2 int64, maxDegree int64, excludedEntities string, flags int64) (string, error) {
 	//  _DLEXPORT int G2_findPathExcludingByEntityID_V2(const long long entityID1, const long long entityID2, const int maxDegree, const char* excludedEntities, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -1421,7 +1047,7 @@ Output
   - A JSON document.
     Example: `{"ENTITY_PATHS":[{"START_ENTITY_ID":1,"END_ENTITY_ID":2,"ENTITIES":[1,2]}],"ENTITIES":[{"RESOLVED_ENTITY":{"ENTITY_ID":1,"ENTITY_NAME":"JOHNSON","RECORD_SUMMARY":[{"DATA_SOURCE":"TEST","RECORD_COUNT":2,"FIRST_SEEN_DT":"2022-12-06 14:55:02.577","LAST_SEEN_DT":"2022-12-06 14:55:02.711"}],"LAST_SEEN_DT":"2022-12-06 14:55:02.711"},"RELATED_ENTITIES":[{"ENTITY_ID":2,"MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED","MATCH_KEY":"+PHONE+ACCT_NUM-SSN","ERRULE_CODE":"SF1","IS_DISCLOSED":0,"IS_AMBIGUOUS":0},{"ENTITY_ID":3,"MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED","MATCH_KEY":"+PHONE+ACCT_NUM-DOB-SSN","ERRULE_CODE":"SF1","IS_DISCLOSED":0,"IS_AMBIGUOUS":0}]},{"RESOLVED_ENTITY":{"ENTITY_ID":2,"ENTITY_NAME":"OCEANGUY","RECORD_SUMMARY":[{"DATA_SOURCE":"TEST","RECORD_COUNT":1,"FIRST_SEEN_DT":"2022-12-06 14:55:02.649","LAST_SEEN_DT":"2022-12-06 14:55:02.649"}],"LAST_SEEN_DT":"2022-12-06 14:55:02.649"},"RELATED_ENTITIES":[{"ENTITY_ID":1,"MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED","MATCH_KEY":"+PHONE+ACCT_NUM-SSN","ERRULE_CODE":"SF1","IS_DISCLOSED":0,"IS_AMBIGUOUS":0},{"ENTITY_ID":3,"MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED","MATCH_KEY":"+ADDRESS+PHONE+ACCT_NUM-DOB-SSN","ERRULE_CODE":"SF1","IS_DISCLOSED":0,"IS_AMBIGUOUS":0}]}]}`
 */
-func (client *G2engine) FindPathExcludingByRecordID(ctx context.Context, dataSourceCode1 string, recordID1 string, dataSourceCode2 string, recordID2 string, maxDegree int64, excludedRecords string) (string, error) {
+func (client *G2engine) findPathExcludingByRecordID(ctx context.Context, dataSourceCode1 string, recordID1 string, dataSourceCode2 string, recordID2 string, maxDegree int64, excludedRecords string) (string, error) {
 	//  _DLEXPORT int G2_findPathExcludingByRecordID(const char* dataSourceCode1, const char* recordID1, const char* dataSourceCode2, const char* recordID2, const int maxDegree, const char* excludedRecords, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -1489,7 +1115,7 @@ Output
   - A JSON document.
     See the example output.
 */
-func (client *G2engine) FindPathExcludingByRecordID_V2(ctx context.Context, dataSourceCode1 string, recordID1 string, dataSourceCode2 string, recordID2 string, maxDegree int64, excludedRecords string, flags int64) (string, error) {
+func (client *G2engine) findPathExcludingByRecordID_V2(ctx context.Context, dataSourceCode1 string, recordID1 string, dataSourceCode2 string, recordID2 string, maxDegree int64, excludedRecords string, flags int64) (string, error) {
 	//  _DLEXPORT int G2_findPathExcludingByRecordID_V2(const char* dataSourceCode1, const char* recordID1, const char* dataSourceCode2, const char* recordID2, const int maxDegree, const char* excludedRecords, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -1551,7 +1177,7 @@ Output
   - A JSON document.
     Example: `{"ENTITY_PATHS":[{"START_ENTITY_ID":1,"END_ENTITY_ID":2,"ENTITIES":[]}],"ENTITIES":[{"RESOLVED_ENTITY":{"ENTITY_ID":1,"ENTITY_NAME":"JOHNSON","RECORD_SUMMARY":[{"DATA_SOURCE":"TEST","RECORD_COUNT":2,"FIRST_SEEN_DT":"2022-12-06 15:00:30.268","LAST_SEEN_DT":"2022-12-06 15:00:30.429"}],"LAST_SEEN_DT":"2022-12-06 15:00:30.429"},"RELATED_ENTITIES":[{"ENTITY_ID":2,"MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED","MATCH_KEY":"+PHONE+ACCT_NUM-SSN","ERRULE_CODE":"SF1","IS_DISCLOSED":0,"IS_AMBIGUOUS":0},{"ENTITY_ID":3,"MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED","MATCH_KEY":"+PHONE+ACCT_NUM-DOB-SSN","ERRULE_CODE":"SF1","IS_DISCLOSED":0,"IS_AMBIGUOUS":0}]},{"RESOLVED_ENTITY":{"ENTITY_ID":2,"ENTITY_NAME":"OCEANGUY","RECORD_SUMMARY":[{"DATA_SOURCE":"TEST","RECORD_COUNT":1,"FIRST_SEEN_DT":"2022-12-06 15:00:30.339","LAST_SEEN_DT":"2022-12-06 15:00:30.339"}],"LAST_SEEN_DT":"2022-12-06 15:00:30.339"},"RELATED_ENTITIES":[{"ENTITY_ID":1,"MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED","MATCH_KEY":"+PHONE+ACCT_NUM-SSN","ERRULE_CODE":"SF1","IS_DISCLOSED":0,"IS_AMBIGUOUS":0},{"ENTITY_ID":3,"MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED","MATCH_KEY":"+ADDRESS+PHONE+ACCT_NUM-DOB-SSN","ERRULE_CODE":"SF1","IS_DISCLOSED":0,"IS_AMBIGUOUS":0}]}]}`
 */
-func (client *G2engine) FindPathIncludingSourceByEntityID(ctx context.Context, entityID1 int64, entityID2 int64, maxDegree int64, excludedEntities string, requiredDsrcs string) (string, error) {
+func (client *G2engine) findPathIncludingSourceByEntityID(ctx context.Context, entityID1 int64, entityID2 int64, maxDegree int64, excludedEntities string, requiredDsrcs string) (string, error) {
 	//  _DLEXPORT int G2_findPathIncludingSourceByEntityID(const long long entityID1, const long long entityID2, const int maxDegree, const char* excludedEntities, const char* requiredDsrcs, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -1606,7 +1232,7 @@ Output
   - A JSON document.
     See the example output.
 */
-func (client *G2engine) FindPathIncludingSourceByEntityID_V2(ctx context.Context, entityID1 int64, entityID2 int64, maxDegree int64, excludedEntities string, requiredDsrcs string, flags int64) (string, error) {
+func (client *G2engine) findPathIncludingSourceByEntityID_V2(ctx context.Context, entityID1 int64, entityID2 int64, maxDegree int64, excludedEntities string, requiredDsrcs string, flags int64) (string, error) {
 	//  _DLEXPORT int G2_findPathIncludingSourceByEntityID_V2(const long long entityID1, const long long entityID2, const int maxDegree, const char* excludedEntities, const char* requiredDsrcs, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -1662,7 +1288,7 @@ Output
   - A JSON document.
     Example: `{"ENTITY_PATHS":[{"START_ENTITY_ID":1,"END_ENTITY_ID":2,"ENTITIES":[]}],"ENTITIES":[{"RESOLVED_ENTITY":{"ENTITY_ID":1,"ENTITY_NAME":"JOHNSON","RECORD_SUMMARY":[{"DATA_SOURCE":"TEST","RECORD_COUNT":2,"FIRST_SEEN_DT":"2022-12-06 15:03:52.805","LAST_SEEN_DT":"2022-12-06 15:03:52.947"}],"LAST_SEEN_DT":"2022-12-06 15:03:52.947"},"RELATED_ENTITIES":[{"ENTITY_ID":2,"MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED","MATCH_KEY":"+PHONE+ACCT_NUM-SSN","ERRULE_CODE":"SF1","IS_DISCLOSED":0,"IS_AMBIGUOUS":0},{"ENTITY_ID":3,"MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED","MATCH_KEY":"+PHONE+ACCT_NUM-DOB-SSN","ERRULE_CODE":"SF1","IS_DISCLOSED":0,"IS_AMBIGUOUS":0}]},{"RESOLVED_ENTITY":{"ENTITY_ID":2,"ENTITY_NAME":"OCEANGUY","RECORD_SUMMARY":[{"DATA_SOURCE":"TEST","RECORD_COUNT":1,"FIRST_SEEN_DT":"2022-12-06 15:03:52.876","LAST_SEEN_DT":"2022-12-06 15:03:52.876"}],"LAST_SEEN_DT":"2022-12-06 15:03:52.876"},"RELATED_ENTITIES":[{"ENTITY_ID":1,"MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED","MATCH_KEY":"+PHONE+ACCT_NUM-SSN","ERRULE_CODE":"SF1","IS_DISCLOSED":0,"IS_AMBIGUOUS":0},{"ENTITY_ID":3,"MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED","MATCH_KEY":"+ADDRESS+PHONE+ACCT_NUM-DOB-SSN","ERRULE_CODE":"SF1","IS_DISCLOSED":0,"IS_AMBIGUOUS":0}]}]}`
 */
-func (client *G2engine) FindPathIncludingSourceByRecordID(ctx context.Context, dataSourceCode1 string, recordID1 string, dataSourceCode2 string, recordID2 string, maxDegree int64, excludedRecords string, requiredDsrcs string) (string, error) {
+func (client *G2engine) findPathIncludingSourceByRecordId(ctx context.Context, dataSourceCode1 string, recordID1 string, dataSourceCode2 string, recordID2 string, maxDegree int64, excludedRecords string, requiredDsrcs string) (string, error) {
 	//  _DLEXPORT int G2_findPathIncludingSourceByRecordID(const char* dataSourceCode1, const char* recordID1, const char* dataSourceCode2, const char* recordID2, const int maxDegree, const char* excludedRecords, const char* requiredDsrcs, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -1729,7 +1355,7 @@ Output
   - A JSON document.
     See the example output.
 */
-func (client *G2engine) FindPathIncludingSourceByRecordID_V2(ctx context.Context, dataSourceCode1 string, recordID1 string, dataSourceCode2 string, recordID2 string, maxDegree int64, excludedRecords string, requiredDsrcs string, flags int64) (string, error) {
+func (client *G2engine) findPathIncludingSourceByRecordId_V2(ctx context.Context, dataSourceCode1 string, recordID1 string, dataSourceCode2 string, recordID2 string, maxDegree int64, excludedRecords string, requiredDsrcs string, flags int64) (string, error) {
 	//  _DLEXPORT int G2_findPathIncludingSourceByRecordID_V2(const char* dataSourceCode1, const char* recordID1, const char* dataSourceCode2, const char* recordID2, const int maxDegree, const char* excludedRecords, const char* requiredDsrcs, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -1862,7 +1488,7 @@ Output
   - A JSON document.
     See the example output.
 */
-func (client *G2engine) GetEntityByEntityID_V2(ctx context.Context, entityID int64, flags int64) (string, error) {
+func (client *G2engine) getEntityByEntityID_V2(ctx context.Context, entityID int64, flags int64) (string, error) {
 	//  _DLEXPORT int G2_getEntityByEntityID_V2(const long long entityID, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -1950,7 +1576,7 @@ Output
   - A JSON document.
     See the example output.
 */
-func (client *G2engine) GetEntityByRecordID_V2(ctx context.Context, dataSourceCode string, recordID string, flags int64) (string, error) {
+func (client *G2engine) getEntityByRecordID_V2(ctx context.Context, dataSourceCode string, recordID string, flags int64) (string, error) {
 	//  _DLEXPORT int G2_getEntityByRecordID_V2(const char* dataSourceCode, const char* recordID, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -2058,7 +1684,7 @@ Output
   - A JSON document.
     See the example output.
 */
-func (client *G2engine) GetRecord_V2(ctx context.Context, dataSourceCode string, recordID string, flags int64) (string, error) {
+func (client *G2engine) getRecord_V2(ctx context.Context, dataSourceCode string, recordID string, flags int64) (string, error) {
 	//  _DLEXPORT int G2_getRecord_V2(const char* dataSourceCode, const char* recordID, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -2190,6 +1816,43 @@ func (client *G2engine) GetSdkId(ctx context.Context) string {
 }
 
 /*
+The GetStats method retrieves workload statistics for the current process.
+These statistics will automatically reset after retrieval.
+
+Input
+  - ctx: A context to control lifecycle.
+
+Output
+  - A JSON document.
+    Example: `{"workload":{"loadedRecords":5,"addedRecords":2,"deletedRecords":0,"reevaluations":0,"repairedEntities":0,"duration":56,"retries":0,"candidates":19,"actualAmbiguousTest":0,"cachedAmbiguousTest":0,"libFeatCacheHit":219,"libFeatCacheMiss":73,"unresolveTest":1,"abortedUnresolve":0,"gnrScorersUsed":1,"unresolveTriggers":{"normalResolve":0,"update":0,"relLink":0,"extensiveResolve":0,"ambiguousNoResolve":1,"ambiguousMultiResolve":0},"reresolveTriggers":{"abortRetry":0,"unresolveMovement":0,"multipleResolvableCandidates":0,"resolveNewFeatures":1,"newFeatureFTypes":[{"DOB":1}]},"reresolveSkipped":0,"filteredObsFeat":0,"expressedFeatureCalls":[{"EFCALL_ID":1,"EFUNC_CODE":"PHONE_HASHER","numCalls":1},{"EFCALL_ID":2,"EFUNC_CODE":"EXPRESS_ID","numCalls":1},{"EFCALL_ID":3,"EFUNC_CODE":"EXPRESS_ID","numCalls":1},{"EFCALL_ID":5,"EFUNC_CODE":"EXPRESS_BOM","numCalls":1},{"EFCALL_ID":7,"EFUNC_CODE":"NAME_HASHER","numCalls":4},{"EFCALL_ID":9,"EFUNC_CODE":"ADDR_HASHER","numCalls":1},{"EFCALL_ID":10,"EFUNC_CODE":"EXPRESS_BOM","numCalls":1},{"EFCALL_ID":14,"EFUNC_CODE":"EXPRESS_ID","numCalls":1},{"EFCALL_ID":16,"EFUNC_CODE":"EXPRESS_ID","numCalls":4}],"expressedFeaturesCreated":[{"ADDR_KEY":2},{"ID_KEY":7},{"NAME_KEY":14},{"PHONE_KEY":1},{"SEARCH_KEY":2}],"scoredPairs":[{"ACCT_NUM":16},{"ADDRESS":16},{"DOB":25},{"GENDER":16},{"LOGIN_ID":16},{"NAME":19},{"PHONE":16},{"SSN":19}],"cacheHit":[{"ADDRESS":12},{"DOB":18},{"NAME":13},{"PHONE":15}],"cacheMiss":[{"ADDRESS":4},{"DOB":7},{"NAME":6},{"PHONE":1}],"redoTriggers":[],"latchContention":[],"highContentionFeat":[],"highContentionResEnt":[],"genericDetect":[],"candidateBuilders":[{"ACCT_NUM":7},{"ADDR_KEY":7},{"DOB":7},{"ID_KEY":9},{"LOGIN_ID":7},{"NAME_KEY":9},{"PHONE":7},{"PHONE_KEY":7},{"SEARCH_KEY":7},{"SSN":9}],"suppressedCandidateBuilders":[],"suppressedScoredFeatureType":[],"reducedScoredFeatureType":[],"suppressedDisclosedRelationshipDomainCount":0,"CorruptEntityTestDiagnosis":{},"threadState":{"active":0,"idle":4,"sqlExecuting":0,"loader":0,"resolver":0,"scoring":0,"dataLatchContention":0,"obsEntContention":0,"resEntContention":0},"systemResources":{"initResources":[{"physicalCores":16},{"logicalCores":16},{"totalMemory":"62.6GB"},{"availableMemory":"49.5GB"}],"currResources":[{"availableMemory":"47.4GB"},{"activeThreads":0},{"workerThreads":4},{"systemLoad":[{"cpuUser":13.442277},{"cpuSystem":2.635741},{"cpuIdle":82.024246},{"cpuWait":1.634159},{"cpuSoftIrq":0.263574}]}]}}}`
+*/
+func (client *G2engine) GetStats(ctx context.Context) (string, error) {
+	//  _DLEXPORT int G2_stats(char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize) );
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	var err error = nil
+	var resultResponse string
+	entryTime := time.Now()
+	if client.isTrace {
+		client.traceEntry(139)
+		defer func() { client.traceExit(140, resultResponse, err, time.Since(entryTime)) }()
+	}
+	result := C.G2_stats_helper()
+	if result.returnCode != 0 {
+		err = client.newError(ctx, 4066, result.returnCode, time.Since(entryTime))
+	}
+	resultResponse = C.GoString(result.response)
+	C.G2GoHelper_free(unsafe.Pointer(result.response))
+	if client.observers != nil {
+		go func() {
+			details := map[string]string{}
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8066, err, details)
+		}()
+	}
+	return resultResponse, err
+}
+
+/*
 The GetVirtualEntityByRecordID method FIXME:
 To control output, use GetVirtualEntityByRecordID_V2() instead.
 
@@ -2245,7 +1908,7 @@ Output
   - A JSON document.
     See the example output.
 */
-func (client *G2engine) GetVirtualEntityByRecordID_V2(ctx context.Context, recordList string, flags int64) (string, error) {
+func (client *G2engine) getVirtualEntityByRecordID_V2(ctx context.Context, recordList string, flags int64) (string, error) {
 	//  _DLEXPORT int G2_getVirtualEntityByRecordID_V2(const char* recordList, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -2328,7 +1991,7 @@ Output
   - A JSON document.
     See the example output.
 */
-func (client *G2engine) HowEntityByEntityID_V2(ctx context.Context, entityID int64, flags int64) (string, error) {
+func (client *G2engine) howEntityByEntityID_V2(ctx context.Context, entityID int64, flags int64) (string, error) {
 	//  _DLEXPORT int G2_howEntityByEntityID_V2(const long long entityID, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -2408,7 +2071,7 @@ Input
   - initConfigID: The configuration ID used for the initialization.
   - verboseLogging: A flag to enable deeper logging of the G2 processing. 0 for no Senzing logging; 1 for logging.
 */
-func (client *G2engine) InitWithConfigID(ctx context.Context, moduleName string, iniParams string, initConfigID int64, verboseLogging int64) error {
+func (client *G2engine) initWithConfigID(ctx context.Context, moduleName string, iniParams string, initConfigID int64, verboseLogging int64) error {
 	//  _DLEXPORT int G2_initWithConfigID(const char *moduleName, const char *iniParams, const long long initConfigID, const int verboseLogging);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -2526,7 +2189,9 @@ Output
   - A JSON document with the record that was re-done.
   - A JSON document with affected entities.
 */
-func (client *G2engine) ProcessRedoRecordWithInfo(ctx context.Context, flags int64) (string, string, error) {
+func (client *G2engine) processRedoRecordWithInfo(ctx context.Context, flags int64) (string, string, error) {
+	_ = ctx
+	_ = flags
 	return "", "", nil
 }
 
@@ -2606,7 +2271,7 @@ Output
   - A JSON document.
     See the example output.
 */
-func (client *G2engine) ReevaluateEntityWithInfo(ctx context.Context, entityID int64, flags int64) (string, error) {
+func (client *G2engine) reevaluateEntityWithInfo(ctx context.Context, entityID int64, flags int64) (string, error) {
 	//  _DLEXPORT int G2_reevaluateEntityWithInfo(const long long entityID, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -2687,7 +2352,7 @@ Output
   - A JSON document.
     See the example output.
 */
-func (client *G2engine) ReevaluateRecordWithInfo(ctx context.Context, dataSourceCode string, recordID string, flags int64) (string, error) {
+func (client *G2engine) reevaluateRecordWithInfo(ctx context.Context, dataSourceCode string, recordID string, flags int64) (string, error) {
 	//  _DLEXPORT int G2_reevaluateRecordWithInfo(const char* dataSourceCode, const char* recordID, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -2843,7 +2508,7 @@ Output
   - A JSON document.
     See the example output.
 */
-func (client *G2engine) ReplaceRecordWithInfo(ctx context.Context, dataSourceCode string, recordID string, jsonData string, flags int64) (string, error) {
+func (client *G2engine) replaceRecordWithInfo(ctx context.Context, dataSourceCode string, recordID string, jsonData string, flags int64) (string, error) {
 	//  _DLEXPORT int G2_replaceRecordWithInfo(const char* dataSourceCode, const char* recordID, const char* jsonData, const char *loadID, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -2933,7 +2598,7 @@ Output
   - A JSON document.
     See the example output.
 */
-func (client *G2engine) SearchByAttributes_V2(ctx context.Context, jsonData string, flags int64) (string, error) {
+func (client *G2engine) searchByAttributes_V2(ctx context.Context, jsonData string, flags int64) (string, error) {
 	//  _DLEXPORT int G2_searchByAttributes_V2(const char* jsonData, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -3002,43 +2667,6 @@ Input
 */
 func (client *G2engine) SetObserverOrigin(ctx context.Context, origin string) {
 	client.observerOrigin = origin
-}
-
-/*
-The Stats method retrieves workload statistics for the current process.
-These statistics will automatically reset after retrieval.
-
-Input
-  - ctx: A context to control lifecycle.
-
-Output
-  - A JSON document.
-    Example: `{"workload":{"loadedRecords":5,"addedRecords":2,"deletedRecords":0,"reevaluations":0,"repairedEntities":0,"duration":56,"retries":0,"candidates":19,"actualAmbiguousTest":0,"cachedAmbiguousTest":0,"libFeatCacheHit":219,"libFeatCacheMiss":73,"unresolveTest":1,"abortedUnresolve":0,"gnrScorersUsed":1,"unresolveTriggers":{"normalResolve":0,"update":0,"relLink":0,"extensiveResolve":0,"ambiguousNoResolve":1,"ambiguousMultiResolve":0},"reresolveTriggers":{"abortRetry":0,"unresolveMovement":0,"multipleResolvableCandidates":0,"resolveNewFeatures":1,"newFeatureFTypes":[{"DOB":1}]},"reresolveSkipped":0,"filteredObsFeat":0,"expressedFeatureCalls":[{"EFCALL_ID":1,"EFUNC_CODE":"PHONE_HASHER","numCalls":1},{"EFCALL_ID":2,"EFUNC_CODE":"EXPRESS_ID","numCalls":1},{"EFCALL_ID":3,"EFUNC_CODE":"EXPRESS_ID","numCalls":1},{"EFCALL_ID":5,"EFUNC_CODE":"EXPRESS_BOM","numCalls":1},{"EFCALL_ID":7,"EFUNC_CODE":"NAME_HASHER","numCalls":4},{"EFCALL_ID":9,"EFUNC_CODE":"ADDR_HASHER","numCalls":1},{"EFCALL_ID":10,"EFUNC_CODE":"EXPRESS_BOM","numCalls":1},{"EFCALL_ID":14,"EFUNC_CODE":"EXPRESS_ID","numCalls":1},{"EFCALL_ID":16,"EFUNC_CODE":"EXPRESS_ID","numCalls":4}],"expressedFeaturesCreated":[{"ADDR_KEY":2},{"ID_KEY":7},{"NAME_KEY":14},{"PHONE_KEY":1},{"SEARCH_KEY":2}],"scoredPairs":[{"ACCT_NUM":16},{"ADDRESS":16},{"DOB":25},{"GENDER":16},{"LOGIN_ID":16},{"NAME":19},{"PHONE":16},{"SSN":19}],"cacheHit":[{"ADDRESS":12},{"DOB":18},{"NAME":13},{"PHONE":15}],"cacheMiss":[{"ADDRESS":4},{"DOB":7},{"NAME":6},{"PHONE":1}],"redoTriggers":[],"latchContention":[],"highContentionFeat":[],"highContentionResEnt":[],"genericDetect":[],"candidateBuilders":[{"ACCT_NUM":7},{"ADDR_KEY":7},{"DOB":7},{"ID_KEY":9},{"LOGIN_ID":7},{"NAME_KEY":9},{"PHONE":7},{"PHONE_KEY":7},{"SEARCH_KEY":7},{"SSN":9}],"suppressedCandidateBuilders":[],"suppressedScoredFeatureType":[],"reducedScoredFeatureType":[],"suppressedDisclosedRelationshipDomainCount":0,"CorruptEntityTestDiagnosis":{},"threadState":{"active":0,"idle":4,"sqlExecuting":0,"loader":0,"resolver":0,"scoring":0,"dataLatchContention":0,"obsEntContention":0,"resEntContention":0},"systemResources":{"initResources":[{"physicalCores":16},{"logicalCores":16},{"totalMemory":"62.6GB"},{"availableMemory":"49.5GB"}],"currResources":[{"availableMemory":"47.4GB"},{"activeThreads":0},{"workerThreads":4},{"systemLoad":[{"cpuUser":13.442277},{"cpuSystem":2.635741},{"cpuIdle":82.024246},{"cpuWait":1.634159},{"cpuSoftIrq":0.263574}]}]}}}`
-*/
-func (client *G2engine) GetStats(ctx context.Context) (string, error) {
-	//  _DLEXPORT int G2_stats(char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize) );
-	runtime.LockOSThread()
-	defer runtime.UnlockOSThread()
-	var err error = nil
-	var resultResponse string
-	entryTime := time.Now()
-	if client.isTrace {
-		client.traceEntry(139)
-		defer func() { client.traceExit(140, resultResponse, err, time.Since(entryTime)) }()
-	}
-	result := C.G2_stats_helper()
-	if result.returnCode != 0 {
-		err = client.newError(ctx, 4066, result.returnCode, time.Since(entryTime))
-	}
-	resultResponse = C.GoString(result.response)
-	C.G2GoHelper_free(unsafe.Pointer(result.response))
-	if client.observers != nil {
-		go func() {
-			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8066, err, details)
-		}()
-	}
-	return resultResponse, err
 }
 
 /*
@@ -3134,7 +2762,7 @@ Output
   - A JSON document.
     See the example output.
 */
-func (client *G2engine) WhyEntities_V2(ctx context.Context, entityID1 int64, entityID2 int64, flags int64) (string, error) {
+func (client *G2engine) whyEntities_V2(ctx context.Context, entityID1 int64, entityID2 int64, flags int64) (string, error) {
 	//  _DLEXPORT int G2_whyEntities_V2(const long long entityID1, const long long entityID2, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -3240,7 +2868,7 @@ Output
   - A JSON document.
     See the example output.
 */
-func (client *G2engine) WhyRecords_V2(ctx context.Context, dataSourceCode1 string, recordID1 string, dataSourceCode2 string, recordID2 string, flags int64) (string, error) {
+func (client *G2engine) whyRecords_V2(ctx context.Context, dataSourceCode1 string, recordID1 string, dataSourceCode2 string, recordID2 string, flags int64) (string, error) {
 	//  _DLEXPORT int G2_whyRecords_V2(const char* dataSourceCode1, const char* recordID1, const char* dataSourceCode2, const char* recordID2, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
