@@ -15,9 +15,9 @@ import (
 	"github.com/senzing-garage/sz-sdk-go-core/szconfig"
 	"github.com/senzing-garage/sz-sdk-go-core/szconfigmgr"
 	"github.com/senzing-garage/sz-sdk-go-core/szdiagnostic"
-	"github.com/senzing-garage/g2-sdk-go/szapi"
-	szengineapi "github.com/senzing-garage/g2-sdk-go/szengine"
-	"github.com/senzing-garage/g2-sdk-go/szerror"
+	"github.com/senzing-garage/sz-sdk-go/szapi"
+	szengineapi "github.com/senzing-garage/sz-sdk-go/szengine"
+	"github.com/senzing-garage/sz-sdk-go/szerror"
 	futil "github.com/senzing-garage/go-common/fileutil"
 	"github.com/senzing-garage/go-common/g2engineconfigurationjson"
 	"github.com/senzing-garage/go-common/record"
@@ -56,18 +56,18 @@ func createError(errorId int, err error) error {
 	return szerror.Cast(logger.NewError(errorId, err), err)
 }
 
-func getTestObject(ctx context.Context, test *testing.T) szapi.G2engine {
+func getTestObject(ctx context.Context, test *testing.T) szapi.Szengine {
 	_ = ctx
 	_ = test
 	return &globalG2engine
 }
 
-func getG2Diagnostic(ctx context.Context) szapi.G2diagnostic {
+func getG2Diagnostic(ctx context.Context) szapi.Szdiagnostic {
 	_ = ctx
 	return &globalG2Diagnostic
 }
 
-func getG2Engine(ctx context.Context) szapi.G2engine {
+func getG2Engine(ctx context.Context) szapi.Szengine {
 	_ = ctx
 	return &globalG2engine
 }
@@ -124,7 +124,7 @@ func testErrorBasic(test *testing.T, err error) {
 	}
 }
 
-func testError(test *testing.T, ctx context.Context, g2engine szapi.G2engine, err error) {
+func testError(test *testing.T, ctx context.Context, g2engine szapi.Szengine, err error) {
 	_ = ctx
 	_ = g2engine
 	if err != nil {
@@ -133,7 +133,7 @@ func testError(test *testing.T, ctx context.Context, g2engine szapi.G2engine, er
 	}
 }
 
-func testErrorNoFail(test *testing.T, ctx context.Context, g2engine szapi.G2engine, err error) {
+func testErrorNoFail(test *testing.T, ctx context.Context, g2engine szapi.Szengine, err error) {
 	_ = ctx
 	_ = g2engine
 	if err != nil {
@@ -253,7 +253,7 @@ func setup() error {
 	custRecords := truthset.CustomerRecords
 	records := []record.Record{custRecords["1001"], custRecords["1002"], custRecords["1003"]}
 	for _, record := range records {
-		_, err = globalG2engine.AddRecord(ctx, record.DataSource, record.Id, record.Json, szapi.G2_NO_FLAGS)
+		_, err = globalG2engine.AddRecord(ctx, record.DataSource, record.Id, record.Json, szapi.SZ_NO_FLAGS)
 		if err != nil {
 			defer teardownG2engine(ctx)
 			return err
@@ -309,7 +309,7 @@ func setupG2engine(ctx context.Context, moduleName string, iniParams string, ver
 	globalG2engine.SetLogLevel(ctx, logging.LevelInfoName)
 	log.SetFlags(0)
 
-	err := globalG2engine.Initialize(ctx, moduleName, iniParams, verboseLogging, szapi.G2_INITIALIZE_WITH_DEFAULT_CONFIGURATION)
+	err := globalG2engine.Initialize(ctx, moduleName, iniParams, verboseLogging, szapi.SZ_INITIALIZE_WITH_DEFAULT_CONFIGURATION)
 	if err != nil {
 		return createError(5903, err)
 	}
@@ -488,16 +488,16 @@ func TestG2engine_AddRecord_G2BadInput(test *testing.T) {
 	testErrorBasic(test, err)
 
 	// this one should succeed
-	_, err = g2engine.AddRecord(ctx, record1.DataSource, record1.Id, record1.Json, szapi.G2_NO_FLAGS)
+	_, err = g2engine.AddRecord(ctx, record1.DataSource, record1.Id, record1.Json, szapi.SZ_NO_FLAGS)
 	testError(test, ctx, g2engine, err)
-	defer g2engine.DeleteRecord(ctx, record1.DataSource, record1.Id, szapi.G2_NO_FLAGS)
+	defer g2engine.DeleteRecord(ctx, record1.DataSource, record1.Id, szapi.SZ_NO_FLAGS)
 
 	// this one should fail
-	_, err = g2engine.AddRecord(ctx, "CUSTOMERS", record2.Id, record2.Json, szapi.G2_NO_FLAGS)
+	_, err = g2engine.AddRecord(ctx, "CUSTOMERS", record2.Id, record2.Json, szapi.SZ_NO_FLAGS)
 	assert.True(test, szerror.Is(err, szerror.SzBadInput))
 
 	// clean-up the records we inserted
-	_, err = g2engine.DeleteRecord(ctx, record1.DataSource, record1.Id, szapi.G2_NO_FLAGS)
+	_, err = g2engine.DeleteRecord(ctx, record1.DataSource, record1.Id, szapi.SZ_NO_FLAGS)
 	testError(test, ctx, g2engine, err)
 }
 
@@ -510,20 +510,20 @@ func TestG2engine_AddRecord(test *testing.T) {
 	record2, err := record.NewRecord(`{"DATA_SOURCE": "TEST", "RECORD_ID": "ADD_TEST_2", "NAME_FULL": "SOMEBODY NOTFOUND"}`)
 	testErrorBasic(test, err)
 
-	_, err = g2engine.AddRecord(ctx, record1.DataSource, record1.Id, record1.Json, szapi.G2_NO_FLAGS)
+	_, err = g2engine.AddRecord(ctx, record1.DataSource, record1.Id, record1.Json, szapi.SZ_NO_FLAGS)
 	testError(test, ctx, g2engine, err)
-	defer g2engine.DeleteRecord(ctx, record1.DataSource, record1.Id, szapi.G2_NO_FLAGS)
+	defer g2engine.DeleteRecord(ctx, record1.DataSource, record1.Id, szapi.SZ_NO_FLAGS)
 
-	_, err = g2engine.AddRecord(ctx, record2.DataSource, record2.Id, record2.Json, szapi.G2_NO_FLAGS)
+	_, err = g2engine.AddRecord(ctx, record2.DataSource, record2.Id, record2.Json, szapi.SZ_NO_FLAGS)
 	testError(test, ctx, g2engine, err)
-	defer g2engine.DeleteRecord(ctx, record2.DataSource, record2.Id, szapi.G2_NO_FLAGS)
+	defer g2engine.DeleteRecord(ctx, record2.DataSource, record2.Id, szapi.SZ_NO_FLAGS)
 
 	// Clean-up the records we inserted.
 
-	_, err = g2engine.DeleteRecord(ctx, record1.DataSource, record1.Id, szapi.G2_NO_FLAGS)
+	_, err = g2engine.DeleteRecord(ctx, record1.DataSource, record1.Id, szapi.SZ_NO_FLAGS)
 	testError(test, ctx, g2engine, err)
 
-	_, err = g2engine.DeleteRecord(ctx, record2.DataSource, record2.Id, szapi.G2_NO_FLAGS)
+	_, err = g2engine.DeleteRecord(ctx, record2.DataSource, record2.Id, szapi.SZ_NO_FLAGS)
 	testError(test, ctx, g2engine, err)
 }
 
@@ -534,12 +534,12 @@ func TestG2engine_AddRecord(test *testing.T) {
 // 	testErrorBasic(test, err)
 
 // 	flags := int64(0)
-// 	actual, err := g2engine.AddRecordWithInfo(ctx, record.DataSource, record.Id, record.Json, szapi.G2_NO_FLAGS, flags)
+// 	actual, err := g2engine.AddRecordWithInfo(ctx, record.DataSource, record.Id, record.Json, szapi.SZ_NO_FLAGS, flags)
 // 	testError(test, ctx, g2engine, err)
-// 	defer g2engine.DeleteRecord(ctx, record.DataSource, record.Id, szapi.G2_NO_FLAGS)
+// 	defer g2engine.DeleteRecord(ctx, record.DataSource, record.Id, szapi.SZ_NO_FLAGS)
 // 	printActual(test, actual)
 
-// 	_, err = g2engine.DeleteRecord(ctx, record.DataSource, record.Id, szapi.G2_NO_FLAGS)
+// 	_, err = g2engine.DeleteRecord(ctx, record.DataSource, record.Id, szapi.SZ_NO_FLAGS)
 // 	testError(test, ctx, g2engine, err)
 // }
 
@@ -605,9 +605,9 @@ func TestG2engine_ExportJSONEntityReport(test *testing.T) {
 	ctx := context.TODO()
 	g2engine := getTestObject(ctx, test)
 	aRecord := testfixtures.FixtureRecords["65536-periods"]
-	_, err := g2engine.AddRecord(ctx, aRecord.DataSource, aRecord.Id, aRecord.Json, szapi.G2_NO_FLAGS)
+	_, err := g2engine.AddRecord(ctx, aRecord.DataSource, aRecord.Id, aRecord.Json, szapi.SZ_NO_FLAGS)
 	testError(test, ctx, g2engine, err)
-	defer g2engine.DeleteRecord(ctx, aRecord.DataSource, aRecord.Id, szapi.G2_NO_FLAGS)
+	defer g2engine.DeleteRecord(ctx, aRecord.DataSource, aRecord.Id, szapi.SZ_NO_FLAGS)
 	flags := int64(-1)
 	aHandle, err := g2engine.ExportJsonEntityReport(ctx, flags)
 	defer func() {
@@ -650,7 +650,7 @@ func TestG2engine_FindNetworkByEntityID(test *testing.T) {
 	maxDegree := int64(2)
 	buildOutDegree := int64(1)
 	maxEntities := int64(10)
-	actual, err := g2engine.FindNetworkByEntityId(ctx, entityList, maxDegree, buildOutDegree, maxEntities, szapi.G2_NO_FLAGS)
+	actual, err := g2engine.FindNetworkByEntityId(ctx, entityList, maxDegree, buildOutDegree, maxEntities, szapi.SZ_NO_FLAGS)
 	testErrorNoFail(test, ctx, g2engine, err)
 	printActual(test, actual)
 }
@@ -665,7 +665,7 @@ func TestG2engine_FindNetworkByRecordID(test *testing.T) {
 	maxDegree := int64(1)
 	buildOutDegree := int64(2)
 	maxEntities := int64(10)
-	actual, err := g2engine.FindNetworkByRecordId(ctx, recordList, maxDegree, buildOutDegree, maxEntities, szapi.G2_NO_FLAGS)
+	actual, err := g2engine.FindNetworkByRecordId(ctx, recordList, maxDegree, buildOutDegree, maxEntities, szapi.SZ_NO_FLAGS)
 	testError(test, ctx, g2engine, err)
 	printActual(test, actual)
 }
@@ -676,7 +676,7 @@ func TestG2engine_FindPathByEntityID(test *testing.T) {
 	entityID1 := getEntityId(truthset.CustomerRecords["1001"])
 	entityID2 := getEntityId(truthset.CustomerRecords["1002"])
 	maxDegree := int64(1)
-	actual, err := g2engine.FindPathByEntityId(ctx, entityID1, entityID2, maxDegree, szapi.G2_NO_EXCLUSIONS, szapi.G2_NO_REQUIRED_DATASOURCES, szapi.G2_NO_FLAGS)
+	actual, err := g2engine.FindPathByEntityId(ctx, entityID1, entityID2, maxDegree, szapi.SZ_NO_EXCLUSIONS, szapi.SZ_NO_REQUIRED_DATASOURCES, szapi.SZ_NO_FLAGS)
 	testError(test, ctx, g2engine, err)
 	printActual(test, actual)
 }
@@ -687,7 +687,7 @@ func TestG2engine_FindPathByRecordID(test *testing.T) {
 	record1 := truthset.CustomerRecords["1001"]
 	record2 := truthset.CustomerRecords["1002"]
 	maxDegree := int64(1)
-	actual, err := g2engine.FindPathByRecordId(ctx, record1.DataSource, record1.Id, record2.DataSource, record2.Id, maxDegree, szapi.G2_NO_EXCLUSIONS, szapi.G2_NO_REQUIRED_DATASOURCES, szapi.G2_NO_FLAGS)
+	actual, err := g2engine.FindPathByRecordId(ctx, record1.DataSource, record1.Id, record2.DataSource, record2.Id, maxDegree, szapi.SZ_NO_EXCLUSIONS, szapi.SZ_NO_REQUIRED_DATASOURCES, szapi.SZ_NO_FLAGS)
 	testError(test, ctx, g2engine, err)
 	printActual(test, actual)
 }
@@ -812,7 +812,7 @@ func TestG2engine_GetEntityByEntityID(test *testing.T) {
 	ctx := context.TODO()
 	g2engine := getTestObject(ctx, test)
 	entityID := getEntityId(truthset.CustomerRecords["1001"])
-	actual, err := g2engine.GetEntityByEntityId(ctx, entityID, szapi.G2_NO_FLAGS)
+	actual, err := g2engine.GetEntityByEntityId(ctx, entityID, szapi.SZ_NO_FLAGS)
 	testError(test, ctx, g2engine, err)
 	printActual(test, actual)
 }
@@ -821,7 +821,7 @@ func TestG2engine_GetEntityByRecordId(test *testing.T) {
 	ctx := context.TODO()
 	g2engine := getTestObject(ctx, test)
 	record := truthset.CustomerRecords["1001"]
-	actual, err := g2engine.GetEntityByRecordId(ctx, record.DataSource, record.Id, szapi.G2_NO_FLAGS)
+	actual, err := g2engine.GetEntityByRecordId(ctx, record.DataSource, record.Id, szapi.SZ_NO_FLAGS)
 	testError(test, ctx, g2engine, err)
 	printActual(test, actual)
 }
@@ -830,7 +830,7 @@ func TestG2engine_GetRecord(test *testing.T) {
 	ctx := context.TODO()
 	g2engine := getTestObject(ctx, test)
 	record := truthset.CustomerRecords["1001"]
-	actual, err := g2engine.GetRecord(ctx, record.DataSource, record.Id, szapi.G2_NO_FLAGS)
+	actual, err := g2engine.GetRecord(ctx, record.DataSource, record.Id, szapi.SZ_NO_FLAGS)
 	testError(test, ctx, g2engine, err)
 	printActual(test, actual)
 }
@@ -857,7 +857,7 @@ func TestG2engine_GetVirtualEntityByRecordId(test *testing.T) {
 	record1 := truthset.CustomerRecords["1001"]
 	record2 := truthset.CustomerRecords["1002"]
 	recordList := `{"RECORDS": [{"DATA_SOURCE": "` + record1.DataSource + `", "RECORD_ID": "` + record1.Id + `"}, {"DATA_SOURCE": "` + record2.DataSource + `", "RECORD_ID": "` + record2.Id + `"}]}`
-	actual, err := g2engine.GetVirtualEntityByRecordId(ctx, recordList, szapi.G2_NO_FLAGS)
+	actual, err := g2engine.GetVirtualEntityByRecordId(ctx, recordList, szapi.SZ_NO_FLAGS)
 	testError(test, ctx, g2engine, err)
 	printActual(test, actual)
 }
@@ -866,7 +866,7 @@ func TestG2engine_HowEntityByEntityId(test *testing.T) {
 	ctx := context.TODO()
 	g2engine := getTestObject(ctx, test)
 	entityID := getEntityId(truthset.CustomerRecords["1001"])
-	actual, err := g2engine.HowEntityByEntityId(ctx, entityID, szapi.G2_NO_FLAGS)
+	actual, err := g2engine.HowEntityByEntityId(ctx, entityID, szapi.SZ_NO_FLAGS)
 	testError(test, ctx, g2engine, err)
 	printActual(test, actual)
 }
@@ -900,7 +900,7 @@ func TestG2engine_ReevaluateEntity(test *testing.T) {
 	ctx := context.TODO()
 	g2engine := getTestObject(ctx, test)
 	entityID := getEntityId(truthset.CustomerRecords["1001"])
-	_, err := g2engine.ReevaluateEntity(ctx, entityID, szapi.G2_NO_FLAGS)
+	_, err := g2engine.ReevaluateEntity(ctx, entityID, szapi.SZ_NO_FLAGS)
 	testError(test, ctx, g2engine, err)
 }
 
@@ -908,7 +908,7 @@ func TestG2engine_ReevaluateEntity_WithInfo(test *testing.T) {
 	ctx := context.TODO()
 	g2engine := getTestObject(ctx, test)
 	entityID := getEntityId(truthset.CustomerRecords["1001"])
-	actual, err := g2engine.ReevaluateEntity(ctx, entityID, szapi.G2_WITH_INFO)
+	actual, err := g2engine.ReevaluateEntity(ctx, entityID, szapi.SZ_WITH_INFO)
 	testError(test, ctx, g2engine, err)
 	printActual(test, actual)
 }
@@ -917,7 +917,7 @@ func TestG2engine_ReevaluateRecord(test *testing.T) {
 	ctx := context.TODO()
 	g2engine := getTestObject(ctx, test)
 	record := truthset.CustomerRecords["1001"]
-	_, err := g2engine.ReevaluateRecord(ctx, record.DataSource, record.Id, szapi.G2_NO_FLAGS)
+	_, err := g2engine.ReevaluateRecord(ctx, record.DataSource, record.Id, szapi.SZ_NO_FLAGS)
 	testError(test, ctx, g2engine, err)
 }
 
@@ -925,7 +925,7 @@ func TestG2engine_ReevaluateRecord_WithInfo(test *testing.T) {
 	ctx := context.TODO()
 	g2engine := getTestObject(ctx, test)
 	record := truthset.CustomerRecords["1001"]
-	actual, err := g2engine.ReevaluateRecord(ctx, record.DataSource, record.Id, szapi.G2_WITH_INFO)
+	actual, err := g2engine.ReevaluateRecord(ctx, record.DataSource, record.Id, szapi.SZ_WITH_INFO)
 	testError(test, ctx, g2engine, err)
 	printActual(test, actual)
 }
@@ -936,11 +936,11 @@ func TestG2engine_ReplaceRecord(test *testing.T) {
 	dataSourceCode := "CUSTOMERS"
 	recordID := "1001"
 	jsonData := `{"SOCIAL_HANDLE": "flavorh", "DATE_OF_BIRTH": "4/8/1984", "ADDR_STATE": "LA", "ADDR_POSTAL_CODE": "71232", "SSN_NUMBER": "053-39-3251", "ENTITY_TYPE": "CUSTOMERS", "GENDER": "F", "srccode": "MDMPER", "CC_ACCOUNT_NUMBER": "5534202208773608", "RECORD_ID": "1001", "DSRC_ACTION": "A", "ADDR_CITY": "Delhi", "DRIVERS_LICENSE_STATE": "DE", "PHONE_NUMBER": "225-671-0796", "NAME_LAST": "JOHNSON", "entityid": "284430058", "ADDR_LINE1": "772 Armstrong RD"}`
-	_, err := g2engine.ReplaceRecord(ctx, dataSourceCode, recordID, jsonData, szapi.G2_NO_FLAGS)
+	_, err := g2engine.ReplaceRecord(ctx, dataSourceCode, recordID, jsonData, szapi.SZ_NO_FLAGS)
 	testError(test, ctx, g2engine, err)
 
 	record := truthset.CustomerRecords["1001"]
-	_, err = g2engine.ReplaceRecord(ctx, record.DataSource, record.Id, record.Json, szapi.G2_NO_FLAGS)
+	_, err = g2engine.ReplaceRecord(ctx, record.DataSource, record.Id, record.Json, szapi.SZ_NO_FLAGS)
 	testError(test, ctx, g2engine, err)
 }
 
@@ -951,11 +951,11 @@ func TestG2engine_ReplaceRecord_WithInfo(test *testing.T) {
 	dataSourceCode := "CUSTOMERS"
 	recordID := "1001"
 	jsonData := `{"SOCIAL_HANDLE": "flavorh", "DATE_OF_BIRTH": "4/8/1985", "ADDR_STATE": "LA", "ADDR_POSTAL_CODE": "71232", "SSN_NUMBER": "053-39-3251", "ENTITY_TYPE": "CUSTOMERS", "GENDER": "F", "srccode": "MDMPER", "CC_ACCOUNT_NUMBER": "5534202208773608", "RECORD_ID": "1001", "DSRC_ACTION": "A", "ADDR_CITY": "Delhi", "DRIVERS_LICENSE_STATE": "DE", "PHONE_NUMBER": "225-671-0796", "NAME_LAST": "JOHNSON", "entityid": "284430058", "ADDR_LINE1": "772 Armstrong RD"}`
-	actual, err := g2engine.ReplaceRecord(ctx, dataSourceCode, recordID, jsonData, szapi.G2_WITH_INFO)
+	actual, err := g2engine.ReplaceRecord(ctx, dataSourceCode, recordID, jsonData, szapi.SZ_WITH_INFO)
 	testError(test, ctx, g2engine, err)
 	printActual(test, actual)
 	record := truthset.CustomerRecords["1001"]
-	_, err = g2engine.ReplaceRecord(ctx, record.DataSource, record.Id, record.Json, szapi.G2_NO_FLAGS)
+	_, err = g2engine.ReplaceRecord(ctx, record.DataSource, record.Id, record.Json, szapi.SZ_NO_FLAGS)
 	testError(test, ctx, g2engine, err)
 }
 
@@ -963,7 +963,7 @@ func TestG2engine_SearchByAttributes(test *testing.T) {
 	ctx := context.TODO()
 	g2engine := getTestObject(ctx, test)
 	attributes := `{"NAMES": [{"NAME_TYPE": "PRIMARY", "NAME_LAST": "JOHNSON"}], "SSN_NUMBER": "053-39-3251"}`
-	actual, err := g2engine.SearchByAttributes(ctx, attributes, szapi.G2_NO_SEARCH_PROFILE, szapi.G2_NO_FLAGS)
+	actual, err := g2engine.SearchByAttributes(ctx, attributes, szapi.SZ_NO_SEARCH_PROFILE, szapi.SZ_NO_FLAGS)
 	testError(test, ctx, g2engine, err)
 	printActual(test, actual)
 }
@@ -981,7 +981,7 @@ func TestG2engine_WhyEntities(test *testing.T) {
 	g2engine := getTestObject(ctx, test)
 	entityID1 := getEntityId(truthset.CustomerRecords["1001"])
 	entityID2 := getEntityId(truthset.CustomerRecords["1002"])
-	actual, err := g2engine.WhyEntities(ctx, entityID1, entityID2, szapi.G2_NO_FLAGS)
+	actual, err := g2engine.WhyEntities(ctx, entityID1, entityID2, szapi.SZ_NO_FLAGS)
 	testError(test, ctx, g2engine, err)
 	printActual(test, actual)
 }
@@ -991,7 +991,7 @@ func TestG2engine_WhyRecords(test *testing.T) {
 	g2engine := getTestObject(ctx, test)
 	record1 := truthset.CustomerRecords["1001"]
 	record2 := truthset.CustomerRecords["1002"]
-	actual, err := g2engine.WhyRecords(ctx, record1.DataSource, record1.Id, record2.DataSource, record2.Id, szapi.G2_NO_FLAGS)
+	actual, err := g2engine.WhyRecords(ctx, record1.DataSource, record1.Id, record2.DataSource, record2.Id, szapi.SZ_NO_FLAGS)
 	testError(test, ctx, g2engine, err)
 	printActual(test, actual)
 }
@@ -1001,7 +1001,7 @@ func TestG2engine_Initialize(test *testing.T) {
 	g2engine := getTestObject(ctx, test)
 	settings, err := getIniParams()
 	testError(test, ctx, g2engine, err)
-	err = g2engine.Initialize(ctx, instanceName, settings, verboseLogging, szapi.G2_INITIALIZE_WITH_DEFAULT_CONFIGURATION)
+	err = g2engine.Initialize(ctx, instanceName, settings, verboseLogging, szapi.SZ_INITIALIZE_WITH_DEFAULT_CONFIGURATION)
 	testError(test, ctx, g2engine, err)
 }
 
@@ -1023,11 +1023,11 @@ func TestG2engine_DeleteRecord(test *testing.T) {
 	record, err := record.NewRecord(`{"DATA_SOURCE": "TEST", "RECORD_ID": "DELETE_TEST", "NAME_FULL": "GONNA B. DELETED"}`)
 	testError(test, ctx, g2engine, err)
 
-	_, err = g2engine.AddRecord(ctx, record.DataSource, record.Id, record.Json, szapi.G2_NO_FLAGS)
+	_, err = g2engine.AddRecord(ctx, record.DataSource, record.Id, record.Json, szapi.SZ_NO_FLAGS)
 	testError(test, ctx, g2engine, err)
 
 	// now delete the record
-	_, err = g2engine.DeleteRecord(ctx, record.DataSource, record.Id, szapi.G2_NO_FLAGS)
+	_, err = g2engine.DeleteRecord(ctx, record.DataSource, record.Id, szapi.SZ_NO_FLAGS)
 	testError(test, ctx, g2engine, err)
 }
 
@@ -1039,11 +1039,11 @@ func TestG2engine_DeleteRecordWithInfo(test *testing.T) {
 	record, err := record.NewRecord(`{"DATA_SOURCE": "TEST", "RECORD_ID": "DELETE_TEST", "NAME_FULL": "DELETE W. INFO"}`)
 	testError(test, ctx, g2engine, err)
 
-	_, err = g2engine.AddRecord(ctx, record.DataSource, record.Id, record.Json, szapi.G2_NO_FLAGS)
+	_, err = g2engine.AddRecord(ctx, record.DataSource, record.Id, record.Json, szapi.SZ_NO_FLAGS)
 	testError(test, ctx, g2engine, err)
 
 	// now delete the record
-	actual, err := g2engine.DeleteRecord(ctx, record.DataSource, record.Id, szapi.G2_WITH_INFO)
+	actual, err := g2engine.DeleteRecord(ctx, record.DataSource, record.Id, szapi.SZ_WITH_INFO)
 	testError(test, ctx, g2engine, err)
 	printActual(test, actual)
 }

@@ -24,8 +24,8 @@ import (
 	"time"
 	"unsafe"
 
-	szconfigmgrapi "github.com/senzing-garage/g2-sdk-go/szconfigmgr"
-	"github.com/senzing-garage/g2-sdk-go/szerror"
+	szconfigmgrapi "github.com/senzing-garage/sz-sdk-go/szconfigmgr"
+	"github.com/senzing-garage/sz-sdk-go/szerror"
 	"github.com/senzing-garage/go-logging/logging"
 	"github.com/senzing-garage/go-observing/notifier"
 	"github.com/senzing-garage/go-observing/observer"

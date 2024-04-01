@@ -12,9 +12,9 @@ import (
 
 	truncator "github.com/aquilax/truncate"
 	"github.com/senzing-garage/sz-sdk-go-core/szconfig"
-	"github.com/senzing-garage/g2-sdk-go/szapi"
-	szconfigmgrapi "github.com/senzing-garage/g2-sdk-go/szconfigmgr"
-	"github.com/senzing-garage/g2-sdk-go/szerror"
+	"github.com/senzing-garage/sz-sdk-go/szapi"
+	szconfigmgrapi "github.com/senzing-garage/sz-sdk-go/szconfigmgr"
+	"github.com/senzing-garage/sz-sdk-go/szerror"
 	futil "github.com/senzing-garage/go-common/fileutil"
 	"github.com/senzing-garage/go-common/g2engineconfigurationjson"
 	"github.com/senzing-garage/go-common/truthset"
@@ -45,18 +45,18 @@ func createError(errorId int, err error) error {
 	return szerror.Cast(logger.NewError(errorId, err), err)
 }
 
-func getTestObject(ctx context.Context, test *testing.T) szapi.G2configmgr {
+func getTestObject(ctx context.Context, test *testing.T) szapi.Szconfigmgr {
 	_ = ctx
 	_ = test
 	return &globalSzconfigmgr
 }
 
-func getSzconfigmgr(ctx context.Context) szapi.G2configmgr {
+func getSzconfigmgr(ctx context.Context) szapi.Szconfigmgr {
 	_ = ctx
 	return &globalSzconfigmgr
 }
 
-func getSzconfig(ctx context.Context) szapi.G2config {
+func getSzconfig(ctx context.Context) szapi.Szconfig {
 	_ = ctx
 	return &globalSzconfig
 }
@@ -75,7 +75,7 @@ func printActual(test *testing.T, actual interface{}) {
 	printResult(test, "Actual", actual)
 }
 
-func testError(test *testing.T, ctx context.Context, szconfigmgr szapi.G2configmgr, err error) {
+func testError(test *testing.T, ctx context.Context, szconfigmgr szapi.Szconfigmgr, err error) {
 	_ = ctx
 	_ = szconfigmgr
 	if err != nil {

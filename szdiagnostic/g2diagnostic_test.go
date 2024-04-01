@@ -13,9 +13,9 @@ import (
 	"github.com/senzing-garage/sz-sdk-go-core/szconfig"
 	"github.com/senzing-garage/sz-sdk-go-core/szconfigmgr"
 	"github.com/senzing-garage/sz-sdk-go-core/szengine"
-	"github.com/senzing-garage/g2-sdk-go/szapi"
-	szdiagnosticapi "github.com/senzing-garage/g2-sdk-go/szdiagnostic"
-	"github.com/senzing-garage/g2-sdk-go/szerror"
+	"github.com/senzing-garage/sz-sdk-go/szapi"
+	szdiagnosticapi "github.com/senzing-garage/sz-sdk-go/szdiagnostic"
+	"github.com/senzing-garage/sz-sdk-go/szerror"
 	futil "github.com/senzing-garage/go-common/fileutil"
 	"github.com/senzing-garage/go-common/g2engineconfigurationjson"
 	"github.com/senzing-garage/go-common/truthset"
@@ -45,13 +45,13 @@ func createError(errorId int, err error) error {
 	return szerror.Cast(logger.NewError(errorId, err), err)
 }
 
-func getTestObject(ctx context.Context, test *testing.T) szapi.G2diagnostic {
+func getTestObject(ctx context.Context, test *testing.T) szapi.Szdiagnostic {
 	_ = ctx
 	_ = test
 	return &globalG2diagnostic
 }
 
-func getG2Diagnostic(ctx context.Context) szapi.G2diagnostic {
+func getG2Diagnostic(ctx context.Context) szapi.Szdiagnostic {
 	_ = ctx
 	return &globalG2diagnostic
 }
@@ -70,7 +70,7 @@ func printActual(test *testing.T, actual interface{}) {
 	printResult(test, "Actual", actual)
 }
 
-func testError(test *testing.T, ctx context.Context, g2diagnostic szapi.G2diagnostic, err error) {
+func testError(test *testing.T, ctx context.Context, g2diagnostic szapi.Szdiagnostic, err error) {
 	_ = ctx
 	_ = g2diagnostic
 	if err != nil {
@@ -79,7 +79,7 @@ func testError(test *testing.T, ctx context.Context, g2diagnostic szapi.G2diagno
 	}
 }
 
-func testErrorNoFail(test *testing.T, ctx context.Context, g2diagnostic szapi.G2diagnostic, err error) {
+func testErrorNoFail(test *testing.T, ctx context.Context, g2diagnostic szapi.Szdiagnostic, err error) {
 	_ = ctx
 	_ = g2diagnostic
 	if err != nil {

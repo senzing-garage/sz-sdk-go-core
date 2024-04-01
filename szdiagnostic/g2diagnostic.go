@@ -25,8 +25,8 @@ import (
 	"time"
 	"unsafe"
 
-	szdiagnosticapi "github.com/senzing-garage/g2-sdk-go/szdiagnostic"
-	"github.com/senzing-garage/g2-sdk-go/szerror"
+	szdiagnosticapi "github.com/senzing-garage/sz-sdk-go/szdiagnostic"
+	"github.com/senzing-garage/sz-sdk-go/szerror"
 	"github.com/senzing-garage/go-logging/logging"
 	"github.com/senzing-garage/go-observing/notifier"
 	"github.com/senzing-garage/go-observing/observer"
