@@ -6,8 +6,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/senzing-garage/sz-sdk-go-core/szconfig"
 	"github.com/senzing-garage/go-logging/logging"
+	"github.com/senzing-garage/sz-sdk-go-core/szconfig"
 )
 
 // ----------------------------------------------------------------------------
@@ -15,7 +15,7 @@ import (
 // ----------------------------------------------------------------------------
 
 func ExampleSzconfigmgr_SetObserverOrigin() {
-	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2configmgr/g2configmgr_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfigmgr/szconfigmgr_examples_test.go
 	ctx := context.TODO()
 	g2configmgr := getSzconfigmgr(ctx)
 	origin := "Machine: nn; Task: UnitTest"
@@ -35,7 +35,7 @@ func ExampleSzconfigmgr_GetObserverOrigin() {
 }
 
 func ExampleSzconfigmgr_AddConfig() {
-	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2configmgr/g2configmgr_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfigmgr/szconfigmgr_examples_test.go
 	ctx := context.TODO()
 	g2config := getSzconfig(ctx)
 	configHandle, err := g2config.Create(ctx)
@@ -60,7 +60,7 @@ func ExampleSzconfigmgr_AddConfig() {
 }
 
 func ExampleSzconfigmgr_GetConfig() {
-	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2configmgr/g2configmgr_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfigmgr/szconfigmgr_examples_test.go
 	ctx := context.TODO()
 	g2configmgr := getSzconfigmgr(ctx)
 	defaultConfigId, err := g2configmgr.GetDefaultConfigId(ctx)
@@ -76,7 +76,7 @@ func ExampleSzconfigmgr_GetConfig() {
 }
 
 func ExampleSzconfigmgr_GetConfigList() {
-	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2configmgr/g2configmgr_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfigmgr/szconfigmgr_examples_test.go
 	ctx := context.TODO()
 	g2configmgr := getSzconfigmgr(ctx)
 	configList, err := g2configmgr.GetConfigList(ctx)
@@ -88,7 +88,7 @@ func ExampleSzconfigmgr_GetConfigList() {
 }
 
 func ExampleSzconfigmgr_GetDefaultConfigId() {
-	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2configmgr/g2configmgr_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfigmgr/szconfigmgr_examples_test.go
 	ctx := context.TODO()
 	g2configmgr := getSzconfigmgr(ctx)
 	defaultConfigId, err := g2configmgr.GetDefaultConfigId(ctx)
@@ -100,7 +100,7 @@ func ExampleSzconfigmgr_GetDefaultConfigId() {
 }
 
 func ExampleSzconfigmgr_ReplaceDefaultConfigId() {
-	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2configmgr/g2configmgr_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfigmgr/szconfigmgr_examples_test.go
 	ctx := context.TODO()
 	g2configmgr := getSzconfigmgr(ctx)
 	currentDefaultConfigId, err := g2configmgr.GetDefaultConfigId(ctx)
@@ -129,7 +129,7 @@ func ExampleSzconfigmgr_ReplaceDefaultConfigId() {
 }
 
 func ExampleSzconfigmgr_SetDefaultConfigId() {
-	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2configmgr/g2configmgr_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfigmgr/szconfigmgr_examples_test.go
 	ctx := context.TODO()
 	g2configmgr := getSzconfigmgr(ctx)
 	configId, err := g2configmgr.GetDefaultConfigId(ctx) // For example purposes only. Normally would use output from GetConfigList()
@@ -144,7 +144,7 @@ func ExampleSzconfigmgr_SetDefaultConfigId() {
 }
 
 func ExampleSzconfigmgr_SetLogLevel() {
-	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2configmgr/g2configmgr_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfigmgr/szconfigmgr_examples_test.go
 	ctx := context.TODO()
 	g2configmgr := getSzconfigmgr(ctx)
 	err := g2configmgr.SetLogLevel(ctx, logging.LevelInfoName)
@@ -155,7 +155,7 @@ func ExampleSzconfigmgr_SetLogLevel() {
 }
 
 func ExampleSzconfigmgr_Initialize() {
-	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2configmgr/g2configmgr_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfigmgr/szconfigmgr_examples_test.go
 	ctx := context.TODO()
 	g2configmgr := &Szconfigmgr{}
 	instanceName := "Test module name"
@@ -172,7 +172,7 @@ func ExampleSzconfigmgr_Initialize() {
 }
 
 func ExampleSzconfigmgr_Destroy() {
-	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2configmgr/g2configmgr_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfigmgr/szconfigmgr_examples_test.go
 	ctx := context.TODO()
 	g2configmgr := getSzconfigmgr(ctx)
 	err := g2configmgr.Destroy(ctx)

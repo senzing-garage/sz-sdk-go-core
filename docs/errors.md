@@ -9,13 +9,13 @@ Error identifiers are in the format `senzing-PPPPnnnn` where:
 
 Prefixes:
 
-1. `6001` - g2config
-1. `6002` - g2configmgr
-1. `6003` - g2diagnostic
-1. `6004` - g2engine
-1. `6005` - g2hasher
-1. `6006` - g2product
-1. `6007` - g2ssadm
+1. `6001` - szconfig
+1. `6002` - szconfigmgr
+1. `6003` - szdiagnostic
+1. `6004` - szengine
+1. `6005` - szhasher
+1. `6006` - szproduct
+1. `6007` - sssadm
 
 ## Common errors
 
@@ -35,163 +35,163 @@ Prefixes:
 
 ### senzing-60010001
 
-- Trace the entering of `g2config.AddDataSource`
-- See `AddDataSource` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2config/g2config.go>
+- Trace the entering of `szconfig.AddDataSource`
+- See `AddDataSource` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig.go>
 
 ### senzing-60010002
 
-- Trace the exiting of `g2config.AddDataSource`
-- See `AddDataSource` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2config/g2config.go>
+- Trace the exiting of `szconfig.AddDataSource`
+- See `AddDataSource` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig.go>
 
 ### senzing-60010003
 
-- Trace the entering of `g2config.ClearLastException`
-- See `ClearLastException` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2config/g2config.go>
+- Trace the entering of `szconfig.ClearLastException`
+- See `ClearLastException` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig.go>
 
 ### senzing-60010004
 
-- Trace the exiting of `g2config.ClearLastException`
-- See `ClearLastException` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2config/g2config.go>
+- Trace the exiting of `szconfig.ClearLastException`
+- See `ClearLastException` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig.go>
 
 ### senzing-60010005
 
-- Trace the entering of `g2config.Close`
-- See `Close` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2config/g2config.go>
+- Trace the entering of `szconfig.Close`
+- See `Close` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig.go>
 
 ### senzing-60010006
 
-- Trace the exiting of `g2config.Close`
-- See `Close` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2config/g2config.go>
+- Trace the exiting of `szconfig.Close`
+- See `Close` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig.go>
 
 ### senzing-60010007
 
-- Trace the entering of `g2config.Create`
-- See `Create` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2config/g2config.go>
+- Trace the entering of `szconfig.Create`
+- See `Create` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig.go>
 
 ### senzing-60010008
 
-- Trace the exiting of `g2config.Create`
-- See `Create` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2config/g2config.go>
+- Trace the exiting of `szconfig.Create`
+- See `Create` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig.go>
 
 ### senzing-60010009
 
-- Trace the entering of `g2config.DeleteDataSource`
-- See `DeleteDataSource` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2config/g2config.go>
+- Trace the entering of `szconfig.DeleteDataSource`
+- See `DeleteDataSource` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig.go>
 
 ### senzing-60010010
 
-- Trace the exiting of `g2config.DeleteDataSource`
-- See `DeleteDataSource` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2config/g2config.go>
+- Trace the exiting of `szconfig.DeleteDataSource`
+- See `DeleteDataSource` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig.go>
 
 ### senzing-60010011
 
-- Trace the entering of `g2config.Destroy`
-- See `Destroy` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2config/g2config.go>
+- Trace the entering of `szconfig.Destroy`
+- See `Destroy` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig.go>
 
 ### senzing-60010012
 
-- Trace the exiting of `g2config.Destroy`
-- See `Destroy` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2config/g2config.go>
+- Trace the exiting of `szconfig.Destroy`
+- See `Destroy` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig.go>
 
 ### senzing-60010013
 
-- Trace the entering of `g2config.GetLastException`
-- See `GetLastException` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2config/g2config.go>
+- Trace the entering of `szconfig.GetLastException`
+- See `GetLastException` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig.go>
 
 ### senzing-60010014
 
-- Trace the exiting of `g2config.GetLastException`
-- See `GetLastException` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2config/g2config.go>
+- Trace the exiting of `szconfig.GetLastException`
+- See `GetLastException` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig.go>
 
 ### senzing-60010015
 
-- Trace the entering of `g2config.GetLastExceptionCode`
-- See `GetLastExceptionCode` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2config/g2config.go>
+- Trace the entering of `szconfig.GetLastExceptionCode`
+- See `GetLastExceptionCode` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig.go>
 
 ### senzing-60010016
 
-- Trace the exiting of `g2config.GetLastExceptionCode`
-- See `GetLastExceptionCode` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2config/g2config.go>
+- Trace the exiting of `szconfig.GetLastExceptionCode`
+- See `GetLastExceptionCode` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig.go>
 
 ### senzing-60010017
 
-- Trace the entering of `g2config.Init`
-- See `Init` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2config/g2config.go>
+- Trace the entering of `szconfig.Init`
+- See `Init` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig.go>
 
 ### senzing-60010018
 
-- Trace the exiting of `g2config.Init`
-- See `Init` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2config/g2config.go>
+- Trace the exiting of `szconfig.Init`
+- See `Init` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig.go>
 
 ### senzing-60010019
 
-- Trace the entering of `g2config.ListDataSources`
-- See `ListDataSources` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2config/g2config.go>
+- Trace the entering of `szconfig.ListDataSources`
+- See `ListDataSources` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig.go>
 
 ### senzing-60010020
 
-- Trace the exiting of `g2config.ListDataSources`
-- See `ListDataSources` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2config/g2config.go>
+- Trace the exiting of `szconfig.ListDataSources`
+- See `ListDataSources` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig.go>
 
 ### senzing-60010021
 
-- Trace the entering of `g2config.Load`
-- See `` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2config/g2config.go>
+- Trace the entering of `szconfig.Load`
+- See `` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig.go>
 
 ### senzing-60010022
 
-- Trace the exiting of `g2config.Load`
-- See `Load` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2config/g2config.go>
+- Trace the exiting of `szconfig.Load`
+- See `Load` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig.go>
 
 ### senzing-60010023
 
-- Trace the entering of `g2config.Save`
-- See `Load` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2config/g2config.go>
+- Trace the entering of `szconfig.Save`
+- See `Load` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig.go>
 
 ### senzing-60010024
 
-- Trace the exiting of `g2config.Save`
-- See `Save` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2config/g2config.go>
+- Trace the exiting of `szconfig.Save`
+- See `Save` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig.go>
 
 ### senzing-60010025
 
-- Trace the entering of `g2config.SetLogLevel`
-- See `SetLogLevel` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2config/g2config.go>
+- Trace the entering of `szconfig.SetLogLevel`
+- See `SetLogLevel` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig.go>
 
 ### senzing-60010026
 
-- Trace the exiting of `g2config.SetLogLevel`
-- See `SetLogLevel` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2config/g2config.go>
+- Trace the exiting of `szconfig.SetLogLevel`
+- See `SetLogLevel` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig.go>
 
 ### senzing-60010027
 
-- Trace the entering of `g2config.RegisterObserver`
-- See `RegisterObserver` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2config/g2config.go>
+- Trace the entering of `szconfig.RegisterObserver`
+- See `RegisterObserver` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig.go>
 
 ### senzing-60010028
 
-- Trace the exiting of `g2config.RegisterObserver`
-- See `RegisterObserver` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2config/g2config.go>
+- Trace the exiting of `szconfig.RegisterObserver`
+- See `RegisterObserver` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig.go>
 
 ### senzing-60010029
 
-- Trace the entering of `g2config.UnregisterObserver`
-- See `UnregisterObserver` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2config/g2config.go>
+- Trace the entering of `szconfig.UnregisterObserver`
+- See `UnregisterObserver` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig.go>
 
 ### senzing-60010030
 
-- Trace the exiting of `g2config.UnregisterObserver`
-- See `UnregisterObserver` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2config/g2config.go>
+- Trace the exiting of `szconfig.UnregisterObserver`
+- See `UnregisterObserver` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig.go>
 
 ### senzing-60010031
 
-- Trace the entering of `g2config.GetSdkId`
-- See `GetSdkId` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2config/g2config.go>
+- Trace the entering of `szconfig.GetSdkId`
+- See `GetSdkId` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig.go>
 
 ### senzing-60010032
 
-- Trace the exiting of `g2config.GetSdkId`
-- See `GetSdkId` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2config/g2config.go>
+- Trace the exiting of `szconfig.GetSdkId`
+- See `GetSdkId` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig.go>
 
 ### senzing-60014001
 

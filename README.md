@@ -40,16 +40,16 @@ The Senzing `sz-sdk-go-core` packages enable Go programs to call Senzing library
 Under the covers, Golang's CGO is used by the sz-sdk-go-core packages to make calls
 to the functions in the Senzing C libraries.
 The `sz-sdk-go-core` implementation of the
-[g2-sdk-go](https://github.com/senzing-garage/g2-sdk-go)
+[sz-sdk-go](https://github.com/senzing-garage/sz-sdk-go)
 interface is used to call the Senzing C SDK APIs directly using Go's CGO.
 
 Other implementations of the
-[g2-sdk-go](https://github.com/senzing-garage/g2-sdk-go)
+[sz-sdk-go](https://github.com/senzing-garage/sz-sdk-go)
 interface include:
 
-- [g2-sdk-go-mock](https://github.com/senzing-garage/g2-sdk-go-mock) - for
+- [sz-sdk-go-mock](https://github.com/senzing-garage/sz-sdk-go-mock) - for
   unit testing calls to the Senzing Go SDK
-- [g2-sdk-go-grpc](https://github.com/senzing-garage/g2-sdk-go-grpc) - for
+- [sz-sdk-go-grpc](https://github.com/senzing-garage/sz-sdk-go-grpc) - for
   calling Senzing SDK APIs over [gRPC](https://grpc.io/)
 - [go-sdk-abstract-factory](https://github.com/senzing-garage/go-sdk-abstract-factory) - An
   [abstract factory pattern](https://en.wikipedia.org/wiki/Abstract_factory_pattern)

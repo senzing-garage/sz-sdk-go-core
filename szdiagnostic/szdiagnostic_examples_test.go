@@ -14,7 +14,7 @@ import (
 // ----------------------------------------------------------------------------
 
 func ExampleSzdiagnostic_SetObserverOrigin() {
-	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2diagnostic/g2diagnostic_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
 	ctx := context.TODO()
 	g2diagnostic := getG2Diagnostic(ctx)
 	origin := "Machine: nn; Task: UnitTest"
@@ -23,7 +23,7 @@ func ExampleSzdiagnostic_SetObserverOrigin() {
 }
 
 func ExampleSzdiagnostic_GetObserverOrigin() {
-	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2diagnostic/g2diagnostic_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
 	ctx := context.TODO()
 	g2diagnostic := getG2Diagnostic(ctx)
 	origin := "Machine: nn; Task: UnitTest"
@@ -34,7 +34,7 @@ func ExampleSzdiagnostic_GetObserverOrigin() {
 }
 
 func ExampleSzdiagnostic_CheckDatabasePerformance() {
-	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2diagnostic/g2diagnostic_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
 	ctx := context.TODO()
 	g2diagnostic := getG2Diagnostic(ctx)
 	secondsToRun := 1
@@ -47,7 +47,7 @@ func ExampleSzdiagnostic_CheckDatabasePerformance() {
 }
 
 func ExampleSzdiagnostic_SetLogLevel() {
-	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2diagnostic/g2diagnostic_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
 	ctx := context.TODO()
 	g2diagnostic := &Szdiagnostic{}
 	err := g2diagnostic.SetLogLevel(ctx, logging.LevelInfoName)
@@ -58,7 +58,7 @@ func ExampleSzdiagnostic_SetLogLevel() {
 }
 
 func ExampleSzdiagnostic_Initialize() {
-	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2diagnostic/g2diagnostic_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
 	ctx := context.TODO()
 	g2diagnostic := &Szdiagnostic{}
 	instanceName := "Test module name"
@@ -76,7 +76,7 @@ func ExampleSzdiagnostic_Initialize() {
 }
 
 func ExampleSzdiagnostic_Reinitialize() {
-	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2diagnostic/g2diagnostic_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
 	ctx := context.TODO()
 	g2diagnostic := getG2Diagnostic(ctx)
 	configId := getDefaultConfigId()
@@ -88,7 +88,7 @@ func ExampleSzdiagnostic_Reinitialize() {
 }
 
 func ExampleSzdiagnostic_Destroy() {
-	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2diagnostic/g2diagnostic_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
 	ctx := context.TODO()
 	g2diagnostic := getG2Diagnostic(ctx)
 	err := g2diagnostic.Destroy(ctx)

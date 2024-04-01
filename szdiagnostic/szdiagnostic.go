@@ -1,5 +1,5 @@
 /*
-The G2diagnostic implementation is a wrapper over the Senzing libg2diagnostic library.
+The szdiagnostic implementation is a wrapper over the Senzing libg2diagnostic library.
 */
 package szdiagnostic
 
@@ -25,12 +25,12 @@ import (
 	"time"
 	"unsafe"
 
-	szdiagnosticapi "github.com/senzing-garage/sz-sdk-go/szdiagnostic"
-	"github.com/senzing-garage/sz-sdk-go/szerror"
 	"github.com/senzing-garage/go-logging/logging"
 	"github.com/senzing-garage/go-observing/notifier"
 	"github.com/senzing-garage/go-observing/observer"
 	"github.com/senzing-garage/go-observing/subject"
+	szdiagnosticapi "github.com/senzing-garage/sz-sdk-go/szdiagnostic"
+	"github.com/senzing-garage/sz-sdk-go/szerror"
 )
 
 // ----------------------------------------------------------------------------

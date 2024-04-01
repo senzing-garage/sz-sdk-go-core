@@ -1,5 +1,5 @@
 /*
-The G2configmgr implementation is a wrapper over the Senzing libg2configmgr library.
+The szconfigmgr implementation is a wrapper over the Senzing libg2configmgr library.
 */
 package szconfigmgr
 
@@ -24,12 +24,12 @@ import (
 	"time"
 	"unsafe"
 
-	szconfigmgrapi "github.com/senzing-garage/sz-sdk-go/szconfigmgr"
-	"github.com/senzing-garage/sz-sdk-go/szerror"
 	"github.com/senzing-garage/go-logging/logging"
 	"github.com/senzing-garage/go-observing/notifier"
 	"github.com/senzing-garage/go-observing/observer"
 	"github.com/senzing-garage/go-observing/subject"
+	szconfigmgrapi "github.com/senzing-garage/sz-sdk-go/szconfigmgr"
+	"github.com/senzing-garage/sz-sdk-go/szerror"
 )
 
 // ----------------------------------------------------------------------------

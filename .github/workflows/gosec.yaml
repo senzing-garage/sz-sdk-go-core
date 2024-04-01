@@ -31,21 +31,21 @@ jobs:
           senzingapi-version: production-v3
 
       - run: |
-          mkdir ./g2config/gohelpers
-          cp /opt/senzing/g2/sdk/c/*.h ./g2config/
-          cp /opt/senzing/g2/sdk/c/gohelpers/*.h ./g2config/gohelpers
-          mkdir ./g2configmgr/gohelpers
-          cp /opt/senzing/g2/sdk/c/*.h ./g2configmgr/
-          cp /opt/senzing/g2/sdk/c/gohelpers/*.h ./g2configmgr/gohelpers
-          mkdir ./g2diagnostic/gohelpers
-          cp /opt/senzing/g2/sdk/c/*.h ./g2diagnostic/
-          cp /opt/senzing/g2/sdk/c/gohelpers/*.h ./g2diagnostic/gohelpers
-          mkdir ./g2engine/gohelpers
-          cp /opt/senzing/g2/sdk/c/*.h ./g2engine/
-          cp /opt/senzing/g2/sdk/c/gohelpers/*.h ./g2engine/gohelpers
-          mkdir ./g2product/gohelpers
-          cp /opt/senzing/g2/sdk/c/*.h ./g2product/
-          cp /opt/senzing/g2/sdk/c/gohelpers/*.h ./g2product/gohelpers
+          mkdir ./szconfig/gohelpers
+          cp /opt/senzing/g2/sdk/c/*.h ./szconfig/
+          cp /opt/senzing/g2/sdk/c/gohelpers/*.h ./szconfig/gohelpers
+          mkdir ./szconfigmgr/gohelpers
+          cp /opt/senzing/g2/sdk/c/*.h ./szconfigmgr/
+          cp /opt/senzing/g2/sdk/c/gohelpers/*.h ./szconfigmgr/gohelpers
+          mkdir ./szdiagnostic/gohelpers
+          cp /opt/senzing/g2/sdk/c/*.h ./szdiagnostic/
+          cp /opt/senzing/g2/sdk/c/gohelpers/*.h ./szdiagnostic/gohelpers
+          mkdir ./szengine/gohelpers
+          cp /opt/senzing/g2/sdk/c/*.h ./szengine/
+          cp /opt/senzing/g2/sdk/c/gohelpers/*.h ./szengine/gohelpers
+          mkdir ./szproduct/gohelpers
+          cp /opt/senzing/g2/sdk/c/*.h ./szproduct/
+          cp /opt/senzing/g2/sdk/c/gohelpers/*.h ./szproduct/gohelpers
 
       - name: run Gosec Security Scanner
         uses: securego/gosec@master
