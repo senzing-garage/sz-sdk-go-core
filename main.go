@@ -413,7 +413,7 @@ func main() {
 	// if err != nil {
 	// 	panic(err)
 	// }
-	// g2Config.SetObserverOrigin(ctx, "g2-sdk-go-base main.go")
+	// g2Config.SetObserverOrigin(ctx, "sz-sdk-go-core main.go")
 
 	// g2Configmgr, err := getG2configmgr(ctx)
 	// if err != nil {

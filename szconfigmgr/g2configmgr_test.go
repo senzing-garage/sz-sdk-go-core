@@ -11,7 +11,7 @@ import (
 	"time"
 
 	truncator "github.com/aquilax/truncate"
-	"github.com/senzing-garage/g2-sdk-go-base/szconfig"
+	"github.com/senzing-garage/sz-sdk-go-core/szconfig"
 	"github.com/senzing-garage/g2-sdk-go/szapi"
 	szconfigmgrapi "github.com/senzing-garage/g2-sdk-go/szconfigmgr"
 	"github.com/senzing-garage/g2-sdk-go/szerror"

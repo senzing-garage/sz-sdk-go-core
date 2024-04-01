@@ -1,4 +1,4 @@
-module github.com/senzing-garage/g2-sdk-go-base
+module github.com/senzing-garage/sz-sdk-go-core
 
 go 1.22
 

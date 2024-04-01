@@ -16,4 +16,4 @@ jobs:
       - name: pull new module version
         uses: andrewslotin/go-proxy-pull-action@v1.1.0
         with:
-          import_path: github.com/senzing-garage/g2-sdk-go-base
+          import_path: github.com/senzing-garage/sz-sdk-go-core

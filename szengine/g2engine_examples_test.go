@@ -16,7 +16,7 @@ import (
 // ----------------------------------------------------------------------------
 
 func ExampleSzengine_SetObserverOrigin() {
-	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	origin := "Machine: nn; Task: UnitTest"
@@ -25,7 +25,7 @@ func ExampleSzengine_SetObserverOrigin() {
 }
 
 func ExampleSzengine_GetObserverOrigin() {
-	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2config/g2engine_test.go
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2config/g2engine_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	origin := "Machine: nn; Task: UnitTest"
@@ -36,7 +36,7 @@ func ExampleSzengine_GetObserverOrigin() {
 }
 
 func ExampleSzengine_AddRecord() {
-	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	dataSourceCode := "CUSTOMERS"
@@ -51,7 +51,7 @@ func ExampleSzengine_AddRecord() {
 }
 
 func ExampleSzengine_AddRecord_secondRecord() {
-	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	dataSourceCode := "CUSTOMERS"
@@ -66,7 +66,7 @@ func ExampleSzengine_AddRecord_secondRecord() {
 }
 
 func ExampleSzengine_AddRecord_withInfo() {
-	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	dataSourceCode := "TEST"
@@ -82,7 +82,7 @@ func ExampleSzengine_AddRecord_withInfo() {
 }
 
 func ExampleSzengine_CloseExport() {
-	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	flags := int64(0)
@@ -95,7 +95,7 @@ func ExampleSzengine_CloseExport() {
 }
 
 func ExampleSzengine_CountRedoRecords() {
-	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	result, err := g2engine.CountRedoRecords(ctx)
@@ -107,7 +107,7 @@ func ExampleSzengine_CountRedoRecords() {
 }
 
 func ExampleSzengine_ExportCsvEntityReport() {
-	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	csvColumnList := ""
@@ -121,7 +121,7 @@ func ExampleSzengine_ExportCsvEntityReport() {
 }
 
 func ExampleSzengine_ExportCsvEntityReportIterator() {
-	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	csvColumnList := ""
@@ -137,7 +137,7 @@ func ExampleSzengine_ExportCsvEntityReportIterator() {
 }
 
 func ExampleSzengine_ExportJsonEntityReport() {
-	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	flags := int64(0)
@@ -150,7 +150,7 @@ func ExampleSzengine_ExportJsonEntityReport() {
 }
 
 func ExampleSzengine_ExportJsonEntityReportIterator() {
-	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	flags := int64(0)
@@ -165,7 +165,7 @@ func ExampleSzengine_ExportJsonEntityReportIterator() {
 }
 
 func ExampleSzengine_FetchNext() {
-	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	flags := int64(0)
@@ -194,7 +194,7 @@ func ExampleSzengine_FetchNext() {
 }
 
 func ExampleSzengine_FindNetworkByEntityId() {
-	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	entityList := `{"ENTITIES": [{"ENTITY_ID": ` + getEntityIdStringForRecord("CUSTOMERS", "1001") + `}, {"ENTITY_ID": ` + getEntityIdStringForRecord("CUSTOMERS", "1002") + `}]}`
@@ -211,7 +211,7 @@ func ExampleSzengine_FindNetworkByEntityId() {
 }
 
 func ExampleSzengine_FindNetworkByRecordId() {
-	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	recordList := `{"RECORDS": [{"DATA_SOURCE": "CUSTOMERS", "RECORD_ID": "1001"}, {"DATA_SOURCE": "CUSTOMERS", "RECORD_ID": "1002"}]}`
@@ -228,7 +228,7 @@ func ExampleSzengine_FindNetworkByRecordId() {
 }
 
 func ExampleSzengine_FindPathByEntityId() {
-	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	entityId1 := getEntityIdForRecord("CUSTOMERS", "1001")
@@ -246,7 +246,7 @@ func ExampleSzengine_FindPathByEntityId() {
 }
 
 func ExampleSzengine_FindPathByRecordId() {
-	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	dataSourceCode1 := "CUSTOMERS"
@@ -266,7 +266,7 @@ func ExampleSzengine_FindPathByRecordId() {
 }
 
 func ExampleSzengine_GetActiveConfigId() {
-	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	result, err := g2engine.GetActiveConfigId(ctx)
@@ -278,7 +278,7 @@ func ExampleSzengine_GetActiveConfigId() {
 }
 
 func ExampleSzengine_GetEntityByEntityId() {
-	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	entityId := getEntityIdForRecord("CUSTOMERS", "1001")
@@ -292,7 +292,7 @@ func ExampleSzengine_GetEntityByEntityId() {
 }
 
 func ExampleSzengine_GetEntityByRecordId() {
-	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	dataSourceCode := "CUSTOMERS"
@@ -307,7 +307,7 @@ func ExampleSzengine_GetEntityByRecordId() {
 }
 
 func ExampleSzengine_GetRecord() {
-	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	dataSourceCode := "CUSTOMERS"
@@ -322,7 +322,7 @@ func ExampleSzengine_GetRecord() {
 }
 
 func ExampleSzengine_GetRedoRecord() {
-	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	result, err := g2engine.GetRedoRecord(ctx)
@@ -334,7 +334,7 @@ func ExampleSzengine_GetRedoRecord() {
 }
 
 func ExampleSzengine_GetRepositoryLastModifiedTime() {
-	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	result, err := g2engine.GetRepositoryLastModifiedTime(ctx)
@@ -346,7 +346,7 @@ func ExampleSzengine_GetRepositoryLastModifiedTime() {
 }
 
 func ExampleSzengine_GetStats() {
-	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	result, err := g2engine.GetStats(ctx)
@@ -358,7 +358,7 @@ func ExampleSzengine_GetStats() {
 }
 
 func ExampleSzengine_GetVirtualEntityByRecordId() {
-	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	recordList := `{"RECORDS": [{"DATA_SOURCE": "CUSTOMERS","RECORD_ID": "1001"},{"DATA_SOURCE": "CUSTOMERS","RECORD_ID": "1002"}]}`
@@ -372,7 +372,7 @@ func ExampleSzengine_GetVirtualEntityByRecordId() {
 }
 
 func ExampleSzengine_HowEntityByEntityId() {
-	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	entityId := getEntityIdForRecord("CUSTOMERS", "1001")
@@ -386,7 +386,7 @@ func ExampleSzengine_HowEntityByEntityId() {
 }
 
 func ExampleSzengine_PrimeEngine() {
-	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	err := g2engine.PrimeEngine(ctx)
@@ -397,7 +397,7 @@ func ExampleSzengine_PrimeEngine() {
 }
 
 func ExampleSzengine_SearchByAttributes() {
-	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	attributes := `{"NAMES": [{"NAME_TYPE": "PRIMARY", "NAME_LAST": "Smith"}], "EMAIL_ADDRESS": "bsmith@work.com"}`
@@ -412,7 +412,7 @@ func ExampleSzengine_SearchByAttributes() {
 }
 
 func ExampleSzengine_SetLogLevel() {
-	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	err := g2engine.SetLogLevel(ctx, logging.LevelInfoName)
@@ -423,7 +423,7 @@ func ExampleSzengine_SetLogLevel() {
 }
 
 func ExampleSzengine_WhyEntities() {
-	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := &Szengine{}
 	var entityId1 int64 = 1
@@ -438,7 +438,7 @@ func ExampleSzengine_WhyEntities() {
 }
 
 func ExampleSzengine_WhyRecords() {
-	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	dataSourceCode1 := "CUSTOMERS"
@@ -455,7 +455,7 @@ func ExampleSzengine_WhyRecords() {
 }
 
 func ExampleSzengine_ProcessRedoRecord() {
-	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	redoRecord := ""
@@ -469,7 +469,7 @@ func ExampleSzengine_ProcessRedoRecord() {
 }
 
 func ExampleSzengine_ReevaluateEntity() {
-	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	entityId := getEntityIdForRecord("CUSTOMERS", "1001")
@@ -482,7 +482,7 @@ func ExampleSzengine_ReevaluateEntity() {
 }
 
 func ExampleSzengine_ReevaluateRecord() {
-	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	dataSourceCode := "CUSTOMERS"
@@ -496,7 +496,7 @@ func ExampleSzengine_ReevaluateRecord() {
 }
 
 func ExampleSzengine_ReplaceRecord() {
-	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	dataSourceCode := "CUSTOMERS"
@@ -511,7 +511,7 @@ func ExampleSzengine_ReplaceRecord() {
 }
 
 func ExampleSzengine_DeleteRecord() {
-	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	dataSourceCode := "CUSTOMERS"
@@ -525,7 +525,7 @@ func ExampleSzengine_DeleteRecord() {
 }
 
 func ExampleSzengine_Initialize() {
-	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	instanceName := "Test module name"
@@ -543,7 +543,7 @@ func ExampleSzengine_Initialize() {
 }
 
 func ExampleSzengine_Reinitialize() {
-	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	initConfigId, _ := g2engine.GetActiveConfigId(ctx) // Example initConfigId.
@@ -555,7 +555,7 @@ func ExampleSzengine_Reinitialize() {
 }
 
 func ExampleSzengine_Destroy() {
-	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2engine/g2engine_examples_test.go
 	ctx := context.TODO()
 	g2engine := getG2Engine(ctx)
 	err := g2engine.Destroy(ctx)

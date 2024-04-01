@@ -1,4 +1,4 @@
-# g2-sdk-go-base development
+# sz-sdk-go-core development
 
 ## Install Go
 
@@ -22,7 +22,7 @@ Since the Senzing library is a prerequisite, it must be installed first.
 
     ```console
     export GIT_ACCOUNT=senzing
-    export GIT_REPOSITORY=g2-sdk-go-base
+    export GIT_REPOSITORY=sz-sdk-go-core
     export GIT_ACCOUNT_DIR=~/${GIT_ACCOUNT}.git
     export GIT_REPOSITORY_DIR="${GIT_ACCOUNT_DIR}/${GIT_REPOSITORY}"
 
@@ -61,7 +61,7 @@ Since the Senzing library is a prerequisite, it must be installed first.
 ## Test using Docker-compose stack with PostgreSql database
 
 The following instructions show how to bring up a test stack to be used
-in testing the `g2-sdk-go-base` packages.
+in testing the `sz-sdk-go-core` packages.
 
 1. Identify a directory to place docker-compose artifacts.
    The directory specified will be deleted and re-created.
