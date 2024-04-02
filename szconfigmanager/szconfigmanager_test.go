@@ -15,25 +15,25 @@ import (
 	"github.com/senzing-garage/go-common/g2engineconfigurationjson"
 	"github.com/senzing-garage/go-logging/logging"
 	"github.com/senzing-garage/sz-sdk-go-core/szconfig"
+	"github.com/senzing-garage/sz-sdk-go/sz"
 	szconfigmanagerapi "github.com/senzing-garage/sz-sdk-go/szconfigmanager"
 	"github.com/senzing-garage/sz-sdk-go/szerror"
-	"github.com/senzing-garage/sz-sdk-go/szinterface"
 	"github.com/stretchr/testify/assert"
 )
 
 const (
 	defaultTruncation = 76
-	moduleName        = "Config Manager Test Module"
+	instanceName      = "Config Manager Test Module"
 	printResults      = false
-	verboseLogging    = 0
+	verboseLogging    = sz.SZ_NO_LOGGING
 )
 
 var (
-	configInitialized     bool              = false
-	configMgrInitialized  bool              = false
-	globalSzconfig        szconfig.Szconfig = szconfig.Szconfig{}
-	globalSzConfigManager SzConfigManager   = SzConfigManager{}
-	logger                logging.LoggingInterface
+	globalSzconfig             szconfig.Szconfig = szconfig.Szconfig{}
+	globalSzConfigManager      Szconfigmanager   = Szconfigmanager{}
+	logger                     logging.LoggingInterface
+	szConfigInitialized        bool = false
+	szConfigManagerInitialized bool = false
 )
 
 // ----------------------------------------------------------------------------
@@ -44,18 +44,18 @@ func createError(errorId int, err error) error {
 	return szerror.Cast(logger.NewError(errorId, err), err)
 }
 
-func getTestObject(ctx context.Context, test *testing.T) szinterface.SzConfigManager {
+func getTestObject(ctx context.Context, test *testing.T) sz.SzConfigManager {
 	_ = ctx
 	_ = test
-	return &globalSzConfigManager
+	return getSzConfigManager(ctx)
 }
 
-func getSzConfigManager(ctx context.Context) szinterface.SzConfigManager {
+func getSzConfigManager(ctx context.Context) sz.SzConfigManager {
 	_ = ctx
 	return &globalSzConfigManager
 }
 
-func getSzconfig(ctx context.Context) szinterface.SzConfig {
+func getSzConfig(ctx context.Context) sz.SzConfig {
 	_ = ctx
 	return &globalSzconfig
 }
@@ -74,7 +74,7 @@ func printActual(test *testing.T, actual interface{}) {
 	printResult(test, "Actual", actual)
 }
 
-func testError(test *testing.T, ctx context.Context, szconfigmanager szinterface.SzConfigManager, err error) {
+func testError(test *testing.T, ctx context.Context, szconfigmanager sz.SzConfigManager, err error) {
 	_ = ctx
 	_ = szconfigmanager
 	if err != nil {
@@ -118,16 +118,25 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
+func createSettings(dbUrl string) (string, error) {
+	configAttrMap := map[string]string{"databaseUrl": dbUrl}
+	settings, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingMap(configAttrMap)
+	if err != nil {
+		err = createError(5902, err)
+	}
+	return settings, err
+}
+
 func getSettings() (string, error) {
-	dbUrl, _, err := setupDB(true)
+	dbUrl, _, err := setupDatabase(true)
 	if err != nil {
 		return "", err
 	}
-	iniParams, err := setupIniParams(dbUrl)
+	settings, err := createSettings(dbUrl)
 	if err != nil {
 		return "", err
 	}
-	return iniParams, nil
+	return settings, nil
 }
 
 func setup() error {
@@ -137,6 +146,8 @@ func setup() error {
 	if err != nil {
 		return createError(5901, err)
 	}
+
+	// Cleanup past runs and prepare for current run.
 
 	baseDir := baseDirectoryPath()
 	err = os.RemoveAll(filepath.Clean(baseDir)) // cleanup any previous test run
@@ -150,27 +161,27 @@ func setup() error {
 
 	// Get the database URL and determine if external or a local file just created.
 
-	dbUrl, _, err := setupDB(false)
+	dbUrl, _, err := setupDatabase(false)
 	if err != nil {
 		return err
 	}
 
-	iniParams, err := setupIniParams(dbUrl)
+	iniParams, err := createSettings(dbUrl)
 	if err != nil {
 		return err
 	}
 
-	err = setupSenzingConfig(ctx, moduleName, iniParams, verboseLogging)
+	err = setupSenzingConfiguration(ctx, instanceName, iniParams, verboseLogging)
 	if err != nil {
 		return err
 	}
 
-	err = setupG2config(ctx, moduleName, iniParams, verboseLogging)
+	err = setupSzConfig(ctx, instanceName, iniParams, verboseLogging)
 	if err != nil {
 		return err
 	}
 
-	err = setupG2configmgr(ctx, moduleName, iniParams, verboseLogging)
+	err = setupSzConfigManager(ctx, instanceName, iniParams, verboseLogging)
 	if err != nil {
 		return err
 	}
@@ -178,7 +189,7 @@ func setup() error {
 	return err
 }
 
-func setupDB(preserveDB bool) (string, bool, error) {
+func setupDatabase(preserveDB bool) (string, bool, error) {
 	var err error = nil
 
 	// Get paths.
@@ -217,9 +228,23 @@ func setupDB(preserveDB bool) (string, bool, error) {
 	return dbUrl, dbExternal, err
 }
 
-func setupG2configmgr(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
-	if configMgrInitialized {
-		return fmt.Errorf("G2configmgr is already setup and has not been torn down")
+func setupSzConfig(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
+	if szConfigInitialized {
+		return fmt.Errorf("SzConfigManager is already setup and has not been torn down")
+	}
+	globalSzconfig.SetLogLevel(ctx, logging.LevelInfoName)
+	log.SetFlags(0)
+	err := globalSzconfig.Initialize(ctx, instanceName, settings, verboseLogging)
+	if err != nil {
+		fmt.Println(err)
+	}
+	szConfigInitialized = true
+	return err
+}
+
+func setupSzConfigManager(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
+	if szConfigManagerInitialized {
+		return fmt.Errorf("SzConfigManager is already setup and has not been torn down")
 	}
 
 	globalSzConfigManager.SetLogLevel(ctx, logging.LevelInfoName)
@@ -228,64 +253,41 @@ func setupG2configmgr(ctx context.Context, instanceName string, settings string,
 	if err != nil {
 		fmt.Println(err)
 	}
-	configMgrInitialized = true
+	szConfigManagerInitialized = true
 	return err
 }
 
-func setupG2config(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
-	if configInitialized {
-		return fmt.Errorf("G2configmgr is already setup and has not been torn down")
-	}
-	globalSzconfig.SetLogLevel(ctx, logging.LevelInfoName)
-	log.SetFlags(0)
-	err := globalSzconfig.Initialize(ctx, instanceName, settings, verboseLogging)
-	if err != nil {
-		fmt.Println(err)
-	}
-	configInitialized = true
-	return err
-}
-
-func setupIniParams(dbUrl string) (string, error) {
-	configAttrMap := map[string]string{"databaseUrl": dbUrl}
-	iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingMap(configAttrMap)
-	if err != nil {
-		err = createError(5902, err)
-	}
-	return iniParams, err
-}
-
-func setupSenzingConfig(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
+func setupSenzingConfiguration(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
 	now := time.Now()
-	aG2config := &szconfig.Szconfig{}
-	err := aG2config.Initialize(ctx, instanceName, settings, verboseLogging)
+	szConfig := &szconfig.Szconfig{}
+	err := szConfig.Initialize(ctx, instanceName, settings, verboseLogging)
 	if err != nil {
 		return createError(5906, err)
 	}
 
-	configHandle, err := aG2config.Create(ctx)
+	configHandle, err := szConfig.Create(ctx)
 	if err != nil {
 		return createError(5907, err)
 	}
 	dataSourceCodes := []string{"CUSTOMERS", "REFERENCE", "WATCHLIST"}
 	for _, dataSourceCode := range dataSourceCodes {
-		_, err := aG2config.AddDataSource(ctx, configHandle, dataSourceCode)
+		_, err := szConfig.AddDataSource(ctx, configHandle, dataSourceCode)
 		if err != nil {
 			return createError(5908, err)
 		}
 	}
 
-	configStr, err := aG2config.GetJsonString(ctx, configHandle)
+	configDefinition, err := szConfig.GetJsonString(ctx, configHandle)
 	if err != nil {
 		return createError(5909, err)
 	}
 
-	err = aG2config.Close(ctx, configHandle)
+	err = szConfig.Close(ctx, configHandle)
 	if err != nil {
 		return createError(5910, err)
 	}
 
-	err = aG2config.Destroy(ctx)
+	err = szConfig.Destroy(ctx)
 	if err != nil {
 		return createError(5911, err)
 
@@ -293,38 +295,38 @@ func setupSenzingConfig(ctx context.Context, instanceName string, settings strin
 
 	// Persist the Senzing configuration to the Senzing repository.
 
-	aG2configmgr := &SzConfigManager{}
-	err = aG2configmgr.Initialize(ctx, instanceName, settings, verboseLogging)
+	szConfigManager := &Szconfigmanager{}
+	err = szConfigManager.Initialize(ctx, instanceName, settings, verboseLogging)
 	if err != nil {
 		return createError(5912, err)
 	}
 
-	configComments := fmt.Sprintf("Created by g2diagnostic_test at %s", now.UTC())
-	configId, err := aG2configmgr.AddConfig(ctx, configStr, configComments)
+	configComment := fmt.Sprintf("Created by szconfigmanager_test at %s", now.UTC())
+	configId, err := szConfigManager.AddConfig(ctx, configDefinition, configComment)
 
 	if err != nil {
 		return createError(5913, err)
 	}
 
-	err = aG2configmgr.SetDefaultConfigId(ctx, configId)
+	err = szConfigManager.SetDefaultConfigId(ctx, configId)
 	if err != nil {
 		return createError(5914, err)
 	}
 
-	err = aG2configmgr.Destroy(ctx)
+	err = szConfigManager.Destroy(ctx)
 	if err != nil {
 		return createError(5915, err)
 	}
 	return err
 }
 
-func restoreG2configmgr(ctx context.Context) error {
+func restoreSzConfigManager(ctx context.Context) error {
 	iniParams, err := getSettings()
 	if err != nil {
 		return err
 	}
 
-	err = setupG2configmgr(ctx, moduleName, iniParams, verboseLogging)
+	err = setupSzConfigManager(ctx, instanceName, iniParams, verboseLogging)
 	if err != nil {
 		return err
 	}
@@ -335,12 +337,12 @@ func restoreG2configmgr(ctx context.Context) error {
 func teardown() error {
 	var resultErr error = nil
 	ctx := context.TODO()
-	err := teardownG2config(ctx)
+	err := teardownSzConfig(ctx)
 	if err != nil {
 		fmt.Println(err)
 		resultErr = err
 	}
-	teardownG2configmgr(ctx)
+	teardownSzConfigManager(ctx)
 	if err != nil {
 		fmt.Println(err)
 		resultErr = err
@@ -348,27 +350,27 @@ func teardown() error {
 	return resultErr
 }
 
-func teardownG2config(ctx context.Context) error {
-	if !configInitialized {
+func teardownSzConfig(ctx context.Context) error {
+	if !szConfigInitialized {
 		return nil
 	}
 	err := globalSzconfig.Destroy(ctx)
 	if err != nil {
 		return err
 	}
-	configInitialized = false
+	szConfigInitialized = false
 	return nil
 }
 
-func teardownG2configmgr(ctx context.Context) error {
-	if !configMgrInitialized {
+func teardownSzConfigManager(ctx context.Context) error {
+	if !szConfigManagerInitialized {
 		return nil
 	}
 	err := globalSzConfigManager.Destroy(ctx)
 	if err != nil {
 		return err
 	}
-	configMgrInitialized = false
+	szConfigManagerInitialized = false
 	return nil
 }
 
@@ -396,25 +398,25 @@ func TestSzConfigManager_AddConfig(test *testing.T) {
 	ctx := context.TODO()
 	szconfigmanager := getTestObject(ctx, test)
 	now := time.Now()
-	g2config := getSzconfig(ctx)
-	configHandle, err1 := g2config.Create(ctx)
+	szConfig := getSzConfig(ctx)
+	configHandle, err1 := szConfig.Create(ctx)
 	if err1 != nil {
 		test.Log("Error:", err1.Error())
-		assert.FailNow(test, "g2config.Create()")
+		assert.FailNow(test, "szConfig.Create()")
 	}
 	dataSourceCode := "GO_TEST_" + strconv.FormatInt(now.Unix(), 10)
-	_, err2 := g2config.AddDataSource(ctx, configHandle, dataSourceCode)
+	_, err2 := szConfig.AddDataSource(ctx, configHandle, dataSourceCode)
 	if err2 != nil {
 		test.Log("Error:", err2.Error())
-		assert.FailNow(test, "g2config.AddDataSource()")
+		assert.FailNow(test, "scConfig.AddDataSource()")
 	}
-	configDefinition, err3 := g2config.GetJsonString(ctx, configHandle)
+	configDefinition, err3 := szConfig.GetJsonString(ctx, configHandle)
 	if err3 != nil {
 		test.Log("Error:", err3.Error())
 		assert.FailNow(test, configDefinition)
 	}
-	configComments := fmt.Sprintf("szconfigmanager_test at %s", now.UTC())
-	actual, err := szconfigmanager.AddConfig(ctx, configDefinition, configComments)
+	configComment := fmt.Sprintf("szconfigmanager_test at %s", now.UTC())
+	actual, err := szconfigmanager.AddConfig(ctx, configDefinition, configComment)
 	testError(test, ctx, szconfigmanager, err)
 	printActual(test, actual)
 }
@@ -499,6 +501,6 @@ func TestSzConfigManager_Destroy(test *testing.T) {
 	testError(test, ctx, szconfigmanager, err)
 
 	// restore the state that existed prior to this test
-	configMgrInitialized = false
-	restoreG2configmgr(ctx)
+	szConfigManagerInitialized = false
+	restoreSzConfigManager(ctx)
 }

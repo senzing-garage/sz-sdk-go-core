@@ -28,9 +28,9 @@ import (
 	"github.com/senzing-garage/go-observing/notifier"
 	"github.com/senzing-garage/go-observing/observer"
 	"github.com/senzing-garage/go-observing/subject"
+	"github.com/senzing-garage/sz-sdk-go/sz"
 	szengineapi "github.com/senzing-garage/sz-sdk-go/szengine"
 	"github.com/senzing-garage/sz-sdk-go/szerror"
-	"github.com/senzing-garage/sz-sdk-go/szinterface"
 )
 
 // ----------------------------------------------------------------------------
@@ -519,8 +519,8 @@ Input
 Output
   - A channel of strings that can be iterated over.
 */
-func (client *Szengine) ExportCsvEntityReportIterator(ctx context.Context, csvColumnList string, flags int64) chan szinterface.StringFragment {
-	stringFragmentChannel := make(chan szinterface.StringFragment)
+func (client *Szengine) ExportCsvEntityReportIterator(ctx context.Context, csvColumnList string, flags int64) chan sz.StringFragment {
+	stringFragmentChannel := make(chan sz.StringFragment)
 
 	go func() {
 		runtime.LockOSThread()
@@ -534,7 +534,7 @@ func (client *Szengine) ExportCsvEntityReportIterator(ctx context.Context, csvCo
 		}
 		reportHandle, err := client.ExportCsvEntityReport(ctx, csvColumnList, flags)
 		if err != nil {
-			result := szinterface.StringFragment{
+			result := sz.StringFragment{
 				Error: err,
 			}
 			stringFragmentChannel <- result
@@ -547,14 +547,14 @@ func (client *Szengine) ExportCsvEntityReportIterator(ctx context.Context, csvCo
 		for {
 			select {
 			case <-ctx.Done():
-				stringFragmentChannel <- szinterface.StringFragment{
+				stringFragmentChannel <- sz.StringFragment{
 					Error: ctx.Err(),
 				}
 				break forLoop
 			default:
 				entityReportFragment, err := client.FetchNext(ctx, reportHandle)
 				if err != nil {
-					stringFragmentChannel <- szinterface.StringFragment{
+					stringFragmentChannel <- sz.StringFragment{
 						Error: err,
 					}
 					break forLoop
@@ -562,7 +562,7 @@ func (client *Szengine) ExportCsvEntityReportIterator(ctx context.Context, csvCo
 				if len(entityReportFragment) == 0 {
 					break forLoop
 				}
-				stringFragmentChannel <- szinterface.StringFragment{
+				stringFragmentChannel <- sz.StringFragment{
 					Value: entityReportFragment,
 				}
 			}
@@ -627,8 +627,8 @@ Input
 Output
   - A channel of strings that can be iterated over.
 */
-func (client *Szengine) ExportJsonEntityReportIterator(ctx context.Context, flags int64) chan szinterface.StringFragment {
-	stringFragmentChannel := make(chan szinterface.StringFragment)
+func (client *Szengine) ExportJsonEntityReportIterator(ctx context.Context, flags int64) chan sz.StringFragment {
+	stringFragmentChannel := make(chan sz.StringFragment)
 	go func() {
 		runtime.LockOSThread()
 		defer runtime.UnlockOSThread()
@@ -641,7 +641,7 @@ func (client *Szengine) ExportJsonEntityReportIterator(ctx context.Context, flag
 		}
 		reportHandle, err := client.ExportJsonEntityReport(ctx, flags)
 		if err != nil {
-			result := szinterface.StringFragment{
+			result := sz.StringFragment{
 				Error: err,
 			}
 			stringFragmentChannel <- result
@@ -654,14 +654,14 @@ func (client *Szengine) ExportJsonEntityReportIterator(ctx context.Context, flag
 		for {
 			select {
 			case <-ctx.Done():
-				stringFragmentChannel <- szinterface.StringFragment{
+				stringFragmentChannel <- sz.StringFragment{
 					Error: ctx.Err(),
 				}
 				break forLoop
 			default:
 				entityReportFragment, err := client.FetchNext(ctx, reportHandle)
 				if err != nil {
-					stringFragmentChannel <- szinterface.StringFragment{
+					stringFragmentChannel <- sz.StringFragment{
 						Error: err,
 					}
 					break forLoop
@@ -669,7 +669,7 @@ func (client *Szengine) ExportJsonEntityReportIterator(ctx context.Context, flag
 				if len(entityReportFragment) == 0 {
 					break forLoop
 				}
-				stringFragmentChannel <- szinterface.StringFragment{
+				stringFragmentChannel <- sz.StringFragment{
 					Value: entityReportFragment,
 				}
 			}
@@ -1793,7 +1793,7 @@ func (client *Szengine) GetRepositoryLastModifiedTime(ctx context.Context) (int6
 
 /*
 The GetSdkId method returns the identifier of this particular Software Development Kit (SDK).
-It is handy when working with multiple implementations of the same G2engineInterface.
+It is handy when working with multiple implementations of the same SzEngine interface.
 For this implementation, "base" is returned.
 
 Input

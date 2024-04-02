@@ -7,6 +7,7 @@ import (
 	"fmt"
 
 	"github.com/senzing-garage/go-logging/logging"
+	"github.com/senzing-garage/sz-sdk-go/sz"
 )
 
 // ----------------------------------------------------------------------------
@@ -62,13 +63,12 @@ func ExampleSzdiagnostic_Initialize() {
 	ctx := context.TODO()
 	g2diagnostic := &Szdiagnostic{}
 	instanceName := "Test module name"
-	configId := int64(0) // "0" means use the current default configuration ID.
 	settings, err := getSettings()
 	if err != nil {
 		fmt.Println(err)
 	}
 	verboseLogging := int64(0)
-	err = g2diagnostic.Initialize(ctx, instanceName, settings, verboseLogging, configId)
+	err = g2diagnostic.Initialize(ctx, instanceName, settings, verboseLogging, sz.SZ_INITIALIZE_WITH_DEFAULT_CONFIGURATION)
 	if err != nil {
 		fmt.Println(err)
 	}

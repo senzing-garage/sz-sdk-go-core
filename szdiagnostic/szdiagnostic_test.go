@@ -17,9 +17,9 @@ import (
 	"github.com/senzing-garage/sz-sdk-go-core/szconfig"
 	"github.com/senzing-garage/sz-sdk-go-core/szconfigmanager"
 	"github.com/senzing-garage/sz-sdk-go-core/szengine"
+	"github.com/senzing-garage/sz-sdk-go/sz"
 	szdiagnosticapi "github.com/senzing-garage/sz-sdk-go/szdiagnostic"
 	"github.com/senzing-garage/sz-sdk-go/szerror"
-	"github.com/senzing-garage/sz-sdk-go/szinterface"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -27,7 +27,7 @@ const (
 	defaultTruncation = 76
 	moduleName        = "Diagnostic Test Module"
 	printResults      = false
-	verboseLogging    = 0
+	verboseLogging    = sz.SZ_NO_LOGGING
 )
 
 var (
@@ -45,13 +45,13 @@ func createError(errorId int, err error) error {
 	return szerror.Cast(logger.NewError(errorId, err), err)
 }
 
-func getTestObject(ctx context.Context, test *testing.T) szinterface.SzDiagnostic {
+func getTestObject(ctx context.Context, test *testing.T) sz.SzDiagnostic {
 	_ = ctx
 	_ = test
 	return &globalG2diagnostic
 }
 
-func getG2Diagnostic(ctx context.Context) szinterface.SzDiagnostic {
+func getG2Diagnostic(ctx context.Context) sz.SzDiagnostic {
 	_ = ctx
 	return &globalG2diagnostic
 }
@@ -70,7 +70,7 @@ func printActual(test *testing.T, actual interface{}) {
 	printResult(test, "Actual", actual)
 }
 
-func testError(test *testing.T, ctx context.Context, g2diagnostic szinterface.SzDiagnostic, err error) {
+func testError(test *testing.T, ctx context.Context, g2diagnostic sz.SzDiagnostic, err error) {
 	_ = ctx
 	_ = g2diagnostic
 	if err != nil {
@@ -79,7 +79,7 @@ func testError(test *testing.T, ctx context.Context, g2diagnostic szinterface.Sz
 	}
 }
 
-func testErrorNoFail(test *testing.T, ctx context.Context, g2diagnostic szinterface.SzDiagnostic, err error) {
+func testErrorNoFail(test *testing.T, ctx context.Context, g2diagnostic sz.SzDiagnostic, err error) {
 	_ = ctx
 	_ = g2diagnostic
 	if err != nil {
@@ -188,7 +188,7 @@ func setup() error {
 
 	// Add Data Sources to Senzing configuration.
 
-	err = setupSenzingConfig(ctx, moduleName, iniParams, verboseLogging)
+	err = setupSenzingConfiguration(ctx, moduleName, iniParams, verboseLogging)
 	if err != nil {
 		return createError(5920, err)
 	}
@@ -294,13 +294,13 @@ func setupDB(preserveDB bool) (string, bool, error) {
 	return dbUrl, dbExternal, err
 }
 
-func setupG2diagnostic(ctx context.Context, moduleName string, iniParams string, verboseLogging int64) error {
+func setupG2diagnostic(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
 	if diagnosticInitialized {
 		return fmt.Errorf("G2diagnostic is already setup and has not been torn down.")
 	}
 	globalG2diagnostic.SetLogLevel(ctx, logging.LevelInfoName)
 	log.SetFlags(0)
-	err := globalG2diagnostic.Initialize(ctx, moduleName, iniParams, verboseLogging, 0)
+	err := globalG2diagnostic.Initialize(ctx, instanceName, settings, verboseLogging, 0)
 	if err != nil {
 		return createError(5903, err)
 	}
@@ -318,11 +318,11 @@ func setupIniParams(dbUrl string) (string, error) {
 	return iniParams, err
 }
 
-func setupSenzingConfig(ctx context.Context, moduleName string, iniParams string, verboseLogging int64) error {
+func setupSenzingConfiguration(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
 	now := time.Now()
 
 	aG2config := &szconfig.Szconfig{}
-	err := aG2config.Initialize(ctx, moduleName, iniParams, verboseLogging)
+	err := aG2config.Initialize(ctx, instanceName, settings, verboseLogging)
 	if err != nil {
 		return createError(5906, err)
 	}
@@ -336,8 +336,7 @@ func setupSenzingConfig(ctx context.Context, moduleName string, iniParams string
 
 	datasourceNames := []string{"CUSTOMERS", "REFERENCE", "WATCHLIST"}
 	for _, datasourceName := range datasourceNames {
-		datasource := truthset.TruthsetDataSources[datasourceName]
-		_, err := aG2config.AddDataSource(ctx, configHandle, datasource.Json)
+		_, err := aG2config.AddDataSource(ctx, configHandle, datasourceName)
 		if err != nil {
 			return createError(5908, err)
 		}
@@ -362,14 +361,14 @@ func setupSenzingConfig(ctx context.Context, moduleName string, iniParams string
 
 	// Persist the Senzing configuration to the Senzing repository.
 
-	aG2configmgr := &szconfigmanager.SzConfigManager{}
-	err = aG2configmgr.Initialize(ctx, moduleName, iniParams, verboseLogging)
+	aG2configmgr := &szconfigmanager.Szconfigmanager{}
+	err = aG2configmgr.Initialize(ctx, instanceName, settings, verboseLogging)
 	if err != nil {
 		return createError(5912, err)
 	}
 
-	configComments := fmt.Sprintf("Created by g2diagnostic_test at %s", now.UTC())
-	configId, err := aG2configmgr.AddConfig(ctx, configStr, configComments)
+	configComment := fmt.Sprintf("Created by g2diagnostic_test at %s", now.UTC())
+	configId, err := aG2configmgr.AddConfig(ctx, configStr, configComment)
 	if err != nil {
 		return createError(5913, err)
 	}
@@ -409,14 +408,14 @@ func teardownG2diagnostic(ctx context.Context) error {
 // Test interface functions
 // ----------------------------------------------------------------------------
 
-func TestG2diagnostic_SetObserverOrigin(test *testing.T) {
+func TestSzDiagnostic_SetObserverOrigin(test *testing.T) {
 	ctx := context.TODO()
 	g2diagnostic := getTestObject(ctx, test)
 	origin := "Machine: nn; Task: UnitTest"
 	g2diagnostic.SetObserverOrigin(ctx, origin)
 }
 
-func TestG2diagnostic_GetObserverOrigin(test *testing.T) {
+func TestSzDiagnostic_GetObserverOrigin(test *testing.T) {
 	ctx := context.TODO()
 	g2diagnostic := getTestObject(ctx, test)
 	origin := "Machine: nn; Task: UnitTest"
@@ -425,7 +424,7 @@ func TestG2diagnostic_GetObserverOrigin(test *testing.T) {
 	assert.Equal(test, origin, actual)
 }
 
-func TestG2diagnostic_CheckDatabasePerformance(test *testing.T) {
+func TestSzDiagnostic_CheckDatabasePerformance(test *testing.T) {
 	ctx := context.TODO()
 	g2diagnostic := getTestObject(ctx, test)
 	secondsToRun := 1
@@ -434,30 +433,28 @@ func TestG2diagnostic_CheckDatabasePerformance(test *testing.T) {
 	printActual(test, actual)
 }
 
-func TestG2diagnostic_Initialize(test *testing.T) {
+func TestSzDiagnostic_Initialize(test *testing.T) {
 	ctx := context.TODO()
 	g2diagnostic := &Szdiagnostic{}
 	instanceName := "Test module name"
-	verboseLogging := int64(0)
 	settings, err := getSettings()
 	testError(test, ctx, g2diagnostic, err)
-	err = g2diagnostic.Initialize(ctx, instanceName, settings, verboseLogging, 0)
+	err = g2diagnostic.Initialize(ctx, instanceName, settings, sz.SZ_NO_LOGGING, sz.SZ_INITIALIZE_WITH_DEFAULT_CONFIGURATION)
 	testError(test, ctx, g2diagnostic, err)
 }
 
-func TestG2diagnostic_InitWithConfigId(test *testing.T) {
+func TestSzDiagnostic_Initialize_WithConfigId(test *testing.T) {
 	ctx := context.TODO()
 	g2diagnostic := &Szdiagnostic{}
 	instanceName := "Test module name"
-	configId := int64(1)
-	verboseLogging := int64(0)
+	configId := getDefaultConfigId()
 	settings, err := getSettings()
 	testError(test, ctx, g2diagnostic, err)
 	err = g2diagnostic.Initialize(ctx, instanceName, settings, verboseLogging, configId)
 	testError(test, ctx, g2diagnostic, err)
 }
 
-func TestG2diagnostic_Reinit(test *testing.T) {
+func TestSzDiagnostic_Reinit(test *testing.T) {
 	ctx := context.TODO()
 	g2diagnostic := getTestObject(ctx, test)
 	configId := getDefaultConfigId()
@@ -465,7 +462,7 @@ func TestG2diagnostic_Reinit(test *testing.T) {
 	testErrorNoFail(test, ctx, g2diagnostic, err)
 }
 
-func TestG2diagnostic_Destroy(test *testing.T) {
+func TestSzDiagnostic_Destroy(test *testing.T) {
 	ctx := context.TODO()
 	g2diagnostic := getTestObject(ctx, test)
 	err := g2diagnostic.Destroy(ctx)

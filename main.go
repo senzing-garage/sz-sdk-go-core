@@ -215,8 +215,8 @@ var Messages = map[int]string{
 
 // 	// Using G2Configmgr: Persist configuration string to database.
 
-// 	configComments := fmt.Sprintf("Created by g2diagnostic_test at %s", now.UTC())
-// 	configId, err := g2Configmgr.AddConfig(ctx, configStr, configComments)
+// 	configComment := fmt.Sprintf("Created by g2diagnostic_test at %s", now.UTC())
+// 	configId, err := g2Configmgr.AddConfig(ctx, configStr, configComment)
 // 	if err != nil {
 // 		return logger.NewError(5103, err)
 // 	}

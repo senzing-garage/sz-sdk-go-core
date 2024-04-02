@@ -12,23 +12,23 @@ import (
 	futil "github.com/senzing-garage/go-common/fileutil"
 	"github.com/senzing-garage/go-common/g2engineconfigurationjson"
 	"github.com/senzing-garage/go-logging/logging"
+	"github.com/senzing-garage/sz-sdk-go/sz"
 	"github.com/senzing-garage/sz-sdk-go/szconfig"
 	"github.com/senzing-garage/sz-sdk-go/szerror"
-	"github.com/senzing-garage/sz-sdk-go/szinterface"
 	"github.com/stretchr/testify/assert"
 )
 
 const (
 	defaultTruncation = 76
-	moduleName        = "Config Test Module"
+	instanceName      = "Config Test Module"
 	printResults      = false
-	verboseLogging    = 0
+	verboseLogging    = sz.SZ_NO_LOGGING
 )
 
 var (
-	configInitialized bool     = false
-	globalSzconfig    Szconfig = Szconfig{}
-	logger            logging.LoggingInterface
+	globalSzconfig      Szconfig = Szconfig{}
+	logger              logging.LoggingInterface
+	szConfigInitialized bool = false
 )
 
 // ----------------------------------------------------------------------------
@@ -39,15 +39,15 @@ func createError(errorId int, err error) error {
 	return szerror.Cast(logger.NewError(errorId, err), err)
 }
 
-func getSzConfig(ctx context.Context) szinterface.SzConfig {
-	_ = ctx
-	return &globalSzconfig
-}
-
-func getTestObject(ctx context.Context, test *testing.T) szinterface.SzConfig {
+func getTestObject(ctx context.Context, test *testing.T) sz.SzConfig {
 	_ = ctx
 	_ = test
 	return getSzConfig(ctx)
+}
+
+func getSzConfig(ctx context.Context) sz.SzConfig {
+	_ = ctx
+	return &globalSzconfig
 }
 
 func truncate(aString string, length int) string {
@@ -64,7 +64,7 @@ func printActual(test *testing.T, actual interface{}) {
 	printResult(test, "Actual", actual)
 }
 
-func testError(test *testing.T, ctx context.Context, szConfig szinterface.SzConfig, err error) {
+func testError(test *testing.T, ctx context.Context, szConfig sz.SzConfig, err error) {
 	_ = ctx
 	_ = szConfig
 	if err != nil {
@@ -99,8 +99,17 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
+func createSettings(dbUrl string) (string, error) {
+	configAttrMap := map[string]string{"databaseUrl": dbUrl}
+	settings, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingMap(configAttrMap)
+	if err != nil {
+		err = createError(5902, err)
+	}
+	return settings, err
+}
+
 func getSettings() (string, error) {
-	dbUrl, _, err := setupDB(true)
+	dbUrl, _, err := setupDatabase(true)
 	if err != nil {
 		return "", err
 	}
@@ -111,13 +120,13 @@ func getSettings() (string, error) {
 	return settings, nil
 }
 
-func restoreSzconfig(ctx context.Context) error {
+func restoreSzConfig(ctx context.Context) error {
 	settings, err := getSettings()
 	if err != nil {
 		return err
 	}
 
-	err = setupSzconfig(ctx, moduleName, settings, verboseLogging)
+	err = setupSzConfig(ctx, instanceName, settings, verboseLogging)
 	if err != nil {
 		return err
 	}
@@ -135,18 +144,18 @@ func setup() error {
 	// Cleanup past runs and prepare for current run.
 
 	baseDir := baseDirectoryPath()
-	err = os.RemoveAll(filepath.Clean(baseDir))
+	err = os.RemoveAll(filepath.Clean(baseDir)) // cleanup any previous test run
 	if err != nil {
 		return fmt.Errorf("Failed to remove target test directory (%v): %w", baseDir, err)
 	}
-	err = os.MkdirAll(filepath.Clean(baseDir), 0750)
+	err = os.MkdirAll(filepath.Clean(baseDir), 0750) // recreate the test target directory
 	if err != nil {
 		return fmt.Errorf("Failed to recreate target test directory (%v): %w", baseDir, err)
 	}
 
 	// Get the database URL and determine if external or a local file just created.
 
-	dbUrl, _, err := setupDB(false)
+	dbUrl, _, err := setupDatabase(false)
 	if err != nil {
 		return err
 	}
@@ -158,7 +167,7 @@ func setup() error {
 		return err
 	}
 
-	err = setupSzconfig(ctx, moduleName, settings, verboseLogging)
+	err = setupSzConfig(ctx, instanceName, settings, verboseLogging)
 	if err != nil {
 		return err
 	}
@@ -166,7 +175,7 @@ func setup() error {
 	return err
 }
 
-func setupDB(preserveDB bool) (string, bool, error) {
+func setupDatabase(preserveDB bool) (string, bool, error) {
 	var err error = nil
 
 	// Get paths.
@@ -205,8 +214,8 @@ func setupDB(preserveDB bool) (string, bool, error) {
 	return dbUrl, dbExternal, err
 }
 
-func setupSzconfig(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
-	if configInitialized {
+func setupSzConfig(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
+	if szConfigInitialized {
 		return fmt.Errorf("Szconfig is already setup and has not been torn down")
 	}
 	globalSzconfig.SetLogLevel(ctx, logging.LevelInfoName)
@@ -215,34 +224,25 @@ func setupSzconfig(ctx context.Context, instanceName string, settings string, ve
 	if err != nil {
 		fmt.Println(err)
 	}
-	configInitialized = true
+	szConfigInitialized = true
 	return err
-}
-
-func createSettings(dbUrl string) (string, error) {
-	configAttrMap := map[string]string{"databaseUrl": dbUrl}
-	settings, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingMap(configAttrMap)
-	if err != nil {
-		err = createError(5902, err)
-	}
-	return settings, err
 }
 
 func teardown() error {
 	ctx := context.TODO()
-	err := teardownSzconfig(ctx)
+	err := teardownSzConfig(ctx)
 	return err
 }
 
-func teardownSzconfig(ctx context.Context) error {
-	if !configInitialized {
+func teardownSzConfig(ctx context.Context) error {
+	if !szConfigInitialized {
 		return nil
 	}
 	err := globalSzconfig.Destroy(ctx)
 	if err != nil {
 		return err
 	}
-	configInitialized = false
+	szConfigInitialized = false
 	return nil
 }
 
@@ -419,6 +419,6 @@ func TestSzConfig_Destroy(test *testing.T) {
 	testError(test, ctx, szConfig, err)
 
 	// restore the state that existed prior to this test
-	configInitialized = false
-	restoreSzconfig(ctx)
+	szConfigInitialized = false
+	restoreSzConfig(ctx)
 }

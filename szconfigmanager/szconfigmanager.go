@@ -28,7 +28,7 @@ import (
 	"github.com/senzing-garage/go-observing/notifier"
 	"github.com/senzing-garage/go-observing/observer"
 	"github.com/senzing-garage/go-observing/subject"
-	szconfigmanagerapi "github.com/senzing-garage/sz-sdk-go/szconfigmanager"
+	"github.com/senzing-garage/sz-sdk-go/szconfigmanager"
 	"github.com/senzing-garage/sz-sdk-go/szerror"
 )
 
@@ -36,8 +36,8 @@ import (
 // Types
 // ----------------------------------------------------------------------------
 
-// SzConfigManager is the default implementation of the SzConfigManager interface.
-type SzConfigManager struct {
+// Szconfigmanager is the default implementation of the Szconfigmanager interface.
+type Szconfigmanager struct {
 	isTrace        bool
 	logger         logging.LoggingInterface
 	observerOrigin string
@@ -57,13 +57,13 @@ const initialByteArraySize = 65535
 // --- Logging ----------------------------------------------------------------
 
 // Get the Logger singleton.
-func (client *SzConfigManager) getLogger() logging.LoggingInterface {
+func (client *Szconfigmanager) getLogger() logging.LoggingInterface {
 	var err error = nil
 	if client.logger == nil {
 		options := []interface{}{
 			&logging.OptionCallerSkip{Value: 4},
 		}
-		client.logger, err = logging.NewSenzingSdkLogger(ComponentId, szconfigmanagerapi.IdMessages, options...)
+		client.logger, err = logging.NewSenzingSdkLogger(ComponentId, szconfigmanager.IdMessages, options...)
 		if err != nil {
 			panic(err)
 		}
@@ -72,19 +72,19 @@ func (client *SzConfigManager) getLogger() logging.LoggingInterface {
 }
 
 // Trace method entry.
-func (client *SzConfigManager) traceEntry(errorNumber int, details ...interface{}) {
+func (client *Szconfigmanager) traceEntry(errorNumber int, details ...interface{}) {
 	client.getLogger().Log(errorNumber, details...)
 }
 
 // Trace method exit.
-func (client *SzConfigManager) traceExit(errorNumber int, details ...interface{}) {
+func (client *Szconfigmanager) traceExit(errorNumber int, details ...interface{}) {
 	client.getLogger().Log(errorNumber, details...)
 }
 
 // --- Errors -----------------------------------------------------------------
 
 // Create a new error.
-func (client *SzConfigManager) newError(ctx context.Context, errorNumber int, details ...interface{}) error {
+func (client *Szconfigmanager) newError(ctx context.Context, errorNumber int, details ...interface{}) error {
 	lastException, err := client.getLastException(ctx)
 	defer client.clearLastException(ctx)
 	message := lastException
@@ -96,7 +96,7 @@ func (client *SzConfigManager) newError(ctx context.Context, errorNumber int, de
 	return szerror.SzError(szerror.SzErrorCode(message), (errorMessage))
 }
 
-// --- G2 exception handling --------------------------------------------------
+// --- Sz exception handling --------------------------------------------------
 
 /*
 The clearLastException method erases the last exception message held by the Senzing G2ConfigMgr object.
@@ -104,7 +104,7 @@ The clearLastException method erases the last exception message held by the Senz
 Input
   - ctx: A context to control lifecycle.
 */
-func (client *SzConfigManager) clearLastException(ctx context.Context) error {
+func (client *Szconfigmanager) clearLastException(ctx context.Context) error {
 	// _DLEXPORT void G2Config_clearLastException()
 	_ = ctx
 	var err error = nil
@@ -126,7 +126,7 @@ Input
 Output
   - A string containing the error received from Senzing's G2ConfigMgr.
 */
-func (client *SzConfigManager) getLastException(ctx context.Context) (string, error) {
+func (client *Szconfigmanager) getLastException(ctx context.Context) (string, error) {
 	// _DLEXPORT int G2Config_getLastException(char *buffer, const size_t bufSize);
 	_ = ctx
 	var err error = nil
@@ -154,7 +154,7 @@ Input:
 Output:
   - An int containing the error received from Senzing's G2ConfigMgr.
 */
-func (client *SzConfigManager) getLastExceptionCode(ctx context.Context) (int, error) {
+func (client *Szconfigmanager) getLastExceptionCode(ctx context.Context) (int, error) {
 	//  _DLEXPORT int G2Config_getLastExceptionCode();
 	_ = ctx
 	var err error = nil
@@ -171,13 +171,13 @@ func (client *SzConfigManager) getLastExceptionCode(ctx context.Context) (int, e
 // --- Misc -------------------------------------------------------------------
 
 // Get space for an array of bytes of a given size.
-func (client *SzConfigManager) getByteArrayC(size int) *C.char {
+func (client *Szconfigmanager) getByteArrayC(size int) *C.char {
 	bytes := C.malloc(C.size_t(size))
 	return (*C.char)(bytes)
 }
 
 // Make a byte array.
-func (client *SzConfigManager) getByteArray(size int) []byte {
+func (client *Szconfigmanager) getByteArray(size int) []byte {
 	return make([]byte, size)
 }
 
@@ -191,12 +191,12 @@ The AddConfig method adds a Senzing configuration JSON document to the Senzing d
 Input
   - ctx: A context to control lifecycle.
   - configStr: The Senzing configuration JSON document.
-  - configComments: A free-form string of comments describing the configuration document.
+  - configComment: A free-form string describing the configuration document.
 
 Output
   - A configuration identifier.
 */
-func (client *SzConfigManager) AddConfig(ctx context.Context, configDefinition string, configComments string) (int64, error) {
+func (client *Szconfigmanager) AddConfig(ctx context.Context, configDefinition string, configComment string) (int64, error) {
 	// _DLEXPORT int G2ConfigMgr_addConfig(const char* configStr, const char* configComments, long long* configID);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -204,24 +204,24 @@ func (client *SzConfigManager) AddConfig(ctx context.Context, configDefinition s
 	var resultConfigId int64
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(1, configDefinition, configComments)
+		client.traceEntry(1, configDefinition, configComment)
 		defer func() {
-			client.traceExit(2, configDefinition, configComments, resultConfigId, err, time.Since(entryTime))
+			client.traceExit(2, configDefinition, configComment, resultConfigId, err, time.Since(entryTime))
 		}()
 	}
 	configStrForC := C.CString(configDefinition)
 	defer C.free(unsafe.Pointer(configStrForC))
-	configCommentsForC := C.CString(configComments)
-	defer C.free(unsafe.Pointer(configCommentsForC))
-	result := C.G2ConfigMgr_addConfig_helper(configStrForC, configCommentsForC)
+	configCommentForC := C.CString(configComment)
+	defer C.free(unsafe.Pointer(configCommentForC))
+	result := C.G2ConfigMgr_addConfig_helper(configStrForC, configCommentForC)
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4001, configDefinition, configComments, result.returnCode, result, time.Since(entryTime))
+		err = client.newError(ctx, 4001, configDefinition, configComment, result.returnCode, result, time.Since(entryTime))
 	}
 	resultConfigId = int64(C.longlong(result.configID))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
-				"configComments": configComments,
+				"configComment": configComment,
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8001, err, details)
 		}()
@@ -236,7 +236,7 @@ It should be called after all other calls are complete.
 Input
   - ctx: A context to control lifecycle.
 */
-func (client *SzConfigManager) Destroy(ctx context.Context) error {
+func (client *Szconfigmanager) Destroy(ctx context.Context) error {
 	// _DLEXPORT int G2Config_destroy();
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -270,7 +270,7 @@ Output
   - A JSON document containing the Senzing configuration.
     See the example output.
 */
-func (client *SzConfigManager) GetConfig(ctx context.Context, configId int64) (string, error) {
+func (client *Szconfigmanager) GetConfig(ctx context.Context, configId int64) (string, error) {
 	// _DLEXPORT int G2ConfigMgr_getConfig(const long long configID, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -306,7 +306,7 @@ Output
   - A JSON document containing Senzing configurations.
     See the example output.
 */
-func (client *SzConfigManager) GetConfigList(ctx context.Context) (string, error) {
+func (client *Szconfigmanager) GetConfigList(ctx context.Context) (string, error) {
 	// _DLEXPORT int G2ConfigMgr_getConfigList(char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -341,7 +341,7 @@ Input
 Output
   - A configuration identifier which identifies the current configuration in use.
 */
-func (client *SzConfigManager) GetDefaultConfigId(ctx context.Context) (int64, error) {
+func (client *Szconfigmanager) GetDefaultConfigId(ctx context.Context) (int64, error) {
 	//  _DLEXPORT int G2ConfigMgr_getDefaultConfigID(long long* configID);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -375,19 +375,19 @@ Input
 Output
   - The value sent in the Observer's "origin" key/value pair.
 */
-func (client *SzConfigManager) GetObserverOrigin(ctx context.Context) string {
+func (client *Szconfigmanager) GetObserverOrigin(ctx context.Context) string {
 	return client.observerOrigin
 }
 
 /*
 The GetSdkId method returns the identifier of this particular Software Development Kit (SDK).
-It is handy when working with multiple implementations of the same G2configmgrInterface.
+It is handy when working with multiple implementations of the same SzConfigManager interface.
 For this implementation, "base" is returned.
 
 Input
   - ctx: A context to control lifecycle.
 */
-func (client *SzConfigManager) GetSdkId(ctx context.Context) string {
+func (client *Szconfigmanager) GetSdkId(ctx context.Context) string {
 	var err error = nil
 	if client.isTrace {
 		entryTime := time.Now()
@@ -413,7 +413,7 @@ Input
   - iniParams: A JSON string containing configuration parameters.
   - verboseLogging: A flag to enable deeper logging of the G2 processing. 0 for no Senzing logging; 1 for logging.
 */
-func (client *SzConfigManager) Initialize(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
+func (client *Szconfigmanager) Initialize(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
 	// _DLEXPORT int G2Config_init(const char *moduleName, const char *iniParams, const int verboseLogging);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -451,7 +451,7 @@ Input
   - ctx: A context to control lifecycle.
   - observer: The observer to be added.
 */
-func (client *SzConfigManager) RegisterObserver(ctx context.Context, observer observer.Observer) error {
+func (client *Szconfigmanager) RegisterObserver(ctx context.Context, observer observer.Observer) error {
 	var err error = nil
 	if client.isTrace {
 		entryTime := time.Now()
@@ -484,7 +484,7 @@ Input
   - oldConfigID: The configuration identifier to replace.
   - newConfigID: The configuration identifier to use as the default.
 */
-func (client *SzConfigManager) ReplaceDefaultConfigId(ctx context.Context, currentDefaultConfigId int64, newDefaultConfigId int64) error {
+func (client *Szconfigmanager) ReplaceDefaultConfigId(ctx context.Context, currentDefaultConfigId int64, newDefaultConfigId int64) error {
 	// _DLEXPORT int G2ConfigMgr_replaceDefaultConfigID(const long long oldConfigID, const long long newConfigID);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -517,7 +517,7 @@ Input
   - ctx: A context to control lifecycle.
   - configID: The configuration identifier of the Senzing Engine configuration to use as the default.
 */
-func (client *SzConfigManager) SetDefaultConfigId(ctx context.Context, configId int64) error {
+func (client *Szconfigmanager) SetDefaultConfigId(ctx context.Context, configId int64) error {
 	// _DLEXPORT int G2ConfigMgr_setDefaultConfigID(const long long configID);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -549,7 +549,7 @@ Input
   - ctx: A context to control lifecycle.
   - logLevel: The desired log level. TRACE, DEBUG, INFO, WARN, ERROR, FATAL or PANIC.
 */
-func (client *SzConfigManager) SetLogLevel(ctx context.Context, logLevelName string) error {
+func (client *Szconfigmanager) SetLogLevel(ctx context.Context, logLevelName string) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error = nil
@@ -581,7 +581,7 @@ Input
   - ctx: A context to control lifecycle.
   - origin: The value sent in the Observer's "origin" key/value pair.
 */
-func (client *SzConfigManager) SetObserverOrigin(ctx context.Context, origin string) {
+func (client *Szconfigmanager) SetObserverOrigin(ctx context.Context, origin string) {
 	client.observerOrigin = origin
 }
 
@@ -592,7 +592,7 @@ Input
   - ctx: A context to control lifecycle.
   - observer: The observer to be added.
 */
-func (client *SzConfigManager) UnregisterObserver(ctx context.Context, observer observer.Observer) error {
+func (client *Szconfigmanager) UnregisterObserver(ctx context.Context, observer observer.Observer) error {
 	var err error = nil
 	if client.isTrace {
 		entryTime := time.Now()
