@@ -12,8 +12,8 @@ import (
 	futil "github.com/senzing-garage/go-common/fileutil"
 	"github.com/senzing-garage/go-common/g2engineconfigurationjson"
 	"github.com/senzing-garage/go-logging/logging"
-	"github.com/senzing-garage/sz-sdk-go/szapi"
 	"github.com/senzing-garage/sz-sdk-go/szerror"
+	"github.com/senzing-garage/sz-sdk-go/szinterface"
 	szproductapi "github.com/senzing-garage/sz-sdk-go/szproduct"
 	"github.com/stretchr/testify/assert"
 )
@@ -39,13 +39,13 @@ func createError(errorId int, err error) error {
 	return szerror.Cast(logger.NewError(errorId, err), err)
 }
 
-func getTestObject(ctx context.Context, test *testing.T) szapi.Szproduct {
+func getTestObject(ctx context.Context, test *testing.T) szinterface.SzProduct {
 	_ = ctx
 	_ = test
 	return &globalG2product
 }
 
-func getG2Product(ctx context.Context) szapi.Szproduct {
+func getG2Product(ctx context.Context) szinterface.SzProduct {
 	_ = ctx
 	return &globalG2product
 }
@@ -64,7 +64,7 @@ func printActual(test *testing.T, actual interface{}) {
 	printResult(test, "Actual", actual)
 }
 
-func testError(test *testing.T, ctx context.Context, g2product szapi.Szproduct, err error) {
+func testError(test *testing.T, ctx context.Context, g2product szinterface.SzProduct, err error) {
 	_ = ctx
 	_ = g2product
 	if err != nil {
@@ -73,7 +73,7 @@ func testError(test *testing.T, ctx context.Context, g2product szapi.Szproduct, 
 	}
 }
 
-// func testErrorNoFail(test *testing.T, ctx context.Context, g2product szapi.Szproduct, err error) {
+// func testErrorNoFail(test *testing.T, ctx context.Context, g2product szinterface.SzProduct, err error) {
 // 	if err != nil {
 // 		test.Log("Error:", err.Error())
 // 	}

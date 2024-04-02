@@ -9,12 +9,12 @@ import (
 	"testing"
 
 	truncator "github.com/aquilax/truncate"
-	"github.com/senzing-garage/sz-sdk-go/szapi"
-	szconfigapi "github.com/senzing-garage/sz-sdk-go/szconfig"
-	"github.com/senzing-garage/sz-sdk-go/szerror"
 	futil "github.com/senzing-garage/go-common/fileutil"
 	"github.com/senzing-garage/go-common/g2engineconfigurationjson"
 	"github.com/senzing-garage/go-logging/logging"
+	"github.com/senzing-garage/sz-sdk-go/szconfig"
+	"github.com/senzing-garage/sz-sdk-go/szerror"
+	"github.com/senzing-garage/sz-sdk-go/szinterface"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -39,15 +39,15 @@ func createError(errorId int, err error) error {
 	return szerror.Cast(logger.NewError(errorId, err), err)
 }
 
-func getTestObject(ctx context.Context, test *testing.T) szapi.Szconfig {
+func getSzConfig(ctx context.Context) szinterface.SzConfig {
 	_ = ctx
-	_ = test
 	return &globalSzconfig
 }
 
-func getSzconfig(ctx context.Context) szapi.Szconfig {
+func getTestObject(ctx context.Context, test *testing.T) szinterface.SzConfig {
 	_ = ctx
-	return &globalSzconfig
+	_ = test
+	return getSzConfig(ctx)
 }
 
 func truncate(aString string, length int) string {
@@ -64,9 +64,9 @@ func printActual(test *testing.T, actual interface{}) {
 	printResult(test, "Actual", actual)
 }
 
-func testError(test *testing.T, ctx context.Context, szconfig szapi.Szconfig, err error) {
+func testError(test *testing.T, ctx context.Context, szConfig szinterface.SzConfig, err error) {
 	_ = ctx
-	_ = szconfig
+	_ = szConfig
 	if err != nil {
 		test.Log("Error:", err.Error())
 		assert.FailNow(test, err.Error())
@@ -111,13 +111,13 @@ func getSettings() (string, error) {
 	return settings, nil
 }
 
-func restoreG2config(ctx context.Context) error {
+func restoreSzconfig(ctx context.Context) error {
 	settings, err := getSettings()
 	if err != nil {
 		return err
 	}
 
-	err = setupG2config(ctx, moduleName, settings, verboseLogging)
+	err = setupSzconfig(ctx, moduleName, settings, verboseLogging)
 	if err != nil {
 		return err
 	}
@@ -127,7 +127,7 @@ func restoreG2config(ctx context.Context) error {
 func setup() error {
 	var err error = nil
 	ctx := context.TODO()
-	logger, err = logging.NewSenzingSdkLogger(ComponentId, szconfigapi.IdMessages)
+	logger, err = logging.NewSenzingSdkLogger(ComponentId, szconfig.IdMessages)
 	if err != nil {
 		return createError(5901, err)
 	}
@@ -158,7 +158,7 @@ func setup() error {
 		return err
 	}
 
-	err = setupG2config(ctx, moduleName, settings, verboseLogging)
+	err = setupSzconfig(ctx, moduleName, settings, verboseLogging)
 	if err != nil {
 		return err
 	}
@@ -205,9 +205,9 @@ func setupDB(preserveDB bool) (string, bool, error) {
 	return dbUrl, dbExternal, err
 }
 
-func setupG2config(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
+func setupSzconfig(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
 	if configInitialized {
-		return fmt.Errorf("G2config is already setup and has not been torn down")
+		return fmt.Errorf("Szconfig is already setup and has not been torn down")
 	}
 	globalSzconfig.SetLogLevel(ctx, logging.LevelInfoName)
 	log.SetFlags(0)
@@ -230,11 +230,11 @@ func createSettings(dbUrl string) (string, error) {
 
 func teardown() error {
 	ctx := context.TODO()
-	err := teardownG2config(ctx)
+	err := teardownSzconfig(ctx)
 	return err
 }
 
-func teardownG2config(ctx context.Context) error {
+func teardownSzconfig(ctx context.Context) error {
 	if !configInitialized {
 		return nil
 	}
@@ -250,177 +250,175 @@ func teardownG2config(ctx context.Context) error {
 // Test interface functions
 // ----------------------------------------------------------------------------
 
-func TestG2config_SetObserverOrigin(test *testing.T) {
+func TestSzConfig_SetObserverOrigin(test *testing.T) {
 	ctx := context.TODO()
-	szconfig := getTestObject(ctx, test)
+	szConfig := getTestObject(ctx, test)
 	origin := "Machine: nn; Task: UnitTest"
-	szconfig.SetObserverOrigin(ctx, origin)
+	szConfig.SetObserverOrigin(ctx, origin)
 }
 
-func TestG2config_GetObserverOrigin(test *testing.T) {
+func TestSzConfig_GetObserverOrigin(test *testing.T) {
 	ctx := context.TODO()
-	szconfig := getTestObject(ctx, test)
+	szConfig := getTestObject(ctx, test)
 	origin := "Machine: nn; Task: UnitTest"
-	szconfig.SetObserverOrigin(ctx, origin)
-	actual := szconfig.GetObserverOrigin(ctx)
+	szConfig.SetObserverOrigin(ctx, origin)
+	actual := szConfig.GetObserverOrigin(ctx)
 	assert.Equal(test, origin, actual)
 }
 
-func TestG2config_AddDataSource(test *testing.T) {
+func TestSzConfig_AddDataSource(test *testing.T) {
 	ctx := context.TODO()
-	szconfig := getTestObject(ctx, test)
-	configHandle, err := szconfig.Create(ctx)
-	testError(test, ctx, szconfig, err)
-	dataSourceDefinition := `{"DSRC_CODE": "GO_TEST"}`
-	actual, err := szconfig.AddDataSource(ctx, configHandle, dataSourceDefinition)
-	testError(test, ctx, szconfig, err)
+	szConfig := getTestObject(ctx, test)
+	configHandle, err := szConfig.Create(ctx)
+	testError(test, ctx, szConfig, err)
+	dataSourceCode := "GO_TEST"
+	actual, err := szConfig.AddDataSource(ctx, configHandle, dataSourceCode)
+	testError(test, ctx, szConfig, err)
 	printActual(test, actual)
-	err = szconfig.Close(ctx, configHandle)
-	testError(test, ctx, szconfig, err)
+	err = szConfig.Close(ctx, configHandle)
+	testError(test, ctx, szConfig, err)
 }
 
-func TestG2config_AddDataSource_WithLoad(test *testing.T) {
+func TestSzConfig_AddDataSource_WithLoad(test *testing.T) {
 	ctx := context.TODO()
-	szconfig := getTestObject(ctx, test)
-	configHandle, err := szconfig.Create(ctx)
-	testError(test, ctx, szconfig, err)
-	configDefinition, err := szconfig.GetJsonString(ctx, configHandle)
-	testError(test, ctx, szconfig, err)
-	err = szconfig.Close(ctx, configHandle)
-	testError(test, ctx, szconfig, err)
-	configHandle2, err := szconfig.Load(ctx, configDefinition)
-	testError(test, ctx, szconfig, err)
-	dataSourceDefinition := `{"DSRC_CODE": "GO_TEST"}`
-	actual, err := szconfig.AddDataSource(ctx, configHandle2, dataSourceDefinition)
-	testError(test, ctx, szconfig, err)
+	szConfig := getTestObject(ctx, test)
+	configHandle, err := szConfig.Create(ctx)
+	testError(test, ctx, szConfig, err)
+	configDefinition, err := szConfig.GetJsonString(ctx, configHandle)
+	testError(test, ctx, szConfig, err)
+	err = szConfig.Close(ctx, configHandle)
+	testError(test, ctx, szConfig, err)
+	configHandle2, err := szConfig.Load(ctx, configDefinition)
+	testError(test, ctx, szConfig, err)
+	dataSourceCode := "GO_TEST"
+	actual, err := szConfig.AddDataSource(ctx, configHandle2, dataSourceCode)
+	testError(test, ctx, szConfig, err)
 	printActual(test, actual)
-	err = szconfig.Close(ctx, configHandle2)
-	testError(test, ctx, szconfig, err)
+	err = szConfig.Close(ctx, configHandle2)
+	testError(test, ctx, szConfig, err)
 }
 
-func TestG2config_Close(test *testing.T) {
+func TestSzConfig_Close(test *testing.T) {
 	ctx := context.TODO()
-	szconfig := getTestObject(ctx, test)
-	configHandle, err := szconfig.Create(ctx)
-	testError(test, ctx, szconfig, err)
-	err = szconfig.Close(ctx, configHandle)
-	testError(test, ctx, szconfig, err)
+	szConfig := getTestObject(ctx, test)
+	configHandle, err := szConfig.Create(ctx)
+	testError(test, ctx, szConfig, err)
+	err = szConfig.Close(ctx, configHandle)
+	testError(test, ctx, szConfig, err)
 }
 
-func TestG2config_Create(test *testing.T) {
+func TestSzConfig_Create(test *testing.T) {
 	ctx := context.TODO()
-	szconfig := getTestObject(ctx, test)
-	actual, err := szconfig.Create(ctx)
-	testError(test, ctx, szconfig, err)
+	szConfig := getTestObject(ctx, test)
+	actual, err := szConfig.Create(ctx)
+	testError(test, ctx, szConfig, err)
 	printActual(test, actual)
 }
 
-func TestG2config_DeleteDataSource(test *testing.T) {
+func TestSzConfig_DeleteDataSource(test *testing.T) {
 	ctx := context.TODO()
-	szconfig := getTestObject(ctx, test)
-	configHandle, err := szconfig.Create(ctx)
-	testError(test, ctx, szconfig, err)
-	actual, err := szconfig.GetDataSources(ctx, configHandle)
-	testError(test, ctx, szconfig, err)
+	szConfig := getTestObject(ctx, test)
+	configHandle, err := szConfig.Create(ctx)
+	testError(test, ctx, szConfig, err)
+	actual, err := szConfig.GetDataSources(ctx, configHandle)
+	testError(test, ctx, szConfig, err)
 	printResult(test, "Original", actual)
 	dataSourceCode := "GO_TEST"
-	dataSourceDefinition := `{"DSRC_CODE": "` + dataSourceCode + `"}`
-	_, err = szconfig.AddDataSource(ctx, configHandle, dataSourceDefinition)
-	testError(test, ctx, szconfig, err)
-	actual, err = szconfig.GetDataSources(ctx, configHandle)
-	testError(test, ctx, szconfig, err)
+	_, err = szConfig.AddDataSource(ctx, configHandle, dataSourceCode)
+	testError(test, ctx, szConfig, err)
+	actual, err = szConfig.GetDataSources(ctx, configHandle)
+	testError(test, ctx, szConfig, err)
 	printResult(test, "     Add", actual)
-	err = szconfig.DeleteDataSource(ctx, configHandle, dataSourceCode)
-	testError(test, ctx, szconfig, err)
-	actual, err = szconfig.GetDataSources(ctx, configHandle)
-	testError(test, ctx, szconfig, err)
+	err = szConfig.DeleteDataSource(ctx, configHandle, dataSourceCode)
+	testError(test, ctx, szConfig, err)
+	actual, err = szConfig.GetDataSources(ctx, configHandle)
+	testError(test, ctx, szConfig, err)
 	printResult(test, "  Delete", actual)
-	err = szconfig.Close(ctx, configHandle)
-	testError(test, ctx, szconfig, err)
+	err = szConfig.Close(ctx, configHandle)
+	testError(test, ctx, szConfig, err)
 }
 
-func TestG2config_DeleteDataSource_WithLoad(test *testing.T) {
+func TestSzConfig_DeleteDataSource_WithLoad(test *testing.T) {
 	ctx := context.TODO()
-	szconfig := getTestObject(ctx, test)
-	configHandle, err := szconfig.Create(ctx)
-	testError(test, ctx, szconfig, err)
-	actual, err := szconfig.GetDataSources(ctx, configHandle)
-	testError(test, ctx, szconfig, err)
+	szConfig := getTestObject(ctx, test)
+	configHandle, err := szConfig.Create(ctx)
+	testError(test, ctx, szConfig, err)
+	actual, err := szConfig.GetDataSources(ctx, configHandle)
+	testError(test, ctx, szConfig, err)
 	printResult(test, "Original", actual)
 	dataSourceCode := "GO_TEST"
-	dataSourceDefinition := `{"DSRC_CODE": "` + dataSourceCode + `"}`
-	_, err = szconfig.AddDataSource(ctx, configHandle, dataSourceDefinition)
-	testError(test, ctx, szconfig, err)
-	actual, err = szconfig.GetDataSources(ctx, configHandle)
-	testError(test, ctx, szconfig, err)
+	_, err = szConfig.AddDataSource(ctx, configHandle, dataSourceCode)
+	testError(test, ctx, szConfig, err)
+	actual, err = szConfig.GetDataSources(ctx, configHandle)
+	testError(test, ctx, szConfig, err)
 	printResult(test, "     Add", actual)
-	configDefinition, err := szconfig.GetJsonString(ctx, configHandle)
-	testError(test, ctx, szconfig, err)
-	err = szconfig.Close(ctx, configHandle)
-	testError(test, ctx, szconfig, err)
-	configHandle2, err := szconfig.Load(ctx, configDefinition)
-	testError(test, ctx, szconfig, err)
-	err = szconfig.DeleteDataSource(ctx, configHandle2, dataSourceCode)
-	testError(test, ctx, szconfig, err)
-	actual, err = szconfig.GetDataSources(ctx, configHandle2)
-	testError(test, ctx, szconfig, err)
+	configDefinition, err := szConfig.GetJsonString(ctx, configHandle)
+	testError(test, ctx, szConfig, err)
+	err = szConfig.Close(ctx, configHandle)
+	testError(test, ctx, szConfig, err)
+	configHandle2, err := szConfig.Load(ctx, configDefinition)
+	testError(test, ctx, szConfig, err)
+	err = szConfig.DeleteDataSource(ctx, configHandle2, dataSourceCode)
+	testError(test, ctx, szConfig, err)
+	actual, err = szConfig.GetDataSources(ctx, configHandle2)
+	testError(test, ctx, szConfig, err)
 	printResult(test, "  Delete", actual)
-	err = szconfig.Close(ctx, configHandle2)
-	testError(test, ctx, szconfig, err)
+	err = szConfig.Close(ctx, configHandle2)
+	testError(test, ctx, szConfig, err)
 }
 
-func TestG2config_GetDataSources(test *testing.T) {
+func TestSzConfig_GetDataSources(test *testing.T) {
 	ctx := context.TODO()
-	szconfig := getTestObject(ctx, test)
-	configHandle, err := szconfig.Create(ctx)
-	testError(test, ctx, szconfig, err)
-	actual, err := szconfig.GetDataSources(ctx, configHandle)
-	testError(test, ctx, szconfig, err)
+	szConfig := getTestObject(ctx, test)
+	configHandle, err := szConfig.Create(ctx)
+	testError(test, ctx, szConfig, err)
+	actual, err := szConfig.GetDataSources(ctx, configHandle)
+	testError(test, ctx, szConfig, err)
 	printActual(test, actual)
-	err = szconfig.Close(ctx, configHandle)
-	testError(test, ctx, szconfig, err)
+	err = szConfig.Close(ctx, configHandle)
+	testError(test, ctx, szConfig, err)
 }
 
-func TestG2config_GetJsonString(test *testing.T) {
+func TestSzConfig_GetJsonString(test *testing.T) {
 	ctx := context.TODO()
-	szconfig := getTestObject(ctx, test)
-	configHandle, err := szconfig.Create(ctx)
-	testError(test, ctx, szconfig, err)
-	actual, err := szconfig.GetJsonString(ctx, configHandle)
-	testError(test, ctx, szconfig, err)
-	printActual(test, actual)
-}
-
-func TestG2config_Load(test *testing.T) {
-	ctx := context.TODO()
-	szconfig := getTestObject(ctx, test)
-	configHandle, err := szconfig.Create(ctx)
-	testError(test, ctx, szconfig, err)
-	jsonConfig, err := szconfig.GetJsonString(ctx, configHandle)
-	testError(test, ctx, szconfig, err)
-	actual, err := szconfig.Load(ctx, jsonConfig)
-	testError(test, ctx, szconfig, err)
+	szConfig := getTestObject(ctx, test)
+	configHandle, err := szConfig.Create(ctx)
+	testError(test, ctx, szConfig, err)
+	actual, err := szConfig.GetJsonString(ctx, configHandle)
+	testError(test, ctx, szConfig, err)
 	printActual(test, actual)
 }
 
-func TestG2config_Initialize(test *testing.T) {
+func TestSzConfig_Load(test *testing.T) {
 	ctx := context.TODO()
-	szconfig := getTestObject(ctx, test)
-	instanceName := "Test module name"
-	verboseLogging := int64(0)
-	settings, err := getSettings()
-	testError(test, ctx, szconfig, err)
-	err = szconfig.Initialize(ctx, instanceName, settings, verboseLogging)
-	testError(test, ctx, szconfig, err)
+	szConfig := getTestObject(ctx, test)
+	configHandle, err := szConfig.Create(ctx)
+	testError(test, ctx, szConfig, err)
+	jsonConfig, err := szConfig.GetJsonString(ctx, configHandle)
+	testError(test, ctx, szConfig, err)
+	actual, err := szConfig.Load(ctx, jsonConfig)
+	testError(test, ctx, szConfig, err)
+	printActual(test, actual)
 }
 
-func TestG2config_Destroy(test *testing.T) {
+// func TestSzConfig_Initialize(test *testing.T) {
+// 	ctx := context.TODO()
+// 	szConfig := getTestObject(ctx, test)
+// 	instanceName := "Test module name"
+// 	verboseLogging := int64(0)
+// 	settings, err := getSettings()
+// 	testError(test, ctx, szConfig, err)
+// 	err = szConfig.Initialize(ctx, instanceName, settings, verboseLogging)
+// 	testError(test, ctx, szConfig, err)
+// }
+
+func TestSzConfig_Destroy(test *testing.T) {
 	ctx := context.TODO()
-	szconfig := getTestObject(ctx, test)
-	err := szconfig.Destroy(ctx)
-	testError(test, ctx, szconfig, err)
+	szConfig := getTestObject(ctx, test)
+	err := szConfig.Destroy(ctx)
+	testError(test, ctx, szConfig, err)
 
 	// restore the state that existed prior to this test
 	configInitialized = false
-	restoreG2config(ctx)
+	restoreSzconfig(ctx)
 }

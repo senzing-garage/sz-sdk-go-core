@@ -8,7 +8,7 @@ import (
 
 	jutil "github.com/senzing-garage/go-common/jsonutil"
 	"github.com/senzing-garage/go-logging/logging"
-	"github.com/senzing-garage/sz-sdk-go/szapi"
+	"github.com/senzing-garage/sz-sdk-go/szinterface"
 )
 
 // ----------------------------------------------------------------------------
@@ -72,7 +72,7 @@ func ExampleSzengine_AddRecord_withInfo() {
 	dataSourceCode := "TEST"
 	recordId := "ABC123"
 	jsonData := `{"DATA_SOURCE": "TEST", "RECORD_ID": "ABC123", "NAME_FULL": "JOE SCHMOE", "DATE_OF_BIRTH": "12/11/1978", "EMAIL_ADDRESS": "joeschmoe@nowhere.com"}`
-	flags := szapi.SZ_WITH_INFO
+	flags := szinterface.SZ_WITH_INFO
 	result, err := g2engine.AddRecord(ctx, dataSourceCode, recordId, jsonData, flags)
 	if err != nil {
 		fmt.Println(err)

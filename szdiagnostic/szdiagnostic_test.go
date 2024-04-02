@@ -10,16 +10,16 @@ import (
 	"time"
 
 	truncator "github.com/aquilax/truncate"
-	"github.com/senzing-garage/sz-sdk-go-core/szconfig"
-	"github.com/senzing-garage/sz-sdk-go-core/szconfigmgr"
-	"github.com/senzing-garage/sz-sdk-go-core/szengine"
-	"github.com/senzing-garage/sz-sdk-go/szapi"
-	szdiagnosticapi "github.com/senzing-garage/sz-sdk-go/szdiagnostic"
-	"github.com/senzing-garage/sz-sdk-go/szerror"
 	futil "github.com/senzing-garage/go-common/fileutil"
 	"github.com/senzing-garage/go-common/g2engineconfigurationjson"
 	"github.com/senzing-garage/go-common/truthset"
 	"github.com/senzing-garage/go-logging/logging"
+	"github.com/senzing-garage/sz-sdk-go-core/szconfig"
+	"github.com/senzing-garage/sz-sdk-go-core/szconfigmanager"
+	"github.com/senzing-garage/sz-sdk-go-core/szengine"
+	szdiagnosticapi "github.com/senzing-garage/sz-sdk-go/szdiagnostic"
+	"github.com/senzing-garage/sz-sdk-go/szerror"
+	"github.com/senzing-garage/sz-sdk-go/szinterface"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -45,13 +45,13 @@ func createError(errorId int, err error) error {
 	return szerror.Cast(logger.NewError(errorId, err), err)
 }
 
-func getTestObject(ctx context.Context, test *testing.T) szapi.Szdiagnostic {
+func getTestObject(ctx context.Context, test *testing.T) szinterface.SzDiagnostic {
 	_ = ctx
 	_ = test
 	return &globalG2diagnostic
 }
 
-func getG2Diagnostic(ctx context.Context) szapi.Szdiagnostic {
+func getG2Diagnostic(ctx context.Context) szinterface.SzDiagnostic {
 	_ = ctx
 	return &globalG2diagnostic
 }
@@ -70,7 +70,7 @@ func printActual(test *testing.T, actual interface{}) {
 	printResult(test, "Actual", actual)
 }
 
-func testError(test *testing.T, ctx context.Context, g2diagnostic szapi.Szdiagnostic, err error) {
+func testError(test *testing.T, ctx context.Context, g2diagnostic szinterface.SzDiagnostic, err error) {
 	_ = ctx
 	_ = g2diagnostic
 	if err != nil {
@@ -79,7 +79,7 @@ func testError(test *testing.T, ctx context.Context, g2diagnostic szapi.Szdiagno
 	}
 }
 
-func testErrorNoFail(test *testing.T, ctx context.Context, g2diagnostic szapi.Szdiagnostic, err error) {
+func testErrorNoFail(test *testing.T, ctx context.Context, g2diagnostic szinterface.SzDiagnostic, err error) {
 	_ = ctx
 	_ = g2diagnostic
 	if err != nil {
@@ -362,7 +362,7 @@ func setupSenzingConfig(ctx context.Context, moduleName string, iniParams string
 
 	// Persist the Senzing configuration to the Senzing repository.
 
-	aG2configmgr := &szconfigmgr.Szconfigmgr{}
+	aG2configmgr := &szconfigmanager.SzConfigManager{}
 	err = aG2configmgr.Initialize(ctx, moduleName, iniParams, verboseLogging)
 	if err != nil {
 		return createError(5912, err)

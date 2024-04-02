@@ -1,4 +1,4 @@
-package szconfigmgr
+package szconfigmanager
 
 import (
 	"context"
@@ -11,14 +11,13 @@ import (
 	"time"
 
 	truncator "github.com/aquilax/truncate"
-	"github.com/senzing-garage/sz-sdk-go-core/szconfig"
-	"github.com/senzing-garage/sz-sdk-go/szapi"
-	szconfigmgrapi "github.com/senzing-garage/sz-sdk-go/szconfigmgr"
-	"github.com/senzing-garage/sz-sdk-go/szerror"
 	futil "github.com/senzing-garage/go-common/fileutil"
 	"github.com/senzing-garage/go-common/g2engineconfigurationjson"
-	"github.com/senzing-garage/go-common/truthset"
 	"github.com/senzing-garage/go-logging/logging"
+	"github.com/senzing-garage/sz-sdk-go-core/szconfig"
+	szconfigmanagerapi "github.com/senzing-garage/sz-sdk-go/szconfigmanager"
+	"github.com/senzing-garage/sz-sdk-go/szerror"
+	"github.com/senzing-garage/sz-sdk-go/szinterface"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -30,11 +29,11 @@ const (
 )
 
 var (
-	configInitialized    bool              = false
-	configMgrInitialized bool              = false
-	globalSzconfig       szconfig.Szconfig = szconfig.Szconfig{}
-	globalSzconfigmgr    Szconfigmgr       = Szconfigmgr{}
-	logger               logging.LoggingInterface
+	configInitialized     bool              = false
+	configMgrInitialized  bool              = false
+	globalSzconfig        szconfig.Szconfig = szconfig.Szconfig{}
+	globalSzConfigManager SzConfigManager   = SzConfigManager{}
+	logger                logging.LoggingInterface
 )
 
 // ----------------------------------------------------------------------------
@@ -45,18 +44,18 @@ func createError(errorId int, err error) error {
 	return szerror.Cast(logger.NewError(errorId, err), err)
 }
 
-func getTestObject(ctx context.Context, test *testing.T) szapi.Szconfigmgr {
+func getTestObject(ctx context.Context, test *testing.T) szinterface.SzConfigManager {
 	_ = ctx
 	_ = test
-	return &globalSzconfigmgr
+	return &globalSzConfigManager
 }
 
-func getSzconfigmgr(ctx context.Context) szapi.Szconfigmgr {
+func getSzConfigManager(ctx context.Context) szinterface.SzConfigManager {
 	_ = ctx
-	return &globalSzconfigmgr
+	return &globalSzConfigManager
 }
 
-func getSzconfig(ctx context.Context) szapi.Szconfig {
+func getSzconfig(ctx context.Context) szinterface.SzConfig {
 	_ = ctx
 	return &globalSzconfig
 }
@@ -75,9 +74,9 @@ func printActual(test *testing.T, actual interface{}) {
 	printResult(test, "Actual", actual)
 }
 
-func testError(test *testing.T, ctx context.Context, szconfigmgr szapi.Szconfigmgr, err error) {
+func testError(test *testing.T, ctx context.Context, szconfigmanager szinterface.SzConfigManager, err error) {
 	_ = ctx
-	_ = szconfigmgr
+	_ = szconfigmanager
 	if err != nil {
 		test.Log("Error:", err.Error())
 		assert.FailNow(test, err.Error())
@@ -85,7 +84,7 @@ func testError(test *testing.T, ctx context.Context, szconfigmgr szapi.Szconfigm
 }
 
 func baseDirectoryPath() string {
-	return filepath.FromSlash("../target/test/szconfigmgr")
+	return filepath.FromSlash("../target/test/szconfigmanager")
 }
 
 func dbTemplatePath() string {
@@ -134,7 +133,7 @@ func getSettings() (string, error) {
 func setup() error {
 	var err error = nil
 	ctx := context.TODO()
-	logger, err = logging.NewSenzingSdkLogger(ComponentId, szconfigmgrapi.IdMessages)
+	logger, err = logging.NewSenzingSdkLogger(ComponentId, szconfigmanagerapi.IdMessages)
 	if err != nil {
 		return createError(5901, err)
 	}
@@ -223,9 +222,9 @@ func setupG2configmgr(ctx context.Context, instanceName string, settings string,
 		return fmt.Errorf("G2configmgr is already setup and has not been torn down")
 	}
 
-	globalSzconfigmgr.SetLogLevel(ctx, logging.LevelInfoName)
+	globalSzConfigManager.SetLogLevel(ctx, logging.LevelInfoName)
 	log.SetFlags(0)
-	err := globalSzconfigmgr.Initialize(ctx, instanceName, settings, verboseLogging)
+	err := globalSzConfigManager.Initialize(ctx, instanceName, settings, verboseLogging)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -268,10 +267,9 @@ func setupSenzingConfig(ctx context.Context, instanceName string, settings strin
 	if err != nil {
 		return createError(5907, err)
 	}
-	datasourceNames := []string{"CUSTOMERS", "REFERENCE", "WATCHLIST"}
-	for _, datasourceName := range datasourceNames {
-		datasource := truthset.TruthsetDataSources[datasourceName]
-		_, err := aG2config.AddDataSource(ctx, configHandle, datasource.Json)
+	dataSourceCodes := []string{"CUSTOMERS", "REFERENCE", "WATCHLIST"}
+	for _, dataSourceCode := range dataSourceCodes {
+		_, err := aG2config.AddDataSource(ctx, configHandle, dataSourceCode)
 		if err != nil {
 			return createError(5908, err)
 		}
@@ -295,7 +293,7 @@ func setupSenzingConfig(ctx context.Context, instanceName string, settings strin
 
 	// Persist the Senzing configuration to the Senzing repository.
 
-	aG2configmgr := &Szconfigmgr{}
+	aG2configmgr := &SzConfigManager{}
 	err = aG2configmgr.Initialize(ctx, instanceName, settings, verboseLogging)
 	if err != nil {
 		return createError(5912, err)
@@ -366,7 +364,7 @@ func teardownG2configmgr(ctx context.Context) error {
 	if !configMgrInitialized {
 		return nil
 	}
-	err := globalSzconfigmgr.Destroy(ctx)
+	err := globalSzConfigManager.Destroy(ctx)
 	if err != nil {
 		return err
 	}
@@ -378,25 +376,25 @@ func teardownG2configmgr(ctx context.Context) error {
 // Test interface functions
 // ----------------------------------------------------------------------------
 
-func TestSzconfigmgr_SetObserverOrigin(test *testing.T) {
+func TestSzConfigManager_SetObserverOrigin(test *testing.T) {
 	ctx := context.TODO()
-	szconfigmgr := getTestObject(ctx, test)
+	szconfigmanager := getTestObject(ctx, test)
 	origin := "Machine: nn; Task: UnitTest"
-	szconfigmgr.SetObserverOrigin(ctx, origin)
+	szconfigmanager.SetObserverOrigin(ctx, origin)
 }
 
-func TestSzconfigmgr_GetObserverOrigin(test *testing.T) {
+func TestSzConfigManager_GetObserverOrigin(test *testing.T) {
 	ctx := context.TODO()
-	szconfigmgr := getTestObject(ctx, test)
+	szconfigmanager := getTestObject(ctx, test)
 	origin := "Machine: nn; Task: UnitTest"
-	szconfigmgr.SetObserverOrigin(ctx, origin)
-	actual := szconfigmgr.GetObserverOrigin(ctx)
+	szconfigmanager.SetObserverOrigin(ctx, origin)
+	actual := szconfigmanager.GetObserverOrigin(ctx)
 	assert.Equal(test, origin, actual)
 }
 
-func TestSzconfigmgr_AddConfig(test *testing.T) {
+func TestSzConfigManager_AddConfig(test *testing.T) {
 	ctx := context.TODO()
-	szconfigmgr := getTestObject(ctx, test)
+	szconfigmanager := getTestObject(ctx, test)
 	now := time.Now()
 	g2config := getSzconfig(ctx)
 	configHandle, err1 := g2config.Create(ctx)
@@ -404,7 +402,7 @@ func TestSzconfigmgr_AddConfig(test *testing.T) {
 		test.Log("Error:", err1.Error())
 		assert.FailNow(test, "g2config.Create()")
 	}
-	dataSourceCode := `{"DSRC_CODE": "GO_TEST_` + strconv.FormatInt(now.Unix(), 10) + `"}`
+	dataSourceCode := "GO_TEST_" + strconv.FormatInt(now.Unix(), 10)
 	_, err2 := g2config.AddDataSource(ctx, configHandle, dataSourceCode)
 	if err2 != nil {
 		test.Log("Error:", err2.Error())
@@ -415,90 +413,90 @@ func TestSzconfigmgr_AddConfig(test *testing.T) {
 		test.Log("Error:", err3.Error())
 		assert.FailNow(test, configDefinition)
 	}
-	configComments := fmt.Sprintf("szconfigmgr_test at %s", now.UTC())
-	actual, err := szconfigmgr.AddConfig(ctx, configDefinition, configComments)
-	testError(test, ctx, szconfigmgr, err)
+	configComments := fmt.Sprintf("szconfigmanager_test at %s", now.UTC())
+	actual, err := szconfigmanager.AddConfig(ctx, configDefinition, configComments)
+	testError(test, ctx, szconfigmanager, err)
 	printActual(test, actual)
 }
 
-func TestSzconfigmgr_GetConfig(test *testing.T) {
+func TestSzConfigManager_GetConfig(test *testing.T) {
 	ctx := context.TODO()
-	szconfigmgr := getTestObject(ctx, test)
-	configId, err1 := szconfigmgr.GetDefaultConfigId(ctx)
+	szconfigmanager := getTestObject(ctx, test)
+	configId, err1 := szconfigmanager.GetDefaultConfigId(ctx)
 	if err1 != nil {
 		test.Log("Error:", err1.Error())
-		assert.FailNow(test, "szconfigmgr.GetDefaultConfigId()")
+		assert.FailNow(test, "szconfigmanager.GetDefaultConfigId()")
 	}
-	actual, err := szconfigmgr.GetConfig(ctx, configId)
-	testError(test, ctx, szconfigmgr, err)
+	actual, err := szconfigmanager.GetConfig(ctx, configId)
+	testError(test, ctx, szconfigmanager, err)
 	printActual(test, actual)
 }
 
-func TestSzconfigmgr_GetConfigList(test *testing.T) {
+func TestSzConfigManager_GetConfigList(test *testing.T) {
 	ctx := context.TODO()
-	szconfigmgr := getTestObject(ctx, test)
-	actual, err := szconfigmgr.GetConfigList(ctx)
-	testError(test, ctx, szconfigmgr, err)
+	szconfigmanager := getTestObject(ctx, test)
+	actual, err := szconfigmanager.GetConfigList(ctx)
+	testError(test, ctx, szconfigmanager, err)
 	printActual(test, actual)
 }
 
-func TestSzconfigmgr_GetDefaultConfigId(test *testing.T) {
+func TestSzConfigManager_GetDefaultConfigId(test *testing.T) {
 	ctx := context.TODO()
-	szconfigmgr := getTestObject(ctx, test)
-	actual, err := szconfigmgr.GetDefaultConfigId(ctx)
-	testError(test, ctx, szconfigmgr, err)
+	szconfigmanager := getTestObject(ctx, test)
+	actual, err := szconfigmanager.GetDefaultConfigId(ctx)
+	testError(test, ctx, szconfigmanager, err)
 	printActual(test, actual)
 }
 
-func TestSzconfigmgr_ReplaceDefaultConfigId(test *testing.T) {
+func TestSzConfigManager_ReplaceDefaultConfigId(test *testing.T) {
 	ctx := context.TODO()
-	szconfigmgr := getTestObject(ctx, test)
-	currentDefaultConfigId, err1 := szconfigmgr.GetDefaultConfigId(ctx)
+	szconfigmanager := getTestObject(ctx, test)
+	currentDefaultConfigId, err1 := szconfigmanager.GetDefaultConfigId(ctx)
 	if err1 != nil {
 		test.Log("Error:", err1.Error())
-		assert.FailNow(test, "szconfigmgr.GetDefaultConfigId()")
+		assert.FailNow(test, "szconfigmanager.GetDefaultConfigId()")
 	}
 
 	// FIXME: This is kind of a cheater.
 
-	newDefaultConfigId, err2 := szconfigmgr.GetDefaultConfigId(ctx)
+	newDefaultConfigId, err2 := szconfigmanager.GetDefaultConfigId(ctx)
 	if err2 != nil {
 		test.Log("Error:", err2.Error())
-		assert.FailNow(test, "szconfigmgr.GetDefaultConfigId()-2")
+		assert.FailNow(test, "szconfigmanager.GetDefaultConfigId()-2")
 	}
 
-	err := szconfigmgr.ReplaceDefaultConfigId(ctx, currentDefaultConfigId, newDefaultConfigId)
-	testError(test, ctx, szconfigmgr, err)
+	err := szconfigmanager.ReplaceDefaultConfigId(ctx, currentDefaultConfigId, newDefaultConfigId)
+	testError(test, ctx, szconfigmanager, err)
 }
 
-func TestSzconfigmgr_SetDefaultConfigId(test *testing.T) {
+func TestSzConfigManager_SetDefaultConfigId(test *testing.T) {
 	ctx := context.TODO()
-	szconfigmgr := getTestObject(ctx, test)
-	configId, err1 := szconfigmgr.GetDefaultConfigId(ctx)
+	szconfigmanager := getTestObject(ctx, test)
+	configId, err1 := szconfigmanager.GetDefaultConfigId(ctx)
 	if err1 != nil {
 		test.Log("Error:", err1.Error())
-		assert.FailNow(test, "szconfigmgr.GetDefaultConfigId()")
+		assert.FailNow(test, "szconfigmanager.GetDefaultConfigId()")
 	}
-	err := szconfigmgr.SetDefaultConfigId(ctx, configId)
-	testError(test, ctx, szconfigmgr, err)
+	err := szconfigmanager.SetDefaultConfigId(ctx, configId)
+	testError(test, ctx, szconfigmanager, err)
 }
 
-func TestSzconfigmgr_Initialize(test *testing.T) {
+func TestSzConfigManager_Initialize(test *testing.T) {
 	ctx := context.TODO()
-	szconfigmgr := getTestObject(ctx, test)
+	szconfigmanager := getTestObject(ctx, test)
 	instanceName := "Test module name"
 	verboseLogging := int64(0)
 	settings, err := getSettings()
-	testError(test, ctx, szconfigmgr, err)
-	err = szconfigmgr.Initialize(ctx, instanceName, settings, verboseLogging)
-	testError(test, ctx, szconfigmgr, err)
+	testError(test, ctx, szconfigmanager, err)
+	err = szconfigmanager.Initialize(ctx, instanceName, settings, verboseLogging)
+	testError(test, ctx, szconfigmanager, err)
 }
 
-func TestSzconfigmgr_Destroy(test *testing.T) {
+func TestSzConfigManager_Destroy(test *testing.T) {
 	ctx := context.TODO()
-	szconfigmgr := getTestObject(ctx, test)
-	err := szconfigmgr.Destroy(ctx)
-	testError(test, ctx, szconfigmgr, err)
+	szconfigmanager := getTestObject(ctx, test)
+	err := szconfigmanager.Destroy(ctx)
+	testError(test, ctx, szconfigmanager, err)
 
 	// restore the state that existed prior to this test
 	configMgrInitialized = false

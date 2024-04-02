@@ -1,8 +1,8 @@
-package szconfigmgr
+package szconfigmanager
 
 // ----------------------------------------------------------------------------
 // Constants
 // ----------------------------------------------------------------------------
 
-// Identfier of the szconfigmgr package found messages having the format "senzing-6002xxxx".
+// Identfier of the szconfigmanager package found messages having the format "senzing-6002xxxx".
 const ComponentId = 6002

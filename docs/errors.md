@@ -10,7 +10,7 @@ Error identifiers are in the format `senzing-PPPPnnnn` where:
 Prefixes:
 
 1. `6001` - szconfig
-1. `6002` - szconfigmgr
+1. `6002` - szconfigmanager
 1. `6003` - szdiagnostic
 1. `6004` - szengine
 1. `6005` - szhasher

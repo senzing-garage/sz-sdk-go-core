@@ -24,13 +24,13 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/senzing-garage/sz-sdk-go/szapi"
-	szengineapi "github.com/senzing-garage/sz-sdk-go/szengine"
-	"github.com/senzing-garage/sz-sdk-go/szerror"
 	"github.com/senzing-garage/go-logging/logging"
 	"github.com/senzing-garage/go-observing/notifier"
 	"github.com/senzing-garage/go-observing/observer"
 	"github.com/senzing-garage/go-observing/subject"
+	szengineapi "github.com/senzing-garage/sz-sdk-go/szengine"
+	"github.com/senzing-garage/sz-sdk-go/szerror"
+	"github.com/senzing-garage/sz-sdk-go/szinterface"
 )
 
 // ----------------------------------------------------------------------------
@@ -519,8 +519,8 @@ Input
 Output
   - A channel of strings that can be iterated over.
 */
-func (client *Szengine) ExportCsvEntityReportIterator(ctx context.Context, csvColumnList string, flags int64) chan szapi.StringFragment {
-	stringFragmentChannel := make(chan szapi.StringFragment)
+func (client *Szengine) ExportCsvEntityReportIterator(ctx context.Context, csvColumnList string, flags int64) chan szinterface.StringFragment {
+	stringFragmentChannel := make(chan szinterface.StringFragment)
 
 	go func() {
 		runtime.LockOSThread()
@@ -534,7 +534,7 @@ func (client *Szengine) ExportCsvEntityReportIterator(ctx context.Context, csvCo
 		}
 		reportHandle, err := client.ExportCsvEntityReport(ctx, csvColumnList, flags)
 		if err != nil {
-			result := szapi.StringFragment{
+			result := szinterface.StringFragment{
 				Error: err,
 			}
 			stringFragmentChannel <- result
@@ -547,14 +547,14 @@ func (client *Szengine) ExportCsvEntityReportIterator(ctx context.Context, csvCo
 		for {
 			select {
 			case <-ctx.Done():
-				stringFragmentChannel <- szapi.StringFragment{
+				stringFragmentChannel <- szinterface.StringFragment{
 					Error: ctx.Err(),
 				}
 				break forLoop
 			default:
 				entityReportFragment, err := client.FetchNext(ctx, reportHandle)
 				if err != nil {
-					stringFragmentChannel <- szapi.StringFragment{
+					stringFragmentChannel <- szinterface.StringFragment{
 						Error: err,
 					}
 					break forLoop
@@ -562,7 +562,7 @@ func (client *Szengine) ExportCsvEntityReportIterator(ctx context.Context, csvCo
 				if len(entityReportFragment) == 0 {
 					break forLoop
 				}
-				stringFragmentChannel <- szapi.StringFragment{
+				stringFragmentChannel <- szinterface.StringFragment{
 					Value: entityReportFragment,
 				}
 			}
@@ -627,8 +627,8 @@ Input
 Output
   - A channel of strings that can be iterated over.
 */
-func (client *Szengine) ExportJsonEntityReportIterator(ctx context.Context, flags int64) chan szapi.StringFragment {
-	stringFragmentChannel := make(chan szapi.StringFragment)
+func (client *Szengine) ExportJsonEntityReportIterator(ctx context.Context, flags int64) chan szinterface.StringFragment {
+	stringFragmentChannel := make(chan szinterface.StringFragment)
 	go func() {
 		runtime.LockOSThread()
 		defer runtime.UnlockOSThread()
@@ -641,7 +641,7 @@ func (client *Szengine) ExportJsonEntityReportIterator(ctx context.Context, flag
 		}
 		reportHandle, err := client.ExportJsonEntityReport(ctx, flags)
 		if err != nil {
-			result := szapi.StringFragment{
+			result := szinterface.StringFragment{
 				Error: err,
 			}
 			stringFragmentChannel <- result
@@ -654,14 +654,14 @@ func (client *Szengine) ExportJsonEntityReportIterator(ctx context.Context, flag
 		for {
 			select {
 			case <-ctx.Done():
-				stringFragmentChannel <- szapi.StringFragment{
+				stringFragmentChannel <- szinterface.StringFragment{
 					Error: ctx.Err(),
 				}
 				break forLoop
 			default:
 				entityReportFragment, err := client.FetchNext(ctx, reportHandle)
 				if err != nil {
-					stringFragmentChannel <- szapi.StringFragment{
+					stringFragmentChannel <- szinterface.StringFragment{
 						Error: err,
 					}
 					break forLoop
@@ -669,7 +669,7 @@ func (client *Szengine) ExportJsonEntityReportIterator(ctx context.Context, flag
 				if len(entityReportFragment) == 0 {
 					break forLoop
 				}
-				stringFragmentChannel <- szapi.StringFragment{
+				stringFragmentChannel <- szinterface.StringFragment{
 					Value: entityReportFragment,
 				}
 			}

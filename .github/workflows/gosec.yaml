@@ -34,9 +34,9 @@ jobs:
           mkdir ./szconfig/gohelpers
           cp /opt/senzing/g2/sdk/c/*.h ./szconfig/
           cp /opt/senzing/g2/sdk/c/gohelpers/*.h ./szconfig/gohelpers
-          mkdir ./szconfigmgr/gohelpers
-          cp /opt/senzing/g2/sdk/c/*.h ./szconfigmgr/
-          cp /opt/senzing/g2/sdk/c/gohelpers/*.h ./szconfigmgr/gohelpers
+          mkdir ./szconfigmanager/gohelpers
+          cp /opt/senzing/g2/sdk/c/*.h ./szconfigmanager/
+          cp /opt/senzing/g2/sdk/c/gohelpers/*.h ./szconfigmanager/gohelpers
           mkdir ./szdiagnostic/gohelpers
           cp /opt/senzing/g2/sdk/c/*.h ./szdiagnostic/
           cp /opt/senzing/g2/sdk/c/gohelpers/*.h ./szdiagnostic/gohelpers

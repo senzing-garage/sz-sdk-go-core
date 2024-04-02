@@ -28,7 +28,7 @@ import (
 	"github.com/senzing-garage/go-observing/notifier"
 	"github.com/senzing-garage/go-observing/observer"
 	"github.com/senzing-garage/go-observing/subject"
-	szconfigapi "github.com/senzing-garage/sz-sdk-go/szconfig"
+	"github.com/senzing-garage/sz-sdk-go/szconfig"
 	"github.com/senzing-garage/sz-sdk-go/szerror"
 )
 
@@ -63,7 +63,7 @@ func (client *Szconfig) getLogger() logging.LoggingInterface {
 		options := []interface{}{
 			&logging.OptionCallerSkip{Value: 4},
 		}
-		client.logger, err = logging.NewSenzingSdkLogger(ComponentId, szconfigapi.IdMessages, options...)
+		client.logger, err = logging.NewSenzingSdkLogger(ComponentId, szconfig.IdMessages, options...)
 		if err != nil {
 			panic(err)
 		}
@@ -96,10 +96,10 @@ func (client *Szconfig) newError(ctx context.Context, errorNumber int, details .
 	return szerror.SzError(szerror.SzErrorCode(message), (errorMessage))
 }
 
-// --- G2 exception handling --------------------------------------------------
+// --- Sz exception handling --------------------------------------------------
 
 /*
-The clearLastException method erases the last exception message held by the Senzing G2Config object.
+The clearLastException method erases the last exception message held by the Senzing Szconfig object.
 
 Input
   - ctx: A context to control lifecycle.
@@ -118,13 +118,13 @@ func (client *Szconfig) clearLastException(ctx context.Context) error {
 }
 
 /*
-The getLastException method retrieves the last exception thrown in Senzing's G2Config.
+The getLastException method retrieves the last exception thrown in Senzing's Szconfig.
 
 Input
   - ctx: A context to control lifecycle.
 
 Output
-  - A string containing the error received from Senzing's G2Config.
+  - A string containing the error received from Senzing's Szconfig.
 */
 func (client *Szconfig) getLastException(ctx context.Context) (string, error) {
 	// _DLEXPORT int G2Config_getLastException(char *buffer, const size_t bufSize);
@@ -146,7 +146,7 @@ func (client *Szconfig) getLastException(ctx context.Context) (string, error) {
 }
 
 /*
-The getLastExceptionCode method retrieves the code of the last exception thrown in Senzing's G2Config.
+The getLastExceptionCode method retrieves the code of the last exception thrown in Senzing's Szconfig.
 
 Input:
   - ctx: A context to control lifecycle.
@@ -198,7 +198,7 @@ Output
   - A string containing a JSON document listing the newly created data source.
     See the example output.
 */
-func (client *Szconfig) AddDataSource(ctx context.Context, configHandle uintptr, dataSourceDefinition string) (string, error) {
+func (client *Szconfig) AddDataSource(ctx context.Context, configHandle uintptr, dataSourceCode string) (string, error) {
 	// _DLEXPORT int G2Config_addDataSource(ConfigHandle configHandle, const char *inputJson, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -206,23 +206,24 @@ func (client *Szconfig) AddDataSource(ctx context.Context, configHandle uintptr,
 	var resultResponse string
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(1, configHandle, dataSourceDefinition)
+		client.traceEntry(1, configHandle, dataSourceCode)
 		defer func() {
-			client.traceExit(2, configHandle, dataSourceDefinition, resultResponse, err, time.Since(entryTime))
+			client.traceExit(2, configHandle, dataSourceCode, resultResponse, err, time.Since(entryTime))
 		}()
 	}
-	inputJsonForC := C.CString(dataSourceDefinition)
-	defer C.free(unsafe.Pointer(inputJsonForC))
-	result := C.G2Config_addDataSource_helper(C.uintptr_t(configHandle), inputJsonForC)
+	dataSourceDefinition := `{"DSRC_CODE": "` + dataSourceCode + `"}`
+	dataSourceDefinitionForC := C.CString(dataSourceDefinition)
+	defer C.free(unsafe.Pointer(dataSourceDefinitionForC))
+	result := C.G2Config_addDataSource_helper(C.uintptr_t(configHandle), dataSourceDefinitionForC)
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4001, configHandle, dataSourceDefinition, result.returnCode, result, time.Since(entryTime))
+		err = client.newError(ctx, 4001, configHandle, dataSourceCode, result.returnCode, result, time.Since(entryTime))
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
-				"inputJson": dataSourceDefinition,
+				"inputJson": dataSourceCode,
 				"return":    resultResponse,
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8001, err, details)
@@ -319,10 +320,10 @@ func (client *Szconfig) DeleteDataSource(ctx context.Context, configHandle uintp
 		client.traceEntry(9, configHandle, dataSourceCode)
 		defer func() { client.traceExit(10, configHandle, dataSourceCode, err, time.Since(entryTime)) }()
 	}
-	inputJson := `{"DSRC_CODE": "` + dataSourceCode + `"}`
-	inputJsonForC := C.CString(inputJson)
-	defer C.free(unsafe.Pointer(inputJsonForC))
-	result := C.G2Config_deleteDataSource_helper(C.uintptr_t(configHandle), inputJsonForC)
+	dataSourceDefinition := `{"DSRC_CODE": "` + dataSourceCode + `"}`
+	dataSourceDefinitionForC := C.CString(dataSourceDefinition)
+	defer C.free(unsafe.Pointer(dataSourceDefinitionForC))
+	result := C.G2Config_deleteDataSource_helper(C.uintptr_t(configHandle), dataSourceDefinitionForC)
 	if result != 0 {
 		err = client.newError(ctx, 4004, configHandle, dataSourceCode, result, time.Since(entryTime))
 	}
@@ -338,7 +339,7 @@ func (client *Szconfig) DeleteDataSource(ctx context.Context, configHandle uintp
 }
 
 /*
-The Destroy method will destroy and perform cleanup for the Senzing G2Config object.
+The Destroy method will destroy and perform cleanup for the Senzing Szconfig object.
 It should be called after all other calls are complete.
 
 Input
@@ -406,7 +407,7 @@ func (client *Szconfig) GetDataSources(ctx context.Context, configHandle uintptr
 }
 
 /*
-The GetJsonString method creates a JSON string representation of the Senzing G2Config object.
+The GetJsonString method creates a JSON string representation of the Senzing Szconfig object.
 The configHandle is created by the Create() method.
 
 Input
@@ -414,7 +415,7 @@ Input
   - configHandle: An identifier of an in-memory configuration.
 
 Output
-  - A string containing a JSON Document representation of the Senzing G2Config object.
+  - A string containing a JSON Document representation of the Senzing Szconfig object.
     See the example output.
 */
 func (client *Szconfig) GetJsonString(ctx context.Context, configHandle uintptr) (string, error) {
@@ -458,7 +459,7 @@ func (client *Szconfig) GetObserverOrigin(ctx context.Context) string {
 
 /*
 The GetSdkId method returns the identifier of this particular Software Development Kit (SDK).
-It is handy when working with multiple implementations of the same G2configInterface.
+It is handy when working with multiple implementations of the same szconfig interface.
 For this implementation, "base" is returned.
 
 Input
@@ -481,7 +482,7 @@ func (client *Szconfig) GetSdkId(ctx context.Context) string {
 }
 
 /*
-The Init method initializes the Senzing G2Config object.
+The Init method initializes the Senzing Szconfig object.
 It must be called prior to any other calls.
 
 Input
