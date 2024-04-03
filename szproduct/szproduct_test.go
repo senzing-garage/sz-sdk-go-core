@@ -20,15 +20,15 @@ import (
 
 const (
 	defaultTruncation = 76
-	moduleName        = "Product Test Module"
+	instanceName      = "Product Test Module"
 	printResults      = false
-	verboseLogging    = 0
+	verboseLogging    = sz.SZ_NO_LOGGING
 )
 
 var (
-	globalG2product    Szproduct = Szproduct{}
-	logger             logging.LoggingInterface
-	productInitialized bool = false
+	globalSzProduct      Szproduct = Szproduct{}
+	logger               logging.LoggingInterface
+	szProductInitialized bool = false
 )
 
 // ----------------------------------------------------------------------------
@@ -39,19 +39,23 @@ func createError(errorId int, err error) error {
 	return szerror.Cast(logger.NewError(errorId, err), err)
 }
 
+func getDatabaseTemplatePath() string {
+	return filepath.FromSlash("../testdata/sqlite/G2C.db")
+}
+
+func getSzProduct(ctx context.Context) sz.SzProduct {
+	_ = ctx
+	return &globalSzProduct
+}
+
+func getTestDirectoryPath() string {
+	return filepath.FromSlash("../target/test/szproduct")
+}
+
 func getTestObject(ctx context.Context, test *testing.T) sz.SzProduct {
 	_ = ctx
 	_ = test
-	return &globalG2product
-}
-
-func getG2Product(ctx context.Context) sz.SzProduct {
-	_ = ctx
-	return &globalG2product
-}
-
-func truncate(aString string, length int) string {
-	return truncator.Truncate(aString, length, "...", truncator.PositionEnd)
+	return getSzProduct(ctx)
 }
 
 func printResult(test *testing.T, title string, result interface{}) {
@@ -64,27 +68,23 @@ func printActual(test *testing.T, actual interface{}) {
 	printResult(test, "Actual", actual)
 }
 
-func testError(test *testing.T, ctx context.Context, g2product sz.SzProduct, err error) {
+func testError(test *testing.T, ctx context.Context, szProduct sz.SzProduct, err error) {
 	_ = ctx
-	_ = g2product
+	_ = szProduct
 	if err != nil {
 		test.Log("Error:", err.Error())
 		assert.FailNow(test, err.Error())
 	}
 }
 
-// func testErrorNoFail(test *testing.T, ctx context.Context, g2product sz.SzProduct, err error) {
+// func testErrorNoFail(test *testing.T, ctx context.Context, szProduct sz.SzProduct, err error) {
 // 	if err != nil {
 // 		test.Log("Error:", err.Error())
 // 	}
 // }
 
-func baseDirectoryPath() string {
-	return filepath.FromSlash("../target/test/g2product")
-}
-
-func dbTemplatePath() string {
-	return filepath.FromSlash("../testdata/sqlite/G2C.db")
+func truncate(aString string, length int) string {
+	return truncator.Truncate(aString, length, "...", truncator.PositionEnd)
 }
 
 // ----------------------------------------------------------------------------
@@ -105,25 +105,34 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
-func getIniParams() (string, error) {
-	dbUrl, _, err := setupDB(true)
+func createSettings(dbUrl string) (string, error) {
+	configAttrMap := map[string]string{"databaseUrl": dbUrl}
+	settings, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingMap(configAttrMap)
 	if err != nil {
-		return "", err
+		err = createError(5902, err)
 	}
-	iniParams, err := setupIniParams(dbUrl)
-	if err != nil {
-		return "", err
-	}
-	return iniParams, nil
+	return settings, err
 }
 
-func restoreG2product(ctx context.Context) error {
-	iniParams, err := getIniParams()
+func getSettings() (string, error) {
+	dbUrl, _, err := setupDatabase(true)
+	if err != nil {
+		return "", err
+	}
+	settings, err := createSettings(dbUrl)
+	if err != nil {
+		return "", err
+	}
+	return settings, nil
+}
+
+func restoreSzProduct(ctx context.Context) error {
+	settings, err := getSettings()
 	if err != nil {
 		return err
 	}
 
-	err = setupG2product(ctx, moduleName, iniParams, verboseLogging)
+	err = setupSzProduct(ctx, instanceName, settings, verboseLogging)
 	if err != nil {
 		return err
 	}
@@ -140,31 +149,31 @@ func setup() error {
 
 	// Cleanup past runs and prepare for current run.
 
-	baseDir := baseDirectoryPath()
-	err = os.RemoveAll(filepath.Clean(baseDir))
+	testDirectoryPath := getTestDirectoryPath()
+	err = os.RemoveAll(filepath.Clean(testDirectoryPath)) // cleanup any previous test run
 	if err != nil {
-		return fmt.Errorf("Failed to remove target test directory (%v): %w", baseDir, err)
+		return fmt.Errorf("Failed to remove target test directory (%v): %w", testDirectoryPath, err)
 	}
-	err = os.MkdirAll(filepath.Clean(baseDir), 0750)
+	err = os.MkdirAll(filepath.Clean(testDirectoryPath), 0750) // recreate the test target directory
 	if err != nil {
-		return fmt.Errorf("Failed to recreate target test directory (%v): %w", baseDir, err)
+		return fmt.Errorf("Failed to recreate target test directory (%v): %w", testDirectoryPath, err)
 	}
 
 	// Get the database URL and determine if external or a local file just created.
 
-	dbUrl, _, err := setupDB(false)
+	dbUrl, _, err := setupDatabase(false)
 	if err != nil {
 		return err
 	}
 
 	// Create the Senzing engine configuration JSON.
 
-	iniParams, err := setupIniParams(dbUrl)
+	settings, err := createSettings(dbUrl)
 	if err != nil {
 		return err
 	}
 
-	err = setupG2product(ctx, moduleName, iniParams, verboseLogging)
+	err = setupSzProduct(ctx, instanceName, settings, verboseLogging)
 	if err != nil {
 		return err
 	}
@@ -172,19 +181,19 @@ func setup() error {
 	return err
 }
 
-func setupDB(preserveDB bool) (string, bool, error) {
+func setupDatabase(preserveDB bool) (string, bool, error) {
 	var err error = nil
 
 	// Get paths.
 
-	baseDir := baseDirectoryPath()
-	dbFilePath, err := filepath.Abs(dbTemplatePath())
+	testDirectoryPath := getTestDirectoryPath()
+	dbFilePath, err := filepath.Abs(getDatabaseTemplatePath())
 	if err != nil {
 		err = fmt.Errorf("failed to obtain absolute path to database file (%s): %s",
 			dbFilePath, err.Error())
 		return "", false, err
 	}
-	dbTargetPath := filepath.Join(baseDirectoryPath(), "G2C.db")
+	dbTargetPath := filepath.Join(getTestDirectoryPath(), "G2C.db")
 	dbTargetPath, err = filepath.Abs(dbTargetPath)
 	if err != nil {
 		err = fmt.Errorf("failed to make target database path (%s) absolute: %w",
@@ -200,10 +209,10 @@ func setupDB(preserveDB bool) (string, bool, error) {
 	if !dbExternal {
 		dbUrl = dbDefaultUrl
 		if !preserveDB {
-			_, _, err = futil.CopyFile(dbFilePath, baseDir, true) // Copy the SQLite database file.
+			_, _, err = futil.CopyFile(dbFilePath, testDirectoryPath, true) // Copy the SQLite database file.
 			if err != nil {
 				err = fmt.Errorf("setup failed to copy template database (%v) to target path (%v): %w",
-					dbFilePath, baseDir, err)
+					dbFilePath, testDirectoryPath, err)
 				// Fall through to return the error.
 			}
 		}
@@ -211,44 +220,35 @@ func setupDB(preserveDB bool) (string, bool, error) {
 	return dbUrl, dbExternal, err
 }
 
-func setupG2product(ctx context.Context, moduleName string, iniParams string, verboseLogging int64) error {
-	if productInitialized {
-		return fmt.Errorf("G2product is already setup and has not been torn down")
+func setupSzProduct(ctx context.Context, moduleName string, iniParams string, verboseLogging int64) error {
+	if szProductInitialized {
+		return fmt.Errorf("SzProduct is already setup and has not been torn down")
 	}
-	globalG2product.SetLogLevel(ctx, logging.LevelInfoName)
+	globalSzProduct.SetLogLevel(ctx, logging.LevelInfoName)
 	log.SetFlags(0)
-	err := globalG2product.Initialize(ctx, moduleName, iniParams, verboseLogging)
+	err := globalSzProduct.Initialize(ctx, moduleName, iniParams, verboseLogging)
 	if err != nil {
 		fmt.Println(err)
 	}
-	productInitialized = true
+	szProductInitialized = true
 	return err
-}
-
-func setupIniParams(dbUrl string) (string, error) {
-	configAttrMap := map[string]string{"databaseUrl": dbUrl}
-	iniParams, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingMap(configAttrMap)
-	if err != nil {
-		err = createError(5902, err)
-	}
-	return iniParams, err
 }
 
 func teardown() error {
 	ctx := context.TODO()
-	err := teardownG2product(ctx)
+	err := teardownSzProduct(ctx)
 	return err
 }
 
-func teardownG2product(ctx context.Context) error {
-	if !productInitialized {
+func teardownSzProduct(ctx context.Context) error {
+	if !szProductInitialized {
 		return nil
 	}
-	err := globalG2product.Destroy(ctx)
+	err := globalSzProduct.Destroy(ctx)
 	if err != nil {
 		return err
 	}
-	productInitialized = false
+	szProductInitialized = false
 	return nil
 }
 
@@ -256,56 +256,55 @@ func teardownG2product(ctx context.Context) error {
 // Test interface functions
 // ----------------------------------------------------------------------------
 
-func TestG2product_SetObserverOrigin(test *testing.T) {
+func TestSzProduct_SetObserverOrigin(test *testing.T) {
 	ctx := context.TODO()
-	g2product := getTestObject(ctx, test)
+	szProduct := getTestObject(ctx, test)
 	origin := "Machine: nn; Task: UnitTest"
-	g2product.SetObserverOrigin(ctx, origin)
+	szProduct.SetObserverOrigin(ctx, origin)
 }
 
-func TestG2product_GetObserverOrigin(test *testing.T) {
+func TestSzProduct_GetObserverOrigin(test *testing.T) {
 	ctx := context.TODO()
-	g2product := getTestObject(ctx, test)
+	szProduct := getTestObject(ctx, test)
 	origin := "Machine: nn; Task: UnitTest"
-	g2product.SetObserverOrigin(ctx, origin)
-	actual := g2product.GetObserverOrigin(ctx)
+	szProduct.SetObserverOrigin(ctx, origin)
+	actual := szProduct.GetObserverOrigin(ctx)
 	assert.Equal(test, origin, actual)
 }
 
-func TestG2product_Initialize(test *testing.T) {
+func TestSzProduct_Initialize(test *testing.T) {
 	ctx := context.TODO()
-	g2product := &Szproduct{}
+	szProduct := &Szproduct{}
 	instanceName := "Test module name"
-	verboseLogging := int64(0)
-	settings, err := getIniParams()
-	testError(test, ctx, g2product, err)
-	err = g2product.Initialize(ctx, instanceName, settings, verboseLogging)
-	testError(test, ctx, g2product, err)
+	settings, err := getSettings()
+	testError(test, ctx, szProduct, err)
+	err = szProduct.Initialize(ctx, instanceName, settings, verboseLogging)
+	testError(test, ctx, szProduct, err)
 }
 
-func TestG2product_GetLicense(test *testing.T) {
+func TestSzProduct_GetLicense(test *testing.T) {
 	ctx := context.TODO()
-	g2product := getTestObject(ctx, test)
-	actual, err := g2product.GetLicense(ctx)
-	testError(test, ctx, g2product, err)
+	szProduct := getTestObject(ctx, test)
+	actual, err := szProduct.GetLicense(ctx)
+	testError(test, ctx, szProduct, err)
 	printActual(test, actual)
 }
 
-func TestG2product_GetVersion(test *testing.T) {
+func TestSzProduct_GetVersion(test *testing.T) {
 	ctx := context.TODO()
-	g2product := getTestObject(ctx, test)
-	actual, err := g2product.GetVersion(ctx)
-	testError(test, ctx, g2product, err)
+	szProduct := getTestObject(ctx, test)
+	actual, err := szProduct.GetVersion(ctx)
+	testError(test, ctx, szProduct, err)
 	printActual(test, actual)
 }
 
-func TestG2product_Destroy(test *testing.T) {
+func TestSzProduct_Destroy(test *testing.T) {
 	ctx := context.TODO()
-	g2product := getTestObject(ctx, test)
-	err := g2product.Destroy(ctx)
-	testError(test, ctx, g2product, err)
+	szProduct := getTestObject(ctx, test)
+	err := szProduct.Destroy(ctx)
+	testError(test, ctx, szProduct, err)
 
 	// restore the pre-test state
-	productInitialized = false
-	restoreG2product(ctx)
+	szProductInitialized = false
+	restoreSzProduct(ctx)
 }

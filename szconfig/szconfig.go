@@ -233,14 +233,14 @@ func (client *Szconfig) AddDataSource(ctx context.Context, configHandle uintptr,
 }
 
 /*
-The Close method cleans up the Senzing G2Config object pointed to by the handle.
+The CloseConfig method cleans up the Senzing G2Config object pointed to by the handle.
 The handle was created by the Create() method.
 
 Input
   - ctx: A context to control lifecycle.
   - configHandle: An identifier of an in-memory configuration.
 */
-func (client *Szconfig) Close(ctx context.Context, configHandle uintptr) error {
+func (client *Szconfig) CloseConfig(ctx context.Context, configHandle uintptr) error {
 	// _DLEXPORT int G2Config_close(ConfigHandle configHandle);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -264,7 +264,7 @@ func (client *Szconfig) Close(ctx context.Context, configHandle uintptr) error {
 }
 
 /*
-The Create method creates an in-memory Senzing configuration from the g2config.json
+The CreateConfig method creates an in-memory Senzing configuration from the g2config.json
 template configuration file located in the PIPELINE.RESOURCEPATH path.
 A handle is returned to identify the in-memory configuration.
 The handle is used by the AddDataSource(), ListDataSources(), DeleteDataSource(), and Save() methods.
@@ -276,7 +276,7 @@ Input
 Output
   - A Pointer to an in-memory Senzing configuration.
 */
-func (client *Szconfig) Create(ctx context.Context) (uintptr, error) {
+func (client *Szconfig) CreateConfig(ctx context.Context) (uintptr, error) {
 	// _DLEXPORT int G2Config_create(ConfigHandle* configHandle);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -407,7 +407,7 @@ func (client *Szconfig) GetDataSources(ctx context.Context, configHandle uintptr
 }
 
 /*
-The GetJsonString method creates a JSON string representation of the Senzing Szconfig object.
+The ExportConfig method creates a JSON string representation of the Senzing Szconfig object.
 The configHandle is created by the Create() method.
 
 Input
@@ -418,7 +418,7 @@ Output
   - A string containing a JSON Document representation of the Senzing Szconfig object.
     See the example output.
 */
-func (client *Szconfig) GetJsonString(ctx context.Context, configHandle uintptr) (string, error) {
+func (client *Szconfig) ExportConfig(ctx context.Context, configHandle uintptr) (string, error) {
 	// _DLEXPORT int G2Config_save(ConfigHandle configHandle, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize) );
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -523,7 +523,7 @@ func (client *Szconfig) Initialize(ctx context.Context, instanceName string, set
 }
 
 /*
-The Load method initializes the in-memory Senzing G2Config object from a JSON string.
+The ImportConfig method initializes the in-memory Senzing G2Config object from a JSON string.
 
 Input
   - ctx: A context to control lifecycle.
@@ -532,7 +532,7 @@ Input
 Output
   - An identifier of an in-memory configuration.
 */
-func (client *Szconfig) Load(ctx context.Context, configDefinition string) (uintptr, error) {
+func (client *Szconfig) ImportConfig(ctx context.Context, configDefinition string) (uintptr, error) {
 	// _DLEXPORT int G2Config_load(const char *jsonConfig,ConfigHandle* configHandle);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()

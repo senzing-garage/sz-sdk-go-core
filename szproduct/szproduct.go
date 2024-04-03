@@ -1,5 +1,5 @@
 /*
-The G2productImpl implementation is a wrapper over the Senzing libg2product library.
+The Szproduct implementation is a wrapper over the Senzing libg2product library.
 */
 package szproduct
 
@@ -36,7 +36,7 @@ import (
 // Types
 // ----------------------------------------------------------------------------
 
-// G2productImpl is the default implementation of the Szproduct interface.
+// Szproduct is an implementation of the SzProduct interface.
 type Szproduct struct {
 	isTrace        bool
 	logger         logging.LoggingInterface
@@ -96,7 +96,7 @@ func (client *Szproduct) newError(ctx context.Context, errorNumber int, details 
 	return szerror.SzError(szerror.SzErrorCode(message), (errorMessage))
 }
 
-// --- G2 exception handling --------------------------------------------------
+// --- Sz exception handling --------------------------------------------------
 
 /*
 The clearLastException method erases the last exception message held by the Senzing G2Product object.
@@ -317,7 +317,7 @@ func (client *Szproduct) GetVersion(ctx context.Context) (string, error) {
 }
 
 /*
-The Init method initializes the Senzing G2Product object.
+The Init method initializes the Senzing SzProduct object.
 It must be called prior to any other calls.
 
 Input

@@ -32,9 +32,9 @@ const (
 
 var (
 	defaultConfigId         int64
-	szDiagnosticInitialized bool         = false
 	globalSzDiagnostic      Szdiagnostic = Szdiagnostic{}
 	logger                  logging.LoggingInterface
+	szDiagnosticInitialized bool = false
 )
 
 // ----------------------------------------------------------------------------
@@ -326,7 +326,7 @@ func setupSenzingConfiguration(ctx context.Context, instanceName string, setting
 
 	// Create an in memory Senzing configuration.
 
-	configHandle, err := szConfig.Create(ctx)
+	configHandle, err := szConfig.CreateConfig(ctx)
 	if err != nil {
 		return createError(5907, err)
 	}
@@ -343,14 +343,14 @@ func setupSenzingConfiguration(ctx context.Context, instanceName string, setting
 
 	// Create a string representation of the in-memory configuration.
 
-	configDefinition, err := szConfig.GetJsonString(ctx, configHandle)
+	configDefinition, err := szConfig.ExportConfig(ctx, configHandle)
 	if err != nil {
 		return createError(5909, err)
 	}
 
 	// Close szConfig in-memory object.
 
-	err = szConfig.Close(ctx, configHandle)
+	err = szConfig.CloseConfig(ctx, configHandle)
 	if err != nil {
 		return createError(5910, err)
 	}

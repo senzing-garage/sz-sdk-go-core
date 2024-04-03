@@ -268,48 +268,48 @@ func TestSzConfig_GetObserverOrigin(test *testing.T) {
 func TestSzConfig_AddDataSource(test *testing.T) {
 	ctx := context.TODO()
 	szConfig := getTestObject(ctx, test)
-	configHandle, err := szConfig.Create(ctx)
+	configHandle, err := szConfig.CreateConfig(ctx)
 	testError(test, ctx, szConfig, err)
 	dataSourceCode := "GO_TEST"
 	actual, err := szConfig.AddDataSource(ctx, configHandle, dataSourceCode)
 	testError(test, ctx, szConfig, err)
 	printActual(test, actual)
-	err = szConfig.Close(ctx, configHandle)
+	err = szConfig.CloseConfig(ctx, configHandle)
 	testError(test, ctx, szConfig, err)
 }
 
 func TestSzConfig_AddDataSource_WithLoad(test *testing.T) {
 	ctx := context.TODO()
 	szConfig := getTestObject(ctx, test)
-	configHandle, err := szConfig.Create(ctx)
+	configHandle, err := szConfig.CreateConfig(ctx)
 	testError(test, ctx, szConfig, err)
-	configDefinition, err := szConfig.GetJsonString(ctx, configHandle)
+	configDefinition, err := szConfig.ExportConfig(ctx, configHandle)
 	testError(test, ctx, szConfig, err)
-	err = szConfig.Close(ctx, configHandle)
+	err = szConfig.CloseConfig(ctx, configHandle)
 	testError(test, ctx, szConfig, err)
-	configHandle2, err := szConfig.Load(ctx, configDefinition)
+	configHandle2, err := szConfig.ImportConfig(ctx, configDefinition)
 	testError(test, ctx, szConfig, err)
 	dataSourceCode := "GO_TEST"
 	actual, err := szConfig.AddDataSource(ctx, configHandle2, dataSourceCode)
 	testError(test, ctx, szConfig, err)
 	printActual(test, actual)
-	err = szConfig.Close(ctx, configHandle2)
+	err = szConfig.CloseConfig(ctx, configHandle2)
 	testError(test, ctx, szConfig, err)
 }
 
-func TestSzConfig_Close(test *testing.T) {
+func TestSzConfig_CloseConfig(test *testing.T) {
 	ctx := context.TODO()
 	szConfig := getTestObject(ctx, test)
-	configHandle, err := szConfig.Create(ctx)
+	configHandle, err := szConfig.CreateConfig(ctx)
 	testError(test, ctx, szConfig, err)
-	err = szConfig.Close(ctx, configHandle)
+	err = szConfig.CloseConfig(ctx, configHandle)
 	testError(test, ctx, szConfig, err)
 }
 
-func TestSzConfig_Create(test *testing.T) {
+func TestSzConfig_CreateConfig(test *testing.T) {
 	ctx := context.TODO()
 	szConfig := getTestObject(ctx, test)
-	actual, err := szConfig.Create(ctx)
+	actual, err := szConfig.CreateConfig(ctx)
 	testError(test, ctx, szConfig, err)
 	printActual(test, actual)
 }
@@ -317,7 +317,7 @@ func TestSzConfig_Create(test *testing.T) {
 func TestSzConfig_DeleteDataSource(test *testing.T) {
 	ctx := context.TODO()
 	szConfig := getTestObject(ctx, test)
-	configHandle, err := szConfig.Create(ctx)
+	configHandle, err := szConfig.CreateConfig(ctx)
 	testError(test, ctx, szConfig, err)
 	actual, err := szConfig.GetDataSources(ctx, configHandle)
 	testError(test, ctx, szConfig, err)
@@ -333,14 +333,14 @@ func TestSzConfig_DeleteDataSource(test *testing.T) {
 	actual, err = szConfig.GetDataSources(ctx, configHandle)
 	testError(test, ctx, szConfig, err)
 	printResult(test, "  Delete", actual)
-	err = szConfig.Close(ctx, configHandle)
+	err = szConfig.CloseConfig(ctx, configHandle)
 	testError(test, ctx, szConfig, err)
 }
 
 func TestSzConfig_DeleteDataSource_WithLoad(test *testing.T) {
 	ctx := context.TODO()
 	szConfig := getTestObject(ctx, test)
-	configHandle, err := szConfig.Create(ctx)
+	configHandle, err := szConfig.CreateConfig(ctx)
 	testError(test, ctx, szConfig, err)
 	actual, err := szConfig.GetDataSources(ctx, configHandle)
 	testError(test, ctx, szConfig, err)
@@ -351,51 +351,51 @@ func TestSzConfig_DeleteDataSource_WithLoad(test *testing.T) {
 	actual, err = szConfig.GetDataSources(ctx, configHandle)
 	testError(test, ctx, szConfig, err)
 	printResult(test, "     Add", actual)
-	configDefinition, err := szConfig.GetJsonString(ctx, configHandle)
+	configDefinition, err := szConfig.ExportConfig(ctx, configHandle)
 	testError(test, ctx, szConfig, err)
-	err = szConfig.Close(ctx, configHandle)
+	err = szConfig.CloseConfig(ctx, configHandle)
 	testError(test, ctx, szConfig, err)
-	configHandle2, err := szConfig.Load(ctx, configDefinition)
+	configHandle2, err := szConfig.ImportConfig(ctx, configDefinition)
 	testError(test, ctx, szConfig, err)
 	err = szConfig.DeleteDataSource(ctx, configHandle2, dataSourceCode)
 	testError(test, ctx, szConfig, err)
 	actual, err = szConfig.GetDataSources(ctx, configHandle2)
 	testError(test, ctx, szConfig, err)
 	printResult(test, "  Delete", actual)
-	err = szConfig.Close(ctx, configHandle2)
+	err = szConfig.CloseConfig(ctx, configHandle2)
 	testError(test, ctx, szConfig, err)
 }
 
 func TestSzConfig_GetDataSources(test *testing.T) {
 	ctx := context.TODO()
 	szConfig := getTestObject(ctx, test)
-	configHandle, err := szConfig.Create(ctx)
+	configHandle, err := szConfig.CreateConfig(ctx)
 	testError(test, ctx, szConfig, err)
 	actual, err := szConfig.GetDataSources(ctx, configHandle)
 	testError(test, ctx, szConfig, err)
 	printActual(test, actual)
-	err = szConfig.Close(ctx, configHandle)
+	err = szConfig.CloseConfig(ctx, configHandle)
 	testError(test, ctx, szConfig, err)
 }
 
-func TestSzConfig_GetJsonString(test *testing.T) {
+func TestSzConfig_ExportConfig(test *testing.T) {
 	ctx := context.TODO()
 	szConfig := getTestObject(ctx, test)
-	configHandle, err := szConfig.Create(ctx)
+	configHandle, err := szConfig.CreateConfig(ctx)
 	testError(test, ctx, szConfig, err)
-	actual, err := szConfig.GetJsonString(ctx, configHandle)
+	actual, err := szConfig.ExportConfig(ctx, configHandle)
 	testError(test, ctx, szConfig, err)
 	printActual(test, actual)
 }
 
-func TestSzConfig_Load(test *testing.T) {
+func TestSzConfig_ImportConfig(test *testing.T) {
 	ctx := context.TODO()
 	szConfig := getTestObject(ctx, test)
-	configHandle, err := szConfig.Create(ctx)
+	configHandle, err := szConfig.CreateConfig(ctx)
 	testError(test, ctx, szConfig, err)
-	jsonConfig, err := szConfig.GetJsonString(ctx, configHandle)
+	jsonConfig, err := szConfig.ExportConfig(ctx, configHandle)
 	testError(test, ctx, szConfig, err)
-	actual, err := szConfig.Load(ctx, jsonConfig)
+	actual, err := szConfig.ImportConfig(ctx, jsonConfig)
 	testError(test, ctx, szConfig, err)
 	printActual(test, actual)
 }

@@ -125,7 +125,7 @@ Input
   - ctx: A context to control lifecycle.
 
 Output
-  - A string containing the error received from Senzing's G2Config.
+  - A string containing the error received from Senzing's G2Diagnostic.
 */
 func (client *Szdiagnostic) getLastException(ctx context.Context) (string, error) {
 	// _DLEXPORT int G2Config_getLastException(char *buffer, const size_t bufSize);
@@ -153,7 +153,7 @@ Input:
   - ctx: A context to control lifecycle.
 
 Output:
-  - An int containing the error received from Senzing's G2Config.
+  - An int containing the error received from Senzing's G2Diagnostic.
 */
 func (client *Szdiagnostic) getLastExceptionCode(ctx context.Context) (int, error) {
 	//  _DLEXPORT int G2Diagnostic_getLastExceptionCode();
@@ -187,7 +187,7 @@ func (client *Szdiagnostic) getByteArray(size int) []byte {
 // ----------------------------------------------------------------------------
 
 /*
-The initWithConfigId method initializes the Senzing G2Diagnosis object with a non-default configuration ID.
+The initWithConfigId method initializes the Senzing SzDiagnostic object with a non-default configuration ID.
 It must be called prior to any other calls.
 
 Input
@@ -232,7 +232,7 @@ func (client *Szdiagnostic) initWithConfigId(ctx context.Context, instanceName s
 }
 
 /*
-The Init method initializes the Senzing G2Diagnosis object.
+The Init method initializes the Senzing SzDiagnostic object.
 It must be called prior to any other calls.
 
 Input
@@ -261,7 +261,7 @@ func (client *Szdiagnostic) init(ctx context.Context, instanceName string, setti
 		err = client.newError(ctx, 4018, instanceName, settings, verboseLogging, result, time.Since(entryTime))
 	}
 
-	// TODO: Temporary code until G2Diagnosis_purgeRepository() is available.
+	// TODO: Temporary code until G2Diagnostic_purgeRepository() is available.
 	result = C.G2_init(moduleNameForC, iniParamsForC, C.longlong(verboseLogging))
 	if result != 0 {
 		err = client.newError(ctx, 4018, instanceName, settings, verboseLogging, result, time.Since(entryTime))
@@ -391,7 +391,7 @@ func (client *Szdiagnostic) GetSdkId(ctx context.Context) string {
 }
 
 /*
-The Init method initializes the Senzing G2Diagnosis object.
+The Init method initializes the Senzing G2Diagnostic object.
 It must be called prior to any other calls.
 
 Input
@@ -472,7 +472,7 @@ func (client *Szdiagnostic) RegisterObserver(ctx context.Context, observer obser
 }
 
 /*
-The Reinit method re-initializes the Senzing G2Diagnosis object.
+The Reinit method re-initializes the Senzing G2Diagnostic object.
 
 Input
   - ctx: A context to control lifecycle.

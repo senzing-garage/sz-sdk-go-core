@@ -348,7 +348,7 @@ func setupSenzingConfiguration(ctx context.Context, moduleName string, iniParams
 		return createError(5906, err)
 	}
 
-	configHandle, err := aG2config.Create(ctx)
+	configHandle, err := aG2config.CreateConfig(ctx)
 	if err != nil {
 		return createError(5907, err)
 	}
@@ -366,19 +366,19 @@ func setupSenzingConfiguration(ctx context.Context, moduleName string, iniParams
 
 	// Create a string representation of the in-memory configuration.
 
-	configStr, err := aG2config.GetJsonString(ctx, configHandle)
+	configStr, err := aG2config.ExportConfig(ctx, configHandle)
 	if err != nil {
 		return createError(5909, err)
 	}
 
-	err = aG2config.Close(ctx, configHandle)
+	err = aG2config.CloseConfig(ctx, configHandle)
 	if err != nil {
 		return createError(5910, err)
 	}
 
 	// Create an alternate Senzing configuration.
 
-	configHandle, err = aG2config.Create(ctx)
+	configHandle, err = aG2config.CreateConfig(ctx)
 	if err != nil {
 		return createError(5907, err)
 	}
@@ -392,12 +392,12 @@ func setupSenzingConfiguration(ctx context.Context, moduleName string, iniParams
 		}
 	}
 
-	altConfigStr, err := aG2config.GetJsonString(ctx, configHandle)
+	altConfigStr, err := aG2config.ExportConfig(ctx, configHandle)
 	if err != nil {
 		return createError(5909, err)
 	}
 
-	err = aG2config.Close(ctx, configHandle)
+	err = aG2config.CloseConfig(ctx, configHandle)
 	if err != nil {
 		return createError(5910, err)
 	}

@@ -39,13 +39,13 @@ func ExampleSzConfigManager_AddConfig() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfigmanager/szconfigmanager_examples_test.go
 	ctx := context.TODO()
 	szConfig := getSzConfig(ctx)
-	configHandle, err := szConfig.Create(ctx)
+	configHandle, err := szConfig.CreateConfig(ctx)
 	if err != nil {
 		text := err.Error()
 		fmt.Println(text[len(text)-40:])
 	}
 	szConfigManager := getSzConfigManager(ctx)
-	configDefinition, err := szConfig.GetJsonString(ctx, configHandle)
+	configDefinition, err := szConfig.ExportConfig(ctx, configHandle)
 	if err != nil {
 		text := err.Error()
 		fmt.Println(text[len(text)-40:])
@@ -109,11 +109,11 @@ func ExampleSzConfigManager_ReplaceDefaultConfigId() {
 		fmt.Println(err)
 	}
 	szConfig := &szconfig.Szconfig{}
-	configHandle, err := szConfig.Create(ctx)
+	configHandle, err := szConfig.CreateConfig(ctx)
 	if err != nil {
 		fmt.Println(err)
 	}
-	configDefinition, err := szConfig.GetJsonString(ctx, configHandle)
+	configDefinition, err := szConfig.ExportConfig(ctx, configHandle)
 	if err != nil {
 		fmt.Println(err)
 	}

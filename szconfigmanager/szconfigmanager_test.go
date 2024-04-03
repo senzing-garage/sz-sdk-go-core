@@ -275,7 +275,7 @@ func setupSenzingConfiguration(ctx context.Context, instanceName string, setting
 
 	// Create an in memory Senzing configuration.
 
-	configHandle, err := szConfig.Create(ctx)
+	configHandle, err := szConfig.CreateConfig(ctx)
 	if err != nil {
 		return createError(5907, err)
 	}
@@ -292,14 +292,14 @@ func setupSenzingConfiguration(ctx context.Context, instanceName string, setting
 
 	// Create a string representation of the in-memory configuration.
 
-	configDefinition, err := szConfig.GetJsonString(ctx, configHandle)
+	configDefinition, err := szConfig.ExportConfig(ctx, configHandle)
 	if err != nil {
 		return createError(5909, err)
 	}
 
 	// Close szConfig in-memory object.
 
-	err = szConfig.Close(ctx, configHandle)
+	err = szConfig.CloseConfig(ctx, configHandle)
 	if err != nil {
 		return createError(5910, err)
 	}
@@ -406,10 +406,10 @@ func TestSzConfigManager_AddConfig(test *testing.T) {
 	szconfigmanager := getTestObject(ctx, test)
 	now := time.Now()
 	szConfig := getSzConfig(ctx)
-	configHandle, err1 := szConfig.Create(ctx)
+	configHandle, err1 := szConfig.CreateConfig(ctx)
 	if err1 != nil {
 		test.Log("Error:", err1.Error())
-		assert.FailNow(test, "szConfig.Create()")
+		assert.FailNow(test, "szConfig.CreateConfig()")
 	}
 	dataSourceCode := "GO_TEST_" + strconv.FormatInt(now.Unix(), 10)
 	_, err2 := szConfig.AddDataSource(ctx, configHandle, dataSourceCode)
@@ -417,7 +417,7 @@ func TestSzConfigManager_AddConfig(test *testing.T) {
 		test.Log("Error:", err2.Error())
 		assert.FailNow(test, "scConfig.AddDataSource()")
 	}
-	configDefinition, err3 := szConfig.GetJsonString(ctx, configHandle)
+	configDefinition, err3 := szConfig.ExportConfig(ctx, configHandle)
 	if err3 != nil {
 		test.Log("Error:", err3.Error())
 		assert.FailNow(test, configDefinition)
