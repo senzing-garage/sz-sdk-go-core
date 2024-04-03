@@ -29,7 +29,7 @@ const (
 )
 
 var (
-	globalSzconfig             szconfig.Szconfig = szconfig.Szconfig{}
+	globalSzConfig             szconfig.Szconfig = szconfig.Szconfig{}
 	globalSzConfigManager      Szconfigmanager   = Szconfigmanager{}
 	logger                     logging.LoggingInterface
 	szConfigInitialized        bool = false
@@ -44,10 +44,8 @@ func createError(errorId int, err error) error {
 	return szerror.Cast(logger.NewError(errorId, err), err)
 }
 
-func getTestObject(ctx context.Context, test *testing.T) sz.SzConfigManager {
-	_ = ctx
-	_ = test
-	return getSzConfigManager(ctx)
+func getDatabaseTemplatePath() string {
+	return filepath.FromSlash("../testdata/sqlite/G2C.db")
 }
 
 func getSzConfigManager(ctx context.Context) sz.SzConfigManager {
@@ -57,11 +55,17 @@ func getSzConfigManager(ctx context.Context) sz.SzConfigManager {
 
 func getSzConfig(ctx context.Context) sz.SzConfig {
 	_ = ctx
-	return &globalSzconfig
+	return &globalSzConfig
 }
 
-func truncate(aString string, length int) string {
-	return truncator.Truncate(aString, length, "...", truncator.PositionEnd)
+func getTestDirectoryPath() string {
+	return filepath.FromSlash("../target/test/szconfigmanager")
+}
+
+func getTestObject(ctx context.Context, test *testing.T) sz.SzConfigManager {
+	_ = ctx
+	_ = test
+	return getSzConfigManager(ctx)
 }
 
 func printResult(test *testing.T, title string, result interface{}) {
@@ -74,21 +78,17 @@ func printActual(test *testing.T, actual interface{}) {
 	printResult(test, "Actual", actual)
 }
 
-func testError(test *testing.T, ctx context.Context, szconfigmanager sz.SzConfigManager, err error) {
+func testError(test *testing.T, ctx context.Context, szConfigManager sz.SzConfigManager, err error) {
 	_ = ctx
-	_ = szconfigmanager
+	_ = szConfigManager
 	if err != nil {
 		test.Log("Error:", err.Error())
 		assert.FailNow(test, err.Error())
 	}
 }
 
-func baseDirectoryPath() string {
-	return filepath.FromSlash("../target/test/szconfigmanager")
-}
-
-func dbTemplatePath() string {
-	return filepath.FromSlash("../testdata/sqlite/G2C.db")
+func truncate(aString string, length int) string {
+	return truncator.Truncate(aString, length, "...", truncator.PositionEnd)
 }
 
 // ----------------------------------------------------------------------------
@@ -149,14 +149,14 @@ func setup() error {
 
 	// Cleanup past runs and prepare for current run.
 
-	baseDir := baseDirectoryPath()
-	err = os.RemoveAll(filepath.Clean(baseDir)) // cleanup any previous test run
+	testDirectoryPath := getTestDirectoryPath()
+	err = os.RemoveAll(filepath.Clean(testDirectoryPath)) // cleanup any previous test run
 	if err != nil {
-		return fmt.Errorf("Failed to remove target test directory (%v): %w", baseDir, err)
+		return fmt.Errorf("Failed to remove target test directory (%v): %w", testDirectoryPath, err)
 	}
-	err = os.MkdirAll(filepath.Clean(baseDir), 0750) // recreate the test target directory
+	err = os.MkdirAll(filepath.Clean(testDirectoryPath), 0750) // recreate the test target directory
 	if err != nil {
-		return fmt.Errorf("Failed to recreate target test directory (%v): %w", baseDir, err)
+		return fmt.Errorf("Failed to recreate target test directory (%v): %w", testDirectoryPath, err)
 	}
 
 	// Get the database URL and determine if external or a local file just created.
@@ -166,22 +166,26 @@ func setup() error {
 		return err
 	}
 
-	iniParams, err := createSettings(dbUrl)
+	// Create the Senzing engine configuration JSON.
+
+	settings, err := createSettings(dbUrl)
 	if err != nil {
 		return err
 	}
 
-	err = setupSenzingConfiguration(ctx, instanceName, iniParams, verboseLogging)
+	// Add Data Sources to Senzing configuration.
+
+	err = setupSenzingConfiguration(ctx, instanceName, settings, verboseLogging)
 	if err != nil {
 		return err
 	}
 
-	err = setupSzConfig(ctx, instanceName, iniParams, verboseLogging)
+	err = setupSzConfig(ctx, instanceName, settings, verboseLogging)
 	if err != nil {
 		return err
 	}
 
-	err = setupSzConfigManager(ctx, instanceName, iniParams, verboseLogging)
+	err = setupSzConfigManager(ctx, instanceName, settings, verboseLogging)
 	if err != nil {
 		return err
 	}
@@ -194,14 +198,14 @@ func setupDatabase(preserveDB bool) (string, bool, error) {
 
 	// Get paths.
 
-	baseDir := baseDirectoryPath()
-	dbFilePath, err := filepath.Abs(dbTemplatePath())
+	testDirectoryPath := getTestDirectoryPath()
+	dbFilePath, err := filepath.Abs(getDatabaseTemplatePath())
 	if err != nil {
 		err = fmt.Errorf("failed to obtain absolute path to database file (%s): %s",
 			dbFilePath, err.Error())
 		return "", false, err
 	}
-	dbTargetPath := filepath.Join(baseDirectoryPath(), "G2C.db")
+	dbTargetPath := filepath.Join(getTestDirectoryPath(), "G2C.db")
 	dbTargetPath, err = filepath.Abs(dbTargetPath)
 	if err != nil {
 		err = fmt.Errorf("failed to make target database path (%s) absolute: %w",
@@ -217,10 +221,10 @@ func setupDatabase(preserveDB bool) (string, bool, error) {
 	if !dbExternal {
 		dbUrl = dbDefaultUrl
 		if !preserveDB {
-			_, _, err = futil.CopyFile(dbFilePath, baseDir, true) // Copy the SQLite database file.
+			_, _, err = futil.CopyFile(dbFilePath, testDirectoryPath, true) // Copy the SQLite database file.
 			if err != nil {
 				err = fmt.Errorf("setup failed to copy template database (%v) to target path (%v): %w",
-					dbFilePath, baseDir, err)
+					dbFilePath, testDirectoryPath, err)
 				// Fall through to return the error.
 			}
 		}
@@ -230,11 +234,11 @@ func setupDatabase(preserveDB bool) (string, bool, error) {
 
 func setupSzConfig(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
 	if szConfigInitialized {
-		return fmt.Errorf("SzConfigManager is already setup and has not been torn down")
+		return fmt.Errorf("SzConfig is already setup and has not been torn down")
 	}
-	globalSzconfig.SetLogLevel(ctx, logging.LevelInfoName)
+	globalSzConfig.SetLogLevel(ctx, logging.LevelInfoName)
 	log.SetFlags(0)
-	err := globalSzconfig.Initialize(ctx, instanceName, settings, verboseLogging)
+	err := globalSzConfig.Initialize(ctx, instanceName, settings, verboseLogging)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -259,16 +263,25 @@ func setupSzConfigManager(ctx context.Context, instanceName string, settings str
 
 func setupSenzingConfiguration(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
 	now := time.Now()
+
+	// Create sz objects.
+
 	szConfig := &szconfig.Szconfig{}
 	err := szConfig.Initialize(ctx, instanceName, settings, verboseLogging)
 	if err != nil {
 		return createError(5906, err)
 	}
+	defer szConfig.Destroy(ctx)
+
+	// Create an in memory Senzing configuration.
 
 	configHandle, err := szConfig.Create(ctx)
 	if err != nil {
 		return createError(5907, err)
 	}
+
+	// Add data sources to in-memory Senzing configuration.
+
 	dataSourceCodes := []string{"CUSTOMERS", "REFERENCE", "WATCHLIST"}
 	for _, dataSourceCode := range dataSourceCodes {
 		_, err := szConfig.AddDataSource(ctx, configHandle, dataSourceCode)
@@ -277,33 +290,31 @@ func setupSenzingConfiguration(ctx context.Context, instanceName string, setting
 		}
 	}
 
+	// Create a string representation of the in-memory configuration.
+
 	configDefinition, err := szConfig.GetJsonString(ctx, configHandle)
 	if err != nil {
 		return createError(5909, err)
 	}
+
+	// Close szConfig in-memory object.
 
 	err = szConfig.Close(ctx, configHandle)
 	if err != nil {
 		return createError(5910, err)
 	}
 
-	err = szConfig.Destroy(ctx)
-	if err != nil {
-		return createError(5911, err)
-
-	}
-
-	// Persist the Senzing configuration to the Senzing repository.
+	// Persist the Senzing configuration to the Senzing repository as default.
 
 	szConfigManager := &Szconfigmanager{}
 	err = szConfigManager.Initialize(ctx, instanceName, settings, verboseLogging)
 	if err != nil {
 		return createError(5912, err)
 	}
+	defer szConfigManager.Destroy(ctx)
 
 	configComment := fmt.Sprintf("Created by szconfigmanager_test at %s", now.UTC())
 	configId, err := szConfigManager.AddConfig(ctx, configDefinition, configComment)
-
 	if err != nil {
 		return createError(5913, err)
 	}
@@ -313,20 +324,16 @@ func setupSenzingConfiguration(ctx context.Context, instanceName string, setting
 		return createError(5914, err)
 	}
 
-	err = szConfigManager.Destroy(ctx)
-	if err != nil {
-		return createError(5915, err)
-	}
 	return err
 }
 
 func restoreSzConfigManager(ctx context.Context) error {
-	iniParams, err := getSettings()
+	settings, err := getSettings()
 	if err != nil {
 		return err
 	}
 
-	err = setupSzConfigManager(ctx, instanceName, iniParams, verboseLogging)
+	err = setupSzConfigManager(ctx, instanceName, settings, verboseLogging)
 	if err != nil {
 		return err
 	}
@@ -354,7 +361,7 @@ func teardownSzConfig(ctx context.Context) error {
 	if !szConfigInitialized {
 		return nil
 	}
-	err := globalSzconfig.Destroy(ctx)
+	err := globalSzConfig.Destroy(ctx)
 	if err != nil {
 		return err
 	}

@@ -26,7 +26,7 @@ const (
 )
 
 var (
-	globalSzconfig      Szconfig = Szconfig{}
+	globalSzConfig      Szconfig = Szconfig{}
 	logger              logging.LoggingInterface
 	szConfigInitialized bool = false
 )
@@ -39,19 +39,23 @@ func createError(errorId int, err error) error {
 	return szerror.Cast(logger.NewError(errorId, err), err)
 }
 
-func getTestObject(ctx context.Context, test *testing.T) sz.SzConfig {
-	_ = ctx
-	_ = test
-	return getSzConfig(ctx)
+func getDatabaseTemplatePath() string {
+	return filepath.FromSlash("../testdata/sqlite/G2C.db")
 }
 
 func getSzConfig(ctx context.Context) sz.SzConfig {
 	_ = ctx
-	return &globalSzconfig
+	return &globalSzConfig
 }
 
-func truncate(aString string, length int) string {
-	return truncator.Truncate(aString, length, "...", truncator.PositionEnd)
+func getTestDirectoryPath() string {
+	return filepath.FromSlash("../target/test/szconfig")
+}
+
+func getTestObject(ctx context.Context, test *testing.T) sz.SzConfig {
+	_ = ctx
+	_ = test
+	return getSzConfig(ctx)
 }
 
 func printResult(test *testing.T, title string, result interface{}) {
@@ -73,12 +77,8 @@ func testError(test *testing.T, ctx context.Context, szConfig sz.SzConfig, err e
 	}
 }
 
-func baseDirectoryPath() string {
-	return filepath.FromSlash("../target/test/szconfig")
-}
-
-func dbTemplatePath() string {
-	return filepath.FromSlash("../testdata/sqlite/G2C.db")
+func truncate(aString string, length int) string {
+	return truncator.Truncate(aString, length, "...", truncator.PositionEnd)
 }
 
 // ----------------------------------------------------------------------------
@@ -125,7 +125,6 @@ func restoreSzConfig(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-
 	err = setupSzConfig(ctx, instanceName, settings, verboseLogging)
 	if err != nil {
 		return err
@@ -143,14 +142,14 @@ func setup() error {
 
 	// Cleanup past runs and prepare for current run.
 
-	baseDir := baseDirectoryPath()
-	err = os.RemoveAll(filepath.Clean(baseDir)) // cleanup any previous test run
+	testDirectoryPath := getTestDirectoryPath()
+	err = os.RemoveAll(filepath.Clean(testDirectoryPath)) // cleanup any previous test run
 	if err != nil {
-		return fmt.Errorf("Failed to remove target test directory (%v): %w", baseDir, err)
+		return fmt.Errorf("Failed to remove target test directory (%v): %w", testDirectoryPath, err)
 	}
-	err = os.MkdirAll(filepath.Clean(baseDir), 0750) // recreate the test target directory
+	err = os.MkdirAll(filepath.Clean(testDirectoryPath), 0750) // recreate the test target directory
 	if err != nil {
-		return fmt.Errorf("Failed to recreate target test directory (%v): %w", baseDir, err)
+		return fmt.Errorf("Failed to recreate target test directory (%v): %w", testDirectoryPath, err)
 	}
 
 	// Get the database URL and determine if external or a local file just created.
@@ -180,14 +179,14 @@ func setupDatabase(preserveDB bool) (string, bool, error) {
 
 	// Get paths.
 
-	baseDir := baseDirectoryPath()
-	dbFilePath, err := filepath.Abs(dbTemplatePath())
+	testDirectoryPath := getTestDirectoryPath()
+	dbFilePath, err := filepath.Abs(getDatabaseTemplatePath())
 	if err != nil {
 		err = fmt.Errorf("failed to obtain absolute path to database file (%s): %s",
 			dbFilePath, err.Error())
 		return "", false, err
 	}
-	dbTargetPath := filepath.Join(baseDirectoryPath(), "G2C.db")
+	dbTargetPath := filepath.Join(getTestDirectoryPath(), "G2C.db")
 	dbTargetPath, err = filepath.Abs(dbTargetPath)
 	if err != nil {
 		err = fmt.Errorf("failed to make target database path (%s) absolute: %w",
@@ -203,10 +202,10 @@ func setupDatabase(preserveDB bool) (string, bool, error) {
 	if !dbExternal {
 		dbUrl = dbDefaultUrl
 		if !preserveDB {
-			_, _, err = futil.CopyFile(dbFilePath, baseDir, true) // Copy the SQLite database file.
+			_, _, err = futil.CopyFile(dbFilePath, testDirectoryPath, true) // Copy the SQLite database file.
 			if err != nil {
 				err = fmt.Errorf("setup failed to copy template database (%v) to target path (%v): %w",
-					dbFilePath, baseDir, err)
+					dbFilePath, testDirectoryPath, err)
 				// Fall through to return the error.
 			}
 		}
@@ -216,11 +215,11 @@ func setupDatabase(preserveDB bool) (string, bool, error) {
 
 func setupSzConfig(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
 	if szConfigInitialized {
-		return fmt.Errorf("Szconfig is already setup and has not been torn down")
+		return fmt.Errorf("SzConfig is already setup and has not been torn down")
 	}
-	globalSzconfig.SetLogLevel(ctx, logging.LevelInfoName)
+	globalSzConfig.SetLogLevel(ctx, logging.LevelInfoName)
 	log.SetFlags(0)
-	err := globalSzconfig.Initialize(ctx, instanceName, settings, verboseLogging)
+	err := globalSzConfig.Initialize(ctx, instanceName, settings, verboseLogging)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -238,7 +237,7 @@ func teardownSzConfig(ctx context.Context) error {
 	if !szConfigInitialized {
 		return nil
 	}
-	err := globalSzconfig.Destroy(ctx)
+	err := globalSzConfig.Destroy(ctx)
 	if err != nil {
 		return err
 	}

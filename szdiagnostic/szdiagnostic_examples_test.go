@@ -14,32 +14,32 @@ import (
 // Examples for godoc documentation
 // ----------------------------------------------------------------------------
 
-func ExampleSzdiagnostic_SetObserverOrigin() {
+func ExampleSzDiagnostic_SetObserverOrigin() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
 	ctx := context.TODO()
-	g2diagnostic := getG2Diagnostic(ctx)
+	szDiagnostic := getSzDiagnostic(ctx)
 	origin := "Machine: nn; Task: UnitTest"
-	g2diagnostic.SetObserverOrigin(ctx, origin)
+	szDiagnostic.SetObserverOrigin(ctx, origin)
 	// Output:
 }
 
-func ExampleSzdiagnostic_GetObserverOrigin() {
+func ExampleSzDiagnostic_GetObserverOrigin() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
 	ctx := context.TODO()
-	g2diagnostic := getG2Diagnostic(ctx)
+	szDiagnostic := getSzDiagnostic(ctx)
 	origin := "Machine: nn; Task: UnitTest"
-	g2diagnostic.SetObserverOrigin(ctx, origin)
-	result := g2diagnostic.GetObserverOrigin(ctx)
+	szDiagnostic.SetObserverOrigin(ctx, origin)
+	result := szDiagnostic.GetObserverOrigin(ctx)
 	fmt.Println(result)
 	// Output: Machine: nn; Task: UnitTest
 }
 
-func ExampleSzdiagnostic_CheckDatabasePerformance() {
+func ExampleSzDiagnostic_CheckDatabasePerformance() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
 	ctx := context.TODO()
-	g2diagnostic := getG2Diagnostic(ctx)
+	szDiagnostic := getSzDiagnostic(ctx)
 	secondsToRun := 1
-	result, err := g2diagnostic.CheckDatabasePerformance(ctx, secondsToRun)
+	result, err := szDiagnostic.CheckDatabasePerformance(ctx, secondsToRun)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -47,51 +47,51 @@ func ExampleSzdiagnostic_CheckDatabasePerformance() {
 	// Output: {"numRecordsInserted":...
 }
 
-func ExampleSzdiagnostic_SetLogLevel() {
+func ExampleSzDiagnostic_SetLogLevel() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
 	ctx := context.TODO()
-	g2diagnostic := &Szdiagnostic{}
-	err := g2diagnostic.SetLogLevel(ctx, logging.LevelInfoName)
+	szDiagnostic := &Szdiagnostic{}
+	err := szDiagnostic.SetLogLevel(ctx, logging.LevelInfoName)
 	if err != nil {
 		fmt.Println(err)
 	}
 	// Output:
 }
 
-func ExampleSzdiagnostic_Initialize() {
+func ExampleSzDiagnostic_Initialize() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
 	ctx := context.TODO()
-	g2diagnostic := &Szdiagnostic{}
+	szDiagnostic := &Szdiagnostic{}
 	instanceName := "Test module name"
 	settings, err := getSettings()
 	if err != nil {
 		fmt.Println(err)
 	}
 	verboseLogging := int64(0)
-	err = g2diagnostic.Initialize(ctx, instanceName, settings, verboseLogging, sz.SZ_INITIALIZE_WITH_DEFAULT_CONFIGURATION)
+	err = szDiagnostic.Initialize(ctx, instanceName, settings, verboseLogging, sz.SZ_INITIALIZE_WITH_DEFAULT_CONFIGURATION)
 	if err != nil {
 		fmt.Println(err)
 	}
 	// Output:
 }
 
-func ExampleSzdiagnostic_Reinitialize() {
+func ExampleSzDiagnostic_Reinitialize() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
 	ctx := context.TODO()
-	g2diagnostic := getG2Diagnostic(ctx)
+	szDiagnostic := getSzDiagnostic(ctx)
 	configId := getDefaultConfigId()
-	err := g2diagnostic.Reinitialize(ctx, configId)
+	err := szDiagnostic.Reinitialize(ctx, configId)
 	if err != nil {
 		fmt.Println(err)
 	}
 	// Output:
 }
 
-func ExampleSzdiagnostic_Destroy() {
+func ExampleSzDiagnostic_Destroy() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
 	ctx := context.TODO()
-	g2diagnostic := getG2Diagnostic(ctx)
-	err := g2diagnostic.Destroy(ctx)
+	szDiagnostic := getSzDiagnostic(ctx)
+	err := szDiagnostic.Destroy(ctx)
 	if err != nil {
 		fmt.Println(err)
 	}
