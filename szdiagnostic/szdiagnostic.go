@@ -187,7 +187,7 @@ func (client *Szdiagnostic) getByteArray(size int) []byte {
 // ----------------------------------------------------------------------------
 
 /*
-The initWithConfigId method initializes the Senzing SzDiagnostic object with a non-default configuration ID.
+The initializeWithConfigId method initializes the Senzing SzDiagnostic object with a non-default configuration ID.
 It must be called prior to any other calls.
 
 Input
@@ -197,7 +197,7 @@ Input
   - configId: The configuration ID used for the initialization.
   - verboseLogging: A flag to enable deeper logging of the G2 processing. 0 for no Senzing logging; 1 for logging.
 */
-func (client *Szdiagnostic) initWithConfigId(ctx context.Context, instanceName string, settings string, configId int64, verboseLogging int64) error {
+func (client *Szdiagnostic) initializeWithConfigId(ctx context.Context, instanceName string, settings string, configId int64, verboseLogging int64) error {
 	//  _DLEXPORT int G2Diagnostic_initWithConfigID(const char *moduleName, const char *iniParams, const long long initConfigID, const int verboseLogging);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -241,7 +241,7 @@ Input
   - settings: A JSON string containing configuration parameters.
   - verboseLogging: A flag to enable deeper logging of the G2 processing. 0 for no Senzing logging; 1 for logging.
 */
-func (client *Szdiagnostic) init(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
+func (client *Szdiagnostic) initialize(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
 	// TODO: Functionality for initConfigId
 	// _DLEXPORT int G2Diagnostic_init(const char *moduleName, const char *iniParams, const int verboseLogging);
 	runtime.LockOSThread()
@@ -403,9 +403,9 @@ Input
 */
 func (client *Szdiagnostic) Initialize(ctx context.Context, instanceName string, settings string, verboseLogging int64, configId int64) error {
 	if configId > 0 {
-		return client.initWithConfigId(ctx, instanceName, settings, configId, verboseLogging)
+		return client.initializeWithConfigId(ctx, instanceName, settings, configId, verboseLogging)
 	}
-	return client.init(ctx, instanceName, settings, verboseLogging)
+	return client.initialize(ctx, instanceName, settings, verboseLogging)
 }
 
 /*

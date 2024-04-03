@@ -15,19 +15,19 @@ import (
 // Examples for godoc documentation
 // ----------------------------------------------------------------------------
 
-func ExampleSzengine_SetObserverOrigin() {
+func ExampleSzEngine_SetObserverOrigin() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	g2engine := getG2Engine(ctx)
+	g2engine := getSzEngine(ctx)
 	origin := "Machine: nn; Task: UnitTest"
 	g2engine.SetObserverOrigin(ctx, origin)
 	// Output:
 }
 
-func ExampleSzengine_GetObserverOrigin() {
+func ExampleSzEngine_GetObserverOrigin() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/g2config/g2engine_test.go
 	ctx := context.TODO()
-	g2engine := getG2Engine(ctx)
+	g2engine := getSzEngine(ctx)
 	origin := "Machine: nn; Task: UnitTest"
 	g2engine.SetObserverOrigin(ctx, origin)
 	result := g2engine.GetObserverOrigin(ctx)
@@ -35,10 +35,10 @@ func ExampleSzengine_GetObserverOrigin() {
 	// Output: Machine: nn; Task: UnitTest
 }
 
-func ExampleSzengine_AddRecord() {
+func ExampleSzEngine_AddRecord() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	g2engine := getG2Engine(ctx)
+	g2engine := getSzEngine(ctx)
 	dataSourceCode := "CUSTOMERS"
 	recordId := "1001"
 	jsonData := `{"DATA_SOURCE": "CUSTOMERS", "RECORD_ID": "1001", "RECORD_TYPE": "PERSON", "PRIMARY_NAME_LAST": "Smith", "PRIMARY_NAME_FIRST": "Robert", "DATE_OF_BIRTH": "12/11/1978", "ADDR_TYPE": "MAILING", "ADDR_LINE1": "123 Main Street, Las Vegas NV 89132", "PHONE_TYPE": "HOME", "PHONE_NUMBER": "702-919-1300", "EMAIL_ADDRESS": "bsmith@work.com", "DATE": "1/2/18", "STATUS": "Active", "AMOUNT": "100"}`
@@ -50,10 +50,10 @@ func ExampleSzengine_AddRecord() {
 	// Output:
 }
 
-func ExampleSzengine_AddRecord_secondRecord() {
+func ExampleSzEngine_AddRecord_secondRecord() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	g2engine := getG2Engine(ctx)
+	g2engine := getSzEngine(ctx)
 	dataSourceCode := "CUSTOMERS"
 	recordId := "1002"
 	jsonData := `{"DATA_SOURCE": "CUSTOMERS", "RECORD_ID": "1002", "RECORD_TYPE": "PERSON", "PRIMARY_NAME_LAST": "Smith", "PRIMARY_NAME_FIRST": "Bob", "DATE_OF_BIRTH": "11/12/1978", "ADDR_TYPE": "HOME", "ADDR_LINE1": "1515 Adela Lane", "ADDR_CITY": "Las Vegas", "ADDR_STATE": "NV", "ADDR_POSTAL_CODE": "89111", "PHONE_TYPE": "MOBILE", "PHONE_NUMBER": "702-919-1300", "DATE": "3/10/17", "STATUS": "Inactive", "AMOUNT": "200"}`
@@ -65,10 +65,10 @@ func ExampleSzengine_AddRecord_secondRecord() {
 	// Output:
 }
 
-func ExampleSzengine_AddRecord_withInfo() {
+func ExampleSzEngine_AddRecord_withInfo() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	g2engine := getG2Engine(ctx)
+	g2engine := getSzEngine(ctx)
 	dataSourceCode := "TEST"
 	recordId := "ABC123"
 	jsonData := `{"DATA_SOURCE": "TEST", "RECORD_ID": "ABC123", "NAME_FULL": "JOE SCHMOE", "DATE_OF_BIRTH": "12/11/1978", "EMAIL_ADDRESS": "joeschmoe@nowhere.com"}`
@@ -81,10 +81,10 @@ func ExampleSzengine_AddRecord_withInfo() {
 	// Output: {"AFFECTED_ENTITIES":[{"ENTITY_ID":null}],"DATA_SOURCE":"TEST","INTERESTING_ENTITIES":{"ENTITIES":[]},"RECORD_ID":"ABC123"}
 }
 
-func ExampleSzengine_CloseExport() {
+func ExampleSzEngine_CloseExport() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	g2engine := getG2Engine(ctx)
+	g2engine := getSzEngine(ctx)
 	flags := int64(0)
 	responseHandle, err := g2engine.ExportJsonEntityReport(ctx, flags)
 	if err != nil {
@@ -94,10 +94,10 @@ func ExampleSzengine_CloseExport() {
 	// Output:
 }
 
-func ExampleSzengine_CountRedoRecords() {
+func ExampleSzEngine_CountRedoRecords() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	g2engine := getG2Engine(ctx)
+	g2engine := getSzEngine(ctx)
 	result, err := g2engine.CountRedoRecords(ctx)
 	if err != nil {
 		fmt.Println(err)
@@ -106,10 +106,10 @@ func ExampleSzengine_CountRedoRecords() {
 	// Output: 1
 }
 
-func ExampleSzengine_ExportCsvEntityReport() {
+func ExampleSzEngine_ExportCsvEntityReport() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	g2engine := getG2Engine(ctx)
+	g2engine := getSzEngine(ctx)
 	csvColumnList := ""
 	flags := int64(0)
 	responseHandle, err := g2engine.ExportCsvEntityReport(ctx, csvColumnList, flags)
@@ -120,10 +120,10 @@ func ExampleSzengine_ExportCsvEntityReport() {
 	// Output: true
 }
 
-func ExampleSzengine_ExportCsvEntityReportIterator() {
+func ExampleSzEngine_ExportCsvEntityReportIterator() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	g2engine := getG2Engine(ctx)
+	g2engine := getSzEngine(ctx)
 	csvColumnList := ""
 	flags := int64(0)
 	for result := range g2engine.ExportCsvEntityReportIterator(ctx, csvColumnList, flags) {
@@ -136,10 +136,10 @@ func ExampleSzengine_ExportCsvEntityReportIterator() {
 	// Output: RESOLVED_ENTITY_ID,RELATED_ENTITY_ID,MATCH_LEVEL,MATCH_KEY,DATA_SOURCE,RECORD_ID
 }
 
-func ExampleSzengine_ExportJsonEntityReport() {
+func ExampleSzEngine_ExportJsonEntityReport() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	g2engine := getG2Engine(ctx)
+	g2engine := getSzEngine(ctx)
 	flags := int64(0)
 	responseHandle, err := g2engine.ExportJsonEntityReport(ctx, flags)
 	if err != nil {
@@ -149,10 +149,10 @@ func ExampleSzengine_ExportJsonEntityReport() {
 	// Output: true
 }
 
-func ExampleSzengine_ExportJsonEntityReportIterator() {
+func ExampleSzEngine_ExportJsonEntityReportIterator() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	g2engine := getG2Engine(ctx)
+	g2engine := getSzEngine(ctx)
 	flags := int64(0)
 	for result := range g2engine.ExportJsonEntityReportIterator(ctx, flags) {
 		if result.Error != nil {
@@ -164,10 +164,10 @@ func ExampleSzengine_ExportJsonEntityReportIterator() {
 	// Output:
 }
 
-func ExampleSzengine_FetchNext() {
+func ExampleSzEngine_FetchNext() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	g2engine := getG2Engine(ctx)
+	g2engine := getSzEngine(ctx)
 	flags := int64(0)
 	responseHandle, err := g2engine.ExportJsonEntityReport(ctx, flags)
 	if err != nil {
@@ -193,10 +193,10 @@ func ExampleSzengine_FetchNext() {
 	// Output: true
 }
 
-func ExampleSzengine_FindNetworkByEntityId() {
+func ExampleSzEngine_FindNetworkByEntityId() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	g2engine := getG2Engine(ctx)
+	g2engine := getSzEngine(ctx)
 	entityList := `{"ENTITIES": [{"ENTITY_ID": ` + getEntityIdStringForRecord("CUSTOMERS", "1001") + `}, {"ENTITY_ID": ` + getEntityIdStringForRecord("CUSTOMERS", "1002") + `}]}`
 	maxDegrees := int64(2)
 	buildOutDegree := int64(1)
@@ -210,10 +210,10 @@ func ExampleSzengine_FindNetworkByEntityId() {
 	// Output: {"ENTITIES":[{"RELATED_ENTITIES":[],"RESOLVED_ENTITY":{"ENTITY_ID":1,"ENTITY_NAME":"Robert Smith","LAST_SEEN_DT":null,"RECORD_SUMMARY":[{"DATA_SOURCE":"CUSTOMERS","FIRST_SEEN_DT":null,"LAST_SEEN_DT":null,"RECORD_COUNT":3}]}}],"ENTITY_PATHS":[]}
 }
 
-func ExampleSzengine_FindNetworkByRecordId() {
+func ExampleSzEngine_FindNetworkByRecordId() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	g2engine := getG2Engine(ctx)
+	g2engine := getSzEngine(ctx)
 	recordList := `{"RECORDS": [{"DATA_SOURCE": "CUSTOMERS", "RECORD_ID": "1001"}, {"DATA_SOURCE": "CUSTOMERS", "RECORD_ID": "1002"}]}`
 	maxDegrees := int64(1)
 	buildOutDegree := int64(2)
@@ -227,10 +227,10 @@ func ExampleSzengine_FindNetworkByRecordId() {
 	// Output: {"ENTITIES":[{"RELATED_ENTITIES":[],"RESOLVED_ENTITY":{"ENTITY_ID":1,"ENTITY_NAME":"Robert Smith","LAST_SEEN_DT":null,"RECORD_SUMMARY":[{"DATA_SOURCE":"CUSTOMERS","FIRST_SEEN_DT":null,"LAST_SEEN_DT":null,"RECORD_COUNT":3}]}}],"ENTITY_PATHS":[]}
 }
 
-func ExampleSzengine_FindPathByEntityId() {
+func ExampleSzEngine_FindPathByEntityId() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	g2engine := getG2Engine(ctx)
+	g2engine := getSzEngine(ctx)
 	entityId1 := getEntityIdForRecord("CUSTOMERS", "1001")
 	entityId2 := getEntityIdForRecord("CUSTOMERS", "1002")
 	maxDegrees := int64(1)
@@ -245,10 +245,10 @@ func ExampleSzengine_FindPathByEntityId() {
 	// Output: {"ENTITY_PATHS":[{"START_ENTITY_ID":1,"END_ENTITY_ID":1,"ENTITIES":[1]}],"ENTITIES":[{"RESOLVED_ENTITY":...
 }
 
-func ExampleSzengine_FindPathByRecordId() {
+func ExampleSzEngine_FindPathByRecordId() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	g2engine := getG2Engine(ctx)
+	g2engine := getSzEngine(ctx)
 	dataSourceCode1 := "CUSTOMERS"
 	recordId1 := "1001"
 	dataSourceCode2 := "CUSTOMERS"
@@ -265,10 +265,10 @@ func ExampleSzengine_FindPathByRecordId() {
 	// Output: {"ENTITY_PATHS":[{"START_ENTITY_ID":1,"END_ENTITY_ID":1,"ENTITIES":[1]}],"ENTITIES":...
 }
 
-func ExampleSzengine_GetActiveConfigId() {
+func ExampleSzEngine_GetActiveConfigId() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	g2engine := getG2Engine(ctx)
+	g2engine := getSzEngine(ctx)
 	result, err := g2engine.GetActiveConfigId(ctx)
 	if err != nil {
 		fmt.Println(err)
@@ -277,10 +277,10 @@ func ExampleSzengine_GetActiveConfigId() {
 	// Output: true
 }
 
-func ExampleSzengine_GetEntityByEntityId() {
+func ExampleSzEngine_GetEntityByEntityId() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	g2engine := getG2Engine(ctx)
+	g2engine := getSzEngine(ctx)
 	entityId := getEntityIdForRecord("CUSTOMERS", "1001")
 	flags := int64(0)
 	result, err := g2engine.GetEntityByEntityId(ctx, entityId, flags)
@@ -291,10 +291,10 @@ func ExampleSzengine_GetEntityByEntityId() {
 	// Output: {"RESOLVED_ENTITY":{"ENTITY_ID":1,"ENTITY_NAME":...
 }
 
-func ExampleSzengine_GetEntityByRecordId() {
+func ExampleSzEngine_GetEntityByRecordId() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	g2engine := getG2Engine(ctx)
+	g2engine := getSzEngine(ctx)
 	dataSourceCode := "CUSTOMERS"
 	recordId := "1001"
 	flags := int64(0)
@@ -306,10 +306,10 @@ func ExampleSzengine_GetEntityByRecordId() {
 	// Output: {"RESOLVED_ENTITY":{"ENTITY_ID":...
 }
 
-func ExampleSzengine_GetRecord() {
+func ExampleSzEngine_GetRecord() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	g2engine := getG2Engine(ctx)
+	g2engine := getSzEngine(ctx)
 	dataSourceCode := "CUSTOMERS"
 	recordId := "1001"
 	flags := int64(0)
@@ -321,10 +321,10 @@ func ExampleSzengine_GetRecord() {
 	// Output: {"DATA_SOURCE":"CUSTOMERS","JSON_DATA":{"ADDR_LINE1":"123 Main Street, Las Vegas NV 89132","ADDR_TYPE":"MAILING","AMOUNT":"100","DATA_SOURCE":"CUSTOMERS","DATE":"1/2/18","DATE_OF_BIRTH":"12/11/1978","EMAIL_ADDRESS":"bsmith@work.com","PHONE_NUMBER":"702-919-1300","PHONE_TYPE":"HOME","PRIMARY_NAME_FIRST":"Robert","PRIMARY_NAME_LAST":"Smith","RECORD_ID":"1001","RECORD_TYPE":"PERSON","STATUS":"Active"},"RECORD_ID":"1001"}
 }
 
-func ExampleSzengine_GetRedoRecord() {
+func ExampleSzEngine_GetRedoRecord() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	g2engine := getG2Engine(ctx)
+	g2engine := getSzEngine(ctx)
 	result, err := g2engine.GetRedoRecord(ctx)
 	if err != nil {
 		fmt.Println(err)
@@ -333,10 +333,10 @@ func ExampleSzengine_GetRedoRecord() {
 	// Output: {"REASON":"deferred delete","DATA_SOURCE":"CUSTOMERS","RECORD_ID":"1002","ENTITY_TYPE":"GENERIC","DSRC_ACTION":"X"}
 }
 
-func ExampleSzengine_GetRepositoryLastModifiedTime() {
+func ExampleSzEngine_GetRepositoryLastModifiedTime() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	g2engine := getG2Engine(ctx)
+	g2engine := getSzEngine(ctx)
 	result, err := g2engine.GetRepositoryLastModifiedTime(ctx)
 	if err != nil {
 		fmt.Println(err)
@@ -345,10 +345,10 @@ func ExampleSzengine_GetRepositoryLastModifiedTime() {
 	// Output: true
 }
 
-func ExampleSzengine_GetStats() {
+func ExampleSzEngine_GetStats() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	g2engine := getG2Engine(ctx)
+	g2engine := getSzEngine(ctx)
 	result, err := g2engine.GetStats(ctx)
 	if err != nil {
 		fmt.Println(err)
@@ -357,10 +357,10 @@ func ExampleSzengine_GetStats() {
 	// Output: { "workload":...
 }
 
-func ExampleSzengine_GetVirtualEntityByRecordId() {
+func ExampleSzEngine_GetVirtualEntityByRecordId() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	g2engine := getG2Engine(ctx)
+	g2engine := getSzEngine(ctx)
 	recordList := `{"RECORDS": [{"DATA_SOURCE": "CUSTOMERS","RECORD_ID": "1001"},{"DATA_SOURCE": "CUSTOMERS","RECORD_ID": "1002"}]}`
 	flags := int64(0)
 	result, err := g2engine.GetVirtualEntityByRecordId(ctx, recordList, flags)
@@ -371,10 +371,10 @@ func ExampleSzengine_GetVirtualEntityByRecordId() {
 	// Output: {"RESOLVED_ENTITY":{"ENTITY_ID":2,"ENTITY_NAME":...
 }
 
-func ExampleSzengine_HowEntityByEntityId() {
+func ExampleSzEngine_HowEntityByEntityId() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	g2engine := getG2Engine(ctx)
+	g2engine := getSzEngine(ctx)
 	entityId := getEntityIdForRecord("CUSTOMERS", "1001")
 	flags := int64(0)
 	result, err := g2engine.HowEntityByEntityId(ctx, entityId, flags)
@@ -385,10 +385,10 @@ func ExampleSzengine_HowEntityByEntityId() {
 	// Output: {"HOW_RESULTS":{"FINAL_STATE":{"NEED_REEVALUATION":1,"VIRTUAL_ENTITIES":[{"MEMBER_RECORDS":[{"INTERNAL_ID":12,"RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":null}]},{"INTERNAL_ID":2,"RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":null}]},{"INTERNAL_ID":3,"RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":null}]}],"VIRTUAL_ENTITY_ID":"V2-S2"}]},"RESOLUTION_STEPS":[{"INBOUND_VIRTUAL_ENTITY_ID":"V2","MATCH_INFO":{"ERRULE_CODE":"CNAME_CFF_CEXCL","FEATURE_SCORES":{"ADDRESS":[{"CANDIDATE_FEAT":"123 Main Street, Las Vegas NV 89132","CANDIDATE_FEAT_ID":3,"CANDIDATE_FEAT_USAGE_TYPE":"MAILING","FULL_SCORE":42,"INBOUND_FEAT":"1515 Adela Lane Las Vegas NV 89111","INBOUND_FEAT_ID":20,"INBOUND_FEAT_USAGE_TYPE":null,"SCORE_BEHAVIOR":"FF","SCORE_BUCKET":"NO_CHANCE"}],"DOB":[{"CANDIDATE_FEAT":"12/11/1978","CANDIDATE_FEAT_ID":2,"CANDIDATE_FEAT_USAGE_TYPE":"","FULL_SCORE":95,"INBOUND_FEAT":"11/12/1978","INBOUND_FEAT_ID":19,"INBOUND_FEAT_USAGE_TYPE":null,"SCORE_BEHAVIOR":"FMES","SCORE_BUCKET":"CLOSE"}],"NAME":[{"CANDIDATE_FEAT":"Robert Smith","CANDIDATE_FEAT_ID":1,"CANDIDATE_FEAT_USAGE_TYPE":"PRIMARY","GENERATION_MATCH":-1,"GNR_FN":97,"GNR_GN":95,"GNR_ON":-1,"GNR_SN":100,"INBOUND_FEAT":"Bob Smith","INBOUND_FEAT_ID":18,"INBOUND_FEAT_USAGE_TYPE":null,"SCORE_BEHAVIOR":"NAME","SCORE_BUCKET":"CLOSE"}],"PHONE":[{"CANDIDATE_FEAT":"702-919-1300","CANDIDATE_FEAT_ID":4,"CANDIDATE_FEAT_USAGE_TYPE":"HOME","FULL_SCORE":100,"INBOUND_FEAT":"702-919-1300","INBOUND_FEAT_ID":4,"INBOUND_FEAT_USAGE_TYPE":null,"SCORE_BEHAVIOR":"FF","SCORE_BUCKET":"SAME"}],"RECORD_TYPE":[{"CANDIDATE_FEAT":"PERSON","CANDIDATE_FEAT_ID":16,"CANDIDATE_FEAT_USAGE_TYPE":"","FULL_SCORE":100,"INBOUND_FEAT":"PERSON","INBOUND_FEAT_ID":16,"INBOUND_FEAT_USAGE_TYPE":null,"SCORE_BEHAVIOR":"FVME","SCORE_BUCKET":"SAME"}]},"MATCH_KEY":"+NAME+DOB+PHONE"},"RESULT_VIRTUAL_ENTITY_ID":"V2-S1","STEP":1,"VIRTUAL_ENTITY_1":{"MEMBER_RECORDS":[{"INTERNAL_ID":2,"RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":null}]}],"VIRTUAL_ENTITY_ID":"V2"},"VIRTUAL_ENTITY_2":{"MEMBER_RECORDS":[{"INTERNAL_ID":12,"RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":null}]}],"VIRTUAL_ENTITY_ID":"V12"}},{"INBOUND_VIRTUAL_ENTITY_ID":"V2-S1","MATCH_INFO":{"ERRULE_CODE":"SF1_PNAME_CSTAB","FEATURE_SCORES":{"DOB":[{"CANDIDATE_FEAT":"12/11/1978","CANDIDATE_FEAT_ID":2,"CANDIDATE_FEAT_USAGE_TYPE":"","FULL_SCORE":100,"INBOUND_FEAT":"12/11/1978","INBOUND_FEAT_ID":2,"INBOUND_FEAT_USAGE_TYPE":null,"SCORE_BEHAVIOR":"FMES","SCORE_BUCKET":"SAME"}],"EMAIL":[{"CANDIDATE_FEAT":"bsmith@work.com","CANDIDATE_FEAT_ID":5,"CANDIDATE_FEAT_USAGE_TYPE":"","FULL_SCORE":100,"INBOUND_FEAT":"bsmith@work.com","INBOUND_FEAT_ID":5,"INBOUND_FEAT_USAGE_TYPE":null,"SCORE_BEHAVIOR":"F1","SCORE_BUCKET":"SAME"}],"NAME":[{"CANDIDATE_FEAT":"Bob J Smith","CANDIDATE_FEAT_ID":32,"CANDIDATE_FEAT_USAGE_TYPE":"PRIMARY","GENERATION_MATCH":-1,"GNR_FN":90,"GNR_GN":88,"GNR_ON":-1,"GNR_SN":100,"INBOUND_FEAT":"Robert Smith","INBOUND_FEAT_ID":1,"INBOUND_FEAT_USAGE_TYPE":null,"SCORE_BEHAVIOR":"NAME","SCORE_BUCKET":"CLOSE"},{"CANDIDATE_FEAT":"Bob J Smith","CANDIDATE_FEAT_ID":32,"CANDIDATE_FEAT_USAGE_TYPE":"PRIMARY","GENERATION_MATCH":-1,"GNR_FN":93,"GNR_GN":93,"GNR_ON":-1,"GNR_SN":100,"INBOUND_FEAT":"Bob Smith","INBOUND_FEAT_ID":18,"INBOUND_FEAT_USAGE_TYPE":null,"SCORE_BEHAVIOR":"NAME","SCORE_BUCKET":"CLOSE"}],"RECORD_TYPE":[{"CANDIDATE_FEAT":"PERSON","CANDIDATE_FEAT_ID":16,"CANDIDATE_FEAT_USAGE_TYPE":"","FULL_SCORE":100,"INBOUND_FEAT":"PERSON","INBOUND_FEAT_ID":16,"INBOUND_FEAT_USAGE_TYPE":null,"SCORE_BEHAVIOR":"FVME","SCORE_BUCKET":"SAME"}]},"MATCH_KEY":"+NAME+DOB+EMAIL"},"RESULT_VIRTUAL_ENTITY_ID":"V2-S2","STEP":2,"VIRTUAL_ENTITY_1":{"MEMBER_RECORDS":[{"INTERNAL_ID":12,"RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":null}]},{"INTERNAL_ID":2,"RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":null}]}],"VIRTUAL_ENTITY_ID":"V2-S1"},"VIRTUAL_ENTITY_2":{"MEMBER_RECORDS":[{"INTERNAL_ID":3,"RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":null}]}],"VIRTUAL_ENTITY_ID":"V3"}}]}}
 }
 
-func ExampleSzengine_PrimeEngine() {
+func ExampleSzEngine_PrimeEngine() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	g2engine := getG2Engine(ctx)
+	g2engine := getSzEngine(ctx)
 	err := g2engine.PrimeEngine(ctx)
 	if err != nil {
 		fmt.Println(err)
@@ -396,10 +396,10 @@ func ExampleSzengine_PrimeEngine() {
 	// Output:
 }
 
-func ExampleSzengine_SearchByAttributes() {
+func ExampleSzEngine_SearchByAttributes() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	g2engine := getG2Engine(ctx)
+	g2engine := getSzEngine(ctx)
 	attributes := `{"NAMES": [{"NAME_TYPE": "PRIMARY", "NAME_LAST": "Smith"}], "EMAIL_ADDRESS": "bsmith@work.com"}`
 	searchProfile := ""
 	flags := int64(0)
@@ -411,10 +411,10 @@ func ExampleSzengine_SearchByAttributes() {
 	// Output: {"RESOLVED_ENTITIES":[{"ENTITY":{"RESOLVED_ENTITY":{"ENTITY_ID":1,"ENTITY_NAME":"Robert Smith","FEATURES":{"ADDRESS":[{"FEAT_DESC":"123 Main Street, Las Vegas NV 89132","FEAT_DESC_VALUES":[{"FEAT_DESC":"123 Main Street, Las Vegas NV 89132","LIB_FEAT_ID":3}],"LIB_FEAT_ID":3,"USAGE_TYPE":"MAILING"},{"FEAT_DESC":"1515 Adela Lane Las Vegas NV 89111","FEAT_DESC_VALUES":[{"FEAT_DESC":"1515 Adela Lane Las Vegas NV 89111","LIB_FEAT_ID":20}],"LIB_FEAT_ID":20,"USAGE_TYPE":"HOME"}],"DOB":[{"FEAT_DESC":"12/11/1978","FEAT_DESC_VALUES":[{"FEAT_DESC":"11/12/1978","LIB_FEAT_ID":19},{"FEAT_DESC":"12/11/1978","LIB_FEAT_ID":2}],"LIB_FEAT_ID":2}],"EMAIL":[{"FEAT_DESC":"bsmith@work.com","FEAT_DESC_VALUES":[{"FEAT_DESC":"bsmith@work.com","LIB_FEAT_ID":5}],"LIB_FEAT_ID":5}],"NAME":[{"FEAT_DESC":"Robert Smith","FEAT_DESC_VALUES":[{"FEAT_DESC":"Bob J Smith","LIB_FEAT_ID":32},{"FEAT_DESC":"Bob Smith","LIB_FEAT_ID":18},{"FEAT_DESC":"Robert Smith","LIB_FEAT_ID":1}],"LIB_FEAT_ID":1,"USAGE_TYPE":"PRIMARY"}],"PHONE":[{"FEAT_DESC":"702-919-1300","FEAT_DESC_VALUES":[{"FEAT_DESC":"702-919-1300","LIB_FEAT_ID":4}],"LIB_FEAT_ID":4,"USAGE_TYPE":"HOME"},{"FEAT_DESC":"702-919-1300","FEAT_DESC_VALUES":[{"FEAT_DESC":"702-919-1300","LIB_FEAT_ID":4}],"LIB_FEAT_ID":4,"USAGE_TYPE":"MOBILE"}],"RECORD_TYPE":[{"FEAT_DESC":"PERSON","FEAT_DESC_VALUES":[{"FEAT_DESC":"PERSON","LIB_FEAT_ID":16}],"LIB_FEAT_ID":16}]},"LAST_SEEN_DT":null,"RECORD_SUMMARY":[{"DATA_SOURCE":"CUSTOMERS","FIRST_SEEN_DT":null,"LAST_SEEN_DT":null,"RECORD_COUNT":3}]}},"MATCH_INFO":{"ERRULE_CODE":"SF1","FEATURE_SCORES":{"EMAIL":[{"CANDIDATE_FEAT":"bsmith@work.com","FULL_SCORE":100,"INBOUND_FEAT":"bsmith@work.com"}],"NAME":[{"CANDIDATE_FEAT":"Bob J Smith","GENERATION_MATCH":-1,"GNR_FN":83,"GNR_GN":40,"GNR_ON":-1,"GNR_SN":100,"INBOUND_FEAT":"Smith"},{"CANDIDATE_FEAT":"Robert Smith","GENERATION_MATCH":-1,"GNR_FN":88,"GNR_GN":40,"GNR_ON":-1,"GNR_SN":100,"INBOUND_FEAT":"Smith"}]},"MATCH_KEY":"+PNAME+EMAIL","MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED"}}]}
 }
 
-func ExampleSzengine_SetLogLevel() {
+func ExampleSzEngine_SetLogLevel() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	g2engine := getG2Engine(ctx)
+	g2engine := getSzEngine(ctx)
 	err := g2engine.SetLogLevel(ctx, logging.LevelInfoName)
 	if err != nil {
 		fmt.Println(err)
@@ -422,7 +422,7 @@ func ExampleSzengine_SetLogLevel() {
 	// Output:
 }
 
-func ExampleSzengine_WhyEntities() {
+func ExampleSzEngine_WhyEntities() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
 	g2engine := &Szengine{}
@@ -437,10 +437,10 @@ func ExampleSzengine_WhyEntities() {
 	// Output: {"WHY_RESULTS":[{"ENTITY_ID":1,"ENTITY_ID_2":100003,"MATCH_INFO":{"WHY_...
 }
 
-func ExampleSzengine_WhyRecords() {
+func ExampleSzEngine_WhyRecords() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	g2engine := getG2Engine(ctx)
+	g2engine := getSzEngine(ctx)
 	dataSourceCode1 := "CUSTOMERS"
 	recordId1 := "1001"
 	dataSourceCode2 := "CUSTOMERS"
@@ -454,10 +454,10 @@ func ExampleSzengine_WhyRecords() {
 	// Output: {"WHY_RESULTS":[{"INTERNAL_ID":12,"ENTITY_ID":1,"FOCUS_RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":"1001"}],...
 }
 
-func ExampleSzengine_ProcessRedoRecord() {
+func ExampleSzEngine_ProcessRedoRecord() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	g2engine := getG2Engine(ctx)
+	g2engine := getSzEngine(ctx)
 	redoRecord := ""
 	flags := int64(0)
 	result, err := g2engine.ProcessRedoRecord(ctx, redoRecord, flags)
@@ -468,10 +468,10 @@ func ExampleSzengine_ProcessRedoRecord() {
 	// Output:
 }
 
-func ExampleSzengine_ReevaluateEntity() {
+func ExampleSzEngine_ReevaluateEntity() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	g2engine := getG2Engine(ctx)
+	g2engine := getSzEngine(ctx)
 	entityId := getEntityIdForRecord("CUSTOMERS", "1001")
 	flags := int64(0)
 	_, err := g2engine.ReevaluateEntity(ctx, entityId, flags)
@@ -481,10 +481,10 @@ func ExampleSzengine_ReevaluateEntity() {
 	// Output:
 }
 
-func ExampleSzengine_ReevaluateRecord() {
+func ExampleSzEngine_ReevaluateRecord() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	g2engine := getG2Engine(ctx)
+	g2engine := getSzEngine(ctx)
 	dataSourceCode := "CUSTOMERS"
 	recordId := "1001"
 	flags := int64(0)
@@ -495,10 +495,10 @@ func ExampleSzengine_ReevaluateRecord() {
 	// Output:
 }
 
-func ExampleSzengine_ReplaceRecord() {
+func ExampleSzEngine_ReplaceRecord() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	g2engine := getG2Engine(ctx)
+	g2engine := getSzEngine(ctx)
 	dataSourceCode := "CUSTOMERS"
 	recordId := "1001"
 	recordDefinition := `{"DATA_SOURCE": "CUSTOMERS", "RECORD_ID": "1001", "RECORD_TYPE": "PERSON", "PRIMARY_NAME_LAST": "Smith", "PRIMARY_NAME_FIRST": "Robert", "DATE_OF_BIRTH": "12/11/1978", "ADDR_TYPE": "MAILING", "ADDR_LINE1": "123 Main Street, Las Vegas NV 89132", "PHONE_TYPE": "HOME", "PHONE_NUMBER": "702-919-1300", "EMAIL_ADDRESS": "bsmith@work.com", "DATE": "1/2/18", "STATUS": "Active", "AMOUNT": "100"}`
@@ -510,10 +510,10 @@ func ExampleSzengine_ReplaceRecord() {
 	// Output:
 }
 
-func ExampleSzengine_DeleteRecord() {
+func ExampleSzEngine_DeleteRecord() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	g2engine := getG2Engine(ctx)
+	g2engine := getSzEngine(ctx)
 	dataSourceCode := "CUSTOMERS"
 	recordId := "1003"
 	flags := int64(0)
@@ -524,12 +524,12 @@ func ExampleSzengine_DeleteRecord() {
 	// Output:
 }
 
-func ExampleSzengine_Initialize() {
+func ExampleSzEngine_Initialize() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	g2engine := getG2Engine(ctx)
+	g2engine := getSzEngine(ctx)
 	instanceName := "Test module name"
-	settings, err := getIniParams()
+	settings, err := getSettings()
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -542,10 +542,10 @@ func ExampleSzengine_Initialize() {
 	// Output:
 }
 
-func ExampleSzengine_Reinitialize() {
+func ExampleSzEngine_Reinitialize() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	g2engine := getG2Engine(ctx)
+	g2engine := getSzEngine(ctx)
 	initConfigId, _ := g2engine.GetActiveConfigId(ctx) // Example initConfigId.
 	err := g2engine.Reinitialize(ctx, initConfigId)
 	if err != nil {
@@ -554,10 +554,10 @@ func ExampleSzengine_Reinitialize() {
 	// Output:
 }
 
-func ExampleSzengine_Destroy() {
+func ExampleSzEngine_Destroy() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	g2engine := getG2Engine(ctx)
+	g2engine := getSzEngine(ctx)
 	err := g2engine.Destroy(ctx)
 	if err != nil {
 		fmt.Println(err)
