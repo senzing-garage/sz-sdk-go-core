@@ -209,11 +209,11 @@ func (client *Szengine) addRecord(ctx context.Context, dataSourceCode string, re
 	}
 	dataSourceCodeForC := C.CString(dataSourceCode)
 	defer C.free(unsafe.Pointer(dataSourceCodeForC))
-	recordIDForC := C.CString(recordId)
-	defer C.free(unsafe.Pointer(recordIDForC))
+	recordIdForC := C.CString(recordId)
+	defer C.free(unsafe.Pointer(recordIdForC))
 	jsonDataForC := C.CString(recordDefinition)
 	defer C.free(unsafe.Pointer(jsonDataForC))
-	result := C.G2_addRecord(dataSourceCodeForC, recordIDForC, jsonDataForC)
+	result := C.G2_addRecord(dataSourceCodeForC, recordIdForC, jsonDataForC)
 	if result != 0 {
 		err = client.newError(ctx, 4001, dataSourceCode, recordId, recordDefinition, result, time.Since(entryTime))
 	}
@@ -258,11 +258,11 @@ func (client *Szengine) addRecordWithInfo(ctx context.Context, dataSourceCode st
 	}
 	dataSourceCodeForC := C.CString(dataSourceCode)
 	defer C.free(unsafe.Pointer(dataSourceCodeForC))
-	recordIDForC := C.CString(recordId)
-	defer C.free(unsafe.Pointer(recordIDForC))
+	recordIdForC := C.CString(recordId)
+	defer C.free(unsafe.Pointer(recordIdForC))
 	jsonDataForC := C.CString(recordDefinition)
 	defer C.free(unsafe.Pointer(jsonDataForC))
-	result := C.G2_addRecordWithInfo_helper(dataSourceCodeForC, recordIDForC, jsonDataForC, C.longlong(flags))
+	result := C.G2_addRecordWithInfo_helper(dataSourceCodeForC, recordIdForC, jsonDataForC, C.longlong(flags))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4002, dataSourceCode, recordId, recordDefinition, flags, result.returnCode, time.Since(entryTime))
 	}
@@ -272,7 +272,7 @@ func (client *Szengine) addRecordWithInfo(ctx context.Context, dataSourceCode st
 		go func() {
 			details := map[string]string{
 				"dataSourceCode": dataSourceCode,
-				"recordID":       recordId,
+				"recordId":       recordId,
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8002, err, details)
 		}()
@@ -300,9 +300,9 @@ func (client *Szengine) deleteRecord(ctx context.Context, dataSourceCode string,
 	}
 	dataSourceCodeForC := C.CString(dataSourceCode)
 	defer C.free(unsafe.Pointer(dataSourceCodeForC))
-	recordIDForC := C.CString(recordId)
-	defer C.free(unsafe.Pointer(recordIDForC))
-	result := C.G2_deleteRecord(dataSourceCodeForC, recordIDForC)
+	recordIdForC := C.CString(recordId)
+	defer C.free(unsafe.Pointer(recordIdForC))
+	result := C.G2_deleteRecord(dataSourceCodeForC, recordIdForC)
 	if result != 0 {
 		err = client.newError(ctx, 4007, dataSourceCode, recordId, result, time.Since(entryTime))
 	}
@@ -310,7 +310,7 @@ func (client *Szengine) deleteRecord(ctx context.Context, dataSourceCode string,
 		go func() {
 			details := map[string]string{
 				"dataSourceCode": dataSourceCode,
-				"recordID":       recordId,
+				"recordId":       recordId,
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8008, err, details)
 		}()
@@ -346,9 +346,9 @@ func (client *Szengine) deleteRecordWithInfo(ctx context.Context, dataSourceCode
 	}
 	dataSourceCodeForC := C.CString(dataSourceCode)
 	defer C.free(unsafe.Pointer(dataSourceCodeForC))
-	recordIDForC := C.CString(recordId)
-	defer C.free(unsafe.Pointer(recordIDForC))
-	result := C.G2_deleteRecordWithInfo_helper(dataSourceCodeForC, recordIDForC, C.longlong(flags))
+	recordIdForC := C.CString(recordId)
+	defer C.free(unsafe.Pointer(recordIdForC))
+	result := C.G2_deleteRecordWithInfo_helper(dataSourceCodeForC, recordIdForC, C.longlong(flags))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4008, dataSourceCode, recordId, flags, result.returnCode, time.Since(entryTime))
 	}
@@ -358,7 +358,7 @@ func (client *Szengine) deleteRecordWithInfo(ctx context.Context, dataSourceCode
 		go func() {
 			details := map[string]string{
 				"dataSourceCode": dataSourceCode,
-				"recordID":       recordId,
+				"recordId":       recordId,
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8009, err, details)
 		}()
@@ -416,7 +416,7 @@ func (client *Szengine) findPathByEntityId_V2(ctx context.Context, startEntityId
 The findPathByRecordId_V2 method finds single relationship paths between two entities.
 The entities are identified by starting and ending records.
 Paths are found using known relationships with other entities.
-It extends FindPathByRecordID() by adding output control flags.
+It extends FindPathByRecordId() by adding output control flags.
 
 Input
   - ctx: A context to control lifecycle.
@@ -473,10 +473,10 @@ func (client *Szengine) findPathByRecordId_V2(ctx context.Context, startDataSour
 }
 
 /*
-The findPathExcludingByEntityID method finds single relationship paths between two entities.
+The findPathExcludingByEntityId method finds single relationship paths between two entities.
 Paths are found using known relationships with other entities.
 In addition, it will find paths that exclude certain entities from being on the path.
-To control output, use FindPathExcludingByEntityID_V2() instead.
+To control output, use FindPathExcludingByEntityId_V2() instead.
 
 Input
   - ctx: A context to control lifecycle.
@@ -523,10 +523,10 @@ func (client *Szengine) findPathExcludingByEntityId(ctx context.Context, startEn
 }
 
 /*
-The findPathExcludingByEntityID_V2 method finds single relationship paths between two entities.
+The findPathExcludingByEntityId_V2 method finds single relationship paths between two entities.
 Paths are found using known relationships with other entities.
 In addition, it will find paths that exclude certain entities from being on the path.
-It extends FindPathExcludingByEntityID() by adding output control flags.
+It extends FindPathExcludingByEntityId() by adding output control flags.
 
 When excluding entities, the user may choose to either strictly exclude the entities,
 or prefer to exclude the entities but still include them if no other path is found.
@@ -582,7 +582,7 @@ func (client *Szengine) findPathExcludingByEntityId_V2(ctx context.Context, star
 The findPathExcludingByRecordId method finds single relationship paths between two entities.
 Paths are found using known relationships with other entities.
 In addition, it will find paths that exclude certain entities from being on the path.
-To control output, use FindPathExcludingByRecordID_V2() instead.
+To control output, use FindPathExcludingByRecordId_V2() instead.
 
 Input
   - ctx: A context to control lifecycle.
@@ -644,7 +644,7 @@ func (client *Szengine) findPathExcludingByRecordId(ctx context.Context, startDa
 The findPathExcludingByRecordId_V2 method finds single relationship paths between two entities.
 Paths are found using known relationships with other entities.
 In addition, it will find paths that exclude certain entities from being on the path.
-It extends FindPathExcludingByRecordID() by adding output control flags.
+It extends FindPathExcludingByRecordId() by adding output control flags.
 
 When excluding entities, the user may choose to either strictly exclude the entities,
 or prefer to exclude the entities but still include them if no other path is found.
@@ -712,7 +712,7 @@ func (client *Szengine) findPathExcludingByRecordId_V2(ctx context.Context, star
 The findPathIncludingSourceByEntityId method finds single relationship paths between two entities.
 In addition, one of the enties along the path must include a specified data source.
 Specific entities may also be excluded,
-using the same methodology as the FindPathExcludingByEntityID() and FindPathExcludingByRecordID().
+using the same methodology as the FindPathExcludingByEntityIdD() and FindPathExcludingByRecordId().
 To control output, use FindPathIncludingSourceByEntityId_V2() instead.
 
 Input
@@ -721,7 +721,7 @@ Input
   - endEntityId: The entity ID for the ending entity of the search path.
   - maxDegrees: The maximum number of degrees in paths between search entities.
   - exclusions: A JSON document listing entities that should be avoided on the path.
-  - requiredDataSources: A JSON document listing data sources that should be included on the path. FIXME:
+  - requiredDataSources: A JSON document listing data sources that should be included on the path. TODO:
 
 Output
   - A JSON document.
@@ -766,8 +766,8 @@ func (client *Szengine) findPathIncludingSourceByEntityId(ctx context.Context, s
 The findPathIncludingSourceByEntityId_V2 method finds single relationship paths between two entities.
 In addition, one of the enties along the path must include a specified data source.
 Specific entities may also be excluded,
-using the same methodology as the FindPathExcludingByEntityID_V2() and FindPathExcludingByRecordID_V2().
-It extends FindPathIncludingSourceByEntityID() by adding output control flags.
+using the same methodology as the FindPathExcludingByEntityId_V2() and FindPathExcludingByRecordId_V2().
+It extends FindPathIncludingSourceByEntityId() by adding output control flags.
 
 Input
   - ctx: A context to control lifecycle.
@@ -775,7 +775,7 @@ Input
   - endEntityId: The entity ID for the ending entity of the search path.
   - maxDegrees: The maximum number of degrees in paths between search entities.
   - exclusions: A JSON document listing entities that should be avoided on the path.
-  - requiredDataSources: A JSON document listing data sources that should be included on the path. FIXME:
+  - requiredDataSources: A JSON document listing data sources that should be included on the path. TODO:
   - flags: Flags used to control information returned.
 
 Output
@@ -821,8 +821,8 @@ func (client *Szengine) findPathIncludingSourceByEntityId_V2(ctx context.Context
 The findPathIncludingSourceByRecordId method finds single relationship paths between two entities.
 In addition, one of the enties along the path must include a specified data source.
 Specific entities may also be excluded,
-using the same methodology as the FindPathExcludingByEntityID() and FindPathExcludingByRecordID().
-To control output, use FindPathIncludingSourceByRecordID_V2() instead.
+using the same methodology as the FindPathExcludingByEntityId() and FindPathExcludingByRecordId().
+To control output, use FindPathIncludingSourceByRecordId_V2() instead.
 
 Input
   - ctx: A context to control lifecycle.
@@ -832,7 +832,7 @@ Input
   - endRecordId: The unique identifier within the records of the same data source for the ending entity of the search path.
   - maxDegrees: The maximum number of degrees in paths between search entities.
   - endRecordId: A JSON document listing entities that should be avoided on the path.
-  - requiredDataSources: A JSON document listing data sources that should be included on the path. FIXME:
+  - requiredDataSources: A JSON document listing data sources that should be included on the path. TODO:
 
 Output
   - A JSON document.
@@ -884,11 +884,11 @@ func (client *Szengine) findPathIncludingSourceByRecordId(ctx context.Context, s
 }
 
 /*
-The findPathIncludingSourceByRecordId method finds single relationship paths between two entities.
+The findPathIncludingSourceByRecordId_V2 method finds single relationship paths between two entities.
 In addition, one of the enties along the path must include a specified data source.
 Specific entities may also be excluded,
-using the same methodology as the FindPathExcludingByEntityID_V2() and FindPathExcludingByRecordID_V2().
-It extends FindPathIncludingSourceByRecordID() by adding output control flags.
+using the same methodology as the FindPathExcludingByEntityId_V2() and FindPathExcludingByRecordId_V2().
+It extends FindPathIncludingSourceByRecordId() by adding output control flags.
 
 Input
   - ctx: A context to control lifecycle.
@@ -898,7 +898,7 @@ Input
   - endRecordId: The unique identifier within the records of the same data source for the ending entity of the search path.
   - maxDegrees: The maximum number of degrees in paths between search entities.
   - exclusions: A JSON document listing entities that should be avoided on the path.
-  - requiredDataSources: A JSON document listing data sources that should be included on the path. FIXME:
+  - requiredDataSources: A JSON document listing data sources that should be included on the path. TODO:
   - flags: Flags used to control information returned.
 
 Output
@@ -951,7 +951,7 @@ func (client *Szengine) findPathIncludingSourceByRecordId_V2(ctx context.Context
 }
 
 /*
-The Initialize method initializes the SzEngine object.
+The init method initializes the SzEngine object.
 It must be called prior to any other calls.
 
 Input
@@ -960,7 +960,7 @@ Input
   - iniParams: A JSON string containing configuration parameters.
   - verboseLogging: A flag to enable deeper logging of the G2 processing. 0 for no Senzing logging; 1 for logging.
 */
-func (client *Szengine) initialize(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
+func (client *Szengine) init(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
 	// _DLEXPORT int G2_init(const char *moduleName, const char *iniParams, const int verboseLogging);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -970,11 +970,11 @@ func (client *Szengine) initialize(ctx context.Context, instanceName string, set
 		client.traceEntry(99, instanceName, settings, verboseLogging)
 		defer func() { client.traceExit(100, instanceName, settings, verboseLogging, err, time.Since(entryTime)) }()
 	}
-	moduleNameForC := C.CString(instanceName)
-	defer C.free(unsafe.Pointer(moduleNameForC))
-	iniParamsForC := C.CString(settings)
-	defer C.free(unsafe.Pointer(iniParamsForC))
-	result := C.G2_init(moduleNameForC, iniParamsForC, C.longlong(verboseLogging))
+	instanceNameForC := C.CString(instanceName)
+	defer C.free(unsafe.Pointer(instanceNameForC))
+	settingsForC := C.CString(settings)
+	defer C.free(unsafe.Pointer(settingsForC))
+	result := C.G2_init(instanceNameForC, settingsForC, C.longlong(verboseLogging))
 	if result != 0 {
 		err = client.newError(ctx, 4047, instanceName, settings, verboseLogging, result, time.Since(entryTime))
 	}
@@ -992,7 +992,7 @@ func (client *Szengine) initialize(ctx context.Context, instanceName string, set
 }
 
 /*
-The initializeWithConfigId method initializes the Senzing G2 object with a non-default configuration ID.
+The initWithConfigId method initializes the Senzing G2 object with a non-default configuration ID.
 It must be called prior to any other calls.
 
 Input
@@ -1002,7 +1002,7 @@ Input
   - configId: The configuration ID used for the initialization.
   - verboseLogging: A flag to enable deeper logging of the G2 processing. 0 for no Senzing logging; 1 for logging.
 */
-func (client *Szengine) initializeWithConfigId(ctx context.Context, instanceName string, settings string, verboseLogging int64, configId int64) error {
+func (client *Szengine) initWithConfigId(ctx context.Context, instanceName string, settings string, verboseLogging int64, configId int64) error {
 	//  _DLEXPORT int G2_initWithConfigID(const char *moduleName, const char *iniParams, const long long initConfigID, const int verboseLogging);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -1014,20 +1014,20 @@ func (client *Szengine) initializeWithConfigId(ctx context.Context, instanceName
 			client.traceExit(102, instanceName, settings, configId, verboseLogging, err, time.Since(entryTime))
 		}()
 	}
-	moduleNameForC := C.CString(instanceName)
-	defer C.free(unsafe.Pointer(moduleNameForC))
-	iniParamsForC := C.CString(settings)
-	defer C.free(unsafe.Pointer(iniParamsForC))
-	result := C.G2_initWithConfigID(moduleNameForC, iniParamsForC, C.longlong(configId), C.longlong(verboseLogging))
+	instanceNameForC := C.CString(instanceName)
+	defer C.free(unsafe.Pointer(instanceNameForC))
+	settingsForC := C.CString(settings)
+	defer C.free(unsafe.Pointer(settingsForC))
+	result := C.G2_initWithConfigID(instanceNameForC, settingsForC, C.longlong(configId), C.longlong(verboseLogging))
 	if result != 0 {
 		err = client.newError(ctx, 4048, instanceName, settings, configId, verboseLogging, result, time.Since(entryTime))
 	}
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
-				"iniParams":      settings,
-				"initConfigID":   strconv.FormatInt(configId, 10),
-				"moduleName":     instanceName,
+				"settings":       settings,
+				"configId":       strconv.FormatInt(configId, 10),
+				"instanceName":   instanceName,
 				"verboseLogging": strconv.FormatInt(verboseLogging, 10),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8048, err, details)
@@ -1069,6 +1069,7 @@ func (client *Szengine) processRedoRecord(ctx context.Context, flags int64) (str
 	//	}
 	//
 	// return resultResponse, err
+	// TODO:
 	return "{}", nil
 }
 
@@ -1087,15 +1088,18 @@ Output
 func (client *Szengine) processRedoRecordWithInfo(ctx context.Context, flags int64) (string, error) {
 	_ = ctx
 	_ = flags
+
+	// TODO:
+
 	return "", nil
 }
 
 /*
-The ReevaluateEntity method FIXME:
+The ReevaluateEntity method TODO:
 
 Input
   - ctx: A context to control lifecycle.
-  - entityID: The unique identifier of an entity.
+  - entityId: The unique identifier of an entity.
   - flags: Flags used to control information returned.
 */
 func (client *Szengine) reevaluateEntity(ctx context.Context, entityId int64, flags int64) (string, error) {
@@ -1115,7 +1119,7 @@ func (client *Szengine) reevaluateEntity(ctx context.Context, entityId int64, fl
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
-				"entityID": strconv.FormatInt(entityId, 10),
+				"entityId": strconv.FormatInt(entityId, 10),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8057, err, details)
 		}()
@@ -1124,11 +1128,11 @@ func (client *Szengine) reevaluateEntity(ctx context.Context, entityId int64, fl
 }
 
 /*
-The ReevaluateEntityWithInfo method FIXME:
+The ReevaluateEntityWithInfo method TODO:
 
 Input
   - ctx: A context to control lifecycle.
-  - entityID: The unique identifier of an entity.
+  - entityId: The unique identifier of an entity.
   - flags: Flags used to control information returned.
 
 Output
@@ -1156,7 +1160,7 @@ func (client *Szengine) reevaluateEntityWithInfo(ctx context.Context, entityId i
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
-				"entityID": strconv.FormatInt(entityId, 10),
+				"entityId": strconv.FormatInt(entityId, 10),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8058, err, details)
 		}()
@@ -1165,7 +1169,7 @@ func (client *Szengine) reevaluateEntityWithInfo(ctx context.Context, entityId i
 }
 
 /*
-The ReevaluateRecord method FIXME:
+The ReevaluateRecord method TODO:
 
 Input
   - ctx: A context to control lifecycle.
@@ -1185,9 +1189,9 @@ func (client *Szengine) reevaluateRecord(ctx context.Context, dataSourceCode str
 	}
 	dataSourceCodeForC := C.CString(dataSourceCode)
 	defer C.free(unsafe.Pointer(dataSourceCodeForC))
-	recordIDForC := C.CString(recordId)
-	defer C.free(unsafe.Pointer(recordIDForC))
-	result := C.G2_reevaluateRecord(dataSourceCodeForC, recordIDForC, C.longlong(flags))
+	recordIdForC := C.CString(recordId)
+	defer C.free(unsafe.Pointer(recordIdForC))
+	result := C.G2_reevaluateRecord(dataSourceCodeForC, recordIdForC, C.longlong(flags))
 	if result != 0 {
 		err = client.newError(ctx, 4059, dataSourceCode, recordId, flags, result, time.Since(entryTime))
 	}
@@ -1195,7 +1199,7 @@ func (client *Szengine) reevaluateRecord(ctx context.Context, dataSourceCode str
 		go func() {
 			details := map[string]string{
 				"dataSourceCode": dataSourceCode,
-				"recordID":       recordId,
+				"recordId":       recordId,
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8059, err, details)
 		}()
@@ -1204,7 +1208,7 @@ func (client *Szengine) reevaluateRecord(ctx context.Context, dataSourceCode str
 }
 
 /*
-The ReevaluateRecordWithInfo method FIXME:
+The ReevaluateRecordWithInfo method TODO:
 
 Input
   - ctx: A context to control lifecycle.
@@ -1232,9 +1236,9 @@ func (client *Szengine) reevaluateRecordWithInfo(ctx context.Context, dataSource
 	}
 	dataSourceCodeForC := C.CString(dataSourceCode)
 	defer C.free(unsafe.Pointer(dataSourceCodeForC))
-	recordIDForC := C.CString(recordId)
-	defer C.free(unsafe.Pointer(recordIDForC))
-	result := C.G2_reevaluateRecordWithInfo_helper(dataSourceCodeForC, recordIDForC, C.longlong(flags))
+	recordIdForC := C.CString(recordId)
+	defer C.free(unsafe.Pointer(recordIdForC))
+	result := C.G2_reevaluateRecordWithInfo_helper(dataSourceCodeForC, recordIdForC, C.longlong(flags))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4060, dataSourceCode, recordId, flags, result.returnCode, time.Since(entryTime))
 	}
@@ -1244,7 +1248,7 @@ func (client *Szengine) reevaluateRecordWithInfo(ctx context.Context, dataSource
 		go func() {
 			details := map[string]string{
 				"dataSourceCode": dataSourceCode,
-				"recordID":       recordId,
+				"recordId":       recordId,
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8060, err, details)
 		}()
@@ -1253,7 +1257,7 @@ func (client *Szengine) reevaluateRecordWithInfo(ctx context.Context, dataSource
 }
 
 /*
-The ReplaceRecord method updates/replaces a record in the Senzing repository.
+The replaceRecord method updates/replaces a record in the Senzing repository.
 If record doesn't exist, a new record is added to the data repository.
 
 Input
@@ -1295,15 +1299,14 @@ func (client *Szengine) replaceRecord(ctx context.Context, dataSourceCode string
 }
 
 /*
-The ReplaceRecordWithInfo method updates/replaces a record in the Senzing repository and returns information on the affected entities.
+The replaceRecordWithInfo method updates/replaces a record in the Senzing repository and returns information on the affected entities.
 If record doesn't exist, a new record is added to the data repository.
 
 Input
   - ctx: A context to control lifecycle.
   - dataSourceCode: Identifies the provenance of the data.
-  - recordID: The unique identifier within the records of the same data source.
-  - jsonData: A JSON document containing the record to be added to the Senzing repository.
-  - loadID: An identifier used to distinguish different load batches/sessions. An empty string is acceptable.
+  - recordId: The unique identifier within the records of the same data source.
+  - recordDefinition: A JSON document containing the record to be added to the Senzing repository.
   - flags: Flags used to control information returned.
 
 Output
@@ -1353,7 +1356,7 @@ To control output, use SearchByAttributes_V2() instead.
 
 Input
   - ctx: A context to control lifecycle.
-  - jsonData: A JSON document containing the record to be added to the Senzing repository.
+  - attributes: A JSON document containing the record to be added to the Senzing repository.
 
 Output
   - A JSON document.
@@ -1393,7 +1396,7 @@ It extends SearchByAttributes() by adding output control flags.
 
 Input
   - ctx: A context to control lifecycle.
-  - jsonData: A JSON document containing the record to be added to the Senzing repository.
+  - attributes: A JSON document containing the record to be added to the Senzing repository.
   - flags: Flags used to control information returned.
 
 Output
@@ -1429,7 +1432,7 @@ func (client *Szengine) searchByAttributes_V2(ctx context.Context, attributes st
 }
 
 /*
-The SearchByAttributes_V3 method FIXME:
+The SearchByAttributes_V3 method TODO:
 
 Input
   - ctx: A context to control lifecycle.
@@ -1454,16 +1457,16 @@ func (client *Szengine) searchByAttributes_V3(ctx context.Context, attributes st
 }
 
 /*
-The WhyEntities method explains why records belong to their resolved entities.
-WhyEntities() will compare the record data within an entity
+The whyEntities method explains why records belong to their resolved entities.
+whyEntities() will compare the record data within an entity
 against the rest of the entity data and show why they are connected.
 This is calculated based on the features that record data represents.
 To control output, use WhyEntities_V2() instead.
 
 Input
   - ctx: A context to control lifecycle.
-  - entityID1: The entity ID for the starting entity of the search path.
-  - entityID2: The entity ID for the ending entity of the search path.
+  - entityId1: The entity ID for the starting entity of the search path.
+  - entityId2: The entity ID for the ending entity of the search path.
 
 Output
   - A JSON document.
@@ -1489,8 +1492,8 @@ func (client *Szengine) whyEntities(ctx context.Context, entityId1 int64, entity
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
-				"entityID1": strconv.FormatInt(entityId1, 10),
-				"entityID2": strconv.FormatInt(entityId2, 10),
+				"entityId1": strconv.FormatInt(entityId1, 10),
+				"entityId2": strconv.FormatInt(entityId2, 10),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8067, err, details)
 		}()
@@ -1499,16 +1502,16 @@ func (client *Szengine) whyEntities(ctx context.Context, entityId1 int64, entity
 }
 
 /*
-The WhyEntities_V2 method explains why records belong to their resolved entities.
-WhyEntities_V2() will compare the record data within an entity
+The whyEntities_V2 method explains why records belong to their resolved entities.
+whyEntities_V2() will compare the record data within an entity
 against the rest of the entity data and show why they are connected.
 This is calculated based on the features that record data represents.
-It extends WhyEntities() by adding output control flags.
+It extends whyEntities() by adding output control flags.
 
 Input
   - ctx: A context to control lifecycle.
-  - entityID1: The entity ID for the starting entity of the search path.
-  - entityID2: The entity ID for the ending entity of the search path.
+  - entityId1: The entity ID for the starting entity of the search path.
+  - entityId2: The entity ID for the ending entity of the search path.
   - flags: Flags used to control information returned.
 
 Output
@@ -1598,21 +1601,21 @@ func (client *Szengine) whyRecordInEntity_V2(ctx context.Context, dataSourceCode
 
 /*
 The whyRecords method explains why records belong to their resolved entities.
-To control output, use WhyRecords_V2() instead.
+To control output, use whyRecords_V2() instead.
 
 Input
   - ctx: A context to control lifecycle.
   - dataSourceCode1: Identifies the provenance of the data.
-  - recordID1: The unique identifier within the records of the same data source.
+  - recordId1: The unique identifier within the records of the same data source.
   - dataSourceCode2: Identifies the provenance of the data.
-  - recordID2: The unique identifier within the records of the same data source.
+  - recordId2: The unique identifier within the records of the same data source.
 
 Output
 
   - A JSON document.
     Example: `{"WHY_RESULTS":[{"INTERNAL_ID":100001,"ENTITY_ID":1,"FOCUS_RECORDS":[{"DATA_SOURCE":"TEST","RECORD_ID":"111"}],"INTERNAL_ID_2":2,"ENTITY_ID_2":2,"FOCUS_RECORDS_2":[{"DATA_SOURCE":"TEST","RECORD_ID":"222"}],"MATCH_INFO":{"WHY_KEY":"+PHONE+ACCT_NUM-DOB-SSN","WHY_ERRULE_CODE":"SF1","MATCH_LEVEL_CODE":"POSSIBLY_RELATED","CANDIDATE_KEYS":{"ACCT_NUM":[{"FEAT_ID":8,"FEAT_DESC":"5534202208773608"}],"ADDR_KEY":[{"FEAT_ID":17,"FEAT_DESC":"772|ARMSTRNK||TL"}],"ID_KEY":[{"FEAT_ID":19,"FEAT_DESC":"ACCT_NUM=5534202208773608"}],"PHONE":[{"FEAT_ID":5,"FEAT_DESC":"225-671-0796"}],"PHONE_KEY":[{"FEAT_ID":21,"FEAT_DESC":"2256710796"}]},"DISCLOSED_RELATIONS":{},"FEATURE_SCORES":{"ACCT_NUM":[{"INBOUND_FEAT_ID":8,"INBOUND_FEAT":"5534202208773608","INBOUND_FEAT_USAGE_TYPE":"CC","CANDIDATE_FEAT_ID":8,"CANDIDATE_FEAT":"5534202208773608","CANDIDATE_FEAT_USAGE_TYPE":"CC","FULL_SCORE":100,"SCORE_BUCKET":"SAME","SCORE_BEHAVIOR":"F1"}],"ADDRESS":[{"INBOUND_FEAT_ID":4,"INBOUND_FEAT":"772 Armstrong RD Delhi LA 71232","INBOUND_FEAT_USAGE_TYPE":"","CANDIDATE_FEAT_ID":26,"CANDIDATE_FEAT":"772 Armstrong RD Delhi WI 53543","CANDIDATE_FEAT_USAGE_TYPE":"","FULL_SCORE":81,"SCORE_BUCKET":"LIKELY","SCORE_BEHAVIOR":"FF"}],"DOB":[{"INBOUND_FEAT_ID":100001,"INBOUND_FEAT":"4/8/1985","INBOUND_FEAT_USAGE_TYPE":"","CANDIDATE_FEAT_ID":25,"CANDIDATE_FEAT":"6/9/1983","CANDIDATE_FEAT_USAGE_TYPE":"","FULL_SCORE":79,"SCORE_BUCKET":"NO_CHANCE","SCORE_BEHAVIOR":"FMES"}],"GENDER":[{"INBOUND_FEAT_ID":3,"INBOUND_FEAT":"F","INBOUND_FEAT_USAGE_TYPE":"","CANDIDATE_FEAT_ID":3,"CANDIDATE_FEAT":"F","CANDIDATE_FEAT_USAGE_TYPE":"","FULL_SCORE":100,"SCORE_BUCKET":"SAME","SCORE_BEHAVIOR":"FVME"}],"LOGIN_ID":[{"INBOUND_FEAT_ID":7,"INBOUND_FEAT":"flavorh","INBOUND_FEAT_USAGE_TYPE":"","CANDIDATE_FEAT_ID":28,"CANDIDATE_FEAT":"flavorh2","CANDIDATE_FEAT_USAGE_TYPE":"","FULL_SCORE":0,"SCORE_BUCKET":"NO_CHANCE","SCORE_BEHAVIOR":"F1"}],"NAME":[{"INBOUND_FEAT_ID":1,"INBOUND_FEAT":"JOHNSON","INBOUND_FEAT_USAGE_TYPE":"","CANDIDATE_FEAT_ID":24,"CANDIDATE_FEAT":"OCEANGUY","CANDIDATE_FEAT_USAGE_TYPE":"","GNR_FN":33,"GNR_SN":32,"GNR_GN":70,"GENERATION_MATCH":-1,"GNR_ON":-1,"SCORE_BUCKET":"NO_CHANCE","SCORE_BEHAVIOR":"NAME"}],"PHONE":[{"INBOUND_FEAT_ID":5,"INBOUND_FEAT":"225-671-0796","INBOUND_FEAT_USAGE_TYPE":"","CANDIDATE_FEAT_ID":5,"CANDIDATE_FEAT":"225-671-0796","CANDIDATE_FEAT_USAGE_TYPE":"","FULL_SCORE":100,"SCORE_BUCKET":"SAME","SCORE_BEHAVIOR":"FF"}],"SSN":[{"INBOUND_FEAT_ID":6,"INBOUND_FEAT":"053-39-3251","INBOUND_FEAT_USAGE_TYPE":"","CANDIDATE_FEAT_ID":27,"CANDIDATE_FEAT":"153-33-5185","CANDIDATE_FEAT_USAGE_TYPE":"","FULL_SCORE":0,"SCORE_BUCKET":"NO_CHANCE","SCORE_BEHAVIOR":"F1ES"}]}}}],"ENTITIES":[{"RESOLVED_ENTITY":{"ENTITY_ID":1,"ENTITY_NAME":"JOHNSON","FEATURES":{"ACCT_NUM":[{"FEAT_DESC":"5534202208773608","LIB_FEAT_ID":8,"USAGE_TYPE":"CC","FEAT_DESC_VALUES":[{"FEAT_DESC":"5534202208773608","LIB_FEAT_ID":8,"USED_FOR_CAND":"Y","USED_FOR_SCORING":"Y","ENTITY_COUNT":3,"CANDIDATE_CAP_REACHED":"N","SCORING_CAP_REACHED":"N","SUPPRESSED":"N"}]}],"ADDRESS":[{"FEAT_DESC":"772 Armstrong RD Delhi LA 71232","LIB_FEAT_ID":4,"FEAT_DESC_VALUES":[{"FEAT_DESC":"772 Armstrong RD Delhi LA 71232","LIB_FEAT_ID":4,"USED_FOR_CAND":"N","USED_FOR_SCORING":"Y","ENTITY_COUNT":1,"CANDIDATE_CAP_REACHED":"N","SCORING_CAP_REACHED":"N","SUPPRESSED":"N"}]}],"ADDR_KEY":[{"FEAT_DESC":"772|ARMSTRNK||71232","LIB_FEAT_ID":18,"FEAT_DESC_VALUES":[{"FEAT_DESC":"772|ARMSTRNK||71232","LIB_FEAT_ID":18,"USED_FOR_CAND":"Y","USED_FOR_SCORING":"N","ENTITY_COUNT":1,"CANDIDATE_CAP_REACHED":"N","SCORING_CAP_REACHED":"N","SUPPRESSED":"N"}]},{"FEAT_DESC":"772|ARMSTRNK||TL","LIB_FEAT_ID":17,"FEAT_DESC_VALUES":[{"FEAT_DESC":"772|ARMSTRNK||TL","LIB_FEAT_ID":17,"USED_FOR_CAND":"Y","USED_FOR_SCORING":"N","ENTITY_COUNT":3,"CANDIDATE_CAP_REACHED":"N","SCORING_CAP_REACHED":"N","SUPPRESSED":"N"}]}],"DOB":[{"FEAT_DESC":"4/8/1983","LIB_FEAT_ID":2,"FEAT_DESC_VALUES":[{"FEAT_DESC":"4/8/1983","LIB_FEAT_ID":2,"USED_FOR_CAND":"Y","USED_FOR_SCORING":"Y","ENTITY_COUNT":1,"CANDIDATE_CAP_REACHED":"N","SCORING_CAP_REACHED":"N","SUPPRESSED":"N"}]},{"FEAT_DESC":"4/8/1985","LIB_FEAT_ID":100001,"FEAT_DESC_VALUES":[{"FEAT_DESC":"4/8/1985","LIB_FEAT_ID":100001,"USED_FOR_CAND":"Y","USED_FOR_SCORING":"Y","ENTITY_COUNT":1,"CANDIDATE_CAP_REACHED":"N","SCORING_CAP_REACHED":"N","SUPPRESSED":"N"}]}],"GENDER":[{"FEAT_DESC":"F","LIB_FEAT_ID":3,"FEAT_DESC_VALUES":[{"FEAT_DESC":"F","LIB_FEAT_ID":3,"USED_FOR_CAND":"N","USED_FOR_SCORING":"Y","ENTITY_COUNT":3,"CANDIDATE_CAP_REACHED":"N","SCORING_CAP_REACHED":"N","SUPPRESSED":"N"}]}],"ID_KEY":[{"FEAT_DESC":"ACCT_NUM=5534202208773608","LIB_FEAT_ID":19,"FEAT_DESC_VALUES":[{"FEAT_DESC":"ACCT_NUM=5534202208773608","LIB_FEAT_ID":19,"USED_FOR_CAND":"Y","USED_FOR_SCORING":"N","ENTITY_COUNT":3,"CANDIDATE_CAP_REACHED":"N","SCORING_CAP_REACHED":"N","SUPPRESSED":"N"}]},{"FEAT_DESC":"SSN=053-39-3251","LIB_FEAT_ID":20,"FEAT_DESC_VALUES":[{"FEAT_DESC":"SSN=053-39-3251","LIB_FEAT_ID":20,"USED_FOR_CAND":"Y","USED_FOR_SCORING":"N","ENTITY_COUNT":1,"CANDIDATE_CAP_REACHED":"N","SCORING_CAP_REACHED":"N","SUPPRESSED":"N"}]}],"LOGIN_ID":[{"FEAT_DESC":"flavorh","LIB_FEAT_ID":7,"FEAT_DESC_VALUES":[{"FEAT_DESC":"flavorh","LIB_FEAT_ID":7,"USED_FOR_CAND":"Y","USED_FOR_SCORING":"Y","ENTITY_COUNT":1,"CANDIDATE_CAP_REACHED":"N","SCORING_CAP_REACHED":"N","SUPPRESSED":"N"}]}],"NAME":[{"FEAT_DESC":"JOHNSON","LIB_FEAT_ID":1,"FEAT_DESC_VALUES":[{"FEAT_DESC":"JOHNSON","LIB_FEAT_ID":1,"USED_FOR_CAND":"N","USED_FOR_SCORING":"Y","ENTITY_COUNT":1,"CANDIDATE_CAP_REACHED":"N","SCORING_CAP_REACHED":"N","SUPPRESSED":"N"}]}],"NAME_KEY":[{"FEAT_DESC":"JNSN","LIB_FEAT_ID":11,"FEAT_DESC_VALUES":[{"FEAT_DESC":"JNSN","LIB_FEAT_ID":11,"USED_FOR_CAND":"Y","USED_FOR_SCORING":"N","ENTITY_COUNT":1,"CANDIDATE_CAP_REACHED":"N","SCORING_CAP_REACHED":"N","SUPPRESSED":"N"}]},{"FEAT_DESC":"JNSN|ADDRESS.CITY_STD=TL","LIB_FEAT_ID":12,"FEAT_DESC_VALUES":[{"FEAT_DESC":"JNSN|ADDRESS.CITY_STD=TL","LIB_FEAT_ID":12,"USED_FOR_CAND":"Y","USED_FOR_SCORING":"N","ENTITY_COUNT":1,"CANDIDATE_CAP_REACHED":"N","SCORING_CAP_REACHED":"N","SUPPRESSED":"N"}]},{"FEAT_DESC":"JNSN|DOB.MMDD_HASH=0804","LIB_FEAT_ID":9,"FEAT_DESC_VALUES":[{"FEAT_DESC":"JNSN|DOB.MMDD_HASH=0804","LIB_FEAT_ID":9,"USED_FOR_CAND":"Y","USED_FOR_SCORING":"N","ENTITY_COUNT":1,"CANDIDATE_CAP_REACHED":"N","SCORING_CAP_REACHED":"N","SUPPRESSED":"N"}]},{"FEAT_DESC":"JNSN|DOB.MMYY_HASH=0483","LIB_FEAT_ID":10,"FEAT_DESC_VALUES":[{"FEAT_DESC":"JNSN|DOB.MMYY_HASH=0483","LIB_FEAT_ID":10,"USED_FOR_CAND":"Y","USED_FOR_SCORING":"N","ENTITY_COUNT":1,"CANDIDATE_CAP_REACHED":"N","SCORING_CAP_REACHED":"N","SUPPRESSED":"N"}]},{"FEAT_DESC":"JNSN|DOB.MMYY_HASH=0485","LIB_FEAT_ID":100002,"FEAT_DESC_VALUES":[{"FEAT_DESC":"JNSN|DOB.MMYY_HASH=0485","LIB_FEAT_ID":100002,"USED_FOR_CAND":"Y","USED_FOR_SCORING":"N","ENTITY_COUNT":1,"CANDIDATE_CAP_REACHED":"N","SCORING_CAP_REACHED":"N","SUPPRESSED":"N"}]},{"FEAT_DESC":"JNSN|DOB=80804","LIB_FEAT_ID":13,"FEAT_DESC_VALUES":[{"FEAT_DESC":"JNSN|DOB=80804","LIB_FEAT_ID":13,"USED_FOR_CAND":"Y","USED_FOR_SCORING":"N","ENTITY_COUNT":1,"CANDIDATE_CAP_REACHED":"N","SCORING_CAP_REACHED":"N","SUPPRESSED":"N"}]},{"FEAT_DESC":"JNSN|PHONE.PHONE_LAST_5=10796","LIB_FEAT_ID":15,"FEAT_DESC_VALUES":[{"FEAT_DESC":"JNSN|PHONE.PHONE_LAST_5=10796","LIB_FEAT_ID":15,"USED_FOR_CAND":"Y","USED_FOR_SCORING":"N","ENTITY_COUNT":1,"CANDIDATE_CAP_REACHED":"N","SCORING_CAP_REACHED":"N","SUPPRESSED":"N"}]},{"FEAT_DESC":"JNSN|POST=71232","LIB_FEAT_ID":14,"FEAT_DESC_VALUES":[{"FEAT_DESC":"JNSN|POST=71232","LIB_FEAT_ID":14,"USED_FOR_CAND":"Y","USED_FOR_SCORING":"N","ENTITY_COUNT":1,"CANDIDATE_CAP_REACHED":"N","SCORING_CAP_REACHED":"N","SUPPRESSED":"N"}]},{"FEAT_DESC":"JNSN|SSN=3251","LIB_FEAT_ID":16,"FEAT_DESC_VALUES":[{"FEAT_DESC":"JNSN|SSN=3251","LIB_FEAT_ID":16,"USED_FOR_CAND":"Y","USED_FOR_SCORING":"N","ENTITY_COUNT":1,"CANDIDATE_CAP_REACHED":"N","SCORING_CAP_REACHED":"N","SUPPRESSED":"N"}]}],"PHONE":[{"FEAT_DESC":"225-671-0796","LIB_FEAT_ID":5,"FEAT_DESC_VALUES":[{"FEAT_DESC":"225-671-0796","LIB_FEAT_ID":5,"USED_FOR_CAND":"Y","USED_FOR_SCORING":"Y","ENTITY_COUNT":3,"CANDIDATE_CAP_REACHED":"N","SCORING_CAP_REACHED":"N","SUPPRESSED":"N"}]}],"PHONE_KEY":[{"FEAT_DESC":"2256710796","LIB_FEAT_ID":21,"FEAT_DESC_VALUES":[{"FEAT_DESC":"2256710796","LIB_FEAT_ID":21,"USED_FOR_CAND":"Y","USED_FOR_SCORING":"N","ENTITY_COUNT":3,"CANDIDATE_CAP_REACHED":"N","SCORING_CAP_REACHED":"N","SUPPRESSED":"N"}]}],"SEARCH_KEY":[{"FEAT_DESC":"LOGIN_ID:FLAVORH|","LIB_FEAT_ID":22,"FEAT_DESC_VALUES":[{"FEAT_DESC":"LOGIN_ID:FLAVORH|","LIB_FEAT_ID":22,"USED_FOR_CAND":"Y","USED_FOR_SCORING":"N","ENTITY_COUNT":1,"CANDIDATE_CAP_REACHED":"N","SCORING_CAP_REACHED":"N","SUPPRESSED":"N"}]},{"FEAT_DESC":"SSN:3251|80804|","LIB_FEAT_ID":23,"FEAT_DESC_VALUES":[{"FEAT_DESC":"SSN:3251|80804|","LIB_FEAT_ID":23,"USED_FOR_CAND":"Y","USED_FOR_SCORING":"N","ENTITY_COUNT":1,"CANDIDATE_CAP_REACHED":"N","SCORING_CAP_REACHED":"N","SUPPRESSED":"N"}]}],"SSN":[{"FEAT_DESC":"053-39-3251","LIB_FEAT_ID":6,"FEAT_DESC_VALUES":[{"FEAT_DESC":"053-39-3251","LIB_FEAT_ID":6,"USED_FOR_CAND":"Y","USED_FOR_SCORING":"Y","ENTITY_COUNT":1,"CANDIDATE_CAP_REACHED":"N","SCORING_CAP_REACHED":"N","SUPPRESSED":"N"}]}]},"RECORD_SUMMARY":[{"DATA_SOURCE":"TEST","RECORD_COUNT":6,"FIRST_SEEN_DT":"2022-12-06 16:13:27.135","LAST_SEEN_DT":"2022-12-06 16:13:27.916"}],"LAST_SEEN_DT":"2022-12-06 16:13:27.916","RECORDS":[{"DATA_SOURCE":"TEST","RECORD_ID":"111","ENTITY_TYPE":"TEST","INTERNAL_ID":100001,"ENTITY_KEY":"A6C927986DF7329D1D2CDE0E8F34328AE640FB7E","ENTITY_DESC":"JOHNSON","MATCH_KEY":"","MATCH_LEVEL":0,"MATCH_LEVEL_CODE":"","ERRULE_CODE":"","LAST_SEEN_DT":"2022-12-06 16:13:27.916","FEATURES":[{"LIB_FEAT_ID":1},{"LIB_FEAT_ID":3},{"LIB_FEAT_ID":4},{"LIB_FEAT_ID":5},{"LIB_FEAT_ID":6},{"LIB_FEAT_ID":7},{"LIB_FEAT_ID":8,"USAGE_TYPE":"CC"},{"LIB_FEAT_ID":9},{"LIB_FEAT_ID":11},{"LIB_FEAT_ID":12},{"LIB_FEAT_ID":13},{"LIB_FEAT_ID":14},{"LIB_FEAT_ID":15},{"LIB_FEAT_ID":16},{"LIB_FEAT_ID":17},{"LIB_FEAT_ID":18},{"LIB_FEAT_ID":19},{"LIB_FEAT_ID":20},{"LIB_FEAT_ID":21},{"LIB_FEAT_ID":22},{"LIB_FEAT_ID":23},{"LIB_FEAT_ID":100001},{"LIB_FEAT_ID":100002}]},{"DATA_SOURCE":"TEST","RECORD_ID":"444","ENTITY_TYPE":"TEST","INTERNAL_ID":1,"ENTITY_KEY":"C6063D4396612FBA7324DB0739273BA1FE815C43","ENTITY_DESC":"JOHNSON","MATCH_KEY":"+NAME+ADDRESS+PHONE+SSN+LOGIN_ID+ACCT_NUM","MATCH_LEVEL":1,"MATCH_LEVEL_CODE":"RESOLVED","ERRULE_CODE":"SF1_PNAME_CFF_CSTAB","LAST_SEEN_DT":"2022-12-06 16:13:27.405","FEATURES":[{"LIB_FEAT_ID":1},{"LIB_FEAT_ID":2},{"LIB_FEAT_ID":3},{"LIB_FEAT_ID":4},{"LIB_FEAT_ID":5},{"LIB_FEAT_ID":6},{"LIB_FEAT_ID":7},{"LIB_FEAT_ID":8,"USAGE_TYPE":"CC"},{"LIB_FEAT_ID":9},{"LIB_FEAT_ID":10},{"LIB_FEAT_ID":11},{"LIB_FEAT_ID":12},{"LIB_FEAT_ID":13},{"LIB_FEAT_ID":14},{"LIB_FEAT_ID":15},{"LIB_FEAT_ID":16},{"LIB_FEAT_ID":17},{"LIB_FEAT_ID":18},{"LIB_FEAT_ID":19},{"LIB_FEAT_ID":20},{"LIB_FEAT_ID":21},{"LIB_FEAT_ID":22},{"LIB_FEAT_ID":23}]},{"DATA_SOURCE":"TEST","RECORD_ID":"555","ENTITY_TYPE":"TEST","INTERNAL_ID":1,"ENTITY_KEY":"C6063D4396612FBA7324DB0739273BA1FE815C43","ENTITY_DESC":"JOHNSON","MATCH_KEY":"+NAME+ADDRESS+PHONE+SSN+LOGIN_ID+ACCT_NUM","MATCH_LEVEL":1,"MATCH_LEVEL_CODE":"RESOLVED","ERRULE_CODE":"SF1_PNAME_CFF_CSTAB","LAST_SEEN_DT":"2022-12-06 16:13:27.408","FEATURES":[{"LIB_FEAT_ID":1},{"LIB_FEAT_ID":2},{"LIB_FEAT_ID":3},{"LIB_FEAT_ID":4},{"LIB_FEAT_ID":5},{"LIB_FEAT_ID":6},{"LIB_FEAT_ID":7},{"LIB_FEAT_ID":8,"USAGE_TYPE":"CC"},{"LIB_FEAT_ID":9},{"LIB_FEAT_ID":10},{"LIB_FEAT_ID":11},{"LIB_FEAT_ID":12},{"LIB_FEAT_ID":13},{"LIB_FEAT_ID":14},{"LIB_FEAT_ID":15},{"LIB_FEAT_ID":16},{"LIB_FEAT_ID":17},{"LIB_FEAT_ID":18},{"LIB_FEAT_ID":19},{"LIB_FEAT_ID":20},{"LIB_FEAT_ID":21},{"LIB_FEAT_ID":22},{"LIB_FEAT_ID":23}]},{"DATA_SOURCE":"TEST","RECORD_ID":"666","ENTITY_TYPE":"TEST","INTERNAL_ID":1,"ENTITY_KEY":"C6063D4396612FBA7324DB0739273BA1FE815C43","ENTITY_DESC":"JOHNSON","MATCH_KEY":"+NAME+ADDRESS+PHONE+SSN+LOGIN_ID+ACCT_NUM","MATCH_LEVEL":1,"MATCH_LEVEL_CODE":"RESOLVED","ERRULE_CODE":"SF1_PNAME_CFF_CSTAB","LAST_SEEN_DT":"2022-12-06 16:13:27.411","FEATURES":[{"LIB_FEAT_ID":1},{"LIB_FEAT_ID":2},{"LIB_FEAT_ID":3},{"LIB_FEAT_ID":4},{"LIB_FEAT_ID":5},{"LIB_FEAT_ID":6},{"LIB_FEAT_ID":7},{"LIB_FEAT_ID":8,"USAGE_TYPE":"CC"},{"LIB_FEAT_ID":9},{"LIB_FEAT_ID":10},{"LIB_FEAT_ID":11},{"LIB_FEAT_ID":12},{"LIB_FEAT_ID":13},{"LIB_FEAT_ID":14},{"LIB_FEAT_ID":15},{"LIB_FEAT_ID":16},{"LIB_FEAT_ID":17},{"LIB_FEAT_ID":18},{"LIB_FEAT_ID":19},{"LIB_FEAT_ID":20},{"LIB_FEAT_ID":21},{"LIB_FEAT_ID":22},{"LIB_FEAT_ID":23}]},{"DATA_SOURCE":"TEST","RECORD_ID":"777","ENTITY_TYPE":"TEST","INTERNAL_ID":1,"ENTITY_KEY":"C6063D4396612FBA7324DB0739273BA1FE815C43","ENTITY_DESC":"JOHNSON","MATCH_KEY":"+NAME+ADDRESS+PHONE+SSN+LOGIN_ID+ACCT_NUM","MATCH_LEVEL":1,"MATCH_LEVEL_CODE":"RESOLVED","ERRULE_CODE":"SF1_PNAME_CFF_CSTAB","LAST_SEEN_DT":"2022-12-06 16:13:27.418","FEATURES":[{"LIB_FEAT_ID":1},{"LIB_FEAT_ID":2},{"LIB_FEAT_ID":3},{"LIB_FEAT_ID":4},{"LIB_FEAT_ID":5},{"LIB_FEAT_ID":6},{"LIB_FEAT_ID":7},{"LIB_FEAT_ID":8,"USAGE_TYPE":"CC"},{"LIB_FEAT_ID":9},{"LIB_FEAT_ID":10},{"LIB_FEAT_ID":11},{"LIB_FEAT_ID":12},{"LIB_FEAT_ID":13},{"LIB_FEAT_ID":14},{"LIB_FEAT_ID":15},{"LIB_FEAT_ID":16},{"LIB_FEAT_ID":17},{"LIB_FEAT_ID":18},{"LIB_FEAT_ID":19},{"LIB_FEAT_ID":20},{"LIB_FEAT_ID":21},{"LIB_FEAT_ID":22},{"LIB_FEAT_ID":23}]},{"DATA_SOURCE":"TEST","RECORD_ID":"FCCE9793DAAD23159DBCCEB97FF2745B92CE7919","ENTITY_TYPE":"TEST","INTERNAL_ID":1,"ENTITY_KEY":"C6063D4396612FBA7324DB0739273BA1FE815C43","ENTITY_DESC":"JOHNSON","MATCH_KEY":"+NAME+ADDRESS+PHONE+SSN+LOGIN_ID+ACCT_NUM","MATCH_LEVEL":1,"MATCH_LEVEL_CODE":"RESOLVED","ERRULE_CODE":"SF1_PNAME_CFF_CSTAB","LAST_SEEN_DT":"2022-12-06 16:13:27.265","FEATURES":[{"LIB_FEAT_ID":1},{"LIB_FEAT_ID":2},{"LIB_FEAT_ID":3},{"LIB_FEAT_ID":4},{"LIB_FEAT_ID":5},{"LIB_FEAT_ID":6},{"LIB_FEAT_ID":7},{"LIB_FEAT_ID":8,"USAGE_TYPE":"CC"},{"LIB_FEAT_ID":9},{"LIB_FEAT_ID":10},{"LIB_FEAT_ID":11},{"LIB_FEAT_ID":12},{"LIB_FEAT_ID":13},{"LIB_FEAT_ID":14},{"LIB_FEAT_ID":15},{"LIB_FEAT_ID":16},{"LIB_FEAT_ID":17},{"LIB_FEAT_ID":18},{"LIB_FEAT_ID":19},{"LIB_FEAT_ID":20},{"LIB_FEAT_ID":21},{"LIB_FEAT_ID":22},{"LIB_FEAT_ID":23}]}]},"RELATED_ENTITIES":[{"ENTITY_ID":2,"MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED","MATCH_KEY":"+PHONE+ACCT_NUM-SSN","ERRULE_CODE":"SF1","IS_DISCLOSED":0,"IS_AMBIGUOUS":0,"ENTITY_NAME":"OCEANGUY","RECORD_SUMMARY":[{"DATA_SOURCE":"TEST","RECORD_COUNT":1,"FIRST_SEEN_DT":"2022-12-06 16:13:27.208","LAST_SEEN_DT":"2022-12-06 16:13:27.208"}],"LAST_SEEN_DT":"2022-12-06 16:13:27.208"},{"ENTITY_ID":3,"MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED","MATCH_KEY":"+PHONE+ACCT_NUM-DOB-SSN","ERRULE_CODE":"SF1","IS_DISCLOSED":0,"IS_AMBIGUOUS":0,"ENTITY_NAME":"Smith","RECORD_SUMMARY":[{"DATA_SOURCE":"TEST","RECORD_COUNT":1,"FIRST_SEEN_DT":"2022-12-06 16:13:27.272","LAST_SEEN_DT":"2022-12-06 16:13:27.272"}],"LAST_SEEN_DT":"2022-12-06 16:13:27.272"}]},{"RESOLVED_ENTITY":{"ENTITY_ID":2,"ENTITY_NAME":"OCEANGUY","FEATURES":{"ACCT_NUM":[{"FEAT_DESC":"5534202208773608","LIB_FEAT_ID":8,"USAGE_TYPE":"CC","FEAT_DESC_VALUES":[{"FEAT_DESC":"5534202208773608","LIB_FEAT_ID":8,"USED_FOR_CAND":"Y","USED_FOR_SCORING":"Y","ENTITY_COUNT":3,"CANDIDATE_CAP_REACHED":"N","SCORING_CAP_REACHED":"N","SUPPRESSED":"N"}]}],"ADDRESS":[{"FEAT_DESC":"772 Armstrong RD Delhi WI 53543","LIB_FEAT_ID":26,"FEAT_DESC_VALUES":[{"FEAT_DESC":"772 Armstrong RD Delhi WI 53543","LIB_FEAT_ID":26,"USED_FOR_CAND":"N","USED_FOR_SCORING":"Y","ENTITY_COUNT":1,"CANDIDATE_CAP_REACHED":"N","SCORING_CAP_REACHED":"N","SUPPRESSED":"N"}]}],"ADDR_KEY":[{"FEAT_DESC":"772|ARMSTRNK||53543","LIB_FEAT_ID":37,"FEAT_DESC_VALUES":[{"FEAT_DESC":"772|ARMSTRNK||53543","LIB_FEAT_ID":37,"USED_FOR_CAND":"Y","USED_FOR_SCORING":"N","ENTITY_COUNT":1,"CANDIDATE_CAP_REACHED":"N","SCORING_CAP_REACHED":"N","SUPPRESSED":"N"}]},{"FEAT_DESC":"772|ARMSTRNK||TL","LIB_FEAT_ID":17,"FEAT_DESC_VALUES":[{"FEAT_DESC":"772|ARMSTRNK||TL","LIB_FEAT_ID":17,"USED_FOR_CAND":"Y","USED_FOR_SCORING":"N","ENTITY_COUNT":3,"CANDIDATE_CAP_REACHED":"N","SCORING_CAP_REACHED":"N","SUPPRESSED":"N"}]}],"DOB":[{"FEAT_DESC":"6/9/1983","LIB_FEAT_ID":25,"FEAT_DESC_VALUES":[{"FEAT_DESC":"6/9/1983","LIB_FEAT_ID":25,"USED_FOR_CAND":"Y","USED_FOR_SCORING":"Y","ENTITY_COUNT":1,"CANDIDATE_CAP_REACHED":"N","SCORING_CAP_REACHED":"N","SUPPRESSED":"N"}]}],"GENDER":[{"FEAT_DESC":"F","LIB_FEAT_ID":3,"FEAT_DESC_VALUES":[{"FEAT_DESC":"F","LIB_FEAT_ID":3,"USED_FOR_CAND":"N","USED_FOR_SCORING":"Y","ENTITY_COUNT":3,"CANDIDATE_CAP_REACHED":"N","SCORING_CAP_REACHED":"N","SUPPRESSED":"N"}]}],"ID_KEY":[{"FEAT_DESC":"ACCT_NUM=5534202208773608","LIB_FEAT_ID":19,"FEAT_DESC_VALUES":[{"FEAT_DESC":"ACCT_NUM=5534202208773608","LIB_FEAT_ID":19,"USED_FOR_CAND":"Y","USED_FOR_SCORING":"N","ENTITY_COUNT":3,"CANDIDATE_CAP_REACHED":"N","SCORING_CAP_REACHED":"N","SUPPRESSED":"N"}]},{"FEAT_DESC":"SSN=153-33-5185","LIB_FEAT_ID":38,"FEAT_DESC_VALUES":[{"FEAT_DESC":"SSN=153-33-5185","LIB_FEAT_ID":38,"USED_FOR_CAND":"Y","USED_FOR_SCORING":"N","ENTITY_COUNT":1,"CANDIDATE_CAP_REACHED":"N","SCORING_CAP_REACHED":"N","SUPPRESSED":"N"}]}],"LOGIN_ID":[{"FEAT_DESC":"flavorh2","LIB_FEAT_ID":28,"FEAT_DESC_VALUES":[{"FEAT_DESC":"flavorh2","LIB_FEAT_ID":28,"USED_FOR_CAND":"Y","USED_FOR_SCORING":"Y","ENTITY_COUNT":1,"CANDIDATE_CAP_REACHED":"N","SCORING_CAP_REACHED":"N","SUPPRESSED":"N"}]}],"NAME":[{"FEAT_DESC":"OCEANGUY","LIB_FEAT_ID":24,"FEAT_DESC_VALUES":[{"FEAT_DESC":"OCEANGUY","LIB_FEAT_ID":24,"USED_FOR_CAND":"N","USED_FOR_SCORING":"Y","ENTITY_COUNT":1,"CANDIDATE_CAP_REACHED":"N","SCORING_CAP_REACHED":"N","SUPPRESSED":"N"}]}],"NAME_KEY":[{"FEAT_DESC":"ASNK","LIB_FEAT_ID":29,"FEAT_DESC_VALUES":[{"FEAT_DESC":"ASNK","LIB_FEAT_ID":29,"USED_FOR_CAND":"Y","USED_FOR_SCORING":"N","ENTITY_COUNT":1,"CANDIDATE_CAP_REACHED":"N","SCORING_CAP_REACHED":"N","SUPPRESSED":"N"}]},{"FEAT_DESC":"ASNK|ADDRESS.CITY_STD=TL","LIB_FEAT_ID":34,"FEAT_DESC_VALUES":[{"FEAT_DESC":"ASNK|ADDRESS.CITY_STD=TL","LIB_FEAT_ID":34,"USED_FOR_CAND":"Y","USED_FOR_SCORING":"N","ENTITY_COUNT":1,"CANDIDATE_CAP_REACHED":"N","SCORING_CAP_REACHED":"N","SUPPRESSED":"N"}]},{"FEAT_DESC":"ASNK|DOB.MMDD_HASH=0906","LIB_FEAT_ID":32,"FEAT_DESC_VALUES":[{"FEAT_DESC":"ASNK|DOB.MMDD_HASH=0906","LIB_FEAT_ID":32,"USED_FOR_CAND":"Y","USED_FOR_SCORING":"N","ENTITY_COUNT":1,"CANDIDATE_CAP_REACHED":"N","SCORING_CAP_REACHED":"N","SUPPRESSED":"N"}]},{"FEAT_DESC":"ASNK|DOB.MMYY_HASH=0683","LIB_FEAT_ID":30,"FEAT_DESC_VALUES":[{"FEAT_DESC":"ASNK|DOB.MMYY_HASH=0683","LIB_FEAT_ID":30,"USED_FOR_CAND":"Y","USED_FOR_SCORING":"N","ENTITY_COUNT":1,"CANDIDATE_CAP_REACHED":"N","SCORING_CAP_REACHED":"N","SUPPRESSED":"N"}]},{"FEAT_DESC":"ASNK|DOB=80906","LIB_FEAT_ID":31,"FEAT_DESC_VALUES":[{"FEAT_DESC":"ASNK|DOB=80906","LIB_FEAT_ID":31,"USED_FOR_CAND":"Y","USED_FOR_SCORING":"N","ENTITY_COUNT":1,"CANDIDATE_CAP_REACHED":"N","SCORING_CAP_REACHED":"N","SUPPRESSED":"N"}]},{"FEAT_DESC":"ASNK|PHONE.PHONE_LAST_5=10796","LIB_FEAT_ID":33,"FEAT_DESC_VALUES":[{"FEAT_DESC":"ASNK|PHONE.PHONE_LAST_5=10796","LIB_FEAT_ID":33,"USED_FOR_CAND":"Y","USED_FOR_SCORING":"N","ENTITY_COUNT":1,"CANDIDATE_CAP_REACHED":"N","SCORING_CAP_REACHED":"N","SUPPRESSED":"N"}]},{"FEAT_DESC":"ASNK|POST=53543","LIB_FEAT_ID":36,"FEAT_DESC_VALUES":[{"FEAT_DESC":"ASNK|POST=53543","LIB_FEAT_ID":36,"USED_FOR_CAND":"Y","USED_FOR_SCORING":"N","ENTITY_COUNT":1,"CANDIDATE_CAP_REACHED":"N","SCORING_CAP_REACHED":"N","SUPPRESSED":"N"}]},{"FEAT_DESC":"ASNK|SSN=5185","LIB_FEAT_ID":35,"FEAT_DESC_VALUES":[{"FEAT_DESC":"ASNK|SSN=5185","LIB_FEAT_ID":35,"USED_FOR_CAND":"Y","USED_FOR_SCORING":"N","ENTITY_COUNT":1,"CANDIDATE_CAP_REACHED":"N","SCORING_CAP_REACHED":"N","SUPPRESSED":"N"}]}],"PHONE":[{"FEAT_DESC":"225-671-0796","LIB_FEAT_ID":5,"FEAT_DESC_VALUES":[{"FEAT_DESC":"225-671-0796","LIB_FEAT_ID":5,"USED_FOR_CAND":"Y","USED_FOR_SCORING":"Y","ENTITY_COUNT":3,"CANDIDATE_CAP_REACHED":"N","SCORING_CAP_REACHED":"N","SUPPRESSED":"N"}]}],"PHONE_KEY":[{"FEAT_DESC":"2256710796","LIB_FEAT_ID":21,"FEAT_DESC_VALUES":[{"FEAT_DESC":"2256710796","LIB_FEAT_ID":21,"USED_FOR_CAND":"Y","USED_FOR_SCORING":"N","ENTITY_COUNT":3,"CANDIDATE_CAP_REACHED":"N","SCORING_CAP_REACHED":"N","SUPPRESSED":"N"}]}],"SEARCH_KEY":[{"FEAT_DESC":"LOGIN_ID:FLAVORH2|","LIB_FEAT_ID":40,"FEAT_DESC_VALUES":[{"FEAT_DESC":"LOGIN_ID:FLAVORH2|","LIB_FEAT_ID":40,"USED_FOR_CAND":"Y","USED_FOR_SCORING":"N","ENTITY_COUNT":1,"CANDIDATE_CAP_REACHED":"N","SCORING_CAP_REACHED":"N","SUPPRESSED":"N"}]},{"FEAT_DESC":"SSN:5185|80906|","LIB_FEAT_ID":39,"FEAT_DESC_VALUES":[{"FEAT_DESC":"SSN:5185|80906|","LIB_FEAT_ID":39,"USED_FOR_CAND":"Y","USED_FOR_SCORING":"N","ENTITY_COUNT":1,"CANDIDATE_CAP_REACHED":"N","SCORING_CAP_REACHED":"N","SUPPRESSED":"N"}]}],"SSN":[{"FEAT_DESC":"153-33-5185","LIB_FEAT_ID":27,"FEAT_DESC_VALUES":[{"FEAT_DESC":"153-33-5185","LIB_FEAT_ID":27,"USED_FOR_CAND":"Y","USED_FOR_SCORING":"Y","ENTITY_COUNT":1,"CANDIDATE_CAP_REACHED":"N","SCORING_CAP_REACHED":"N","SUPPRESSED":"N"}]}]},"RECORD_SUMMARY":[{"DATA_SOURCE":"TEST","RECORD_COUNT":1,"FIRST_SEEN_DT":"2022-12-06 16:13:27.208","LAST_SEEN_DT":"2022-12-06 16:13:27.208"}],"LAST_SEEN_DT":"2022-12-06 16:13:27.208","RECORDS":[{"DATA_SOURCE":"TEST","RECORD_ID":"222","ENTITY_TYPE":"TEST","INTERNAL_ID":2,"ENTITY_KEY":"740BA22D15CA88462A930AF8A7C904FF5E48226C","ENTITY_DESC":"OCEANGUY","MATCH_KEY":"","MATCH_LEVEL":0,"MATCH_LEVEL_CODE":"","ERRULE_CODE":"","LAST_SEEN_DT":"2022-12-06 16:13:27.208","FEATURES":[{"LIB_FEAT_ID":3},{"LIB_FEAT_ID":5},{"LIB_FEAT_ID":8,"USAGE_TYPE":"CC"},{"LIB_FEAT_ID":17},{"LIB_FEAT_ID":19},{"LIB_FEAT_ID":21},{"LIB_FEAT_ID":24},{"LIB_FEAT_ID":25},{"LIB_FEAT_ID":26},{"LIB_FEAT_ID":27},{"LIB_FEAT_ID":28},{"LIB_FEAT_ID":29},{"LIB_FEAT_ID":30},{"LIB_FEAT_ID":31},{"LIB_FEAT_ID":32},{"LIB_FEAT_ID":33},{"LIB_FEAT_ID":34},{"LIB_FEAT_ID":35},{"LIB_FEAT_ID":36},{"LIB_FEAT_ID":37},{"LIB_FEAT_ID":38},{"LIB_FEAT_ID":39},{"LIB_FEAT_ID":40}]}]},"RELATED_ENTITIES":[{"ENTITY_ID":1,"MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED","MATCH_KEY":"+PHONE+ACCT_NUM-SSN","ERRULE_CODE":"SF1","IS_DISCLOSED":0,"IS_AMBIGUOUS":0,"ENTITY_NAME":"JOHNSON","RECORD_SUMMARY":[{"DATA_SOURCE":"TEST","RECORD_COUNT":6,"FIRST_SEEN_DT":"2022-12-06 16:13:27.135","LAST_SEEN_DT":"2022-12-06 16:13:27.916"}],"LAST_SEEN_DT":"2022-12-06 16:13:27.916"},{"ENTITY_ID":3,"MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED","MATCH_KEY":"+ADDRESS+PHONE+ACCT_NUM-DOB-SSN","ERRULE_CODE":"SF1","IS_DISCLOSED":0,"IS_AMBIGUOUS":0,"ENTITY_NAME":"Smith","RECORD_SUMMARY":[{"DATA_SOURCE":"TEST","RECORD_COUNT":1,"FIRST_SEEN_DT":"2022-12-06 16:13:27.272","LAST_SEEN_DT":"2022-12-06 16:13:27.272"}],"LAST_SEEN_DT":"2022-12-06 16:13:27.272"}]}]}`
 */
-func (client *Szengine) whyRecords(ctx context.Context, dataSourceCode1 string, recordID1 string, dataSourceCode2 string, recordID2 string) (string, error) {
+func (client *Szengine) whyRecords(ctx context.Context, dataSourceCode1 string, recordId1 string, dataSourceCode2 string, recordId2 string) (string, error) {
 	//  _DLEXPORT int G2_whyRecords(const char* dataSourceCode1, const char* recordID1, const char* dataSourceCode2, const char* recordID2, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -1620,22 +1623,22 @@ func (client *Szengine) whyRecords(ctx context.Context, dataSourceCode1 string, 
 	var resultResponse string
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(153, dataSourceCode1, recordID1, dataSourceCode2, recordID2)
+		client.traceEntry(153, dataSourceCode1, recordId1, dataSourceCode2, recordId2)
 		defer func() {
-			client.traceExit(154, dataSourceCode1, recordID1, dataSourceCode2, recordID2, resultResponse, err, time.Since(entryTime))
+			client.traceExit(154, dataSourceCode1, recordId1, dataSourceCode2, recordId2, resultResponse, err, time.Since(entryTime))
 		}()
 	}
 	dataSource1CodeForC := C.CString(dataSourceCode1)
 	defer C.free(unsafe.Pointer(dataSource1CodeForC))
-	recordID1ForC := C.CString(recordID1)
-	defer C.free(unsafe.Pointer(recordID1ForC))
+	recordId1ForC := C.CString(recordId1)
+	defer C.free(unsafe.Pointer(recordId1ForC))
 	dataSource2CodeForC := C.CString(dataSourceCode2)
 	defer C.free(unsafe.Pointer(dataSource2CodeForC))
-	recordID2ForC := C.CString(recordID2)
-	defer C.free(unsafe.Pointer(recordID2ForC))
-	result := C.G2_whyRecords_helper(dataSource1CodeForC, recordID1ForC, dataSource2CodeForC, recordID2ForC)
+	recordId2ForC := C.CString(recordId2)
+	defer C.free(unsafe.Pointer(recordId2ForC))
+	result := C.G2_whyRecords_helper(dataSource1CodeForC, recordId1ForC, dataSource2CodeForC, recordId2ForC)
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4073, dataSourceCode1, recordID1, dataSourceCode2, recordID2, result.returnCode, time.Since(entryTime))
+		err = client.newError(ctx, 4073, dataSourceCode1, recordId1, dataSourceCode2, recordId2, result.returnCode, time.Since(entryTime))
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
@@ -1643,9 +1646,9 @@ func (client *Szengine) whyRecords(ctx context.Context, dataSourceCode1 string, 
 		go func() {
 			details := map[string]string{
 				"dataSourceCode1": dataSourceCode1,
-				"recordID1":       recordID1,
+				"recordId1":       recordId1,
 				"dataSourceCode2": dataSourceCode2,
-				"recordID2":       recordID2,
+				"recordId2":       recordId2,
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8073, err, details)
 		}()
@@ -1660,16 +1663,16 @@ It extends WhyRecords() by adding output control flags.
 Input
   - ctx: A context to control lifecycle.
   - dataSourceCode1: Identifies the provenance of the data.
-  - recordID1: The unique identifier within the records of the same data source.
+  - recordId1: The unique identifier within the records of the same data source.
   - dataSourceCode2: Identifies the provenance of the data.
-  - recordID2: The unique identifier within the records of the same data source.
+  - recordId2: The unique identifier within the records of the same data source.
   - flags: Flags used to control information returned.
 
 Output
   - A JSON document.
     See the example output.
 */
-func (client *Szengine) whyRecords_V2(ctx context.Context, dataSourceCode1 string, recordID1 string, dataSourceCode2 string, recordID2 string, flags int64) (string, error) {
+func (client *Szengine) whyRecords_V2(ctx context.Context, dataSourceCode1 string, recordId1 string, dataSourceCode2 string, recordId2 string, flags int64) (string, error) {
 	//  _DLEXPORT int G2_whyRecords_V2(const char* dataSourceCode1, const char* recordID1, const char* dataSourceCode2, const char* recordID2, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -1677,22 +1680,22 @@ func (client *Szengine) whyRecords_V2(ctx context.Context, dataSourceCode1 strin
 	var resultResponse string
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(155, dataSourceCode1, recordID1, dataSourceCode2, recordID2, flags)
+		client.traceEntry(155, dataSourceCode1, recordId1, dataSourceCode2, recordId2, flags)
 		defer func() {
-			client.traceExit(156, dataSourceCode1, recordID1, dataSourceCode2, recordID2, flags, resultResponse, err, time.Since(entryTime))
+			client.traceExit(156, dataSourceCode1, recordId1, dataSourceCode2, recordId2, flags, resultResponse, err, time.Since(entryTime))
 		}()
 	}
 	dataSource1CodeForC := C.CString(dataSourceCode1)
 	defer C.free(unsafe.Pointer(dataSource1CodeForC))
-	recordID1ForC := C.CString(recordID1)
-	defer C.free(unsafe.Pointer(recordID1ForC))
+	recordId1ForC := C.CString(recordId1)
+	defer C.free(unsafe.Pointer(recordId1ForC))
 	dataSource2CodeForC := C.CString(dataSourceCode2)
 	defer C.free(unsafe.Pointer(dataSource2CodeForC))
-	recordID2ForC := C.CString(recordID2)
-	defer C.free(unsafe.Pointer(recordID2ForC))
-	result := C.G2_whyRecords_V2_helper(dataSource1CodeForC, recordID1ForC, dataSource2CodeForC, recordID2ForC, C.longlong(flags))
+	recordId2ForC := C.CString(recordId2)
+	defer C.free(unsafe.Pointer(recordId2ForC))
+	result := C.G2_whyRecords_V2_helper(dataSource1CodeForC, recordId1ForC, dataSource2CodeForC, recordId2ForC, C.longlong(flags))
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4074, dataSourceCode1, recordID1, dataSourceCode2, recordID2, flags, result.returnCode, time.Since(entryTime))
+		err = client.newError(ctx, 4074, dataSourceCode1, recordId1, dataSourceCode2, recordId2, flags, result.returnCode, time.Since(entryTime))
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
@@ -1700,9 +1703,9 @@ func (client *Szengine) whyRecords_V2(ctx context.Context, dataSourceCode1 strin
 		go func() {
 			details := map[string]string{
 				"dataSourceCode1": dataSourceCode1,
-				"recordID1":       recordID1,
+				"recordId1":       recordId1,
 				"dataSourceCode2": dataSourceCode2,
-				"recordID2":       recordID2,
+				"recordId2":       recordId2,
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8074, err, details)
 		}()
@@ -1800,7 +1803,7 @@ The DeleteRecord method deletes a record from the Senzing repository.
 Input
   - ctx: A context to control lifecycle.
   - dataSourceCode: Identifies the provenance of the data.
-  - recordID: The unique identifier within the records of the same data source.
+  - recordId: The unique identifier within the records of the same data source.
   - flags: Flags used to control information returned.
 */
 func (client *Szengine) DeleteRecord(ctx context.Context, dataSourceCode string, recordId string, flags int64) (string, error) {
@@ -2070,7 +2073,7 @@ Input
   - responseHandle: A handle created by ExportJSONEntityReport() or ExportCSVEntityReport().
 
 Output
-  - FIXME:
+  - TODO:
 */
 func (client *Szengine) FetchNext(ctx context.Context, responseHandle uintptr) (string, error) {
 	//  _DLEXPORT int G2_fetchNext(ExportHandle responseHandle, char *responseBuf, const size_t bufSize);
@@ -2204,7 +2207,7 @@ Input
   - endEntityId: The entity ID for the ending entity of the search path.
   - maxDegrees: The maximum number of degrees in paths between search entities.
   - exclusions: A JSON document listing entities that should be avoided on the path.
-  - requiredDataSources: A JSON document listing data sources that should be included on the path. FIXME:
+  - requiredDataSources: A JSON document listing data sources that should be included on the path. TODO:
 
 Output
   - A JSON document.
@@ -2232,7 +2235,7 @@ Input
   - endRecordId: The unique identifier within the records of the same data source for the ending entity of the search path.
   - maxDegrees: The maximum number of degrees in paths between search entities.
   - exclusions: A JSON document listing entities that should be avoided on the path.
-  - requiredDataSources: A JSON document listing data sources that should be included on the path. FIXME:
+  - requiredDataSources: A JSON document listing data sources that should be included on the path. TODO:
   - flags: Flags used to control information returned.
 
 Output
@@ -2250,7 +2253,7 @@ func (client *Szengine) FindPathByRecordId(ctx context.Context, startDataSourceC
 }
 
 /*
-The GetActiveConfigID method returns the identifier of the loaded Senzing engine configuration.
+The GetActiveConfigId method returns the identifier of the loaded Senzing engine configuration.
 
 Input
   - ctx: A context to control lifecycle.
@@ -2263,28 +2266,28 @@ func (client *Szengine) GetActiveConfigId(ctx context.Context) (int64, error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error = nil
-	var resultConfigID int64
+	var resultConfigId int64
 	entryTime := time.Now()
 	if client.isTrace {
 		client.traceEntry(69)
-		defer func() { client.traceExit(70, resultConfigID, err, time.Since(entryTime)) }()
+		defer func() { client.traceExit(70, resultConfigId, err, time.Since(entryTime)) }()
 	}
 	result := C.G2_getActiveConfigID_helper()
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4033, result.returnCode, result, time.Since(entryTime))
 	}
-	resultConfigID = int64(C.longlong(result.configID))
+	resultConfigId = int64(C.longlong(result.configID))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8034, err, details)
 		}()
 	}
-	return resultConfigID, err
+	return resultConfigId, err
 }
 
 /*
-The GetEntityByEntityID method returns entity data based on the ID of a resolved identity.
+The GetEntityByEntityId method returns entity data based on the ID of a resolved identity.
 
 Input
   - ctx: A context to control lifecycle.
@@ -2326,12 +2329,12 @@ func (client *Szengine) GetEntityByEntityId(ctx context.Context, entityId int64,
 
 /*
 The GetEntityByRecordId method returns entity data based on the ID of a record which is a member of the entity.
-It extends GetEntityByRecordID() by adding output control flags.
+It extends GetEntityByRecordId() by adding output control flags.
 
 Input
   - ctx: A context to control lifecycle.
   - dataSourceCode: Identifies the provenance of the data.
-  - recordID: The unique identifier within the records of the same data source.
+  - recordId: The unique identifier within the records of the same data source.
   - flags: Flags used to control information returned.
 
 Output
@@ -2353,9 +2356,9 @@ func (client *Szengine) GetEntityByRecordId(ctx context.Context, dataSourceCode 
 	}
 	dataSourceCodeForC := C.CString(dataSourceCode)
 	defer C.free(unsafe.Pointer(dataSourceCodeForC))
-	recordIDForC := C.CString(recordId)
-	defer C.free(unsafe.Pointer(recordIDForC))
-	result := C.G2_getEntityByRecordID_V2_helper(dataSourceCodeForC, recordIDForC, C.longlong(flags))
+	recordIdForC := C.CString(recordId)
+	defer C.free(unsafe.Pointer(recordIdForC))
+	result := C.G2_getEntityByRecordID_V2_helper(dataSourceCodeForC, recordIdForC, C.longlong(flags))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4037, dataSourceCode, recordId, flags, result.returnCode, time.Since(entryTime))
 	}
@@ -2365,7 +2368,7 @@ func (client *Szengine) GetEntityByRecordId(ctx context.Context, dataSourceCode 
 		go func() {
 			details := map[string]string{
 				"dataSourceCode": dataSourceCode,
-				"recordID":       recordId,
+				"recordId":       recordId,
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8038, err, details)
 		}()
@@ -2568,7 +2571,7 @@ func (client *Szengine) GetStats(ctx context.Context) (string, error) {
 }
 
 /*
-The GetVirtualEntityByRecordId method FIXME:
+The GetVirtualEntityByRecordId method TODO:
 
 Input
   - ctx: A context to control lifecycle.
@@ -2611,19 +2614,19 @@ func (client *Szengine) GetVirtualEntityByRecordId(ctx context.Context, recordLi
 }
 
 /*
-The HowEntityByEntityId method FIXME:
-It extends HowEntityByEntityID() by adding output control flags.
+The HowEntityByEntityId method TODO:
+It extends HowEntityByEntityId() by adding output control flags.
 
 Input
   - ctx: A context to control lifecycle.
-  - entityID: The unique identifier of an entity.
+  - entityId: The unique identifier of an entity.
   - flags: Flags used to control information returned.
 
 Output
   - A JSON document.
     See the example output.
 */
-func (client *Szengine) HowEntityByEntityId(ctx context.Context, entityID int64, flags int64) (string, error) {
+func (client *Szengine) HowEntityByEntityId(ctx context.Context, entityId int64, flags int64) (string, error) {
 	//  _DLEXPORT int G2_howEntityByEntityID_V2(const long long entityID, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -2631,19 +2634,19 @@ func (client *Szengine) HowEntityByEntityId(ctx context.Context, entityID int64,
 	var resultResponse string
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(97, entityID, flags)
-		defer func() { client.traceExit(98, entityID, flags, resultResponse, err, time.Since(entryTime)) }()
+		client.traceEntry(97, entityId, flags)
+		defer func() { client.traceExit(98, entityId, flags, resultResponse, err, time.Since(entryTime)) }()
 	}
-	result := C.G2_howEntityByEntityID_V2_helper(C.longlong(entityID), C.longlong(flags))
+	result := C.G2_howEntityByEntityID_V2_helper(C.longlong(entityId), C.longlong(flags))
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4046, entityID, flags, result.returnCode, time.Since(entryTime))
+		err = client.newError(ctx, 4046, entityId, flags, result.returnCode, time.Since(entryTime))
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
-				"entityID": strconv.FormatInt(entityID, 10),
+				"entityId": strconv.FormatInt(entityId, 10),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8046, err, details)
 		}()
@@ -2665,9 +2668,9 @@ Input
 */
 func (client *Szengine) Initialize(ctx context.Context, instanceName string, settings string, verboseLogging int64, configId int64) error {
 	if configId > 0 {
-		return client.initializeWithConfigId(ctx, instanceName, settings, verboseLogging, configId)
+		return client.initWithConfigId(ctx, instanceName, settings, verboseLogging, configId)
 	}
-	return client.initialize(ctx, instanceName, settings, verboseLogging)
+	return client.init(ctx, instanceName, settings, verboseLogging)
 }
 
 /*
@@ -2721,7 +2724,7 @@ func (client *Szengine) ProcessRedoRecord(ctx context.Context, redoRecord string
 }
 
 /*
-The ReevaluateEntity method FIXME:
+The ReevaluateEntity method TODO:
 
 Input
   - ctx: A context to control lifecycle.
@@ -2738,7 +2741,7 @@ func (client *Szengine) ReevaluateEntity(ctx context.Context, entityId int64, fl
 }
 
 /*
-The ReevaluateRecord method FIXME:
+The ReevaluateRecord method TODO:
 
 Input
   - ctx: A context to control lifecycle.
@@ -2775,7 +2778,7 @@ func (client *Szengine) RegisterObserver(ctx context.Context, observer observer.
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
-				"observerID": observer.GetObserverId(ctx),
+				"observerId": observer.GetObserverId(ctx),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8076, err, details)
 		}()
@@ -2788,26 +2791,26 @@ The Reinit method re-initializes the Senzing G2Engine object using a specified c
 
 Input
   - ctx: A context to control lifecycle.
-  - initConfigID: The configuration ID used for the initialization.
+  - initConfigId: The configuration ID used for the initialization.
 */
-func (client *Szengine) Reinitialize(ctx context.Context, initConfigID int64) error {
+func (client *Szengine) Reinitialize(ctx context.Context, configId int64) error {
 	//  _DLEXPORT int G2_reinit(const long long initConfigID);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error = nil
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(127, initConfigID)
-		defer func() { client.traceExit(128, initConfigID, err, time.Since(entryTime)) }()
+		client.traceEntry(127, configId)
+		defer func() { client.traceExit(128, configId, err, time.Since(entryTime)) }()
 	}
-	result := C.G2_reinit(C.longlong(initConfigID))
+	result := C.G2_reinit(C.longlong(configId))
 	if result != 0 {
-		err = client.newError(ctx, 4061, initConfigID, result, time.Since(entryTime))
+		err = client.newError(ctx, 4061, configId, result, time.Since(entryTime))
 	}
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
-				"initConfigID": strconv.FormatInt(initConfigID, 10),
+				"configId": strconv.FormatInt(configId, 10),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8061, err, details)
 		}()
@@ -2922,7 +2925,7 @@ func (client *Szengine) UnregisterObserver(ctx context.Context, observer observe
 		// In client.notify, each observer will get notified in a goroutine.
 		// Then client.observers may be set to nil, but observer goroutines will be OK.
 		details := map[string]string{
-			"observerID": observer.GetObserverId(ctx),
+			"observerId": observer.GetObserverId(ctx),
 		}
 		notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8078, err, details)
 	}
@@ -2942,8 +2945,8 @@ It extends WhyEntities() by adding output control flags.
 
 Input
   - ctx: A context to control lifecycle.
-  - entityID1: The entity ID for the starting entity of the search path.
-  - entityID2: The entity ID for the ending entity of the search path.
+  - entityId1: The entity ID for the starting entity of the search path.
+  - entityId2: The entity ID for the ending entity of the search path.
   - flags: Flags used to control information returned.
 
 Output
