@@ -369,44 +369,6 @@ func (client *Szconfig) Destroy(ctx context.Context) error {
 }
 
 /*
-The GetDataSources method returns a JSON document of data sources.
-The configHandle is created by the Create() method.
-
-Input
-  - ctx: A context to control lifecycle.
-  - configHandle: An identifier of an in-memory configuration.
-
-Output
-  - A string containing a JSON document listing all of the data sources.
-    See the example output.
-*/
-func (client *Szconfig) GetDataSources(ctx context.Context, configHandle uintptr) (string, error) {
-	// _DLEXPORT int G2Config_listDataSources(ConfigHandle configHandle, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
-	runtime.LockOSThread()
-	defer runtime.UnlockOSThread()
-	var err error = nil
-	var resultResponse string
-	entryTime := time.Now()
-	if client.isTrace {
-		client.traceEntry(19, configHandle)
-		defer func() { client.traceExit(20, configHandle, resultResponse, err, time.Since(entryTime)) }()
-	}
-	result := C.G2Config_listDataSources_helper(C.uintptr_t(configHandle))
-	if result.returnCode != 0 {
-		err = client.newError(ctx, 4008, result.returnCode, result, time.Since(entryTime))
-	}
-	resultResponse = C.GoString(result.response)
-	C.G2GoHelper_free(unsafe.Pointer(result.response))
-	if client.observers != nil {
-		go func() {
-			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8007, err, details)
-		}()
-	}
-	return resultResponse, err
-}
-
-/*
 The ExportConfig method creates a JSON string representation of the Senzing Szconfig object.
 The configHandle is created by the Create() method.
 
@@ -439,6 +401,44 @@ func (client *Szconfig) ExportConfig(ctx context.Context, configHandle uintptr) 
 		go func() {
 			details := map[string]string{}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8009, err, details)
+		}()
+	}
+	return resultResponse, err
+}
+
+/*
+The GetDataSources method returns a JSON document of data sources.
+The configHandle is created by the Create() method.
+
+Input
+  - ctx: A context to control lifecycle.
+  - configHandle: An identifier of an in-memory configuration.
+
+Output
+  - A string containing a JSON document listing all of the data sources.
+    See the example output.
+*/
+func (client *Szconfig) GetDataSources(ctx context.Context, configHandle uintptr) (string, error) {
+	// _DLEXPORT int G2Config_listDataSources(ConfigHandle configHandle, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	var err error = nil
+	var resultResponse string
+	entryTime := time.Now()
+	if client.isTrace {
+		client.traceEntry(19, configHandle)
+		defer func() { client.traceExit(20, configHandle, resultResponse, err, time.Since(entryTime)) }()
+	}
+	result := C.G2Config_listDataSources_helper(C.uintptr_t(configHandle))
+	if result.returnCode != 0 {
+		err = client.newError(ctx, 4008, result.returnCode, result, time.Since(entryTime))
+	}
+	resultResponse = C.GoString(result.response)
+	C.G2GoHelper_free(unsafe.Pointer(result.response))
+	if client.observers != nil {
+		go func() {
+			details := map[string]string{}
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8007, err, details)
 		}()
 	}
 	return resultResponse, err
@@ -482,6 +482,43 @@ func (client *Szconfig) GetSdkId(ctx context.Context) string {
 }
 
 /*
+The ImportConfig method initializes the in-memory Senzing G2Config object from a JSON string.
+
+Input
+  - ctx: A context to control lifecycle.
+  - configDefinition: A JSON document containing the Senzing configuration.
+
+Output
+  - An identifier of an in-memory configuration.
+*/
+func (client *Szconfig) ImportConfig(ctx context.Context, configDefinition string) (uintptr, error) {
+	// _DLEXPORT int G2Config_load(const char *jsonConfig,ConfigHandle* configHandle);
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	var err error = nil
+	var resultResponse uintptr
+	entryTime := time.Now()
+	if client.isTrace {
+		client.traceEntry(21, configDefinition)
+		defer func() { client.traceExit(22, configDefinition, resultResponse, err, time.Since(entryTime)) }()
+	}
+	jsonConfigForC := C.CString(configDefinition)
+	defer C.free(unsafe.Pointer(jsonConfigForC))
+	result := C.G2Config_load_helper(jsonConfigForC)
+	if result.returnCode != 0 {
+		err = client.newError(ctx, 4009, configDefinition, result.returnCode, time.Since(entryTime))
+	}
+	resultResponse = uintptr(result.response)
+	if client.observers != nil {
+		go func() {
+			details := map[string]string{}
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8008, err, details)
+		}()
+	}
+	return resultResponse, err
+}
+
+/*
 The Init method initializes the Senzing Szconfig object.
 It must be called prior to any other calls.
 
@@ -520,43 +557,6 @@ func (client *Szconfig) Initialize(ctx context.Context, instanceName string, set
 		}()
 	}
 	return err
-}
-
-/*
-The ImportConfig method initializes the in-memory Senzing G2Config object from a JSON string.
-
-Input
-  - ctx: A context to control lifecycle.
-  - configDefinition: A JSON document containing the Senzing configuration.
-
-Output
-  - An identifier of an in-memory configuration.
-*/
-func (client *Szconfig) ImportConfig(ctx context.Context, configDefinition string) (uintptr, error) {
-	// _DLEXPORT int G2Config_load(const char *jsonConfig,ConfigHandle* configHandle);
-	runtime.LockOSThread()
-	defer runtime.UnlockOSThread()
-	var err error = nil
-	var resultResponse uintptr
-	entryTime := time.Now()
-	if client.isTrace {
-		client.traceEntry(21, configDefinition)
-		defer func() { client.traceExit(22, configDefinition, resultResponse, err, time.Since(entryTime)) }()
-	}
-	jsonConfigForC := C.CString(configDefinition)
-	defer C.free(unsafe.Pointer(jsonConfigForC))
-	result := C.G2Config_load_helper(jsonConfigForC)
-	if result.returnCode != 0 {
-		err = client.newError(ctx, 4009, configDefinition, result.returnCode, time.Since(entryTime))
-	}
-	resultResponse = uintptr(result.response)
-	if client.observers != nil {
-		go func() {
-			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8008, err, details)
-		}()
-	}
-	return resultResponse, err
 }
 
 /*

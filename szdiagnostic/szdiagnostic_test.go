@@ -432,7 +432,9 @@ func TestSzDiagnostic_Initialize(test *testing.T) {
 	instanceName := "Test module name"
 	settings, err := getSettings()
 	testError(test, ctx, szDiagnostic, err)
-	err = szDiagnostic.Initialize(ctx, instanceName, settings, sz.SZ_NO_LOGGING, sz.SZ_INITIALIZE_WITH_DEFAULT_CONFIGURATION)
+	verboseLogging := sz.SZ_NO_LOGGING
+	configId := sz.SZ_INITIALIZE_WITH_DEFAULT_CONFIGURATION
+	err = szDiagnostic.Initialize(ctx, instanceName, settings, verboseLogging, configId)
 	testError(test, ctx, szDiagnostic, err)
 }
 
@@ -440,9 +442,10 @@ func TestSzDiagnostic_Initialize_WithConfigId(test *testing.T) {
 	ctx := context.TODO()
 	szDiagnostic := &Szdiagnostic{}
 	instanceName := "Test module name"
-	configId := getDefaultConfigId()
 	settings, err := getSettings()
 	testError(test, ctx, szDiagnostic, err)
+	verboseLogging := sz.SZ_NO_LOGGING
+	configId := getDefaultConfigId()
 	err = szDiagnostic.Initialize(ctx, instanceName, settings, verboseLogging, configId)
 	testError(test, ctx, szDiagnostic, err)
 }

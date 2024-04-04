@@ -275,7 +275,7 @@ func TestSzProduct_GetObserverOrigin(test *testing.T) {
 func TestSzProduct_Initialize(test *testing.T) {
 	ctx := context.TODO()
 	szProduct := &Szproduct{}
-	instanceName := "Test module name"
+	instanceName := "Test name"
 	settings, err := getSettings()
 	testError(test, ctx, szProduct, err)
 	err = szProduct.Initialize(ctx, instanceName, settings, verboseLogging)

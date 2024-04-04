@@ -400,16 +400,16 @@ func TestSzConfig_ImportConfig(test *testing.T) {
 	printActual(test, actual)
 }
 
-// func TestSzConfig_Initialize(test *testing.T) {
-// 	ctx := context.TODO()
-// 	szConfig := getTestObject(ctx, test)
-// 	instanceName := "Test module name"
-// 	verboseLogging := int64(0)
-// 	settings, err := getSettings()
-// 	testError(test, ctx, szConfig, err)
-// 	err = szConfig.Initialize(ctx, instanceName, settings, verboseLogging)
-// 	testError(test, ctx, szConfig, err)
-// }
+func TestSzConfig_Initialize(test *testing.T) {
+	ctx := context.TODO()
+	szConfig := getTestObject(ctx, test)
+	instanceName := "Test name"
+	verboseLogging := sz.SZ_NO_LOGGING
+	settings, err := getSettings()
+	testError(test, ctx, szConfig, err)
+	err = szConfig.Initialize(ctx, instanceName, settings, verboseLogging)
+	testError(test, ctx, szConfig, err)
+}
 
 func TestSzConfig_Destroy(test *testing.T) {
 	ctx := context.TODO()

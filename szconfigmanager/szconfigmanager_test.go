@@ -403,7 +403,6 @@ func TestSzConfigManager_GetObserverOrigin(test *testing.T) {
 
 func TestSzConfigManager_AddConfig(test *testing.T) {
 	ctx := context.TODO()
-	szconfigmanager := getTestObject(ctx, test)
 	now := time.Now()
 	szConfig := getSzConfig(ctx)
 	configHandle, err1 := szConfig.CreateConfig(ctx)
@@ -422,6 +421,7 @@ func TestSzConfigManager_AddConfig(test *testing.T) {
 		test.Log("Error:", err3.Error())
 		assert.FailNow(test, configDefinition)
 	}
+	szconfigmanager := getTestObject(ctx, test)
 	configComment := fmt.Sprintf("szconfigmanager_test at %s", now.UTC())
 	actual, err := szconfigmanager.AddConfig(ctx, configDefinition, configComment)
 	testError(test, ctx, szconfigmanager, err)
@@ -466,7 +466,7 @@ func TestSzConfigManager_ReplaceDefaultConfigId(test *testing.T) {
 		assert.FailNow(test, "szconfigmanager.GetDefaultConfigId()")
 	}
 
-	// FIXME: This is kind of a cheater.
+	// TODO: This is kind of a cheater.
 
 	newDefaultConfigId, err2 := szconfigmanager.GetDefaultConfigId(ctx)
 	if err2 != nil {

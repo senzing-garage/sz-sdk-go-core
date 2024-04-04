@@ -60,10 +60,10 @@ func getDatabaseTemplatePath() string {
 	return filepath.FromSlash("../testdata/sqlite/G2C.db")
 }
 
-func getSzDiagnostic(ctx context.Context) sz.SzDiagnostic {
-	_ = ctx
-	return &globalSzDiagnostic
-}
+// func getSzDiagnostic(ctx context.Context) sz.SzDiagnostic {
+// 	_ = ctx
+// 	return &globalSzDiagnostic
+// }
 
 func getSzEngine(ctx context.Context) sz.SzEngine {
 	_ = ctx
@@ -941,7 +941,7 @@ func TestSzEngine_ReplaceRecord(test *testing.T) {
 	testError(test, ctx, szEngine, err)
 }
 
-// FIXME: Remove after GDEV-3576 is fixed
+// TODO: Remove after GDEV-3576 is fixed
 func TestSzEngine_ReplaceRecord_WithInfo(test *testing.T) {
 	ctx := context.TODO()
 	szEngine := getTestObject(ctx, test)

@@ -6,8 +6,9 @@ import (
 	"context"
 	"fmt"
 
-	jutil "github.com/senzing-garage/go-common/jsonutil"
+	"github.com/senzing-garage/go-common/jsonutil"
 	"github.com/senzing-garage/go-logging/logging"
+	"github.com/senzing-garage/sz-sdk-go/sz"
 )
 
 // ----------------------------------------------------------------------------
@@ -38,12 +39,12 @@ func ExampleSzProduct_Initialize() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szproduct/szproduct_examples_test.go
 	ctx := context.TODO()
 	szProduct := getSzProduct(ctx)
-	instanceName := "Test module name"
+	instanceName := "Test name"
 	settings, err := getSettings()
 	if err != nil {
 		fmt.Println(err)
 	}
-	verboseLogging := int64(0)
+	verboseLogging := sz.SZ_NO_LOGGING
 	szProduct.Initialize(ctx, instanceName, settings, verboseLogging)
 	// Output:
 }
@@ -56,7 +57,7 @@ func ExampleSzProduct_GetLicense() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println(jutil.Flatten(jutil.Redact(result, "customer", "contract", "issueDate", "licenseLevel", "billing", "licenseType", "expireDate", "recordLimit")))
+	fmt.Println(jsonutil.Flatten(jsonutil.Redact(result, "customer", "contract", "issueDate", "licenseLevel", "billing", "licenseType", "expireDate", "recordLimit")))
 	// Output: {"billing":null,"contract":null,"customer":null,"expireDate":null,"issueDate":null,"licenseLevel":null,"licenseType":null,"recordLimit":null}
 }
 

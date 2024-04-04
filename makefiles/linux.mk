@@ -38,6 +38,7 @@ setup-osarch-specific:
 .PHONY: test-osarch-specific
 test-osarch-specific:
 	@go test -v -p 1 ./...
+	# @go test -v -p 1 ./szengine
 
 # -----------------------------------------------------------------------------
 # Makefile targets supported only by this platform.

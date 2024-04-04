@@ -67,8 +67,9 @@ func ExampleSzDiagnostic_Initialize() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	verboseLogging := int64(0)
-	err = szDiagnostic.Initialize(ctx, instanceName, settings, verboseLogging, sz.SZ_INITIALIZE_WITH_DEFAULT_CONFIGURATION)
+	verboseLogging := sz.SZ_NO_LOGGING
+	configId := sz.SZ_INITIALIZE_WITH_DEFAULT_CONFIGURATION
+	err = szDiagnostic.Initialize(ctx, instanceName, settings, verboseLogging, configId)
 	if err != nil {
 		fmt.Println(err)
 	}
