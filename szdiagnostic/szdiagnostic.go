@@ -242,7 +242,6 @@ Input
   - verboseLogging: A flag to enable deeper logging of the G2 processing. 0 for no Senzing logging; 1 for logging.
 */
 func (client *Szdiagnostic) initialize(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
-	// TODO: Functionality for initConfigId
 	// _DLEXPORT int G2Diagnostic_init(const char *moduleName, const char *iniParams, const int verboseLogging);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()

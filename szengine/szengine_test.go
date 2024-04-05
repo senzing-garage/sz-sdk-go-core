@@ -331,7 +331,7 @@ func setupSzEngine(ctx context.Context, instanceName string, settings string, ve
 
 	// In case of an external database (e.g.: PostgreSQL) we need to purge since the database
 	// may be shared across test suites -- this is not ideal since tests are not isolated.
-	// TODO: look for a way to use external databases while still isolating tests.
+	// TODO: Look for a way to use external databases while still isolating tests.
 
 	if purge {
 		err = globalSzDiagnostic.PurgeRepository(ctx)

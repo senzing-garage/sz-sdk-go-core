@@ -1089,7 +1089,7 @@ func (client *Szengine) processRedoRecordWithInfo(ctx context.Context, flags int
 	_ = ctx
 	_ = flags
 
-	// TODO:
+	// TODO: Implement processRedoRecordWithInfo
 
 	return "", nil
 }
@@ -1451,7 +1451,7 @@ func (client *Szengine) searchByAttributes_V3(ctx context.Context, attributes st
 	_ = searchProfile
 	_ = flags
 
-	// TODO:
+	// TODO: implement searchByAttributes_V3
 
 	return resultResponse, err
 }
@@ -1567,7 +1567,7 @@ func (client *Szengine) whyRecordInEntity(ctx context.Context, dataSourceCode st
 	_ = dataSourceCode
 	_ = recordId
 
-	// TODO:
+	// TODO: Implement whyRecordInEntity
 
 	return resultResponse, err
 }
@@ -1594,7 +1594,7 @@ func (client *Szengine) whyRecordInEntity_V2(ctx context.Context, dataSourceCode
 	_ = recordId
 	_ = flags
 
-	// TODO:
+	// TODO: Implement whyRecordInEntity_V2
 
 	return resultResponse, err
 }
@@ -2073,7 +2073,7 @@ Input
   - responseHandle: A handle created by ExportJSONEntityReport() or ExportCSVEntityReport().
 
 Output
-  - TODO:
+  - TODO: Document output for FetchNext
 */
 func (client *Szengine) FetchNext(ctx context.Context, responseHandle uintptr) (string, error) {
 	//  _DLEXPORT int G2_fetchNext(ExportHandle responseHandle, char *responseBuf, const size_t bufSize);
