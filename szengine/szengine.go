@@ -1,5 +1,5 @@
 /*
-The G2engineImpl implementation is a wrapper over the Senzing libg2 library.
+The szengine is a wrapper over the Senzing libg2 library.
 */
 package szengine
 

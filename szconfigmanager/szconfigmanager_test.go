@@ -11,8 +11,8 @@ import (
 	"time"
 
 	truncator "github.com/aquilax/truncate"
-	futil "github.com/senzing-garage/go-common/fileutil"
-	"github.com/senzing-garage/go-common/g2engineconfigurationjson"
+	"github.com/senzing-garage/go-helpers/engineconfigurationjson"
+	futil "github.com/senzing-garage/go-helpers/fileutil"
 	"github.com/senzing-garage/go-logging/logging"
 	"github.com/senzing-garage/sz-sdk-go-core/szconfig"
 	"github.com/senzing-garage/sz-sdk-go/sz"
@@ -120,7 +120,7 @@ func TestMain(m *testing.M) {
 
 func createSettings(dbUrl string) (string, error) {
 	configAttrMap := map[string]string{"databaseUrl": dbUrl}
-	settings, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingMap(configAttrMap)
+	settings, err := engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingMap(configAttrMap)
 	if err != nil {
 		err = createError(5902, err)
 	}
