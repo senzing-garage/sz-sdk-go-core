@@ -3,7 +3,6 @@ package szdiagnostic
 import (
 	"context"
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 	"testing"
@@ -11,30 +10,29 @@ import (
 
 	truncator "github.com/aquilax/truncate"
 	"github.com/senzing-garage/go-helpers/engineconfigurationjson"
-	futil "github.com/senzing-garage/go-helpers/fileutil"
+	"github.com/senzing-garage/go-helpers/fileutil"
 	"github.com/senzing-garage/go-helpers/truthset"
 	"github.com/senzing-garage/go-logging/logging"
 	"github.com/senzing-garage/sz-sdk-go-core/szconfig"
 	"github.com/senzing-garage/sz-sdk-go-core/szconfigmanager"
 	"github.com/senzing-garage/sz-sdk-go-core/szengine"
 	"github.com/senzing-garage/sz-sdk-go/sz"
-	szdiagnosticapi "github.com/senzing-garage/sz-sdk-go/szdiagnostic"
+	"github.com/senzing-garage/sz-sdk-go/szdiagnostic"
 	"github.com/senzing-garage/sz-sdk-go/szerror"
 	"github.com/stretchr/testify/assert"
 )
 
 const (
 	defaultTruncation = 76
-	instanceName      = "Diagnostic Test Module"
+	instanceName      = "Diagnostic Test"
 	printResults      = false
 	verboseLogging    = sz.SZ_NO_LOGGING
 )
 
 var (
-	defaultConfigId         int64
-	globalSzDiagnostic      Szdiagnostic = Szdiagnostic{}
-	logger                  logging.LoggingInterface
-	szDiagnosticInitialized bool = false
+	defaultConfigId    int64
+	globalSzDiagnostic *Szdiagnostic
+	logger             logging.LoggingInterface
 )
 
 // ----------------------------------------------------------------------------
@@ -53,9 +51,44 @@ func getDefaultConfigId() int64 {
 	return defaultConfigId
 }
 
+func getSettings() (string, error) {
+
+	// Determine Database URL.
+
+	testDirectoryPath := getTestDirectoryPath()
+	dbTargetPath, err := filepath.Abs(filepath.Join(testDirectoryPath, "G2C.db"))
+	if err != nil {
+		err = fmt.Errorf("failed to make target database path (%s) absolute: %w",
+			dbTargetPath, err)
+		return "", err
+	}
+	databaseUrl := fmt.Sprintf("sqlite3://na:na@%s", dbTargetPath)
+
+	// Create Senzing engine configuration JSON.
+
+	configAttrMap := map[string]string{"databaseUrl": databaseUrl}
+	settings, err := engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingMap(configAttrMap)
+	if err != nil {
+		err = createError(5902, err)
+	}
+	return settings, err
+}
+
 func getSzDiagnostic(ctx context.Context) sz.SzDiagnostic {
 	_ = ctx
-	return &globalSzDiagnostic
+	if globalSzDiagnostic == nil {
+		settings, err := getSettings()
+		if err != nil {
+			fmt.Printf("getSettings() Error: %v\n", err)
+			return nil
+		}
+		globalSzDiagnostic = &Szdiagnostic{}
+		err = globalSzDiagnostic.Initialize(ctx, instanceName, settings, verboseLogging, getDefaultConfigId())
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
+	return globalSzDiagnostic
 }
 
 func getTestDirectoryPath() string {
@@ -63,7 +96,6 @@ func getTestDirectoryPath() string {
 }
 
 func getTestObject(ctx context.Context, test *testing.T) sz.SzDiagnostic {
-	_ = ctx
 	_ = test
 	return getSzDiagnostic(ctx)
 }
@@ -126,123 +158,54 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
-func createSettings(dbUrl string) (string, error) {
-	configAttrMap := map[string]string{"databaseUrl": dbUrl}
-	settings, err := engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingMap(configAttrMap)
-	if err != nil {
-		err = createError(5902, err)
-	}
-	return settings, err
-}
-
-func getSettings() (string, error) {
-	dbUrl, _, err := setupDatabase(true)
-	if err != nil {
-		return "", err
-	}
-	settings, err := createSettings(dbUrl)
-	if err != nil {
-		return "", err
-	}
-	return settings, nil
-}
-
-func restoreSzDiagnostic(ctx context.Context) error {
-	settings, err := getSettings()
-	if err != nil {
-		return err
-	}
-	err = setupSzDiagnostic(ctx, instanceName, settings, verboseLogging)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
 func setup() error {
 	var err error = nil
-	ctx := context.TODO()
-	logger, err = logging.NewSenzingSdkLogger(ComponentId, szdiagnosticapi.IdMessages)
+	logger, err = logging.NewSenzingSdkLogger(ComponentId, szdiagnostic.IdMessages)
 	if err != nil {
 		return createError(5901, err)
 	}
-
-	// Cleanup past runs and prepare for current run.
-
-	testDirectoryPath := getTestDirectoryPath()
-	err = os.RemoveAll(filepath.Clean(testDirectoryPath)) // cleanup any previous test run
+	err = setupDirectories()
 	if err != nil {
-		return fmt.Errorf("Failed to remove target test directory (%v): %w", testDirectoryPath, err)
+		return fmt.Errorf("Failed to set up directories. Error: %v", err)
 	}
-	err = os.MkdirAll(filepath.Clean(testDirectoryPath), 0750) // recreate the test target directory
+	err = setupDatabase()
 	if err != nil {
-		return fmt.Errorf("Failed to recreate target test directory (%v): %w", testDirectoryPath, err)
+		return fmt.Errorf("Failed to set up database. Error: %v", err)
 	}
-
-	// Get the database URL and determine if external or a local file just created.
-
-	dbUrl, dbPurge, err := setupDatabase(false)
-	if err != nil {
-		return err
-	}
-
-	// Create the Senzing engine configuration JSON.
-
-	settings, err := createSettings(dbUrl)
-	if err != nil {
-		return err
-	}
-
-	// Add Data Sources to Senzing configuration.
-
-	err = setupSenzingConfiguration(ctx, instanceName, settings, verboseLogging)
+	err = setupSenzingConfiguration()
 	if err != nil {
 		return createError(5920, err)
 	}
-
-	// Add records.
-
-	err = setupAddRecords(ctx, instanceName, settings, verboseLogging, dbPurge)
+	err = setupAddRecords()
 	if err != nil {
 		return createError(5922, err)
 	}
-
-	// Setup the SzDiagnostic object.
-
-	err = setupSzDiagnostic(ctx, instanceName, settings, verboseLogging)
-	if err != nil {
-		return err
-	}
-
 	return err
 }
 
-func setupAddRecords(ctx context.Context, instancename string, settings string, verboseLogging int64, purge bool) error {
+func setupAddRecords() error {
+	ctx := context.TODO()
+
+	settings, err := getSettings()
+	if err != nil {
+		return createError(9999, err)
+	}
 
 	// Create sz objects.
 
 	szEngine := &szengine.Szengine{}
-	err := szEngine.Initialize(ctx, instancename, settings, verboseLogging, sz.SZ_INITIALIZE_WITH_DEFAULT_CONFIGURATION)
+	err = szEngine.Initialize(ctx, instanceName, settings, verboseLogging, sz.SZ_INITIALIZE_WITH_DEFAULT_CONFIGURATION)
 	if err != nil {
 		return createError(5916, err)
 	}
 	defer szEngine.Destroy(ctx)
 
 	szDiagnostic := getSzDiagnostic(ctx)
-	err = szDiagnostic.Initialize(ctx, instancename, settings, verboseLogging, sz.SZ_INITIALIZE_WITH_DEFAULT_CONFIGURATION)
+	err = szDiagnostic.Initialize(ctx, instanceName, settings, verboseLogging, sz.SZ_INITIALIZE_WITH_DEFAULT_CONFIGURATION)
 	if err != nil {
 		return createError(5916, err)
 	}
 	defer szDiagnostic.Destroy(ctx)
-
-	// If requested, purge existing database.
-
-	if purge {
-		err = szDiagnostic.PurgeRepository(ctx)
-		if err != nil {
-			return createError(5904, err)
-		}
-	}
 
 	// Add records into Senzing.
 
@@ -257,68 +220,60 @@ func setupAddRecords(ctx context.Context, instancename string, settings string, 
 
 	return err
 }
-
-func setupDatabase(preserveDB bool) (string, bool, error) {
+func setupDatabase() error {
 	var err error = nil
 
-	// Get paths.
+	// Locate source and target paths.
 
 	testDirectoryPath := getTestDirectoryPath()
-	dbFilePath, err := filepath.Abs(getDatabaseTemplatePath())
+	dbTargetPath, err := filepath.Abs(filepath.Join(testDirectoryPath, "G2C.db"))
 	if err != nil {
-		err = fmt.Errorf("failed to obtain absolute path to database file (%s): %s",
-			dbFilePath, err.Error())
-		return "", false, err
-	}
-	dbTargetPath := filepath.Join(getTestDirectoryPath(), "G2C.db")
-	dbTargetPath, err = filepath.Abs(dbTargetPath)
-	if err != nil {
-		err = fmt.Errorf("failed to make target database path (%s) absolute: %w",
+		return fmt.Errorf("failed to make target database path (%s) absolute: %w",
 			dbTargetPath, err)
-		return "", false, err
 	}
-
-	// Check the environment for a database URL.
-
-	dbUrl, envUrlExists := os.LookupEnv("SENZING_TOOLS_DATABASE_URL")
-	dbDefaultUrl := fmt.Sprintf("sqlite3://na:na@%s", dbTargetPath)
-	dbExternal := envUrlExists && dbDefaultUrl != dbUrl
-	if !dbExternal {
-		dbUrl = dbDefaultUrl
-		if !preserveDB {
-			_, _, err = futil.CopyFile(dbFilePath, testDirectoryPath, true) // Copy the SQLite database file.
-			if err != nil {
-				err = fmt.Errorf("setup failed to copy template database (%v) to target path (%v): %w",
-					dbFilePath, testDirectoryPath, err)
-				// Fall through to return the error.
-			}
-		}
-	}
-	return dbUrl, dbExternal, err
-}
-
-func setupSzDiagnostic(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
-	if szDiagnosticInitialized {
-		return fmt.Errorf("SzDiagnostic is already setup and has not been torn down.")
-	}
-	globalSzDiagnostic.SetLogLevel(ctx, logging.LevelInfoName)
-	log.SetFlags(0)
-	err := globalSzDiagnostic.Initialize(ctx, instanceName, settings, verboseLogging, sz.SZ_INITIALIZE_WITH_DEFAULT_CONFIGURATION)
+	databaseTemplatePath, err := filepath.Abs(getDatabaseTemplatePath())
 	if err != nil {
-		return createError(5903, err)
+		return fmt.Errorf("failed to obtain absolute path to database file (%s): %s",
+			databaseTemplatePath, err.Error())
 	}
 
-	szDiagnosticInitialized = true
+	// Copy template file to test directory.
+
+	_, _, err = fileutil.CopyFile(databaseTemplatePath, testDirectoryPath, true) // Copy the SQLite database file.
+	if err != nil {
+		return fmt.Errorf("setup failed to copy template database (%v) to target path (%v): %w",
+			databaseTemplatePath, testDirectoryPath, err)
+	}
 	return err
 }
 
-func setupSenzingConfiguration(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
+func setupDirectories() error {
+	var err error = nil
+	testDirectoryPath := getTestDirectoryPath()
+	err = os.RemoveAll(filepath.Clean(testDirectoryPath)) // cleanup any previous test run
+	if err != nil {
+		return fmt.Errorf("Failed to remove target test directory (%v): %w", testDirectoryPath, err)
+	}
+	err = os.MkdirAll(filepath.Clean(testDirectoryPath), 0750) // recreate the test target directory
+	if err != nil {
+		return fmt.Errorf("Failed to recreate target test directory (%v): %w", testDirectoryPath, err)
+	}
+	return err
+}
+
+func setupSenzingConfiguration() error {
+	ctx := context.TODO()
 	now := time.Now()
+
+	settings, err := getSettings()
+	if err != nil {
+		return createError(9999, err)
+	}
 
 	// Create sz objects.
 
 	szConfig := &szconfig.Szconfig{}
-	err := szConfig.Initialize(ctx, instanceName, settings, verboseLogging)
+	err = szConfig.Initialize(ctx, instanceName, settings, verboseLogging)
 	if err != nil {
 		return createError(5906, err)
 	}
@@ -386,14 +341,11 @@ func teardown() error {
 }
 
 func teardownSzDiagnostic(ctx context.Context) error {
-	if !szDiagnosticInitialized {
-		return nil
-	}
 	err := globalSzDiagnostic.Destroy(ctx)
 	if err != nil {
 		return err
 	}
-	szDiagnosticInitialized = false
+	globalSzDiagnostic = nil
 	return nil
 }
 
@@ -463,8 +415,4 @@ func TestSzDiagnostic_Destroy(test *testing.T) {
 	szDiagnostic := getTestObject(ctx, test)
 	err := szDiagnostic.Destroy(ctx)
 	testError(test, ctx, szDiagnostic, err)
-
-	// restore the state that existed prior to this test
-	szDiagnosticInitialized = false
-	restoreSzDiagnostic(ctx)
 }

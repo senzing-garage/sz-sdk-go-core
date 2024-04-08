@@ -70,9 +70,9 @@ func getSettings() (string, error) {
 
 func getSzAbstractFactory(ctx context.Context) sz.SzAbstractFactory {
 	_ = ctx
-
 	settings, err := getSettings()
 	if err != nil {
+		fmt.Printf("getSettings() Error: %v\n", err)
 		return nil
 	}
 	result := &Szabstractfactory{
@@ -81,7 +81,6 @@ func getSzAbstractFactory(ctx context.Context) sz.SzAbstractFactory {
 		Settings:       settings,
 		VerboseLogging: verboseLogging,
 	}
-
 	return result
 }
 
@@ -158,7 +157,6 @@ func setupDatabase() error {
 		return fmt.Errorf("failed to make target database path (%s) absolute: %w",
 			dbTargetPath, err)
 	}
-
 	databaseTemplatePath, err := filepath.Abs(getDatabaseTemplatePath())
 	if err != nil {
 		return fmt.Errorf("failed to obtain absolute path to database file (%s): %s",
