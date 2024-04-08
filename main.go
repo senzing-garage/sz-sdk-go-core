@@ -14,23 +14,9 @@ import (
 	"github.com/senzing-garage/go-helpers/fileutil"
 	"github.com/senzing-garage/go-helpers/truthset"
 	"github.com/senzing-garage/go-logging/logging"
-	"github.com/senzing-garage/go-observing/observer"
-	"github.com/senzing-garage/go-observing/observerpb"
-	"github.com/senzing-garage/sz-sdk-go-core/szconfig"
-	"github.com/senzing-garage/sz-sdk-go-core/szconfigmanager"
-	"github.com/senzing-garage/sz-sdk-go-core/szdiagnostic"
-	"github.com/senzing-garage/sz-sdk-go-core/szengine"
-	"github.com/senzing-garage/sz-sdk-go-core/szproduct"
+	"github.com/senzing-garage/sz-sdk-go-core/szabstractfactory"
 	"github.com/senzing-garage/sz-sdk-go/sz"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 )
-
-// ----------------------------------------------------------------------------
-// Constants
-// ----------------------------------------------------------------------------
-
-const MessageIdTemplate = "senzing-9999%04d"
 
 // ----------------------------------------------------------------------------
 // Variables
@@ -45,74 +31,28 @@ var Messages = map[int]string{
 	2004: "License",
 	2999: "Cannot retrieve last error message.",
 }
-
-// Values updated via "go install -ldflags" parameters.
-
-var programName string = "unknown"
-var buildVersion string = "0.0.0"
-var buildIteration string = "0"
 var logger logging.LoggingInterface
 
 // ----------------------------------------------------------------------------
 // Internal methods
 // ----------------------------------------------------------------------------
 
-func getTestDirectoryPath() string {
-	return filepath.FromSlash("target/test/main")
+func failOnError(msgId int, err error) {
+	logger.Log(msgId, err)
+	panic(err.Error())
 }
 
 func getDatabaseTemplatePath() string {
 	return filepath.FromSlash("testdata/sqlite/G2C.db")
 }
 
-func setupDatabase(preserveDB bool) (string, bool, error) {
-	var err error = nil
-	testDirectoryPath := getTestDirectoryPath()
-	databaseTemplatePath := getDatabaseTemplatePath()
-	databaseTemplatePath, err = filepath.Abs(databaseTemplatePath)
-	if err != nil {
-		err = fmt.Errorf("failed to obtain absolute path to database file (%s): %s",
-			databaseTemplatePath, err.Error())
-		return "", false, err
-	}
-
-	// check the environment for a database URL
-	dbUrl, envUrlExists := os.LookupEnv("SENZING_TOOLS_DATABASE_URL")
-
-	dbTargetPath := filepath.Join(getTestDirectoryPath(), "G2C.db")
-
-	dbTargetPath, err = filepath.Abs(dbTargetPath)
-	if err != nil {
-		err = fmt.Errorf("failed to make target database path (%s) absolute: %w",
-			dbTargetPath, err)
-		return "", false, err
-	}
-
-	dbDefaultUrl := fmt.Sprintf("sqlite3://na:na@%s", dbTargetPath)
-
-	dbExternal := envUrlExists && dbDefaultUrl != dbUrl
-
-	if !dbExternal {
-		// set the database URL
-		dbUrl = dbDefaultUrl
-
-		if !preserveDB {
-			// copy the SQLite database file
-			_, _, err = fileutil.CopyFile(databaseTemplatePath, testDirectoryPath, true)
-
-			if err != nil {
-				err = fmt.Errorf("setup failed to copy template database (%v) to target path (%v): %w",
-					databaseTemplatePath, testDirectoryPath, err)
-				// fall through to return the error
-			}
-		}
-	}
-
-	return dbUrl, dbExternal, err
+func getLogger(ctx context.Context) (logging.LoggingInterface, error) {
+	_ = ctx
+	return logging.NewSenzingLogger("my-unique-%04d", Messages)
 }
 
-func createSettings(dbUrl string) (string, error) {
-	configAttrMap := map[string]string{"databaseUrl": dbUrl}
+func getSettings(databaseUrl string) (string, error) {
+	configAttrMap := map[string]string{"databaseUrl": databaseUrl}
 	settings, err := engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingMap(configAttrMap)
 	if err != nil {
 		return "", err
@@ -120,132 +60,48 @@ func createSettings(dbUrl string) (string, error) {
 	return settings, err
 }
 
-func getSettings() (string, error) {
-	dbUrl, _, err := setupDatabase(true)
-	if err != nil {
-		return "", err
-	}
-	settings, err := createSettings(dbUrl)
-	if err != nil {
-		return "", err
-	}
-	return settings, nil
+func getTestDirectoryPath() string {
+	return filepath.FromSlash("target/test/main")
 }
 
-func getSzConfig(ctx context.Context) (sz.SzConfig, error) {
-	result := szconfig.Szconfig{}
-	instanceName := "Test name"
-	verboseLogging := int64(0) // 0 for no Senzing logging; 1 for logging
-	settings, err := getSettings()
-	if err != nil {
-		return &result, err
-	}
-	err = result.Initialize(ctx, instanceName, settings, verboseLogging)
-	return &result, err
-}
+func setupDatabase() (string, error) {
+	var err error = nil
+	databaseUrl, ok := os.LookupEnv("SENZING_TOOLS_DATABASE_URL")
+	if !ok {
 
-func getSzConfigManager(ctx context.Context) (sz.SzConfigManager, error) {
-	result := szconfigmanager.Szconfigmanager{}
-	instanceName := "Test name"
-	verboseLogging := int64(0)
-	settings, err := getSettings()
-	if err != nil {
-		return &result, err
-	}
-	err = result.Initialize(ctx, instanceName, settings, verboseLogging)
-	return &result, err
-}
+		// Construct SQLite database URL.
 
-func getSzDiagnostic(ctx context.Context) (sz.SzDiagnostic, error) {
-	result := szdiagnostic.Szdiagnostic{}
-	instanceName := "Test name"
-	verboseLogging := int64(0)
-	settings, err := getSettings()
-	if err != nil {
-		return &result, err
-	}
-	err = result.Initialize(ctx, instanceName, settings, verboseLogging, 0)
-	return &result, err
-}
-
-func getSzEngine(ctx context.Context) (sz.SzEngine, error) {
-	result := szengine.Szengine{}
-	moduleName := "Test name"
-	verboseLogging := int64(0)
-	settings, err := getSettings()
-	if err != nil {
-		return &result, err
-	}
-	err = result.Initialize(ctx, moduleName, settings, verboseLogging, 0)
-	return &result, err
-}
-
-func getSzProduct(ctx context.Context) (sz.SzProduct, error) {
-	result := szproduct.Szproduct{}
-	moduleName := "Test module name"
-	verboseLogging := int64(0)
-	settings, err := getSettings()
-	if err != nil {
-		return &result, err
-	}
-	err = result.Initialize(ctx, moduleName, settings, verboseLogging)
-	return &result, err
-}
-
-func getLogger(ctx context.Context) (logging.LoggingInterface, error) {
-	_ = ctx
-	logger, err := logging.NewSenzingLogger("my-unique-%04d", Messages)
-	if err != nil {
-		fmt.Println(err)
-	}
-	return logger, err
-}
-
-func demonstrateConfigFunctions(ctx context.Context, szConfig sz.SzConfig, szConfigManager sz.SzConfigManager) error {
-	now := time.Now()
-
-	// Using SzConfig: Create a default configuration in memory.
-
-	configHandle, err := szConfig.CreateConfig(ctx)
-	if err != nil {
-		return logger.NewError(5100, err)
-	}
-
-	// Using SzConfig: Add data source to in-memory configuration.
-
-	for testDataSourceCode, _ := range truthset.TruthsetDataSources {
-		_, err := szConfig.AddDataSource(ctx, configHandle, testDataSourceCode)
+		testDirectoryPath := getTestDirectoryPath()
+		dbTargetPath, err := filepath.Abs(filepath.Join(testDirectoryPath, "G2C.db"))
 		if err != nil {
-			return logger.NewError(5101, err)
+			err = fmt.Errorf("failed to make target database path (%s) absolute: %w",
+				dbTargetPath, err)
+			return "", err
+		}
+		databaseUrl = fmt.Sprintf("sqlite3://na:na@%s", dbTargetPath)
+
+		// Copy template file to test directory.
+
+		databaseTemplatePath, err := filepath.Abs(getDatabaseTemplatePath())
+		if err != nil {
+			err = fmt.Errorf("failed to obtain absolute path to database file (%s): %s",
+				databaseTemplatePath, err.Error())
+			return "", err
+		}
+		_, _, err = fileutil.CopyFile(databaseTemplatePath, testDirectoryPath, true) // Copy the SQLite database file.
+		if err != nil {
+			return databaseUrl, fmt.Errorf("setup failed to copy template database (%v) to target path (%v): %w",
+				databaseTemplatePath, testDirectoryPath, err)
 		}
 	}
-
-	// Using SzConfig: Persist configuration to a string.
-
-	configStr, err := szConfig.ExportConfig(ctx, configHandle)
-	if err != nil {
-		return logger.NewError(5102, err)
-	}
-
-	// Using SzConfigManager: Persist configuration string to database.
-
-	configComment := fmt.Sprintf("Created by g2diagnostic_test at %s", now.UTC())
-	configId, err := szConfigManager.AddConfig(ctx, configStr, configComment)
-	if err != nil {
-		return logger.NewError(5103, err)
-	}
-
-	// Using SzConfigManager: Set new configuration as the default.
-
-	err = szConfigManager.SetDefaultConfigId(ctx, configId)
-	if err != nil {
-		return logger.NewError(5104, err)
-	}
-
-	return err
+	return databaseUrl, err
 }
 
-func demonstrateAddRecord(ctx context.Context, g2Engine sz.SzEngine) (string, error) {
+// ----------------------------------------------------------------------------
+// Demonstrations
+// ----------------------------------------------------------------------------
+
+func demonstrateAddRecord(ctx context.Context, szEngine sz.SzEngine) (string, error) {
 	dataSourceCode := "TEST"
 	randomNumber, err := rand.Int(rand.Reader, big.NewInt(1000000000))
 	if err != nil {
@@ -259,77 +115,122 @@ func demonstrateAddRecord(ctx context.Context, g2Engine sz.SzEngine) (string, er
 		`", "DSRC_ACTION": "A", "ADDR_CITY": "Delhi", "DRIVERS_LICENSE_STATE": "DE", "PHONE_NUMBER": "225-671-0796", "NAME_LAST": "SEAMAN", "entityid": "284430058", "ADDR_LINE1": "772 Armstrong RD"}`)
 	var flags int64 = sz.SZ_WITH_INFO
 
-	// Using G2Engine: Add record and return "withInfo".
+	// Using SzEngine: Add record and return "withInfo".
 
-	return g2Engine.AddRecord(ctx, dataSourceCode, recordId, jsonData, flags)
+	return szEngine.AddRecord(ctx, dataSourceCode, recordId, jsonData, flags)
 }
 
-func demonstrateAdditionalFunctions(ctx context.Context, g2Diagnostic sz.SzDiagnostic, g2Engine sz.SzEngine, g2Product sz.SzProduct) error {
+func demonstrateConfigFunctions(ctx context.Context, szAbstractFactory sz.SzAbstractFactory) error {
+	now := time.Now()
 
-	err := g2Diagnostic.PurgeRepository(ctx)
+	// Create Senzing objects.
+
+	szConfig, err := szAbstractFactory.CreateConfig(ctx)
+	if err != nil {
+		return logger.NewError(5101, err)
+	}
+	defer szConfig.Destroy(ctx)
+
+	szConfigManager, err := szAbstractFactory.CreateConfigManager(ctx)
+	if err != nil {
+		return logger.NewError(5102, err)
+	}
+	defer szConfigManager.Destroy(ctx)
+
+	// Using SzConfig: Create a default configuration in memory.
+
+	configHandle, err := szConfig.CreateConfig(ctx)
+	if err != nil {
+		return logger.NewError(5103, err)
+	}
+
+	// Using SzConfig: Add data source to in-memory configuration.
+
+	for testDataSourceCode := range truthset.TruthsetDataSources {
+		_, err := szConfig.AddDataSource(ctx, configHandle, testDataSourceCode)
+		if err != nil {
+			return logger.NewError(5104, err)
+		}
+	}
+
+	// Using SzConfig: Persist configuration to a string.
+
+	configStr, err := szConfig.ExportConfig(ctx, configHandle)
+	if err != nil {
+		return logger.NewError(5105, err)
+	}
+
+	// Using SzConfigManager: Persist configuration string to database.
+
+	configComment := fmt.Sprintf("Created by main.go at %s", now.UTC())
+	configId, err := szConfigManager.AddConfig(ctx, configStr, configComment)
+	if err != nil {
+		return logger.NewError(5106, err)
+	}
+
+	// Using SzConfigManager: Set new configuration as the default.
+
+	err = szConfigManager.SetDefaultConfigId(ctx, configId)
+	if err != nil {
+		return logger.NewError(5107, err)
+	}
+
+	return err
+}
+
+func demonstrateSenzingFunctions(ctx context.Context, szAbstractFactory sz.SzAbstractFactory) error {
+
+	// Create Senzing objects.
+
+	szDiagnostic, err := szAbstractFactory.CreateDiagnostic(ctx)
+	if err != nil {
+		return logger.NewError(9999, err)
+	}
+	defer szDiagnostic.Destroy(ctx)
+
+	szEngine, err := szAbstractFactory.CreateEngine(ctx)
+	if err != nil {
+		return logger.NewError(9999, err)
+	}
+	defer szEngine.Destroy(ctx)
+
+	szProduct, err := szAbstractFactory.CreateProduct(ctx)
+	if err != nil {
+		return logger.NewError(9999, err)
+	}
+	defer szProduct.Destroy(ctx)
+
+	// Clean the repository.
+
+	err = szDiagnostic.PurgeRepository(ctx)
 	if err != nil {
 		failOnError(5301, err)
 	}
 
-	// Using G2Engine: Add records with information returned.
+	// Using SzEngine: Add records with information returned.
 
-	withInfo, err := demonstrateAddRecord(ctx, g2Engine)
+	withInfo, err := demonstrateAddRecord(ctx, szEngine)
 	if err != nil {
 		failOnError(5302, err)
 	}
 	logger.Log(2003, withInfo)
 
-	// Using G2Product: Show license metadata.
+	// Using SzProduct: Show license metadata.
 
-	license, err := g2Product.GetLicense(ctx)
+	license, err := szProduct.GetLicense(ctx)
 	if err != nil {
 		failOnError(5303, err)
 	}
 	logger.Log(2004, license)
 
-	// Using G2Engine: Purge repository again.
+	// Using SzEngine: Purge repository again.
 
-	err = g2Diagnostic.PurgeRepository(ctx)
+	err = szDiagnostic.PurgeRepository(ctx)
 	if err != nil {
 		failOnError(5304, err)
 	}
 
 	return err
-}
-
-func destroyObjects(ctx context.Context, g2Config sz.SzConfig, g2Configmgr sz.SzConfigManager, g2Diagnostic sz.SzDiagnostic, g2Engine sz.SzEngine, g2Product sz.SzProduct) error {
-
-	err := g2Config.Destroy(ctx)
-	if err != nil {
-		failOnError(5401, err)
-	}
-
-	err = g2Configmgr.Destroy(ctx)
-	if err != nil {
-		failOnError(5402, err)
-	}
-
-	err = g2Diagnostic.Destroy(ctx)
-	if err != nil {
-		failOnError(5403, err)
-	}
-
-	err = g2Engine.Destroy(ctx)
-	if err != nil {
-		failOnError(5404, err)
-	}
-
-	err = g2Product.Destroy(ctx)
-	if err != nil {
-		failOnError(5405, err)
-	}
-
-	return err
-}
-
-func failOnError(msgId int, err error) {
-	logger.Log(msgId, err)
-	panic(err.Error())
 }
 
 // ----------------------------------------------------------------------------
@@ -340,152 +241,57 @@ func main() {
 	var err error = nil
 	ctx := context.TODO()
 
-	fmt.Printf(">>>>>> Step 1.0\n")
+	// Create a directory for temporary files.
 
-	// get the base directory for temporary files
-	baseDir := getTestDirectoryPath()
-	err = os.RemoveAll(filepath.Clean(baseDir)) // cleanup any previous test run
-	if err != nil {
-		fmt.Printf("Failed to remove target test directory: %v\n", baseDir)
-		fmt.Println(err)
-		return
-	}
-
-	fmt.Printf(">>>>>> Step 2.0\n")
-
-	err = os.MkdirAll(filepath.Clean(baseDir), 0750) // recreate the test target directory
-	if err != nil {
-		fmt.Printf("Failed to recreate target test directory: %v\n", baseDir)
-		fmt.Println(err)
-		return
-	}
-
-	fmt.Printf(">>>>>> Step 3.0\n")
-
-	// setup the database
-	_, _, err = setupDatabase(false)
-	if err != nil {
-		fmt.Println("Failed to setup database")
-		fmt.Println(err)
-		return
-	}
-
-	fmt.Printf(">>>>>> Step 4.0\n")
-
-	// Configure the "log" standard library.
-	log.SetFlags(0)
-	logger, err = getLogger(ctx)
-	if err != nil {
-		failOnError(5000, err)
-	}
-
-	// Test logger.
-
-	programmMetadataMap := map[string]interface{}{
-		"ProgramName":    programName,
-		"BuildVersion":   buildVersion,
-		"BuildIteration": buildIteration,
-	}
-
-	fmt.Printf("\n-------------------------------------------------------------------------------\n\n")
-	logger.Log(2001, "Just a test of logging", programmMetadataMap)
-
-	// Create observers.
-
-	observer1 := &observer.ObserverNull{
-		Id: "Observer 1",
-	}
-	observer2 := &observer.ObserverNull{
-		Id: "Observer 2",
-	}
-
-	grpcConnection, err := grpc.Dial("localhost:8260", grpc.WithTransportCredentials(insecure.NewCredentials()))
-	if err != nil {
-		fmt.Printf("Did not connect: %v\n", err)
-	}
-
-	observer3 := &observer.ObserverGrpc{
-		Id:         "Observer 3",
-		GrpcClient: observerpb.NewObserverClient(grpcConnection),
-	}
-
-	// Get Senzing objects for installing a Senzing Engine configuration.
-
-	g2Config, err := getSzConfig(ctx)
+	testDirectoryPath := getTestDirectoryPath()
+	err = os.RemoveAll(filepath.Clean(testDirectoryPath)) // Cleanup any previous test run.
 	if err != nil {
 		failOnError(5001, err)
 	}
-	err = g2Config.RegisterObserver(ctx, observer1)
-	if err != nil {
-		panic(err)
-	}
-	err = g2Config.RegisterObserver(ctx, observer2)
-	if err != nil {
-		panic(err)
-	}
-	err = g2Config.RegisterObserver(ctx, observer3)
-	if err != nil {
-		panic(err)
-	}
-	g2Config.SetObserverOrigin(ctx, "sz-sdk-go-core main.go")
 
-	g2Configmgr, err := getSzConfigManager(ctx)
+	err = os.MkdirAll(filepath.Clean(testDirectoryPath), 0750) // Recreate the test target directory.
+	if err != nil {
+		failOnError(5002, err)
+	}
+
+	// Setup dependencies.
+
+	databaseUrl, err := setupDatabase()
+	if err != nil {
+		failOnError(5003, err)
+	}
+
+	log.SetFlags(0)
+	logger, err = getLogger(ctx)
+	if err != nil {
+		failOnError(5004, err)
+	}
+
+	// Create a SzAbstractFactory.
+
+	settings, err := getSettings(databaseUrl)
 	if err != nil {
 		failOnError(5005, err)
 	}
-	err = g2Configmgr.RegisterObserver(ctx, observer1)
-	if err != nil {
-		panic(err)
+	szAbstractFactory := &szabstractfactory.Szabstractfactory{
+		ConfigId:       sz.SZ_INITIALIZE_WITH_DEFAULT_CONFIGURATION,
+		InstanceName:   "Example instance",
+		Settings:       settings,
+		VerboseLogging: sz.SZ_NO_LOGGING,
 	}
 
-	// Persist the Senzing configuration to the Senzing repository.
+	// Demonstrate persisting a Senzing configuration to the Senzing repository.
 
-	err = demonstrateConfigFunctions(ctx, g2Config, g2Configmgr)
+	err = demonstrateConfigFunctions(ctx, szAbstractFactory)
 	if err != nil {
-		failOnError(5008, err)
-	}
-
-	// Now that a Senzing configuration is installed, get the remainder of the Senzing objects.
-
-	g2Diagnostic, err := getSzDiagnostic(ctx)
-	if err != nil {
-		failOnError(5009, err)
-	}
-	err = g2Diagnostic.RegisterObserver(ctx, observer1)
-	if err != nil {
-		panic(err)
-	}
-
-	g2Engine, err := getSzEngine(ctx)
-	if err != nil {
-		failOnError(5010, err)
-	}
-	err = g2Engine.RegisterObserver(ctx, observer1)
-	if err != nil {
-		panic(err)
-	}
-
-	g2Product, err := getSzProduct(ctx)
-	if err != nil {
-		failOnError(5011, err)
-	}
-	err = g2Product.RegisterObserver(ctx, observer1)
-	if err != nil {
-		panic(err)
+		failOnError(5006, err)
 	}
 
 	// Demonstrate tests.
 
-	err = demonstrateAdditionalFunctions(ctx, g2Diagnostic, g2Engine, g2Product)
+	err = demonstrateSenzingFunctions(ctx, szAbstractFactory)
 	if err != nil {
-		failOnError(5015, err)
-	}
-
-	// Destroy Senzing objects.
-
-	err = destroyObjects(ctx, g2Config, g2Configmgr, g2Diagnostic, g2Engine, g2Product)
-	if err != nil {
-		failOnError(5016, err)
+		failOnError(5007, err)
 	}
 
 	fmt.Printf("\n-------------------------------------------------------------------------------\n\n")

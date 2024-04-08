@@ -10,7 +10,7 @@ import (
 
 	truncator "github.com/aquilax/truncate"
 	"github.com/senzing-garage/go-helpers/engineconfigurationjson"
-	futil "github.com/senzing-garage/go-helpers/fileutil"
+	"github.com/senzing-garage/go-helpers/fileutil"
 	"github.com/senzing-garage/go-logging/logging"
 	"github.com/senzing-garage/sz-sdk-go/sz"
 	"github.com/senzing-garage/sz-sdk-go/szconfig"
@@ -202,7 +202,7 @@ func setupDatabase(preserveDB bool) (string, bool, error) {
 	if !dbExternal {
 		dbUrl = dbDefaultUrl
 		if !preserveDB {
-			_, _, err = futil.CopyFile(dbFilePath, testDirectoryPath, true) // Copy the SQLite database file.
+			_, _, err = fileutil.CopyFile(dbFilePath, testDirectoryPath, true) // Copy the SQLite database file.
 			if err != nil {
 				err = fmt.Errorf("setup failed to copy template database (%v) to target path (%v): %w",
 					dbFilePath, testDirectoryPath, err)

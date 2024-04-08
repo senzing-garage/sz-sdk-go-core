@@ -7,9 +7,8 @@ require (
 	github.com/senzing-garage/go-helpers v0.5.0
 	github.com/senzing-garage/go-logging v1.4.0
 	github.com/senzing-garage/go-observing v0.3.0
-	github.com/senzing-garage/sz-sdk-go v0.11.2-0.20240405202506-73eb12006976
+	github.com/senzing-garage/sz-sdk-go v0.11.2-0.20240408125115-aeb151155dec
 	github.com/stretchr/testify v1.9.0
-	google.golang.org/grpc v1.63.0
 )
 
 require (
@@ -21,6 +20,7 @@ require (
 	golang.org/x/sys v0.19.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240401170217-c3f982113cda // indirect
+	google.golang.org/grpc v1.63.0 // indirect
 	google.golang.org/protobuf v1.33.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
