@@ -63,7 +63,7 @@ func getSettings() (string, error) {
 	configAttrMap := map[string]string{"databaseUrl": databaseUrl}
 	settings, err := engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingMap(configAttrMap)
 	if err != nil {
-		err = createError(5902, err)
+		err = createError(5900, err)
 	}
 	return settings, err
 }
@@ -122,9 +122,7 @@ func printActual(test *testing.T, actual interface{}) {
 	printResult(test, "Actual", actual)
 }
 
-func testError(test *testing.T, ctx context.Context, szConfigManager sz.SzConfigManager, err error) {
-	_ = ctx
-	_ = szConfigManager
+func testError(test *testing.T, err error) {
 	if err != nil {
 		test.Log("Error:", err.Error())
 		assert.FailNow(test, err.Error())
@@ -166,7 +164,7 @@ func setup() error {
 	var err error = nil
 	logger, err = logging.NewSenzingSdkLogger(ComponentId, szconfigmanager.IdMessages)
 	if err != nil {
-		return fmt.Errorf("Failed to create logger. Error: %v", err)
+		return createError(5901, err)
 	}
 	err = setupDirectories()
 	if err != nil {
@@ -178,7 +176,7 @@ func setup() error {
 	}
 	err = setupSenzingConfiguration()
 	if err != nil {
-		return fmt.Errorf("Failed to set up Senzing Configuration. Error: %v", err)
+		return createError(5920, err)
 	}
 	return err
 }
@@ -230,7 +228,7 @@ func setupSenzingConfiguration() error {
 
 	settings, err := getSettings()
 	if err != nil {
-		return createError(9999, err)
+		return createError(5901, err)
 	}
 
 	// Create sz objects.
@@ -238,7 +236,7 @@ func setupSenzingConfiguration() error {
 	szConfig := &szconfig.Szconfig{}
 	err = szConfig.Initialize(ctx, instanceName, settings, verboseLogging)
 	if err != nil {
-		return createError(5906, err)
+		return createError(5902, err)
 	}
 	defer szConfig.Destroy(ctx)
 
@@ -246,7 +244,7 @@ func setupSenzingConfiguration() error {
 
 	configHandle, err := szConfig.CreateConfig(ctx)
 	if err != nil {
-		return createError(5907, err)
+		return createError(5903, err)
 	}
 
 	// Add data sources to in-memory Senzing configuration.
@@ -255,7 +253,7 @@ func setupSenzingConfiguration() error {
 	for _, dataSourceCode := range dataSourceCodes {
 		_, err := szConfig.AddDataSource(ctx, configHandle, dataSourceCode)
 		if err != nil {
-			return createError(5908, err)
+			return createError(5904, err)
 		}
 	}
 
@@ -263,14 +261,14 @@ func setupSenzingConfiguration() error {
 
 	configDefinition, err := szConfig.ExportConfig(ctx, configHandle)
 	if err != nil {
-		return createError(5909, err)
+		return createError(5905, err)
 	}
 
 	// Close szConfig in-memory object.
 
 	err = szConfig.CloseConfig(ctx, configHandle)
 	if err != nil {
-		return createError(5910, err)
+		return createError(5906, err)
 	}
 
 	// Persist the Senzing configuration to the Senzing repository as default.
@@ -278,19 +276,19 @@ func setupSenzingConfiguration() error {
 	szConfigManager := &Szconfigmanager{}
 	err = szConfigManager.Initialize(ctx, instanceName, settings, verboseLogging)
 	if err != nil {
-		return createError(5912, err)
+		return createError(5907, err)
 	}
 	defer szConfigManager.Destroy(ctx)
 
 	configComment := fmt.Sprintf("Created by szconfigmanager_test at %s", now.UTC())
 	configId, err := szConfigManager.AddConfig(ctx, configDefinition, configComment)
 	if err != nil {
-		return createError(5913, err)
+		return createError(5908, err)
 	}
 
 	err = szConfigManager.SetDefaultConfigId(ctx, configId)
 	if err != nil {
-		return createError(5914, err)
+		return createError(5909, err)
 	}
 
 	return err
@@ -373,7 +371,7 @@ func TestSzConfigManager_AddConfig(test *testing.T) {
 	szconfigmanager := getTestObject(ctx, test)
 	configComment := fmt.Sprintf("szconfigmanager_test at %s", now.UTC())
 	actual, err := szconfigmanager.AddConfig(ctx, configDefinition, configComment)
-	testError(test, ctx, szconfigmanager, err)
+	testError(test, err)
 	printActual(test, actual)
 }
 
@@ -386,7 +384,7 @@ func TestSzConfigManager_GetConfig(test *testing.T) {
 		assert.FailNow(test, "szconfigmanager.GetDefaultConfigId()")
 	}
 	actual, err := szconfigmanager.GetConfig(ctx, configId)
-	testError(test, ctx, szconfigmanager, err)
+	testError(test, err)
 	printActual(test, actual)
 }
 
@@ -394,7 +392,7 @@ func TestSzConfigManager_GetConfigList(test *testing.T) {
 	ctx := context.TODO()
 	szconfigmanager := getTestObject(ctx, test)
 	actual, err := szconfigmanager.GetConfigList(ctx)
-	testError(test, ctx, szconfigmanager, err)
+	testError(test, err)
 	printActual(test, actual)
 }
 
@@ -402,7 +400,7 @@ func TestSzConfigManager_GetDefaultConfigId(test *testing.T) {
 	ctx := context.TODO()
 	szconfigmanager := getTestObject(ctx, test)
 	actual, err := szconfigmanager.GetDefaultConfigId(ctx)
-	testError(test, ctx, szconfigmanager, err)
+	testError(test, err)
 	printActual(test, actual)
 }
 
@@ -424,7 +422,7 @@ func TestSzConfigManager_ReplaceDefaultConfigId(test *testing.T) {
 	}
 
 	err := szconfigmanager.ReplaceDefaultConfigId(ctx, currentDefaultConfigId, newDefaultConfigId)
-	testError(test, ctx, szconfigmanager, err)
+	testError(test, err)
 }
 
 func TestSzConfigManager_SetDefaultConfigId(test *testing.T) {
@@ -436,7 +434,7 @@ func TestSzConfigManager_SetDefaultConfigId(test *testing.T) {
 		assert.FailNow(test, "szconfigmanager.GetDefaultConfigId()")
 	}
 	err := szconfigmanager.SetDefaultConfigId(ctx, configId)
-	testError(test, ctx, szconfigmanager, err)
+	testError(test, err)
 }
 
 func TestSzConfigManager_Initialize(test *testing.T) {
@@ -445,14 +443,14 @@ func TestSzConfigManager_Initialize(test *testing.T) {
 	instanceName := "Test module name"
 	verboseLogging := int64(0)
 	settings, err := getSettings()
-	testError(test, ctx, szconfigmanager, err)
+	testError(test, err)
 	err = szconfigmanager.Initialize(ctx, instanceName, settings, verboseLogging)
-	testError(test, ctx, szconfigmanager, err)
+	testError(test, err)
 }
 
 func TestSzConfigManager_Destroy(test *testing.T) {
 	ctx := context.TODO()
 	szconfigmanager := getTestObject(ctx, test)
 	err := szconfigmanager.Destroy(ctx)
-	testError(test, ctx, szconfigmanager, err)
+	testError(test, err)
 }
