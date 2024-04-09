@@ -85,7 +85,7 @@ func getSzConfig(ctx context.Context) sz.SzConfig {
 	return globalSzConfig
 }
 
-func getSzConfigManager(ctx context.Context) sz.SzConfigManager {
+func getSzConfigManager(ctx context.Context) *Szconfigmanager {
 	_ = ctx
 	if globalSzConfigManager == nil {
 		settings, err := getSettings()
@@ -102,12 +102,15 @@ func getSzConfigManager(ctx context.Context) sz.SzConfigManager {
 	return globalSzConfigManager
 }
 
+func getSzConfigManagerAsInterface(ctx context.Context) sz.SzConfigManager {
+	return getSzConfigManager(ctx)
+}
+
 func getTestDirectoryPath() string {
 	return filepath.FromSlash("../target/test/szconfigmanager")
 }
 
-func getTestObject(ctx context.Context, test *testing.T) sz.SzConfigManager {
-	_ = ctx
+func getTestObject(ctx context.Context, test *testing.T) *Szconfigmanager {
 	_ = test
 	return getSzConfigManager(ctx)
 }
@@ -391,6 +394,14 @@ func TestSzConfigManager_GetConfig(test *testing.T) {
 func TestSzConfigManager_GetConfigList(test *testing.T) {
 	ctx := context.TODO()
 	szconfigmanager := getTestObject(ctx, test)
+	actual, err := szconfigmanager.GetConfigList(ctx)
+	testError(test, err)
+	printActual(test, actual)
+}
+
+func TestSzConfigManager_GetConfigList_asInterface(test *testing.T) {
+	ctx := context.TODO()
+	szconfigmanager := getSzConfigManagerAsInterface(ctx)
 	actual, err := szconfigmanager.GetConfigList(ctx)
 	testError(test, err)
 	printActual(test, actual)

@@ -14,7 +14,7 @@ import (
 // Examples for godoc documentation
 // ----------------------------------------------------------------------------
 
-func ExampleSzConfig_SetObserverOrigin() {
+func ExampleSzconfig_SetObserverOrigin() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig_examples_test.go
 	ctx := context.TODO()
 	szConfig := getSzConfig(ctx)
@@ -23,7 +23,7 @@ func ExampleSzConfig_SetObserverOrigin() {
 	// Output:
 }
 
-func ExampleSzConfig_GetObserverOrigin() {
+func ExampleSzconfig_GetObserverOrigin() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig_examples_test.go
 	ctx := context.TODO()
 	szConfig := getSzConfig(ctx)
@@ -146,7 +146,7 @@ func ExampleSzConfig_ImportConfig() {
 	// Output: true
 }
 
-func ExampleSzConfig_SetLogLevel() {
+func ExampleSzconfig_SetLogLevel() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig_examples_test.go
 	ctx := context.TODO()
 	szConfig := getSzConfig(ctx)

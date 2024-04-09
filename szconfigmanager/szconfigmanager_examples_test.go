@@ -15,7 +15,7 @@ import (
 // Examples for godoc documentation
 // ----------------------------------------------------------------------------
 
-func ExampleSzConfigManager_SetObserverOrigin() {
+func ExampleSzconfigmanager_SetObserverOrigin() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfigmanager/szconfigmanager_examples_test.go
 	ctx := context.TODO()
 	szConfigManager := getSzConfigManager(ctx)
@@ -24,7 +24,7 @@ func ExampleSzConfigManager_SetObserverOrigin() {
 	// Output:
 }
 
-func ExampleSzConfigManager_GetObserverOrigin() {
+func ExampleSzconfigmanager_GetObserverOrigin() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfigmanager/szconfigmanager_examples_test.go
 	ctx := context.TODO()
 	szConfigManager := getSzConfigManager(ctx)
@@ -144,7 +144,7 @@ func ExampleSzConfigManager_SetDefaultConfigId() {
 	// Output:
 }
 
-func ExampleSzConfigManager_SetLogLevel() {
+func ExampleSzconfigmanager_SetLogLevel() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfigmanager/szconfigmanager_examples_test.go
 	ctx := context.TODO()
 	szConfigManager := getSzConfigManager(ctx)

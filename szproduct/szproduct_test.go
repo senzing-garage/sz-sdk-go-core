@@ -64,7 +64,7 @@ func getSettings() (string, error) {
 	return settings, err
 }
 
-func getSzProduct(ctx context.Context) sz.SzProduct {
+func getSzProduct(ctx context.Context) *Szproduct {
 	_ = ctx
 	if globalSzProduct == nil {
 		settings, err := getSettings()
@@ -81,11 +81,15 @@ func getSzProduct(ctx context.Context) sz.SzProduct {
 	return globalSzProduct
 }
 
+func getSzProductAsInterface(ctx context.Context) sz.SzProduct {
+	return getSzProduct(ctx)
+}
+
 func getTestDirectoryPath() string {
 	return filepath.FromSlash("../target/test/szproduct")
 }
 
-func getTestObject(ctx context.Context, test *testing.T) sz.SzProduct {
+func getTestObject(ctx context.Context, test *testing.T) *Szproduct {
 	_ = test
 	return getSzProduct(ctx)
 }
@@ -235,6 +239,14 @@ func TestSzProduct_Initialize(test *testing.T) {
 func TestSzProduct_GetLicense(test *testing.T) {
 	ctx := context.TODO()
 	szProduct := getTestObject(ctx, test)
+	actual, err := szProduct.GetLicense(ctx)
+	testError(test, err)
+	printActual(test, actual)
+}
+
+func TestSzProduct_GetLicense_asInterface(test *testing.T) {
+	ctx := context.TODO()
+	szProduct := getSzProductAsInterface(ctx)
 	actual, err := szProduct.GetLicense(ctx)
 	testError(test, err)
 	printActual(test, actual)

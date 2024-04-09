@@ -15,7 +15,7 @@ import (
 // Examples for godoc documentation
 // ----------------------------------------------------------------------------
 
-func ExampleSzEngine_SetObserverOrigin() {
+func ExampleSzengine_SetObserverOrigin() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
 	szengine := getSzEngine(ctx)
@@ -24,7 +24,7 @@ func ExampleSzEngine_SetObserverOrigin() {
 	// Output:
 }
 
-func ExampleSzEngine_GetObserverOrigin() {
+func ExampleSzengine_GetObserverOrigin() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_test.go
 	ctx := context.TODO()
 	szengine := getSzEngine(ctx)
@@ -529,7 +529,7 @@ func ExampleSzEngine_SearchByAttributes_searchProfile() {
 	// TODO: Implement ExampleSzEngine_SearchByAttributes_searchProfile
 }
 
-func ExampleSzEngine_SetLogLevel() {
+func ExampleSzengine_SetLogLevel() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
 	szengine := getSzEngine(ctx)

@@ -64,8 +64,7 @@ func getSettings() (string, error) {
 	return settings, err
 }
 
-func getSzConfig(ctx context.Context) sz.SzConfig {
-	_ = ctx
+func getSzConfig(ctx context.Context) *Szconfig {
 	if globalSzConfig == nil {
 		settings, err := getSettings()
 		if err != nil {
@@ -81,11 +80,15 @@ func getSzConfig(ctx context.Context) sz.SzConfig {
 	return globalSzConfig
 }
 
+func getSzConfigAsInterface(ctx context.Context) sz.SzConfig {
+	return getSzConfig(ctx)
+}
+
 func getTestDirectoryPath() string {
 	return filepath.FromSlash("../target/test/szconfig")
 }
 
-func getTestObject(ctx context.Context, test *testing.T) sz.SzConfig {
+func getTestObject(ctx context.Context, test *testing.T) *Szconfig {
 	_ = test
 	return getSzConfig(ctx)
 }
@@ -326,6 +329,18 @@ func TestSzConfig_DeleteDataSource_WithLoad(test *testing.T) {
 func TestSzConfig_GetDataSources(test *testing.T) {
 	ctx := context.TODO()
 	szConfig := getTestObject(ctx, test)
+	configHandle, err := szConfig.CreateConfig(ctx)
+	testError(test, err)
+	actual, err := szConfig.GetDataSources(ctx, configHandle)
+	testError(test, err)
+	printActual(test, actual)
+	err = szConfig.CloseConfig(ctx, configHandle)
+	testError(test, err)
+}
+
+func TestSzConfig_GetDataSources_asInterface(test *testing.T) {
+	ctx := context.TODO()
+	szConfig := getSzConfigAsInterface(ctx)
 	configHandle, err := szConfig.CreateConfig(ctx)
 	testError(test, err)
 	actual, err := szConfig.GetDataSources(ctx, configHandle)

@@ -115,7 +115,7 @@ func getSettings() (string, error) {
 	return settings, err
 }
 
-func getSzEngine(ctx context.Context) sz.SzEngine {
+func getSzEngine(ctx context.Context) *Szengine {
 	_ = ctx
 	if globalSzEngine == nil {
 		settings, err := getSettings()
@@ -132,11 +132,15 @@ func getSzEngine(ctx context.Context) sz.SzEngine {
 	return globalSzEngine
 }
 
+func getSzEngineAsInterface(ctx context.Context) sz.SzEngine {
+	return getSzEngine(ctx)
+}
+
 func getTestDirectoryPath() string {
 	return filepath.FromSlash("../target/test/szengine")
 }
 
-func getTestObject(ctx context.Context, test *testing.T) sz.SzEngine {
+func getTestObject(ctx context.Context, test *testing.T) *Szengine {
 	_ = test
 	return getSzEngine(ctx)
 }
@@ -456,6 +460,14 @@ func TestSzEngine_AddRecord_withInfo(test *testing.T) {
 func TestSzEngine_CountRedoRecords(test *testing.T) {
 	ctx := context.TODO()
 	szEngine := getTestObject(ctx, test)
+	actual, err := szEngine.CountRedoRecords(ctx)
+	testError(test, err)
+	printActual(test, actual)
+}
+
+func TestSzEngine_CountRedoRecords_asInterface(test *testing.T) {
+	ctx := context.TODO()
+	szEngine := getSzEngineAsInterface(ctx)
 	actual, err := szEngine.CountRedoRecords(ctx)
 	testError(test, err)
 	printActual(test, actual)

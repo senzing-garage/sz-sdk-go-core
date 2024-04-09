@@ -14,7 +14,7 @@ import (
 // Examples for godoc documentation
 // ----------------------------------------------------------------------------
 
-func ExampleSzDiagnostic_SetObserverOrigin() {
+func ExampleSzdiagnostic_SetObserverOrigin() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
 	ctx := context.TODO()
 	szDiagnostic := getSzDiagnostic(ctx)
@@ -23,7 +23,7 @@ func ExampleSzDiagnostic_SetObserverOrigin() {
 	// Output:
 }
 
-func ExampleSzDiagnostic_GetObserverOrigin() {
+func ExampleSzdiagnostic_GetObserverOrigin() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
 	ctx := context.TODO()
 	szDiagnostic := getSzDiagnostic(ctx)
@@ -47,7 +47,7 @@ func ExampleSzDiagnostic_CheckDatabasePerformance() {
 	// Output: {"numRecordsInserted":...
 }
 
-func ExampleSzDiagnostic_SetLogLevel() {
+func ExampleSzdiagnostic_SetLogLevel() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
 	ctx := context.TODO()
 	szDiagnostic := &Szdiagnostic{}

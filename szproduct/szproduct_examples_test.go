@@ -15,7 +15,7 @@ import (
 // Examples for godoc documentation
 // ----------------------------------------------------------------------------
 
-func ExampleSzProduct_SetObserverOrigin() {
+func ExampleSzproduct_SetObserverOrigin() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szproduct/szproduct_examples_test.go
 	ctx := context.TODO()
 	szProduct := getSzProduct(ctx)
@@ -24,7 +24,7 @@ func ExampleSzProduct_SetObserverOrigin() {
 	// Output:
 }
 
-func ExampleSzProduct_GetObserverOrigin() {
+func ExampleSzproduct_GetObserverOrigin() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szproduct/szproduct_test.go
 	ctx := context.TODO()
 	szProduct := getSzProduct(ctx)
@@ -61,7 +61,7 @@ func ExampleSzProduct_GetLicense() {
 	// Output: {"billing":null,"contract":null,"customer":null,"expireDate":null,"issueDate":null,"licenseLevel":null,"licenseType":null,"recordLimit":null}
 }
 
-func ExampleSzProduct_SetLogLevel() {
+func ExampleSzproduct_SetLogLevel() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szproduct/szproduct_examples_test.go
 	ctx := context.TODO()
 	szProduct := getSzProduct(ctx)

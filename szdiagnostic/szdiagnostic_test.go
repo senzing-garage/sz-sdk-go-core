@@ -74,7 +74,7 @@ func getSettings() (string, error) {
 	return settings, err
 }
 
-func getSzDiagnostic(ctx context.Context) sz.SzDiagnostic {
+func getSzDiagnostic(ctx context.Context) *Szdiagnostic {
 	_ = ctx
 	if globalSzDiagnostic == nil {
 		settings, err := getSettings()
@@ -91,11 +91,15 @@ func getSzDiagnostic(ctx context.Context) sz.SzDiagnostic {
 	return globalSzDiagnostic
 }
 
+func getSzDiagnosticAsInterface(ctx context.Context) sz.SzDiagnostic {
+	return getSzDiagnostic(ctx)
+}
+
 func getTestDirectoryPath() string {
 	return filepath.FromSlash("../target/test/szdiagnostic")
 }
 
-func getTestObject(ctx context.Context, test *testing.T) sz.SzDiagnostic {
+func getTestObject(ctx context.Context, test *testing.T) *Szdiagnostic {
 	_ = test
 	return getSzDiagnostic(ctx)
 }
@@ -362,6 +366,15 @@ func TestSzDiagnostic_GetObserverOrigin(test *testing.T) {
 func TestSzDiagnostic_CheckDatabasePerformance(test *testing.T) {
 	ctx := context.TODO()
 	szDiagnostic := getTestObject(ctx, test)
+	secondsToRun := 1
+	actual, err := szDiagnostic.CheckDatabasePerformance(ctx, secondsToRun)
+	testError(test, err)
+	printActual(test, actual)
+}
+
+func TestSzDiagnostic_CheckDatabasePerformance_asInterface(test *testing.T) {
+	ctx := context.TODO()
+	szDiagnostic := getSzDiagnosticAsInterface(ctx)
 	secondsToRun := 1
 	actual, err := szDiagnostic.CheckDatabasePerformance(ctx, secondsToRun)
 	testError(test, err)
