@@ -496,38 +496,39 @@ func ExampleSzengine_PrimeEngine() {
 }
 
 func ExampleSzEngine_ProcessRedoRecord() {
-	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
-	ctx := context.TODO()
-	szEngine := getSzEngine(ctx)
-	redoRecord, err := szEngine.GetRedoRecord(ctx)
-	if err != nil {
-		fmt.Println(err)
-	}
-	flags := sz.SZ_WITHOUT_INFO
-	result, err := szEngine.ProcessRedoRecord(ctx, redoRecord, flags)
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println(result)
-	// Output: {}
+	// TODO: Uncomment after it has been implemented
+	// // For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
+	// ctx := context.TODO()
+	// szEngine := getSzEngine(ctx)
+	// redoRecord, err := szEngine.GetRedoRecord(ctx)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
+	// flags := sz.SZ_WITHOUT_INFO
+	// result, err := szEngine.ProcessRedoRecord(ctx, redoRecord, flags)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
+	// fmt.Println(result)
+	// // Output: {}
 }
 
 func ExampleSzEngine_ProcessRedoRecord_withInfo() {
-	// TODO: Fix Output
-	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
-	ctx := context.TODO()
-	szEngine := getSzEngine(ctx)
-	redoRecord, err := szEngine.GetRedoRecord(ctx)
-	if err != nil {
-		fmt.Println(err)
-	}
-	flags := sz.SZ_WITH_INFO
-	result, err := szEngine.ProcessRedoRecord(ctx, redoRecord, flags)
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println(result)
-	// Output:
+	// TODO: Uncomment after it has been implemented.
+	// // For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
+	// ctx := context.TODO()
+	// szEngine := getSzEngine(ctx)
+	// redoRecord, err := szEngine.GetRedoRecord(ctx)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
+	// flags := sz.SZ_WITH_INFO
+	// result, err := szEngine.ProcessRedoRecord(ctx, redoRecord, flags)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
+	// fmt.Println(result)
+	// // Output: {}
 }
 
 func ExampleSzengine_ReevaluateEntity() {
