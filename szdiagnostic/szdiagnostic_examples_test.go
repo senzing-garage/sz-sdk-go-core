@@ -28,7 +28,7 @@ func ExampleSzdiagnostic_CheckDatabasePerformance() {
 }
 
 func ExampleSzdiagnostic_PurgeRepository() {
-	// For more information, visit https://github.com/Senzing/sz-sdk-go-grpc/blob/main/szdiagnostic/szdiagnostic_examples_test.go
+	// For more information, visit https://github.com/Senzing/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
 	ctx := context.TODO()
 	szDiagnostic := getSzDiagnostic(ctx)
 	err := szDiagnostic.PurgeRepository(ctx)

@@ -177,7 +177,7 @@ func ExampleSzEngine_ExportJsonEntityReportIterator() {
 	// Output:
 }
 
-func ExampleSzEngine_FetchNext() {
+func ExampleSzengine_FetchNext() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
 	szEngine := getSzEngine(ctx)
