@@ -30,6 +30,75 @@ var (
 )
 
 // ----------------------------------------------------------------------------
+// Interface functions - test
+// ----------------------------------------------------------------------------
+
+func TestSzProduct_GetLicense(test *testing.T) {
+	ctx := context.TODO()
+	szProduct := getTestObject(ctx, test)
+	actual, err := szProduct.GetLicense(ctx)
+	testError(test, err)
+	printActual(test, actual)
+}
+
+func TestSzProduct_GetVersion(test *testing.T) {
+	ctx := context.TODO()
+	szProduct := getTestObject(ctx, test)
+	actual, err := szProduct.GetVersion(ctx)
+	testError(test, err)
+	printActual(test, actual)
+}
+
+// ----------------------------------------------------------------------------
+// Logging and observing
+// ----------------------------------------------------------------------------
+
+func TestSzProduct_SetObserverOrigin(test *testing.T) {
+	ctx := context.TODO()
+	szProduct := getTestObject(ctx, test)
+	origin := "Machine: nn; Task: UnitTest"
+	szProduct.SetObserverOrigin(ctx, origin)
+}
+
+func TestSzProduct_GetObserverOrigin(test *testing.T) {
+	ctx := context.TODO()
+	szProduct := getTestObject(ctx, test)
+	origin := "Machine: nn; Task: UnitTest"
+	szProduct.SetObserverOrigin(ctx, origin)
+	actual := szProduct.GetObserverOrigin(ctx)
+	assert.Equal(test, origin, actual)
+}
+
+// ----------------------------------------------------------------------------
+// Object creation / destruction
+// ----------------------------------------------------------------------------
+
+func TestSzProduct_AsInterface(test *testing.T) {
+	ctx := context.TODO()
+	szProduct := getSzProductAsInterface(ctx)
+	actual, err := szProduct.GetLicense(ctx)
+	testError(test, err)
+	printActual(test, actual)
+}
+
+func TestSzProduct_Initialize(test *testing.T) {
+	ctx := context.TODO()
+	szProduct := &Szproduct{}
+	instanceName := "Test name"
+	settings, err := getSettings()
+	testError(test, err)
+	err = szProduct.Initialize(ctx, instanceName, settings, verboseLogging)
+	testError(test, err)
+}
+
+func TestSzProduct_Destroy(test *testing.T) {
+	ctx := context.TODO()
+	szProduct := getTestObject(ctx, test)
+	err := szProduct.Destroy(ctx)
+	testError(test, err)
+}
+
+// ----------------------------------------------------------------------------
 // Internal functions
 // ----------------------------------------------------------------------------
 
@@ -204,65 +273,4 @@ func teardownSzProduct(ctx context.Context) error {
 	}
 	szProductSingleton = nil
 	return nil
-}
-
-// ----------------------------------------------------------------------------
-// Test interface functions
-// ----------------------------------------------------------------------------
-
-func TestSzProduct_SetObserverOrigin(test *testing.T) {
-	ctx := context.TODO()
-	szProduct := getTestObject(ctx, test)
-	origin := "Machine: nn; Task: UnitTest"
-	szProduct.SetObserverOrigin(ctx, origin)
-}
-
-func TestSzProduct_GetObserverOrigin(test *testing.T) {
-	ctx := context.TODO()
-	szProduct := getTestObject(ctx, test)
-	origin := "Machine: nn; Task: UnitTest"
-	szProduct.SetObserverOrigin(ctx, origin)
-	actual := szProduct.GetObserverOrigin(ctx)
-	assert.Equal(test, origin, actual)
-}
-
-func TestSzProduct_Initialize(test *testing.T) {
-	ctx := context.TODO()
-	szProduct := &Szproduct{}
-	instanceName := "Test name"
-	settings, err := getSettings()
-	testError(test, err)
-	err = szProduct.Initialize(ctx, instanceName, settings, verboseLogging)
-	testError(test, err)
-}
-
-func TestSzProduct_GetLicense(test *testing.T) {
-	ctx := context.TODO()
-	szProduct := getTestObject(ctx, test)
-	actual, err := szProduct.GetLicense(ctx)
-	testError(test, err)
-	printActual(test, actual)
-}
-
-func TestSzProduct_GetLicense_asInterface(test *testing.T) {
-	ctx := context.TODO()
-	szProduct := getSzProductAsInterface(ctx)
-	actual, err := szProduct.GetLicense(ctx)
-	testError(test, err)
-	printActual(test, actual)
-}
-
-func TestSzProduct_GetVersion(test *testing.T) {
-	ctx := context.TODO()
-	szProduct := getTestObject(ctx, test)
-	actual, err := szProduct.GetVersion(ctx)
-	testError(test, err)
-	printActual(test, actual)
-}
-
-func TestSzProduct_Destroy(test *testing.T) {
-	ctx := context.TODO()
-	szProduct := getTestObject(ctx, test)
-	err := szProduct.Destroy(ctx)
-	testError(test, err)
 }

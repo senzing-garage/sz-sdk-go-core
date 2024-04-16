@@ -46,6 +46,672 @@ var (
 )
 
 // ----------------------------------------------------------------------------
+// Interface functions - test
+// ----------------------------------------------------------------------------
+
+func TestSzEngine_AddRecord(test *testing.T) {
+	ctx := context.TODO()
+	szEngine := getTestObject(ctx, test)
+	flags := sz.SZ_WITHOUT_INFO
+	records := []record.Record{
+		truthset.CustomerRecords["1004"],
+		truthset.CustomerRecords["1005"],
+	}
+	for _, record := range records {
+		actual, err := szEngine.AddRecord(ctx, record.DataSource, record.Id, record.Json, flags)
+		testError(test, err)
+		printActual(test, actual)
+		defer szEngine.DeleteRecord(ctx, record.DataSource, record.Id, flags)
+	}
+}
+
+func TestSzEngine_AddRecord_szBadInput(test *testing.T) {
+	ctx := context.TODO()
+	szEngine := getTestObject(ctx, test)
+	record1, err := record.NewRecord(`{"DATA_SOURCE": "TEST", "RECORD_ID": "ADD_TEST_ERR_1", "NAME_FULL": "NOBODY NOMATCH"}`)
+	testError(test, err)
+	record2, err := record.NewRecord(`{"DATA_SOURCE": "BOB", "RECORD_ID": "ADD_TEST_ERR_2", "NAME_FULL": "ERR BAD SOURCE"}`)
+	testError(test, err)
+	flags := sz.SZ_WITHOUT_INFO
+
+	// This one should succeed.
+
+	actual, err := szEngine.AddRecord(ctx, record1.DataSource, record1.Id, record1.Json, flags)
+	testError(test, err)
+	defer szEngine.DeleteRecord(ctx, record1.DataSource, record1.Id, sz.SZ_WITHOUT_INFO)
+	printActual(test, actual)
+
+	// This one should fail.
+
+	actual, err = szEngine.AddRecord(ctx, "CUSTOMERS", record2.Id, record2.Json, flags)
+	assert.True(test, szerror.Is(err, szerror.SzBadInput))
+	printActual(test, actual)
+
+	// Clean-up the records we inserted.
+
+	actual, err = szEngine.DeleteRecord(ctx, record1.DataSource, record1.Id, flags)
+	testError(test, err)
+	defer szEngine.DeleteRecord(ctx, record2.DataSource, record2.Id, sz.SZ_NO_FLAGS)
+	printActual(test, actual)
+}
+
+func TestSzEngine_AddRecord_withInfo(test *testing.T) {
+	ctx := context.TODO()
+	szEngine := getTestObject(ctx, test)
+	flags := sz.SZ_WITH_INFO
+	records := []record.Record{
+		truthset.CustomerRecords["1004"],
+		truthset.CustomerRecords["1005"],
+	}
+	for _, record := range records {
+		actual, err := szEngine.AddRecord(ctx, record.DataSource, record.Id, record.Json, flags)
+		testError(test, err)
+		printActual(test, actual)
+		defer szEngine.DeleteRecord(ctx, record.DataSource, record.Id, flags)
+	}
+}
+
+func TestSzEngine_CloseExport(test *testing.T) {
+	// Tested in:
+	//  - TestSzEngine_ExportCsvEntityReport
+	//  - TestSzEngine_ExportJsonEntityReport
+}
+
+func TestSzEngine_CountRedoRecords(test *testing.T) {
+	expected := int64(1)
+	ctx := context.TODO()
+	szEngine := getTestObject(ctx, test)
+	actual, err := szEngine.CountRedoRecords(ctx)
+	testError(test, err)
+	printActual(test, actual)
+	assert.Equal(test, expected, actual)
+}
+
+func TestSzEngine_DeleteRecord(test *testing.T) {
+	ctx := context.TODO()
+	szEngine := getTestObject(ctx, test)
+	record := truthset.CustomerRecords["1009"]
+	flags := sz.SZ_WITHOUT_INFO
+	actual, err := szEngine.AddRecord(ctx, record.DataSource, record.Id, record.Json, flags)
+	printActual(test, actual)
+	testError(test, err)
+	actual, err = szEngine.DeleteRecord(ctx, record.DataSource, record.Id, flags)
+	testError(test, err)
+	printActual(test, actual)
+}
+
+func TestSzEngine_DeleteRecord_withInfo(test *testing.T) {
+	ctx := context.TODO()
+	szEngine := getTestObject(ctx, test)
+	record := truthset.CustomerRecords["1010"]
+	flags := sz.SZ_WITH_INFO
+	actual, err := szEngine.AddRecord(ctx, record.DataSource, record.Id, record.Json, flags)
+	testError(test, err)
+	printActual(test, actual)
+	actual, err = szEngine.DeleteRecord(ctx, record.DataSource, record.Id, flags)
+	testError(test, err)
+	printActual(test, actual)
+}
+
+func TestSzEngine_ExportCsvEntityReport(test *testing.T) {
+	expected := []string{
+		`RESOLVED_ENTITY_ID,RELATED_ENTITY_ID,MATCH_LEVEL_CODE,MATCH_KEY,DATA_SOURCE,RECORD_ID`,
+		`1,0,"","","CUSTOMERS","1001"`,
+		`1,0,"RESOLVED","+NAME+DOB+PHONE","CUSTOMERS","1002"`,
+		`1,0,"RESOLVED","+NAME+DOB+EMAIL","CUSTOMERS","1003"`,
+	}
+	ctx := context.TODO()
+	szEngine := getTestObject(ctx, test)
+	csvColumnList := ""
+	flags := sz.SZ_EXPORT_INCLUDE_ALL_ENTITIES
+	aHandle, err := szEngine.ExportCsvEntityReport(ctx, csvColumnList, flags)
+	defer func() {
+		err := szEngine.CloseExport(ctx, aHandle)
+		testError(test, err)
+	}()
+	testError(test, err)
+	actualCount := 0
+	for actual := range szEngine.ExportCsvEntityReportIterator(ctx, csvColumnList, flags) {
+		assert.Equal(test, expected[actualCount], strings.TrimSpace(actual.Value))
+		actualCount += 1
+	}
+	assert.Equal(test, len(expected), actualCount)
+}
+
+func TestSzEngine_ExportCsvEntityReportIterator(test *testing.T) {
+	expected := []string{
+		`RESOLVED_ENTITY_ID,RELATED_ENTITY_ID,MATCH_LEVEL_CODE,MATCH_KEY,DATA_SOURCE,RECORD_ID`,
+		`1,0,"","","CUSTOMERS","1001"`,
+		`1,0,"RESOLVED","+NAME+DOB+PHONE","CUSTOMERS","1002"`,
+		`1,0,"RESOLVED","+NAME+DOB+EMAIL","CUSTOMERS","1003"`,
+	}
+	ctx := context.TODO()
+	szEngine := getTestObject(ctx, test)
+	csvColumnList := ""
+	flags := sz.SZ_EXPORT_INCLUDE_ALL_ENTITIES
+	actualCount := 0
+	for actual := range szEngine.ExportCsvEntityReportIterator(ctx, csvColumnList, flags) {
+		testError(test, actual.Error)
+		assert.Equal(test, expected[actualCount], strings.TrimSpace(actual.Value))
+		actualCount += 1
+	}
+	assert.Equal(test, len(expected), actualCount)
+}
+
+func TestSzEngine_ExportJsonEntityReport(test *testing.T) {
+	ctx := context.TODO()
+	szEngine := getTestObject(ctx, test)
+	aRecord := testfixtures.FixtureRecords["65536-periods"]
+	flags := sz.SZ_WITH_INFO
+	actual, err := szEngine.AddRecord(ctx, aRecord.DataSource, aRecord.Id, aRecord.Json, flags)
+	testError(test, err)
+	printActual(test, actual)
+	defer szEngine.DeleteRecord(ctx, aRecord.DataSource, aRecord.Id, sz.SZ_WITHOUT_INFO)
+	// TODO: Figure out correct flags.
+	// flags := sz.Flags(sz.SZ_EXPORT_DEFAULT_FLAGS, sz.SZ_EXPORT_INCLUDE_ALL_HAVING_RELATIONSHIPS, sz.SZ_EXPORT_INCLUDE_ALL_HAVING_RELATIONSHIPS)
+	flags = int64(-1)
+	aHandle, err := szEngine.ExportJsonEntityReport(ctx, flags)
+	defer func() {
+		err := szEngine.CloseExport(ctx, aHandle)
+		testError(test, err)
+	}()
+	testError(test, err)
+	jsonEntityReport := ""
+	for {
+		jsonEntityReportFragment, err := szEngine.FetchNext(ctx, aHandle)
+		testError(test, err)
+		if len(jsonEntityReportFragment) == 0 {
+			break
+		}
+		jsonEntityReport += jsonEntityReportFragment
+	}
+	testError(test, err)
+	assert.True(test, len(jsonEntityReport) > 65536)
+}
+
+func TestSzEngine_ExportJsonEntityReportIterator(test *testing.T) {
+	expected := 1
+	ctx := context.TODO()
+	szEngine := getTestObject(ctx, test)
+	flags := sz.SZ_EXPORT_INCLUDE_ALL_ENTITIES
+	actualCount := 0
+	for actual := range szEngine.ExportJsonEntityReportIterator(ctx, flags) {
+		testError(test, actual.Error)
+		printActual(test, actual.Value)
+		actualCount += 1
+	}
+	assert.Equal(test, expected, actualCount)
+}
+
+func TestSzEngine_FetchNext(test *testing.T) {
+	// Tested in:
+	//  - TestSzEngine_ExportJsonEntityReport
+}
+
+func TestSzEngine_FindNetworkByEntityId(test *testing.T) {
+	ctx := context.TODO()
+	szEngine := getTestObject(ctx, test)
+	record1 := truthset.CustomerRecords["1001"]
+	record2 := truthset.CustomerRecords["1002"]
+	entityList := `{"ENTITIES": [{"ENTITY_ID": ` + getEntityIdString(record1) + `}, {"ENTITY_ID": ` + getEntityIdString(record2) + `}]}`
+	maxDegrees := int64(2)
+	buildOutDegree := int64(1)
+	maxEntities := int64(10)
+	flags := sz.SZ_FIND_NETWORK_DEFAULT_FLAGS
+	actual, err := szEngine.FindNetworkByEntityId(ctx, entityList, maxDegrees, buildOutDegree, maxEntities, flags)
+	testErrorNoFail(test, err)
+	printActual(test, actual)
+}
+
+func TestSzEngine_FindNetworkByRecordId(test *testing.T) {
+	ctx := context.TODO()
+	szEngine := getTestObject(ctx, test)
+	record1 := truthset.CustomerRecords["1001"]
+	record2 := truthset.CustomerRecords["1002"]
+	record3 := truthset.CustomerRecords["1003"]
+	recordList := `{"RECORDS": [{"DATA_SOURCE": "` + record1.DataSource + `", "RECORD_ID": "` + record1.Id + `"}, {"DATA_SOURCE": "` + record2.DataSource + `", "RECORD_ID": "` + record2.Id + `"}, {"DATA_SOURCE": "` + record3.DataSource + `", "RECORD_ID": "` + record3.Id + `"}]}`
+	maxDegrees := int64(1)
+	buildOutDegree := int64(2)
+	maxEntities := int64(10)
+	flags := sz.SZ_FIND_NETWORK_DEFAULT_FLAGS
+	actual, err := szEngine.FindNetworkByRecordId(ctx, recordList, maxDegrees, buildOutDegree, maxEntities, flags)
+	testError(test, err)
+	printActual(test, actual)
+}
+
+func TestSzEngine_FindPathByEntityId(test *testing.T) {
+	ctx := context.TODO()
+	szEngine := getTestObject(ctx, test)
+	startEntityId := getEntityId(truthset.CustomerRecords["1001"])
+	endEntityId := getEntityId(truthset.CustomerRecords["1002"])
+	maxDegrees := int64(1)
+	exclusions := sz.SZ_NO_EXCLUSIONS
+	requiredDataSources := sz.SZ_NO_REQUIRED_DATASOURCES
+	flags := sz.SZ_NO_FLAGS
+	actual, err := szEngine.FindPathByEntityId(ctx, startEntityId, endEntityId, maxDegrees, exclusions, requiredDataSources, flags)
+	testError(test, err)
+	printActual(test, actual)
+}
+
+func TestSzEngine_FindPathByEntityId_excluding(test *testing.T) {
+	ctx := context.TODO()
+	szEngine := getTestObject(ctx, test)
+	startRecord := truthset.CustomerRecords["1001"]
+	startEntityId := getEntityId(startRecord)
+	endEntityId := getEntityId(truthset.CustomerRecords["1002"])
+	maxDegrees := int64(1)
+	exclusions := `{"ENTITIES": [{"ENTITY_ID": ` + getEntityIdString(startRecord) + `}]}`
+	requiredDataSources := sz.SZ_NO_REQUIRED_DATASOURCES
+	flags := sz.SZ_NO_FLAGS
+	actual, err := szEngine.FindPathByEntityId(ctx, startEntityId, endEntityId, maxDegrees, exclusions, requiredDataSources, flags)
+	testError(test, err)
+	printActual(test, actual)
+}
+
+func TestSzEngine_FindPathByEntityId_excludingAndIncluding(test *testing.T) {
+	ctx := context.TODO()
+	szEngine := getTestObject(ctx, test)
+	startRecord := truthset.CustomerRecords["1001"]
+	startEntityId := getEntityId(startRecord)
+	endEntityId := getEntityId(truthset.CustomerRecords["1002"])
+	maxDegrees := int64(1)
+	exclusions := `{"ENTITIES": [{"ENTITY_ID": ` + getEntityIdString(startRecord) + `}]}`
+	requiredDataSources := `{"DATA_SOURCES": ["` + startRecord.DataSource + `"]}`
+	flags := sz.SZ_NO_FLAGS
+	actual, err := szEngine.FindPathByEntityId(ctx, startEntityId, endEntityId, maxDegrees, exclusions, requiredDataSources, flags)
+	testError(test, err)
+	printActual(test, actual)
+}
+
+func TestSzEngine_FindPathByEntityId_including(test *testing.T) {
+	ctx := context.TODO()
+	szEngine := getTestObject(ctx, test)
+	startRecord := truthset.CustomerRecords["1001"]
+	startEntityId := getEntityId(startRecord)
+	endEntityId := getEntityId(truthset.CustomerRecords["1002"])
+	maxDegrees := int64(1)
+	exclusions := sz.SZ_NO_EXCLUSIONS
+	requiredDataSources := `{"DATA_SOURCES": ["` + startRecord.DataSource + `"]}`
+	flags := sz.SZ_NO_FLAGS
+	actual, err := szEngine.FindPathByEntityId(ctx, startEntityId, endEntityId, maxDegrees, exclusions, requiredDataSources, flags)
+	testError(test, err)
+	printActual(test, actual)
+}
+
+func TestSzEngine_FindPathByRecordId(test *testing.T) {
+	ctx := context.TODO()
+	szEngine := getTestObject(ctx, test)
+	record1 := truthset.CustomerRecords["1001"]
+	record2 := truthset.CustomerRecords["1002"]
+	maxDegree := int64(1)
+	exclusions := sz.SZ_NO_EXCLUSIONS
+	requiredDataSources := sz.SZ_NO_REQUIRED_DATASOURCES
+	flags := sz.SZ_NO_FLAGS
+	actual, err := szEngine.FindPathByRecordId(ctx, record1.DataSource, record1.Id, record2.DataSource, record2.Id, maxDegree, exclusions, requiredDataSources, flags)
+	testError(test, err)
+	printActual(test, actual)
+}
+
+func TestSzEngine_FindPathByRecordId_excluding(test *testing.T) {
+	ctx := context.TODO()
+	szEngine := getTestObject(ctx, test)
+	record1 := truthset.CustomerRecords["1001"]
+	record2 := truthset.CustomerRecords["1002"]
+	maxDegree := int64(1)
+	exclusions := `{"RECORDS": [{ "DATA_SOURCE": "` + record1.DataSource + `", "RECORD_ID": "` + record1.Id + `"}]}`
+	requiredDataSources := sz.SZ_NO_REQUIRED_DATASOURCES
+	flags := sz.SZ_NO_FLAGS
+	actual, err := szEngine.FindPathByRecordId(ctx, record1.DataSource, record1.Id, record2.DataSource, record2.Id, maxDegree, exclusions, requiredDataSources, flags)
+	testError(test, err)
+	printActual(test, actual)
+}
+
+func TestSzEngine_FindPathByRecordId_excludingAndIncluding(test *testing.T) {
+	ctx := context.TODO()
+	szEngine := getTestObject(ctx, test)
+	record1 := truthset.CustomerRecords["1001"]
+	record2 := truthset.CustomerRecords["1002"]
+	maxDegree := int64(1)
+	exclusions := `{"RECORDS": [{ "DATA_SOURCE": "` + record1.DataSource + `", "RECORD_ID": "` + record1.Id + `"}]}`
+	requiredDataSources := `{"DATA_SOURCES": ["` + record1.DataSource + `"]}`
+	flags := sz.SZ_NO_FLAGS
+	actual, err := szEngine.FindPathByRecordId(ctx, record1.DataSource, record1.Id, record2.DataSource, record2.Id, maxDegree, exclusions, requiredDataSources, flags)
+	testError(test, err)
+	printActual(test, actual)
+}
+
+func TestSzEngine_FindPathByRecordId_including(test *testing.T) {
+	ctx := context.TODO()
+	szEngine := getTestObject(ctx, test)
+	record1 := truthset.CustomerRecords["1001"]
+	record2 := truthset.CustomerRecords["1002"]
+	maxDegree := int64(1)
+	exclusions := `{"ENTITIES": [{"ENTITY_ID": ` + getEntityIdString(record1) + `}]}`
+	requiredDataSources := `{"DATA_SOURCES": ["` + record1.DataSource + `"]}`
+	flags := sz.SZ_NO_FLAGS
+	actual, err := szEngine.FindPathByRecordId(ctx, record1.DataSource, record1.Id, record2.DataSource, record2.Id, maxDegree, exclusions, requiredDataSources, flags)
+	testError(test, err)
+	printActual(test, actual)
+}
+
+func TestSzEngine_GetActiveConfigId(test *testing.T) {
+	ctx := context.TODO()
+	szEngine := getTestObject(ctx, test)
+	actual, err := szEngine.GetActiveConfigId(ctx)
+	testError(test, err)
+	printActual(test, actual)
+}
+
+func TestSzEngine_GetEntityByEntityId(test *testing.T) {
+	ctx := context.TODO()
+	szEngine := getTestObject(ctx, test)
+	entityId := getEntityId(truthset.CustomerRecords["1001"])
+	flags := sz.SZ_NO_FLAGS
+	actual, err := szEngine.GetEntityByEntityId(ctx, entityId, flags)
+	testError(test, err)
+	printActual(test, actual)
+}
+
+func TestSzEngine_GetEntityByRecordId(test *testing.T) {
+	ctx := context.TODO()
+	szEngine := getTestObject(ctx, test)
+	record := truthset.CustomerRecords["1001"]
+	flags := sz.SZ_NO_FLAGS
+	actual, err := szEngine.GetEntityByRecordId(ctx, record.DataSource, record.Id, flags)
+	testError(test, err)
+	printActual(test, actual)
+}
+
+func TestSzEngine_GetRecord(test *testing.T) {
+	ctx := context.TODO()
+	szEngine := getTestObject(ctx, test)
+	record := truthset.CustomerRecords["1001"]
+	flags := sz.SZ_NO_FLAGS
+	actual, err := szEngine.GetRecord(ctx, record.DataSource, record.Id, flags)
+	testError(test, err)
+	printActual(test, actual)
+}
+
+func TestSzEngine_GetRedoRecord(test *testing.T) {
+	ctx := context.TODO()
+	szEngine := getTestObject(ctx, test)
+	actual, err := szEngine.GetRedoRecord(ctx)
+	testError(test, err)
+	printActual(test, actual)
+}
+
+func TestSzEngine_GetRepositoryLastModifiedTime(test *testing.T) {
+	ctx := context.TODO()
+	szEngine := getTestObject(ctx, test)
+	actual, err := szEngine.GetRepositoryLastModifiedTime(ctx)
+	testError(test, err)
+	printActual(test, actual)
+}
+
+func TestSzEngine_GetStats(test *testing.T) {
+	ctx := context.TODO()
+	szEngine := getTestObject(ctx, test)
+	actual, err := szEngine.GetStats(ctx)
+	testError(test, err)
+	printActual(test, actual)
+}
+
+func TestSzEngine_GetVirtualEntityByRecordId(test *testing.T) {
+	ctx := context.TODO()
+	szEngine := getTestObject(ctx, test)
+	record1 := truthset.CustomerRecords["1001"]
+	record2 := truthset.CustomerRecords["1002"]
+	recordList := `{"RECORDS": [{"DATA_SOURCE": "` + record1.DataSource + `", "RECORD_ID": "` + record1.Id + `"}, {"DATA_SOURCE": "` + record2.DataSource + `", "RECORD_ID": "` + record2.Id + `"}]}`
+	flags := sz.SZ_NO_FLAGS
+	actual, err := szEngine.GetVirtualEntityByRecordId(ctx, recordList, flags)
+	testError(test, err)
+	printActual(test, actual)
+}
+
+func TestSzEngine_HowEntityByEntityId(test *testing.T) {
+	ctx := context.TODO()
+	szEngine := getTestObject(ctx, test)
+	entityId := getEntityId(truthset.CustomerRecords["1001"])
+	flags := sz.SZ_NO_FLAGS
+	actual, err := szEngine.HowEntityByEntityId(ctx, entityId, flags)
+	testError(test, err)
+	printActual(test, actual)
+}
+
+func TestSzEngine_PrimeEngine(test *testing.T) {
+	ctx := context.TODO()
+	szEngine := getTestObject(ctx, test)
+	err := szEngine.PrimeEngine(ctx)
+	testError(test, err)
+}
+
+func TestSzEngine_ProcessRedoRecord(test *testing.T) {
+	// TODO: Implement TestSzEngine_ProcessRedoRecord
+	// ctx := context.TODO()
+	// szEngine := getTestObject(ctx, test)
+	// flags := sz.SZ_WITHOUT_INFO
+	// actual, err := szEngine.ProcessRedoRecord(ctx, redoRecord, flags)
+	// testError(test, err)
+	// printActual(test, actual)
+}
+
+func TestSzEngine_ProcessRedoRecord_withInfo(test *testing.T) {
+	// TODO: Implement TestSzEngine_ProcessRedoRecord_withInfo
+	// ctx := context.TODO()
+	// szEngine := getTestObject(ctx, test)
+	// flags := sz.SZ_WITH_INFO
+	// actual, err := szEngine.ProcessRedoRecord(ctx, redoRecord, flags)
+	// testError(test, err)
+	// printActual(test, actual)
+}
+
+func TestSzEngine_ReevaluateEntity(test *testing.T) {
+	ctx := context.TODO()
+	szEngine := getTestObject(ctx, test)
+	entityId := getEntityId(truthset.CustomerRecords["1001"])
+	flags := sz.SZ_WITHOUT_INFO
+	actual, err := szEngine.ReevaluateEntity(ctx, entityId, flags)
+	testError(test, err)
+	printActual(test, actual)
+}
+
+func TestSzEngine_ReevaluateEntity_withInfo(test *testing.T) {
+	ctx := context.TODO()
+	szEngine := getTestObject(ctx, test)
+	entityId := getEntityId(truthset.CustomerRecords["1001"])
+	flags := sz.SZ_WITH_INFO
+	actual, err := szEngine.ReevaluateEntity(ctx, entityId, flags)
+	testError(test, err)
+	printActual(test, actual)
+}
+
+func TestSzEngine_ReevaluateRecord(test *testing.T) {
+	ctx := context.TODO()
+	szEngine := getTestObject(ctx, test)
+	record := truthset.CustomerRecords["1001"]
+	flags := sz.SZ_WITHOUT_INFO
+	actual, err := szEngine.ReevaluateRecord(ctx, record.DataSource, record.Id, flags)
+	testError(test, err)
+	printActual(test, actual)
+}
+
+func TestSzEngine_ReevaluateRecord_withInfo(test *testing.T) {
+	ctx := context.TODO()
+	szEngine := getTestObject(ctx, test)
+	record := truthset.CustomerRecords["1001"]
+	flags := sz.SZ_WITH_INFO
+	actual, err := szEngine.ReevaluateRecord(ctx, record.DataSource, record.Id, flags)
+	testError(test, err)
+	printActual(test, actual)
+}
+
+func TestSzEngine_ReplaceRecord(test *testing.T) {
+	ctx := context.TODO()
+	szEngine := getTestObject(ctx, test)
+	dataSourceCode := "CUSTOMERS"
+	recordId := "1001"
+	recordDefinition := `{"SOCIAL_HANDLE": "flavorh", "DATE_OF_BIRTH": "4/8/1984", "ADDR_STATE": "LA", "ADDR_POSTAL_CODE": "71232", "SSN_NUMBER": "053-39-3251", "ENTITY_TYPE": "CUSTOMERS", "GENDER": "F", "srccode": "MDMPER", "CC_ACCOUNT_NUMBER": "5534202208773608", "RECORD_ID": "1001", "DSRC_ACTION": "A", "ADDR_CITY": "Delhi", "DRIVERS_LICENSE_STATE": "DE", "PHONE_NUMBER": "225-671-0796", "NAME_LAST": "JOHNSON", "entityid": "284430058", "ADDR_LINE1": "772 Armstrong RD"}`
+	flags := sz.SZ_WITHOUT_INFO
+	actual, err := szEngine.ReplaceRecord(ctx, dataSourceCode, recordId, recordDefinition, flags)
+	testError(test, err)
+	printActual(test, actual)
+	record := truthset.CustomerRecords["1001"]
+	actual, err = szEngine.ReplaceRecord(ctx, record.DataSource, record.Id, record.Json, flags)
+	testError(test, err)
+	printActual(test, actual)
+}
+
+func TestSzEngine_ReplaceRecord_withInfo(test *testing.T) {
+	ctx := context.TODO()
+	szEngine := getTestObject(ctx, test)
+	dataSourceCode := "CUSTOMERS"
+	recordId := "1001"
+	recordDefinition := `{"SOCIAL_HANDLE": "flavorh", "DATE_OF_BIRTH": "4/8/1985", "ADDR_STATE": "LA", "ADDR_POSTAL_CODE": "71232", "SSN_NUMBER": "053-39-3251", "ENTITY_TYPE": "CUSTOMERS", "GENDER": "F", "srccode": "MDMPER", "CC_ACCOUNT_NUMBER": "5534202208773608", "RECORD_ID": "1001", "DSRC_ACTION": "A", "ADDR_CITY": "Delhi", "DRIVERS_LICENSE_STATE": "DE", "PHONE_NUMBER": "225-671-0796", "NAME_LAST": "JOHNSON", "entityid": "284430058", "ADDR_LINE1": "772 Armstrong RD"}`
+	flags := sz.SZ_WITH_INFO
+	actual, err := szEngine.ReplaceRecord(ctx, dataSourceCode, recordId, recordDefinition, flags)
+	testError(test, err)
+	printActual(test, actual)
+	record := truthset.CustomerRecords["1001"]
+	actual, err = szEngine.ReplaceRecord(ctx, record.DataSource, record.Id, record.Json, flags)
+	testError(test, err)
+	printActual(test, actual)
+}
+
+func TestSzEngine_SearchByAttributes(test *testing.T) {
+	ctx := context.TODO()
+	szEngine := getTestObject(ctx, test)
+	attributes := `{"NAMES": [{"NAME_TYPE": "PRIMARY", "NAME_LAST": "JOHNSON"}], "SSN_NUMBER": "053-39-3251"}`
+	searchProfile := sz.SZ_NO_SEARCH_PROFILE
+	flags := sz.SZ_NO_FLAGS
+	actual, err := szEngine.SearchByAttributes(ctx, attributes, searchProfile, flags)
+	testError(test, err)
+	printActual(test, actual)
+}
+
+func TestSzEngine_StreamExportCsvEntityReport(test *testing.T) {
+	// TODO: Write TestSzEngine_StreamExportCsvEntityReport
+}
+
+func TestSzEngine_StreamExportJsonEntityReport(test *testing.T) {
+	// TODO: Write TestSzEngine_StreamExportJsonEntityReport
+}
+
+func TestSzEngine_SearchByAttributes_searchProfile(test *testing.T) {
+	ctx := context.TODO()
+	szEngine := getTestObject(ctx, test)
+	attributes := `{"NAMES": [{"NAME_TYPE": "PRIMARY", "NAME_LAST": "JOHNSON"}], "SSN_NUMBER": "053-39-3251"}`
+	searchProfile := sz.SZ_NO_SEARCH_PROFILE // TODO: Figure out the search profile
+	flags := sz.SZ_NO_FLAGS
+	actual, err := szEngine.SearchByAttributes(ctx, attributes, searchProfile, flags)
+	testError(test, err)
+	printActual(test, actual)
+}
+
+func TestSzEngine_WhyEntities(test *testing.T) {
+	ctx := context.TODO()
+	szEngine := getTestObject(ctx, test)
+	entityId1 := getEntityId(truthset.CustomerRecords["1001"])
+	entityId2 := getEntityId(truthset.CustomerRecords["1002"])
+	flags := sz.SZ_NO_FLAGS
+	actual, err := szEngine.WhyEntities(ctx, entityId1, entityId2, flags)
+	testError(test, err)
+	printActual(test, actual)
+}
+
+func TestSzEngine_WhyRecordInEntity(test *testing.T) {
+	ctx := context.TODO()
+	szEngine := getTestObject(ctx, test)
+	record := truthset.CustomerRecords["1001"]
+	flags := sz.SZ_NO_FLAGS
+	actual, err := szEngine.WhyRecordInEntity(ctx, record.DataSource, record.Id, flags)
+	testError(test, err)
+	printActual(test, actual)
+}
+
+func TestSzEngine_WhyRecords(test *testing.T) {
+	ctx := context.TODO()
+	szEngine := getTestObject(ctx, test)
+	record1 := truthset.CustomerRecords["1001"]
+	record2 := truthset.CustomerRecords["1002"]
+	flags := sz.SZ_NO_FLAGS
+	actual, err := szEngine.WhyRecords(ctx, record1.DataSource, record1.Id, record2.DataSource, record2.Id, flags)
+	testError(test, err)
+	printActual(test, actual)
+}
+
+// ----------------------------------------------------------------------------
+// Logging and observing
+// ----------------------------------------------------------------------------
+
+func TestSzEngine_SetObserverOrigin(test *testing.T) {
+	ctx := context.TODO()
+	szEngine := getTestObject(ctx, test)
+	origin := "Machine: nn; Task: UnitTest"
+	szEngine.SetObserverOrigin(ctx, origin)
+}
+
+func TestSzEngine_GetObserverOrigin(test *testing.T) {
+	ctx := context.TODO()
+	szEngine := getTestObject(ctx, test)
+	origin := "Machine: nn; Task: UnitTest"
+	szEngine.SetObserverOrigin(ctx, origin)
+	actual := szEngine.GetObserverOrigin(ctx)
+	assert.Equal(test, origin, actual)
+	printActual(test, actual)
+}
+
+// ----------------------------------------------------------------------------
+// Object creation / destruction
+// ----------------------------------------------------------------------------
+
+func TestSzEngine_AsInterface(test *testing.T) {
+	expected := int64(1)
+	ctx := context.TODO()
+	szEngine := getSzEngineAsInterface(ctx)
+	actual, err := szEngine.CountRedoRecords(ctx)
+	testError(test, err)
+	printActual(test, actual)
+	assert.Equal(test, expected, actual)
+}
+
+func TestSzEngine_Initialize(test *testing.T) {
+	ctx := context.TODO()
+	szEngine := getTestObject(ctx, test)
+	settings, err := getSettings()
+	testError(test, err)
+	configId := sz.SZ_INITIALIZE_WITH_DEFAULT_CONFIGURATION
+	err = szEngine.Initialize(ctx, instanceName, settings, verboseLogging, configId)
+	testError(test, err)
+}
+
+func TestSzEngine_Initialize_withConfigId(test *testing.T) {
+	ctx := context.TODO()
+	szEngine := getTestObject(ctx, test)
+	settings, err := getSettings()
+	testError(test, err)
+	configId := getDefaultConfigId()
+	err = szEngine.Initialize(ctx, instanceName, settings, verboseLogging, configId)
+	testError(test, err)
+}
+
+func TestSzEngine_Reinitialize(test *testing.T) {
+	ctx := context.TODO()
+	szEngine := getTestObject(ctx, test)
+	configId, err := szEngine.GetActiveConfigId(ctx)
+	testError(test, err)
+	err = szEngine.Reinitialize(ctx, configId)
+	testError(test, err)
+	printActual(test, configId)
+}
+
+func TestSzEngine_Destroy(test *testing.T) {
+	ctx := context.TODO()
+	szEngine := getTestObject(ctx, test)
+	err := szEngine.Destroy(ctx)
+	testError(test, err)
+}
+
+// ----------------------------------------------------------------------------
 // Internal functions
 // ----------------------------------------------------------------------------
 
@@ -369,655 +1035,4 @@ func teardownSzEngine(ctx context.Context) error {
 	}
 	szEngineSingleton = nil
 	return nil
-}
-
-// ----------------------------------------------------------------------------
-// Test interface functions
-// ----------------------------------------------------------------------------
-
-func TestSzEngine_SetObserverOrigin(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
-	origin := "Machine: nn; Task: UnitTest"
-	szEngine.SetObserverOrigin(ctx, origin)
-}
-
-func TestSzEngine_GetObserverOrigin(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
-	origin := "Machine: nn; Task: UnitTest"
-	szEngine.SetObserverOrigin(ctx, origin)
-	actual := szEngine.GetObserverOrigin(ctx)
-	assert.Equal(test, origin, actual)
-	printActual(test, actual)
-}
-
-func TestSzEngine_AddRecord(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
-	flags := sz.SZ_WITHOUT_INFO
-	records := []record.Record{
-		truthset.CustomerRecords["1004"],
-		truthset.CustomerRecords["1005"],
-	}
-	for _, record := range records {
-		actual, err := szEngine.AddRecord(ctx, record.DataSource, record.Id, record.Json, flags)
-		testError(test, err)
-		printActual(test, actual)
-		defer szEngine.DeleteRecord(ctx, record.DataSource, record.Id, flags)
-	}
-}
-
-func TestSzEngine_AddRecord_szBadInput(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
-	record1, err := record.NewRecord(`{"DATA_SOURCE": "TEST", "RECORD_ID": "ADD_TEST_ERR_1", "NAME_FULL": "NOBODY NOMATCH"}`)
-	testError(test, err)
-	record2, err := record.NewRecord(`{"DATA_SOURCE": "BOB", "RECORD_ID": "ADD_TEST_ERR_2", "NAME_FULL": "ERR BAD SOURCE"}`)
-	testError(test, err)
-	flags := sz.SZ_WITHOUT_INFO
-
-	// This one should succeed.
-
-	actual, err := szEngine.AddRecord(ctx, record1.DataSource, record1.Id, record1.Json, flags)
-	testError(test, err)
-	defer szEngine.DeleteRecord(ctx, record1.DataSource, record1.Id, sz.SZ_WITHOUT_INFO)
-	printActual(test, actual)
-
-	// This one should fail.
-
-	actual, err = szEngine.AddRecord(ctx, "CUSTOMERS", record2.Id, record2.Json, flags)
-	assert.True(test, szerror.Is(err, szerror.SzBadInput))
-	printActual(test, actual)
-
-	// Clean-up the records we inserted.
-
-	actual, err = szEngine.DeleteRecord(ctx, record1.DataSource, record1.Id, flags)
-	testError(test, err)
-	defer szEngine.DeleteRecord(ctx, record2.DataSource, record2.Id, sz.SZ_NO_FLAGS)
-	printActual(test, actual)
-}
-
-func TestSzEngine_AddRecord_withInfo(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
-	flags := sz.SZ_WITH_INFO
-	records := []record.Record{
-		truthset.CustomerRecords["1004"],
-		truthset.CustomerRecords["1005"],
-	}
-	for _, record := range records {
-		actual, err := szEngine.AddRecord(ctx, record.DataSource, record.Id, record.Json, flags)
-		testError(test, err)
-		printActual(test, actual)
-		defer szEngine.DeleteRecord(ctx, record.DataSource, record.Id, flags)
-	}
-}
-
-func TestSzEngine_CountRedoRecords(test *testing.T) {
-	expected := int64(1)
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
-	actual, err := szEngine.CountRedoRecords(ctx)
-	testError(test, err)
-	printActual(test, actual)
-	assert.Equal(test, expected, actual)
-}
-
-func TestSzEngine_CountRedoRecords_asInterface(test *testing.T) {
-	expected := int64(1)
-	ctx := context.TODO()
-	szEngine := getSzEngineAsInterface(ctx)
-	actual, err := szEngine.CountRedoRecords(ctx)
-	testError(test, err)
-	printActual(test, actual)
-	assert.Equal(test, expected, actual)
-}
-
-func TestSzEngine_ExportCsvEntityReport(test *testing.T) {
-	expected := []string{
-		`RESOLVED_ENTITY_ID,RELATED_ENTITY_ID,MATCH_LEVEL_CODE,MATCH_KEY,DATA_SOURCE,RECORD_ID`,
-		`1,0,"","","CUSTOMERS","1001"`,
-		`1,0,"RESOLVED","+NAME+DOB+PHONE","CUSTOMERS","1002"`,
-		`1,0,"RESOLVED","+NAME+DOB+EMAIL","CUSTOMERS","1003"`,
-	}
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
-	csvColumnList := ""
-	flags := sz.SZ_EXPORT_INCLUDE_ALL_ENTITIES
-	aHandle, err := szEngine.ExportCsvEntityReport(ctx, csvColumnList, flags)
-	defer func() {
-		err := szEngine.CloseExport(ctx, aHandle)
-		testError(test, err)
-	}()
-	testError(test, err)
-	actualCount := 0
-	for actual := range szEngine.ExportCsvEntityReportIterator(ctx, csvColumnList, flags) {
-		assert.Equal(test, expected[actualCount], strings.TrimSpace(actual.Value))
-		actualCount += 1
-	}
-	assert.Equal(test, len(expected), actualCount)
-}
-
-func TestSzEngine_ExportCsvEntityReportIterator(test *testing.T) {
-	expected := []string{
-		`RESOLVED_ENTITY_ID,RELATED_ENTITY_ID,MATCH_LEVEL_CODE,MATCH_KEY,DATA_SOURCE,RECORD_ID`,
-		`1,0,"","","CUSTOMERS","1001"`,
-		`1,0,"RESOLVED","+NAME+DOB+PHONE","CUSTOMERS","1002"`,
-		`1,0,"RESOLVED","+NAME+DOB+EMAIL","CUSTOMERS","1003"`,
-	}
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
-	csvColumnList := ""
-	flags := sz.SZ_EXPORT_INCLUDE_ALL_ENTITIES
-	actualCount := 0
-	for actual := range szEngine.ExportCsvEntityReportIterator(ctx, csvColumnList, flags) {
-		testError(test, actual.Error)
-		assert.Equal(test, expected[actualCount], strings.TrimSpace(actual.Value))
-		actualCount += 1
-	}
-	assert.Equal(test, len(expected), actualCount)
-}
-
-func TestSzEngine_ExportJsonEntityReport(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
-	aRecord := testfixtures.FixtureRecords["65536-periods"]
-	flags := sz.SZ_WITH_INFO
-	actual, err := szEngine.AddRecord(ctx, aRecord.DataSource, aRecord.Id, aRecord.Json, flags)
-	testError(test, err)
-	printActual(test, actual)
-	defer szEngine.DeleteRecord(ctx, aRecord.DataSource, aRecord.Id, sz.SZ_WITHOUT_INFO)
-	// TODO: Figure out correct flags.
-	// flags := sz.Flags(sz.SZ_EXPORT_DEFAULT_FLAGS, sz.SZ_EXPORT_INCLUDE_ALL_HAVING_RELATIONSHIPS, sz.SZ_EXPORT_INCLUDE_ALL_HAVING_RELATIONSHIPS)
-	flags = int64(-1)
-	aHandle, err := szEngine.ExportJsonEntityReport(ctx, flags)
-	defer func() {
-		err := szEngine.CloseExport(ctx, aHandle)
-		testError(test, err)
-	}()
-	testError(test, err)
-	jsonEntityReport := ""
-	for {
-		jsonEntityReportFragment, err := szEngine.FetchNext(ctx, aHandle)
-		testError(test, err)
-		if len(jsonEntityReportFragment) == 0 {
-			break
-		}
-		jsonEntityReport += jsonEntityReportFragment
-	}
-	testError(test, err)
-	assert.True(test, len(jsonEntityReport) > 65536)
-}
-
-func TestSzEngine_ExportJsonEntityReportIterator(test *testing.T) {
-	expected := 1
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
-	flags := sz.SZ_EXPORT_INCLUDE_ALL_ENTITIES
-	actualCount := 0
-	for actual := range szEngine.ExportJsonEntityReportIterator(ctx, flags) {
-		testError(test, actual.Error)
-		printActual(test, actual.Value)
-		actualCount += 1
-	}
-	assert.Equal(test, expected, actualCount)
-}
-
-func TestSzEngine_FindNetworkByEntityId(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
-	record1 := truthset.CustomerRecords["1001"]
-	record2 := truthset.CustomerRecords["1002"]
-	entityList := `{"ENTITIES": [{"ENTITY_ID": ` + getEntityIdString(record1) + `}, {"ENTITY_ID": ` + getEntityIdString(record2) + `}]}`
-	maxDegrees := int64(2)
-	buildOutDegree := int64(1)
-	maxEntities := int64(10)
-	flags := sz.SZ_FIND_NETWORK_DEFAULT_FLAGS
-	actual, err := szEngine.FindNetworkByEntityId(ctx, entityList, maxDegrees, buildOutDegree, maxEntities, flags)
-	testErrorNoFail(test, err)
-	printActual(test, actual)
-}
-
-func TestSzEngine_FindNetworkByRecordId(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
-	record1 := truthset.CustomerRecords["1001"]
-	record2 := truthset.CustomerRecords["1002"]
-	record3 := truthset.CustomerRecords["1003"]
-	recordList := `{"RECORDS": [{"DATA_SOURCE": "` + record1.DataSource + `", "RECORD_ID": "` + record1.Id + `"}, {"DATA_SOURCE": "` + record2.DataSource + `", "RECORD_ID": "` + record2.Id + `"}, {"DATA_SOURCE": "` + record3.DataSource + `", "RECORD_ID": "` + record3.Id + `"}]}`
-	maxDegrees := int64(1)
-	buildOutDegree := int64(2)
-	maxEntities := int64(10)
-	flags := sz.SZ_FIND_NETWORK_DEFAULT_FLAGS
-	actual, err := szEngine.FindNetworkByRecordId(ctx, recordList, maxDegrees, buildOutDegree, maxEntities, flags)
-	testError(test, err)
-	printActual(test, actual)
-}
-
-func TestSzEngine_FindPathByEntityId(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
-	startEntityId := getEntityId(truthset.CustomerRecords["1001"])
-	endEntityId := getEntityId(truthset.CustomerRecords["1002"])
-	maxDegrees := int64(1)
-	exclusions := sz.SZ_NO_EXCLUSIONS
-	requiredDataSources := sz.SZ_NO_REQUIRED_DATASOURCES
-	flags := sz.SZ_NO_FLAGS
-	actual, err := szEngine.FindPathByEntityId(ctx, startEntityId, endEntityId, maxDegrees, exclusions, requiredDataSources, flags)
-	testError(test, err)
-	printActual(test, actual)
-}
-
-func TestSzEngine_FindPathByEntityId_excluding(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
-	startRecord := truthset.CustomerRecords["1001"]
-	startEntityId := getEntityId(startRecord)
-	endEntityId := getEntityId(truthset.CustomerRecords["1002"])
-	maxDegrees := int64(1)
-	exclusions := `{"ENTITIES": [{"ENTITY_ID": ` + getEntityIdString(startRecord) + `}]}`
-	requiredDataSources := sz.SZ_NO_REQUIRED_DATASOURCES
-	flags := sz.SZ_NO_FLAGS
-	actual, err := szEngine.FindPathByEntityId(ctx, startEntityId, endEntityId, maxDegrees, exclusions, requiredDataSources, flags)
-	testError(test, err)
-	printActual(test, actual)
-}
-
-func TestSzEngine_FindPathByEntityId_excludingAndIncluding(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
-	startRecord := truthset.CustomerRecords["1001"]
-	startEntityId := getEntityId(startRecord)
-	endEntityId := getEntityId(truthset.CustomerRecords["1002"])
-	maxDegrees := int64(1)
-	exclusions := `{"ENTITIES": [{"ENTITY_ID": ` + getEntityIdString(startRecord) + `}]}`
-	requiredDataSources := `{"DATA_SOURCES": ["` + startRecord.DataSource + `"]}`
-	flags := sz.SZ_NO_FLAGS
-	actual, err := szEngine.FindPathByEntityId(ctx, startEntityId, endEntityId, maxDegrees, exclusions, requiredDataSources, flags)
-	testError(test, err)
-	printActual(test, actual)
-}
-
-func TestSzEngine_FindPathByEntityId_including(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
-	startRecord := truthset.CustomerRecords["1001"]
-	startEntityId := getEntityId(startRecord)
-	endEntityId := getEntityId(truthset.CustomerRecords["1002"])
-	maxDegrees := int64(1)
-	exclusions := sz.SZ_NO_EXCLUSIONS
-	requiredDataSources := `{"DATA_SOURCES": ["` + startRecord.DataSource + `"]}`
-	flags := sz.SZ_NO_FLAGS
-	actual, err := szEngine.FindPathByEntityId(ctx, startEntityId, endEntityId, maxDegrees, exclusions, requiredDataSources, flags)
-	testError(test, err)
-	printActual(test, actual)
-}
-
-func TestSzEngine_FindPathByRecordId(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
-	record1 := truthset.CustomerRecords["1001"]
-	record2 := truthset.CustomerRecords["1002"]
-	maxDegree := int64(1)
-	exclusions := sz.SZ_NO_EXCLUSIONS
-	requiredDataSources := sz.SZ_NO_REQUIRED_DATASOURCES
-	flags := sz.SZ_NO_FLAGS
-	actual, err := szEngine.FindPathByRecordId(ctx, record1.DataSource, record1.Id, record2.DataSource, record2.Id, maxDegree, exclusions, requiredDataSources, flags)
-	testError(test, err)
-	printActual(test, actual)
-}
-
-func TestSzEngine_FindPathByRecordId_excluding(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
-	record1 := truthset.CustomerRecords["1001"]
-	record2 := truthset.CustomerRecords["1002"]
-	maxDegree := int64(1)
-	exclusions := `{"RECORDS": [{ "DATA_SOURCE": "` + record1.DataSource + `", "RECORD_ID": "` + record1.Id + `"}]}`
-	requiredDataSources := sz.SZ_NO_REQUIRED_DATASOURCES
-	flags := sz.SZ_NO_FLAGS
-	actual, err := szEngine.FindPathByRecordId(ctx, record1.DataSource, record1.Id, record2.DataSource, record2.Id, maxDegree, exclusions, requiredDataSources, flags)
-	testError(test, err)
-	printActual(test, actual)
-}
-
-func TestSzEngine_FindPathByRecordId_excludingAndIncluding(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
-	record1 := truthset.CustomerRecords["1001"]
-	record2 := truthset.CustomerRecords["1002"]
-	maxDegree := int64(1)
-	exclusions := `{"RECORDS": [{ "DATA_SOURCE": "` + record1.DataSource + `", "RECORD_ID": "` + record1.Id + `"}]}`
-	requiredDataSources := `{"DATA_SOURCES": ["` + record1.DataSource + `"]}`
-	flags := sz.SZ_NO_FLAGS
-	actual, err := szEngine.FindPathByRecordId(ctx, record1.DataSource, record1.Id, record2.DataSource, record2.Id, maxDegree, exclusions, requiredDataSources, flags)
-	testError(test, err)
-	printActual(test, actual)
-}
-
-func TestSzEngine_FindPathByRecordId_including(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
-	record1 := truthset.CustomerRecords["1001"]
-	record2 := truthset.CustomerRecords["1002"]
-	maxDegree := int64(1)
-	exclusions := `{"ENTITIES": [{"ENTITY_ID": ` + getEntityIdString(record1) + `}]}`
-	requiredDataSources := `{"DATA_SOURCES": ["` + record1.DataSource + `"]}`
-	flags := sz.SZ_NO_FLAGS
-	actual, err := szEngine.FindPathByRecordId(ctx, record1.DataSource, record1.Id, record2.DataSource, record2.Id, maxDegree, exclusions, requiredDataSources, flags)
-	testError(test, err)
-	printActual(test, actual)
-}
-
-func TestSzEngine_GetActiveConfigId(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
-	actual, err := szEngine.GetActiveConfigId(ctx)
-	testError(test, err)
-	printActual(test, actual)
-}
-
-func TestSzEngine_GetEntityByEntityId(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
-	entityId := getEntityId(truthset.CustomerRecords["1001"])
-	flags := sz.SZ_NO_FLAGS
-	actual, err := szEngine.GetEntityByEntityId(ctx, entityId, flags)
-	testError(test, err)
-	printActual(test, actual)
-}
-
-func TestSzEngine_GetEntityByRecordId(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
-	record := truthset.CustomerRecords["1001"]
-	flags := sz.SZ_NO_FLAGS
-	actual, err := szEngine.GetEntityByRecordId(ctx, record.DataSource, record.Id, flags)
-	testError(test, err)
-	printActual(test, actual)
-}
-
-func TestSzEngine_GetRecord(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
-	record := truthset.CustomerRecords["1001"]
-	flags := sz.SZ_NO_FLAGS
-	actual, err := szEngine.GetRecord(ctx, record.DataSource, record.Id, flags)
-	testError(test, err)
-	printActual(test, actual)
-}
-
-func TestSzEngine_GetRedoRecord(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
-	actual, err := szEngine.GetRedoRecord(ctx)
-	testError(test, err)
-	printActual(test, actual)
-}
-
-func TestSzEngine_GetRepositoryLastModifiedTime(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
-	actual, err := szEngine.GetRepositoryLastModifiedTime(ctx)
-	testError(test, err)
-	printActual(test, actual)
-}
-
-func TestSzEngine_GetStats(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
-	actual, err := szEngine.GetStats(ctx)
-	testError(test, err)
-	printActual(test, actual)
-}
-
-func TestSzEngine_GetVirtualEntityByRecordId(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
-	record1 := truthset.CustomerRecords["1001"]
-	record2 := truthset.CustomerRecords["1002"]
-	recordList := `{"RECORDS": [{"DATA_SOURCE": "` + record1.DataSource + `", "RECORD_ID": "` + record1.Id + `"}, {"DATA_SOURCE": "` + record2.DataSource + `", "RECORD_ID": "` + record2.Id + `"}]}`
-	flags := sz.SZ_NO_FLAGS
-	actual, err := szEngine.GetVirtualEntityByRecordId(ctx, recordList, flags)
-	testError(test, err)
-	printActual(test, actual)
-}
-
-func TestSzEngine_HowEntityByEntityId(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
-	entityId := getEntityId(truthset.CustomerRecords["1001"])
-	flags := sz.SZ_NO_FLAGS
-	actual, err := szEngine.HowEntityByEntityId(ctx, entityId, flags)
-	testError(test, err)
-	printActual(test, actual)
-}
-
-func TestSzEngine_PrimeEngine(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
-	err := szEngine.PrimeEngine(ctx)
-	testError(test, err)
-}
-
-// TODO: Implement TestSzEngine_ProcessRedoRecord
-// func TestSzEngine_ProcessRedoRecord(test *testing.T) {
-// 	ctx := context.TODO()
-// 	szEngine := getTestObject(ctx, test)
-//  flags := sz.SZ_WITHOUT_INFO
-// 	actual, err := szEngine.ProcessRedoRecord(ctx, redoRecord, flags)
-// 	testError(test, err)
-// 	printActual(test, actual)
-// }
-
-// TODO: Implement TestSzEngine_ProcessRedoRecord_withInfo
-// func TestSzEngine_ProcessRedoRecord_withInfo(test *testing.T) {
-// 	ctx := context.TODO()
-// 	szEngine := getTestObject(ctx, test)
-//  flags := sz.SZ_WITH_INFO
-// 	actual, err := szEngine.ProcessRedoRecord(ctx, redoRecord, flags)
-// 	testError(test, err)
-// 	printActual(test, actual)
-// }
-
-func TestSzEngine_ReevaluateEntity(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
-	entityId := getEntityId(truthset.CustomerRecords["1001"])
-	flags := sz.SZ_WITHOUT_INFO
-	actual, err := szEngine.ReevaluateEntity(ctx, entityId, flags)
-	testError(test, err)
-	printActual(test, actual)
-}
-
-func TestSzEngine_ReevaluateEntity_withInfo(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
-	entityId := getEntityId(truthset.CustomerRecords["1001"])
-	flags := sz.SZ_WITH_INFO
-	actual, err := szEngine.ReevaluateEntity(ctx, entityId, flags)
-	testError(test, err)
-	printActual(test, actual)
-}
-
-func TestSzEngine_ReevaluateRecord(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
-	record := truthset.CustomerRecords["1001"]
-	flags := sz.SZ_WITHOUT_INFO
-	actual, err := szEngine.ReevaluateRecord(ctx, record.DataSource, record.Id, flags)
-	testError(test, err)
-	printActual(test, actual)
-}
-
-func TestSzEngine_ReevaluateRecord_withInfo(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
-	record := truthset.CustomerRecords["1001"]
-	flags := sz.SZ_WITH_INFO
-	actual, err := szEngine.ReevaluateRecord(ctx, record.DataSource, record.Id, flags)
-	testError(test, err)
-	printActual(test, actual)
-}
-
-func TestSzEngine_ReplaceRecord(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
-	dataSourceCode := "CUSTOMERS"
-	recordId := "1001"
-	recordDefinition := `{"SOCIAL_HANDLE": "flavorh", "DATE_OF_BIRTH": "4/8/1984", "ADDR_STATE": "LA", "ADDR_POSTAL_CODE": "71232", "SSN_NUMBER": "053-39-3251", "ENTITY_TYPE": "CUSTOMERS", "GENDER": "F", "srccode": "MDMPER", "CC_ACCOUNT_NUMBER": "5534202208773608", "RECORD_ID": "1001", "DSRC_ACTION": "A", "ADDR_CITY": "Delhi", "DRIVERS_LICENSE_STATE": "DE", "PHONE_NUMBER": "225-671-0796", "NAME_LAST": "JOHNSON", "entityid": "284430058", "ADDR_LINE1": "772 Armstrong RD"}`
-	flags := sz.SZ_WITHOUT_INFO
-	actual, err := szEngine.ReplaceRecord(ctx, dataSourceCode, recordId, recordDefinition, flags)
-	testError(test, err)
-	printActual(test, actual)
-	record := truthset.CustomerRecords["1001"]
-	actual, err = szEngine.ReplaceRecord(ctx, record.DataSource, record.Id, record.Json, flags)
-	testError(test, err)
-	printActual(test, actual)
-}
-
-func TestSzEngine_ReplaceRecord_withInfo(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
-	dataSourceCode := "CUSTOMERS"
-	recordId := "1001"
-	recordDefinition := `{"SOCIAL_HANDLE": "flavorh", "DATE_OF_BIRTH": "4/8/1985", "ADDR_STATE": "LA", "ADDR_POSTAL_CODE": "71232", "SSN_NUMBER": "053-39-3251", "ENTITY_TYPE": "CUSTOMERS", "GENDER": "F", "srccode": "MDMPER", "CC_ACCOUNT_NUMBER": "5534202208773608", "RECORD_ID": "1001", "DSRC_ACTION": "A", "ADDR_CITY": "Delhi", "DRIVERS_LICENSE_STATE": "DE", "PHONE_NUMBER": "225-671-0796", "NAME_LAST": "JOHNSON", "entityid": "284430058", "ADDR_LINE1": "772 Armstrong RD"}`
-	flags := sz.SZ_WITH_INFO
-	actual, err := szEngine.ReplaceRecord(ctx, dataSourceCode, recordId, recordDefinition, flags)
-	testError(test, err)
-	printActual(test, actual)
-	record := truthset.CustomerRecords["1001"]
-	actual, err = szEngine.ReplaceRecord(ctx, record.DataSource, record.Id, record.Json, flags)
-	testError(test, err)
-	printActual(test, actual)
-}
-
-func TestSzEngine_SearchByAttributes(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
-	attributes := `{"NAMES": [{"NAME_TYPE": "PRIMARY", "NAME_LAST": "JOHNSON"}], "SSN_NUMBER": "053-39-3251"}`
-	searchProfile := sz.SZ_NO_SEARCH_PROFILE
-	flags := sz.SZ_NO_FLAGS
-	actual, err := szEngine.SearchByAttributes(ctx, attributes, searchProfile, flags)
-	testError(test, err)
-	printActual(test, actual)
-}
-
-func TestSzEngine_StreamExportCsvEntityReport(test *testing.T) {
-	// TODO: Write TestSzEngine_StreamExportCsvEntityReport
-}
-
-func TestSzEngine_StreamExportJsonEntityReport(test *testing.T) {
-	// TODO: Write TestSzEngine_StreamExportJsonEntityReport
-}
-
-func TestSzEngine_SearchByAttributes_searchProfile(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
-	attributes := `{"NAMES": [{"NAME_TYPE": "PRIMARY", "NAME_LAST": "JOHNSON"}], "SSN_NUMBER": "053-39-3251"}`
-	searchProfile := sz.SZ_NO_SEARCH_PROFILE // TODO: Figure out the search profile
-	flags := sz.SZ_NO_FLAGS
-	actual, err := szEngine.SearchByAttributes(ctx, attributes, searchProfile, flags)
-	testError(test, err)
-	printActual(test, actual)
-}
-
-func TestSzEngine_WhyEntities(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
-	entityId1 := getEntityId(truthset.CustomerRecords["1001"])
-	entityId2 := getEntityId(truthset.CustomerRecords["1002"])
-	flags := sz.SZ_NO_FLAGS
-	actual, err := szEngine.WhyEntities(ctx, entityId1, entityId2, flags)
-	testError(test, err)
-	printActual(test, actual)
-}
-
-func TestSzEngine_WhyRecordInEntity(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
-	record := truthset.CustomerRecords["1001"]
-	flags := sz.SZ_NO_FLAGS
-	actual, err := szEngine.WhyRecordInEntity(ctx, record.DataSource, record.Id, flags)
-	testError(test, err)
-	printActual(test, actual)
-}
-
-func TestSzEngine_WhyRecords(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
-	record1 := truthset.CustomerRecords["1001"]
-	record2 := truthset.CustomerRecords["1002"]
-	flags := sz.SZ_NO_FLAGS
-	actual, err := szEngine.WhyRecords(ctx, record1.DataSource, record1.Id, record2.DataSource, record2.Id, flags)
-	testError(test, err)
-	printActual(test, actual)
-}
-
-// ----------------------------------------------------------------------------
-// Examples that are not in sorted order.
-// ----------------------------------------------------------------------------
-
-func TestSzEngine_Initialize(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
-	settings, err := getSettings()
-	testError(test, err)
-	configId := sz.SZ_INITIALIZE_WITH_DEFAULT_CONFIGURATION
-	err = szEngine.Initialize(ctx, instanceName, settings, verboseLogging, configId)
-	testError(test, err)
-}
-
-func TestSzEngine_Initialize_withConfigId(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
-	settings, err := getSettings()
-	testError(test, err)
-	configId := getDefaultConfigId()
-	err = szEngine.Initialize(ctx, instanceName, settings, verboseLogging, configId)
-	testError(test, err)
-}
-
-func TestSzEngine_Reinitialize(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
-	configId, err := szEngine.GetActiveConfigId(ctx)
-	testError(test, err)
-	err = szEngine.Reinitialize(ctx, configId)
-	testError(test, err)
-	printActual(test, configId)
-}
-
-func TestSzEngine_DeleteRecord(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
-	record := truthset.CustomerRecords["1009"]
-	flags := sz.SZ_WITHOUT_INFO
-	actual, err := szEngine.AddRecord(ctx, record.DataSource, record.Id, record.Json, flags)
-	printActual(test, actual)
-	testError(test, err)
-	actual, err = szEngine.DeleteRecord(ctx, record.DataSource, record.Id, flags)
-	testError(test, err)
-	printActual(test, actual)
-}
-
-func TestSzEngine_DeleteRecord_withInfo(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
-	record := truthset.CustomerRecords["1010"]
-	flags := sz.SZ_WITH_INFO
-	actual, err := szEngine.AddRecord(ctx, record.DataSource, record.Id, record.Json, flags)
-	testError(test, err)
-	printActual(test, actual)
-	actual, err = szEngine.DeleteRecord(ctx, record.DataSource, record.Id, flags)
-	testError(test, err)
-	printActual(test, actual)
-}
-
-func TestSzEngine_Destroy(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
-	err := szEngine.Destroy(ctx)
-	testError(test, err)
 }

@@ -12,28 +12,8 @@ import (
 )
 
 // ----------------------------------------------------------------------------
-// Examples for godoc documentation
+// Interface functions - Examples for godoc documentation
 // ----------------------------------------------------------------------------
-
-func ExampleSzconfigmanager_SetObserverOrigin() {
-	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfigmanager/szconfigmanager_examples_test.go
-	ctx := context.TODO()
-	szConfigManager := getSzConfigManager(ctx)
-	origin := "Machine: nn; Task: UnitTest"
-	szConfigManager.SetObserverOrigin(ctx, origin)
-	// Output:
-}
-
-func ExampleSzconfigmanager_GetObserverOrigin() {
-	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfigmanager/szconfigmanager_examples_test.go
-	ctx := context.TODO()
-	szConfigManager := getSzConfigManager(ctx)
-	origin := "Machine: nn; Task: UnitTest"
-	szConfigManager.SetObserverOrigin(ctx, origin)
-	result := szConfigManager.GetObserverOrigin(ctx)
-	fmt.Println(result)
-	// Output: Machine: nn; Task: UnitTest
-}
 
 func ExampleSzConfigManager_AddConfig() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfigmanager/szconfigmanager_examples_test.go
@@ -144,6 +124,10 @@ func ExampleSzConfigManager_SetDefaultConfigId() {
 	// Output:
 }
 
+// ----------------------------------------------------------------------------
+// Logging and observing
+// ----------------------------------------------------------------------------
+
 func ExampleSzconfigmanager_SetLogLevel() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfigmanager/szconfigmanager_examples_test.go
 	ctx := context.TODO()
@@ -154,6 +138,30 @@ func ExampleSzconfigmanager_SetLogLevel() {
 	}
 	// Output:
 }
+
+func ExampleSzconfigmanager_SetObserverOrigin() {
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfigmanager/szconfigmanager_examples_test.go
+	ctx := context.TODO()
+	szConfigManager := getSzConfigManager(ctx)
+	origin := "Machine: nn; Task: UnitTest"
+	szConfigManager.SetObserverOrigin(ctx, origin)
+	// Output:
+}
+
+func ExampleSzconfigmanager_GetObserverOrigin() {
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfigmanager/szconfigmanager_examples_test.go
+	ctx := context.TODO()
+	szConfigManager := getSzConfigManager(ctx)
+	origin := "Machine: nn; Task: UnitTest"
+	szConfigManager.SetObserverOrigin(ctx, origin)
+	result := szConfigManager.GetObserverOrigin(ctx)
+	fmt.Println(result)
+	// Output: Machine: nn; Task: UnitTest
+}
+
+// ----------------------------------------------------------------------------
+// Object creation / destruction
+// ----------------------------------------------------------------------------
 
 func ExampleSzConfigManager_Initialize() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfigmanager/szconfigmanager_examples_test.go

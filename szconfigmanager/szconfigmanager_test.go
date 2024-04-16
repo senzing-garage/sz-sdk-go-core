@@ -34,6 +34,149 @@ var (
 )
 
 // ----------------------------------------------------------------------------
+// Interface functions - test
+// ----------------------------------------------------------------------------
+
+func TestSzConfigManager_AddConfig(test *testing.T) {
+	ctx := context.TODO()
+	szConfigManager := getTestObject(ctx, test)
+	now := time.Now()
+	szConfig := getSzConfig(ctx)
+	configHandle, err1 := szConfig.CreateConfig(ctx)
+	if err1 != nil {
+		test.Log("Error:", err1.Error())
+		assert.FailNow(test, "szConfig.CreateConfig()")
+	}
+	dataSourceCode := "GO_TEST_" + strconv.FormatInt(now.Unix(), 10)
+	_, err2 := szConfig.AddDataSource(ctx, configHandle, dataSourceCode)
+	if err2 != nil {
+		test.Log("Error:", err2.Error())
+		assert.FailNow(test, "szConfig.AddDataSource()")
+	}
+	configDefinition, err3 := szConfig.ExportConfig(ctx, configHandle)
+	if err3 != nil {
+		test.Log("Error:", err2.Error())
+		assert.FailNow(test, configDefinition)
+	}
+	configComment := fmt.Sprintf("szconfigmanager_test at %s", now.UTC())
+	actual, err := szConfigManager.AddConfig(ctx, configDefinition, configComment)
+	testError(test, err)
+	printActual(test, actual)
+}
+
+func TestSzConfigManager_GetConfig(test *testing.T) {
+	ctx := context.TODO()
+	szConfigManager := getTestObject(ctx, test)
+	configId, err1 := szConfigManager.GetDefaultConfigId(ctx)
+	if err1 != nil {
+		test.Log("Error:", err1.Error())
+		assert.FailNow(test, "szConfigManager.GetDefaultConfigId()")
+	}
+	actual, err := szConfigManager.GetConfig(ctx, configId)
+	testError(test, err)
+	printActual(test, actual)
+}
+
+func TestSzConfigManager_GetConfigList(test *testing.T) {
+	ctx := context.TODO()
+	szConfigManager := getTestObject(ctx, test)
+	actual, err := szConfigManager.GetConfigList(ctx)
+	testError(test, err)
+	printActual(test, actual)
+}
+
+func TestSzConfigManager_GetDefaultConfigId(test *testing.T) {
+	ctx := context.TODO()
+	szConfigManager := getTestObject(ctx, test)
+	actual, err := szConfigManager.GetDefaultConfigId(ctx)
+	testError(test, err)
+	printActual(test, actual)
+}
+
+func TestSzConfigManager_ReplaceDefaultConfigId(test *testing.T) {
+	ctx := context.TODO()
+	szConfigManager := getTestObject(ctx, test)
+	currentDefaultConfigId, err1 := szConfigManager.GetDefaultConfigId(ctx)
+	if err1 != nil {
+		test.Log("Error:", err1.Error())
+		assert.FailNow(test, "szConfigManager.GetDefaultConfigID()")
+	}
+
+	// TODO: This is kind of a cheater.
+
+	newDefaultConfigId, err2 := szConfigManager.GetDefaultConfigId(ctx)
+	if err2 != nil {
+		test.Log("Error:", err2.Error())
+		assert.FailNow(test, "szConfigManager.GetDefaultConfigId()-2")
+	}
+
+	err := szConfigManager.ReplaceDefaultConfigId(ctx, currentDefaultConfigId, newDefaultConfigId)
+	testError(test, err)
+}
+
+func TestSzConfigManager_SetDefaultConfigId(test *testing.T) {
+	ctx := context.TODO()
+	szConfigManager := getTestObject(ctx, test)
+	configId, err1 := szConfigManager.GetDefaultConfigId(ctx)
+	if err1 != nil {
+		test.Log("Error:", err1.Error())
+		assert.FailNow(test, "szConfigManager.GetDefaultConfigId()")
+	}
+	err := szConfigManager.SetDefaultConfigId(ctx, configId)
+	testError(test, err)
+}
+
+// ----------------------------------------------------------------------------
+// Logging and observing
+// ----------------------------------------------------------------------------
+
+func TestSzConfigManager_SetObserverOrigin(test *testing.T) {
+	ctx := context.TODO()
+	szConfigManager := getTestObject(ctx, test)
+	origin := "Machine: nn; Task: UnitTest"
+	szConfigManager.SetObserverOrigin(ctx, origin)
+}
+
+func TestSzConfigManager_GetObserverOrigin(test *testing.T) {
+	ctx := context.TODO()
+	szConfigManager := getTestObject(ctx, test)
+	origin := "Machine: nn; Task: UnitTest"
+	szConfigManager.SetObserverOrigin(ctx, origin)
+	actual := szConfigManager.GetObserverOrigin(ctx)
+	assert.Equal(test, origin, actual)
+}
+
+// ----------------------------------------------------------------------------
+// Object creation / destruction
+// ----------------------------------------------------------------------------
+
+func TestSzConfigManager_AsInterface(test *testing.T) {
+	ctx := context.TODO()
+	szconfigmanager := getSzConfigManagerAsInterface(ctx)
+	actual, err := szconfigmanager.GetConfigList(ctx)
+	testError(test, err)
+	printActual(test, actual)
+}
+
+func TestSzConfigManager_Initialize(test *testing.T) {
+	ctx := context.TODO()
+	szConfigManager := getTestObject(ctx, test)
+	instanceName := "Test name"
+	verboseLogging := sz.SZ_NO_LOGGING
+	settings, err := getSettings()
+	testError(test, err)
+	err = szConfigManager.Initialize(ctx, instanceName, settings, verboseLogging)
+	testError(test, err)
+}
+
+func TestSzConfigManager_Destroy(test *testing.T) {
+	ctx := context.TODO()
+	szConfigManager := getTestObject(ctx, test)
+	err := szConfigManager.Destroy(ctx)
+	testError(test, err)
+}
+
+// ----------------------------------------------------------------------------
 // Internal functions
 // ----------------------------------------------------------------------------
 
@@ -329,139 +472,4 @@ func teardownSzConfigManager(ctx context.Context) error {
 	}
 	szConfigManagerSingleton = nil
 	return nil
-}
-
-// ----------------------------------------------------------------------------
-// Test interface functions
-// ----------------------------------------------------------------------------
-
-func TestSzConfigManager_SetObserverOrigin(test *testing.T) {
-	ctx := context.TODO()
-	szConfigManager := getTestObject(ctx, test)
-	origin := "Machine: nn; Task: UnitTest"
-	szConfigManager.SetObserverOrigin(ctx, origin)
-}
-
-func TestSzConfigManager_GetObserverOrigin(test *testing.T) {
-	ctx := context.TODO()
-	szConfigManager := getTestObject(ctx, test)
-	origin := "Machine: nn; Task: UnitTest"
-	szConfigManager.SetObserverOrigin(ctx, origin)
-	actual := szConfigManager.GetObserverOrigin(ctx)
-	assert.Equal(test, origin, actual)
-}
-
-func TestSzConfigManager_AddConfig(test *testing.T) {
-	ctx := context.TODO()
-	szConfigManager := getTestObject(ctx, test)
-	now := time.Now()
-	szConfig := getSzConfig(ctx)
-	configHandle, err1 := szConfig.CreateConfig(ctx)
-	if err1 != nil {
-		test.Log("Error:", err1.Error())
-		assert.FailNow(test, "szConfig.CreateConfig()")
-	}
-	dataSourceCode := "GO_TEST_" + strconv.FormatInt(now.Unix(), 10)
-	_, err2 := szConfig.AddDataSource(ctx, configHandle, dataSourceCode)
-	if err2 != nil {
-		test.Log("Error:", err2.Error())
-		assert.FailNow(test, "szConfig.AddDataSource()")
-	}
-	configDefinition, err3 := szConfig.ExportConfig(ctx, configHandle)
-	if err3 != nil {
-		test.Log("Error:", err2.Error())
-		assert.FailNow(test, configDefinition)
-	}
-	configComment := fmt.Sprintf("szconfigmanager_test at %s", now.UTC())
-	actual, err := szConfigManager.AddConfig(ctx, configDefinition, configComment)
-	testError(test, err)
-	printActual(test, actual)
-}
-
-func TestSzConfigManager_GetConfig(test *testing.T) {
-	ctx := context.TODO()
-	szConfigManager := getTestObject(ctx, test)
-	configId, err1 := szConfigManager.GetDefaultConfigId(ctx)
-	if err1 != nil {
-		test.Log("Error:", err1.Error())
-		assert.FailNow(test, "szConfigManager.GetDefaultConfigId()")
-	}
-	actual, err := szConfigManager.GetConfig(ctx, configId)
-	testError(test, err)
-	printActual(test, actual)
-}
-
-func TestSzConfigManager_GetConfigList(test *testing.T) {
-	ctx := context.TODO()
-	szConfigManager := getTestObject(ctx, test)
-	actual, err := szConfigManager.GetConfigList(ctx)
-	testError(test, err)
-	printActual(test, actual)
-}
-
-func TestSzConfigManager_GetConfigList_asInterface(test *testing.T) {
-	ctx := context.TODO()
-	szconfigmanager := getSzConfigManagerAsInterface(ctx)
-	actual, err := szconfigmanager.GetConfigList(ctx)
-	testError(test, err)
-	printActual(test, actual)
-}
-
-func TestSzConfigManager_GetDefaultConfigId(test *testing.T) {
-	ctx := context.TODO()
-	szConfigManager := getTestObject(ctx, test)
-	actual, err := szConfigManager.GetDefaultConfigId(ctx)
-	testError(test, err)
-	printActual(test, actual)
-}
-
-func TestSzConfigManager_ReplaceDefaultConfigId(test *testing.T) {
-	ctx := context.TODO()
-	szConfigManager := getTestObject(ctx, test)
-	currentDefaultConfigId, err1 := szConfigManager.GetDefaultConfigId(ctx)
-	if err1 != nil {
-		test.Log("Error:", err1.Error())
-		assert.FailNow(test, "szConfigManager.GetDefaultConfigID()")
-	}
-
-	// TODO: This is kind of a cheater.
-
-	newDefaultConfigId, err2 := szConfigManager.GetDefaultConfigId(ctx)
-	if err2 != nil {
-		test.Log("Error:", err2.Error())
-		assert.FailNow(test, "szConfigManager.GetDefaultConfigId()-2")
-	}
-
-	err := szConfigManager.ReplaceDefaultConfigId(ctx, currentDefaultConfigId, newDefaultConfigId)
-	testError(test, err)
-}
-
-func TestSzConfigManager_SetDefaultConfigId(test *testing.T) {
-	ctx := context.TODO()
-	szConfigManager := getTestObject(ctx, test)
-	configId, err1 := szConfigManager.GetDefaultConfigId(ctx)
-	if err1 != nil {
-		test.Log("Error:", err1.Error())
-		assert.FailNow(test, "szConfigManager.GetDefaultConfigId()")
-	}
-	err := szConfigManager.SetDefaultConfigId(ctx, configId)
-	testError(test, err)
-}
-
-func TestSzConfigManager_Initialize(test *testing.T) {
-	ctx := context.TODO()
-	szConfigManager := getTestObject(ctx, test)
-	instanceName := "Test name"
-	verboseLogging := sz.SZ_NO_LOGGING
-	settings, err := getSettings()
-	testError(test, err)
-	err = szConfigManager.Initialize(ctx, instanceName, settings, verboseLogging)
-	testError(test, err)
-}
-
-func TestSzConfigManager_Destroy(test *testing.T) {
-	ctx := context.TODO()
-	szConfigManager := getTestObject(ctx, test)
-	err := szConfigManager.Destroy(ctx)
-	testError(test, err)
 }

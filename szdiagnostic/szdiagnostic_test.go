@@ -36,6 +36,98 @@ var (
 )
 
 // ----------------------------------------------------------------------------
+// Interface functions - test
+// ----------------------------------------------------------------------------
+
+func TestSzDiagnostic_CheckDatabasePerformance(test *testing.T) {
+	ctx := context.TODO()
+	szDiagnostic := getTestObject(ctx, test)
+	secondsToRun := 1
+	actual, err := szDiagnostic.CheckDatabasePerformance(ctx, secondsToRun)
+	testError(test, err)
+	printActual(test, actual)
+}
+
+func TestSzDiagnostic_PurgeRepository(test *testing.T) {
+	ctx := context.TODO()
+	szDiagnostic := getTestObject(ctx, test)
+	err := szDiagnostic.PurgeRepository(ctx)
+	testError(test, err)
+}
+
+// ----------------------------------------------------------------------------
+// Logging and observing
+// ----------------------------------------------------------------------------
+
+func TestSzDiagnostic_SetObserverOrigin(test *testing.T) {
+	ctx := context.TODO()
+	szDiagnostic := getTestObject(ctx, test)
+	origin := "Machine: nn; Task: UnitTest"
+	szDiagnostic.SetObserverOrigin(ctx, origin)
+}
+
+func TestSzDiagnostic_GetObserverOrigin(test *testing.T) {
+	ctx := context.TODO()
+	szDiagnostic := getTestObject(ctx, test)
+	origin := "Machine: nn; Task: UnitTest"
+	szDiagnostic.SetObserverOrigin(ctx, origin)
+	actual := szDiagnostic.GetObserverOrigin(ctx)
+	assert.Equal(test, origin, actual)
+}
+
+// ----------------------------------------------------------------------------
+// Object creation / destruction
+// ----------------------------------------------------------------------------
+
+func TestSzDiagnostic_AsInterface(test *testing.T) {
+	ctx := context.TODO()
+	szDiagnostic := getSzDiagnosticAsInterface(ctx)
+	secondsToRun := 1
+	actual, err := szDiagnostic.CheckDatabasePerformance(ctx, secondsToRun)
+	testError(test, err)
+	printActual(test, actual)
+}
+
+func TestSzDiagnostic_Initialize(test *testing.T) {
+	ctx := context.TODO()
+	szDiagnostic := &Szdiagnostic{}
+	instanceName := "Test module name"
+	settings, err := getSettings()
+	testError(test, err)
+	verboseLogging := sz.SZ_NO_LOGGING
+	configId := sz.SZ_INITIALIZE_WITH_DEFAULT_CONFIGURATION
+	err = szDiagnostic.Initialize(ctx, instanceName, settings, verboseLogging, configId)
+	testError(test, err)
+}
+
+func TestSzDiagnostic_Initialize_WithConfigId(test *testing.T) {
+	ctx := context.TODO()
+	szDiagnostic := &Szdiagnostic{}
+	instanceName := "Test module name"
+	settings, err := getSettings()
+	testError(test, err)
+	verboseLogging := sz.SZ_NO_LOGGING
+	configId := getDefaultConfigId()
+	err = szDiagnostic.Initialize(ctx, instanceName, settings, verboseLogging, configId)
+	testError(test, err)
+}
+
+func TestSzDiagnostic_Reinitialize(test *testing.T) {
+	ctx := context.TODO()
+	szDiagnostic := getTestObject(ctx, test)
+	configId := getDefaultConfigId()
+	err := szDiagnostic.Reinitialize(ctx, configId)
+	testErrorNoFail(test, err)
+}
+
+func TestSzDiagnostic_Destroy(test *testing.T) {
+	ctx := context.TODO()
+	szDiagnostic := getTestObject(ctx, test)
+	err := szDiagnostic.Destroy(ctx)
+	testError(test, err)
+}
+
+// ----------------------------------------------------------------------------
 // Internal functions
 // ----------------------------------------------------------------------------
 
@@ -341,81 +433,4 @@ func teardownSzDiagnostic(ctx context.Context) error {
 	}
 	szDiagnosticSingleton = nil
 	return nil
-}
-
-// ----------------------------------------------------------------------------
-// Test interface functions
-// ----------------------------------------------------------------------------
-
-func TestSzDiagnostic_SetObserverOrigin(test *testing.T) {
-	ctx := context.TODO()
-	szDiagnostic := getTestObject(ctx, test)
-	origin := "Machine: nn; Task: UnitTest"
-	szDiagnostic.SetObserverOrigin(ctx, origin)
-}
-
-func TestSzDiagnostic_GetObserverOrigin(test *testing.T) {
-	ctx := context.TODO()
-	szDiagnostic := getTestObject(ctx, test)
-	origin := "Machine: nn; Task: UnitTest"
-	szDiagnostic.SetObserverOrigin(ctx, origin)
-	actual := szDiagnostic.GetObserverOrigin(ctx)
-	assert.Equal(test, origin, actual)
-}
-
-func TestSzDiagnostic_CheckDatabasePerformance(test *testing.T) {
-	ctx := context.TODO()
-	szDiagnostic := getTestObject(ctx, test)
-	secondsToRun := 1
-	actual, err := szDiagnostic.CheckDatabasePerformance(ctx, secondsToRun)
-	testError(test, err)
-	printActual(test, actual)
-}
-
-func TestSzDiagnostic_CheckDatabasePerformance_asInterface(test *testing.T) {
-	ctx := context.TODO()
-	szDiagnostic := getSzDiagnosticAsInterface(ctx)
-	secondsToRun := 1
-	actual, err := szDiagnostic.CheckDatabasePerformance(ctx, secondsToRun)
-	testError(test, err)
-	printActual(test, actual)
-}
-
-func TestSzDiagnostic_Initialize(test *testing.T) {
-	ctx := context.TODO()
-	szDiagnostic := &Szdiagnostic{}
-	instanceName := "Test module name"
-	settings, err := getSettings()
-	testError(test, err)
-	verboseLogging := sz.SZ_NO_LOGGING
-	configId := sz.SZ_INITIALIZE_WITH_DEFAULT_CONFIGURATION
-	err = szDiagnostic.Initialize(ctx, instanceName, settings, verboseLogging, configId)
-	testError(test, err)
-}
-
-func TestSzDiagnostic_Initialize_WithConfigId(test *testing.T) {
-	ctx := context.TODO()
-	szDiagnostic := &Szdiagnostic{}
-	instanceName := "Test module name"
-	settings, err := getSettings()
-	testError(test, err)
-	verboseLogging := sz.SZ_NO_LOGGING
-	configId := getDefaultConfigId()
-	err = szDiagnostic.Initialize(ctx, instanceName, settings, verboseLogging, configId)
-	testError(test, err)
-}
-
-func TestSzDiagnostic_Reinit(test *testing.T) {
-	ctx := context.TODO()
-	szDiagnostic := getTestObject(ctx, test)
-	configId := getDefaultConfigId()
-	err := szDiagnostic.Reinitialize(ctx, configId)
-	testErrorNoFail(test, err)
-}
-
-func TestSzDiagnostic_Destroy(test *testing.T) {
-	ctx := context.TODO()
-	szDiagnostic := getTestObject(ctx, test)
-	err := szDiagnostic.Destroy(ctx)
-	testError(test, err)
 }

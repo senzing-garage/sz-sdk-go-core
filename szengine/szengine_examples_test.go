@@ -12,28 +12,8 @@ import (
 )
 
 // ----------------------------------------------------------------------------
-// Examples for godoc documentation
+// Interface functions - Examples for godoc documentation
 // ----------------------------------------------------------------------------
-
-func ExampleSzengine_SetObserverOrigin() {
-	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
-	ctx := context.TODO()
-	szengine := getSzEngine(ctx)
-	origin := "Machine: nn; Task: UnitTest"
-	szengine.SetObserverOrigin(ctx, origin)
-	// Output:
-}
-
-func ExampleSzengine_GetObserverOrigin() {
-	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_test.go
-	ctx := context.TODO()
-	szengine := getSzEngine(ctx)
-	origin := "Machine: nn; Task: UnitTest"
-	szengine.SetObserverOrigin(ctx, origin)
-	result := szengine.GetObserverOrigin(ctx)
-	fmt.Println(result)
-	// Output: Machine: nn; Task: UnitTest
-}
 
 func ExampleSzEngine_AddRecord() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
@@ -106,6 +86,36 @@ func ExampleSzEngine_CountRedoRecords() {
 	}
 	fmt.Println(result)
 	// Output: 1
+}
+
+func ExampleSzEngine_DeleteRecord() {
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
+	ctx := context.TODO()
+	szengine := getSzEngine(ctx)
+	dataSourceCode := "CUSTOMERS"
+	recordId := "1003"
+	flags := sz.SZ_WITHOUT_INFO
+	result, err := szengine.DeleteRecord(ctx, dataSourceCode, recordId, flags)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(result)
+	// Output: {}
+}
+
+func ExampleSzEngine_DeleteRecord_withInfo() {
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
+	ctx := context.TODO()
+	szengine := getSzEngine(ctx)
+	dataSourceCode := "CUSTOMERS"
+	recordId := "1003"
+	flags := sz.SZ_WITH_INFO
+	result, err := szengine.DeleteRecord(ctx, dataSourceCode, recordId, flags)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(result)
+	// Output: {"DATA_SOURCE":"CUSTOMERS","RECORD_ID":"1003","AFFECTED_ENTITIES":[],"INTERESTING_ENTITIES":{"ENTITIES":[]}}
 }
 
 func ExampleSzEngine_ExportCsvEntityReport() {
@@ -354,7 +364,7 @@ func ExampleSzEngine_GetRedoRecord() {
 		fmt.Println(err)
 	}
 	fmt.Println(result)
-	// Output: {"REASON":"Replaced observed entity","DATA_SOURCE":"CUSTOMERS","RECORD_ID":"1002","DSRC_ACTION":"X"}
+	// Output: {"REASON":"deferred delete","DATA_SOURCE":"CUSTOMERS","RECORD_ID":"1001","DSRC_ACTION":"X"}
 }
 
 func ExampleSzEngine_GetRepositoryLastModifiedTime() {
@@ -406,7 +416,7 @@ func ExampleSzEngine_HowEntityByEntityId() {
 		fmt.Println(err)
 	}
 	fmt.Println(jsonutil.Flatten(jsonutil.NormalizeAndSort(jsonutil.Flatten(jsonutil.Redact(result, "RECORD_ID", "INBOUND_FEAT_USAGE_TYPE")))))
-	// Output: {"HOW_RESULTS":{"FINAL_STATE":{"NEED_REEVALUATION":0,"VIRTUAL_ENTITIES":[{"MEMBER_RECORDS":[{"INTERNAL_ID":1,"RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":null}]},{"INTERNAL_ID":2,"RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":null}]},{"INTERNAL_ID":3,"RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":null}]}],"VIRTUAL_ENTITY_ID":"V1-S2"}]},"RESOLUTION_STEPS":[{"INBOUND_VIRTUAL_ENTITY_ID":"V1-S1","MATCH_INFO":{"ERRULE_CODE":"SF1_PNAME_CSTAB","MATCH_KEY":"+NAME+DOB+EMAIL"},"RESULT_VIRTUAL_ENTITY_ID":"V1-S2","STEP":2,"VIRTUAL_ENTITY_1":{"MEMBER_RECORDS":[{"INTERNAL_ID":1,"RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":null}]},{"INTERNAL_ID":2,"RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":null}]}],"VIRTUAL_ENTITY_ID":"V1-S1"},"VIRTUAL_ENTITY_2":{"MEMBER_RECORDS":[{"INTERNAL_ID":3,"RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":null}]}],"VIRTUAL_ENTITY_ID":"V3"}},{"INBOUND_VIRTUAL_ENTITY_ID":"V2","MATCH_INFO":{"ERRULE_CODE":"CNAME_CFF_CEXCL","MATCH_KEY":"+NAME+DOB+PHONE"},"RESULT_VIRTUAL_ENTITY_ID":"V1-S1","STEP":1,"VIRTUAL_ENTITY_1":{"MEMBER_RECORDS":[{"INTERNAL_ID":1,"RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":null}]}],"VIRTUAL_ENTITY_ID":"V1"},"VIRTUAL_ENTITY_2":{"MEMBER_RECORDS":[{"INTERNAL_ID":2,"RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":null}]}],"VIRTUAL_ENTITY_ID":"V2"}}]}}
+	// Output: {"HOW_RESULTS":{"FINAL_STATE":{"NEED_REEVALUATION":0,"VIRTUAL_ENTITIES":[{"MEMBER_RECORDS":[{"INTERNAL_ID":1,"RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":null}]},{"INTERNAL_ID":2,"RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":null}]}],"VIRTUAL_ENTITY_ID":"V1-S1"}]},"RESOLUTION_STEPS":[{"INBOUND_VIRTUAL_ENTITY_ID":"V2","MATCH_INFO":{"ERRULE_CODE":"CNAME_CFF_CEXCL","MATCH_KEY":"+NAME+DOB+PHONE"},"RESULT_VIRTUAL_ENTITY_ID":"V1-S1","STEP":1,"VIRTUAL_ENTITY_1":{"MEMBER_RECORDS":[{"INTERNAL_ID":1,"RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":null}]}],"VIRTUAL_ENTITY_ID":"V1"},"VIRTUAL_ENTITY_2":{"MEMBER_RECORDS":[{"INTERNAL_ID":2,"RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":null}]}],"VIRTUAL_ENTITY_ID":"V2"}}]}}
 }
 
 func ExampleSzEngine_PrimeEngine() {
@@ -417,6 +427,41 @@ func ExampleSzEngine_PrimeEngine() {
 	if err != nil {
 		fmt.Println(err)
 	}
+	// Output:
+}
+
+func ExampleSzEngine_ProcessRedoRecord() {
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
+	ctx := context.TODO()
+	szengine := getSzEngine(ctx)
+	redoRecord, err := szengine.GetRedoRecord(ctx)
+	if err != nil {
+		fmt.Println(err)
+	}
+	flags := sz.SZ_WITHOUT_INFO
+	result, err := szengine.ProcessRedoRecord(ctx, redoRecord, flags)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(result)
+	// Output: {}
+}
+
+// TODO: Fix Output
+func ExampleSzEngine_ProcessRedoRecord_withInfo() {
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
+	ctx := context.TODO()
+	szengine := getSzEngine(ctx)
+	redoRecord, err := szengine.GetRedoRecord(ctx)
+	if err != nil {
+		fmt.Println(err)
+	}
+	flags := sz.SZ_WITH_INFO
+	result, err := szengine.ProcessRedoRecord(ctx, redoRecord, flags)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(result)
 	// Output:
 }
 
@@ -529,30 +574,19 @@ func ExampleSzEngine_SearchByAttributes_searchProfile() {
 	// TODO: Implement ExampleSzEngine_SearchByAttributes_searchProfile
 }
 
-func ExampleSzengine_SetLogLevel() {
-	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
-	ctx := context.TODO()
-	szengine := getSzEngine(ctx)
-	err := szengine.SetLogLevel(ctx, logging.LevelInfoName)
-	if err != nil {
-		fmt.Println(err)
-	}
-	// Output:
-}
-
 func ExampleSzEngine_WhyEntities() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
 	szengine := &Szengine{}
 	var entityId1 int64 = 1
-	var entityId2 int64 = 100003
+	var entityId2 int64 = 100001
 	flags := sz.SZ_NO_FLAGS
 	result, err := szengine.WhyEntities(ctx, entityId1, entityId2, flags)
 	if err != nil {
 		fmt.Println(err)
 	}
 	fmt.Println(truncate(result, 74))
-	// Output: {"WHY_RESULTS":[{"ENTITY_ID":1,"ENTITY_ID_2":100003,"MATCH_INFO":{"WHY_...
+	// Output: {"WHY_RESULTS":[{"ENTITY_ID":1,"ENTITY_ID_2":100001,"MATCH_INFO":{"WHY_...
 }
 
 func ExampleSzEngine_WhyRecordInEntity() {
@@ -588,7 +622,42 @@ func ExampleSzEngine_WhyRecords() {
 }
 
 // ----------------------------------------------------------------------------
-// Examples that are not in sorted order.
+// Logging and observing
+// ----------------------------------------------------------------------------
+
+func ExampleSzengine_SetLogLevel() {
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
+	ctx := context.TODO()
+	szengine := getSzEngine(ctx)
+	err := szengine.SetLogLevel(ctx, logging.LevelInfoName)
+	if err != nil {
+		fmt.Println(err)
+	}
+	// Output:
+}
+
+func ExampleSzengine_SetObserverOrigin() {
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
+	ctx := context.TODO()
+	szengine := getSzEngine(ctx)
+	origin := "Machine: nn; Task: UnitTest"
+	szengine.SetObserverOrigin(ctx, origin)
+	// Output:
+}
+
+func ExampleSzengine_GetObserverOrigin() {
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_test.go
+	ctx := context.TODO()
+	szengine := getSzEngine(ctx)
+	origin := "Machine: nn; Task: UnitTest"
+	szengine.SetObserverOrigin(ctx, origin)
+	result := szengine.GetObserverOrigin(ctx)
+	fmt.Println(result)
+	// Output: Machine: nn; Task: UnitTest
+}
+
+// ----------------------------------------------------------------------------
+// Object creation / destruction
 // ----------------------------------------------------------------------------
 
 func ExampleSzEngine_Initialize() {
@@ -622,71 +691,6 @@ func ExampleSzEngine_Reinitialize() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	// Output:
-}
-
-func ExampleSzEngine_DeleteRecord() {
-	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
-	ctx := context.TODO()
-	szengine := getSzEngine(ctx)
-	dataSourceCode := "CUSTOMERS"
-	recordId := "1003"
-	flags := sz.SZ_WITHOUT_INFO
-	result, err := szengine.DeleteRecord(ctx, dataSourceCode, recordId, flags)
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println(result)
-	// Output: {}
-}
-
-func ExampleSzEngine_DeleteRecord_withInfo() {
-	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
-	ctx := context.TODO()
-	szengine := getSzEngine(ctx)
-	dataSourceCode := "CUSTOMERS"
-	recordId := "1003"
-	flags := sz.SZ_WITH_INFO
-	result, err := szengine.DeleteRecord(ctx, dataSourceCode, recordId, flags)
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println(result)
-	// Output: {"DATA_SOURCE":"CUSTOMERS","RECORD_ID":"1003","AFFECTED_ENTITIES":[],"INTERESTING_ENTITIES":{"ENTITIES":[]}}
-}
-
-func ExampleSzEngine_ProcessRedoRecord() {
-	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
-	ctx := context.TODO()
-	szengine := getSzEngine(ctx)
-	redoRecord, err := szengine.GetRedoRecord(ctx)
-	if err != nil {
-		fmt.Println(err)
-	}
-	flags := sz.SZ_WITHOUT_INFO
-	result, err := szengine.ProcessRedoRecord(ctx, redoRecord, flags)
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println(result)
-	// Output: {}
-}
-
-// TODO: Fix Output
-func ExampleSzEngine_ProcessRedoRecord_withInfo() {
-	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
-	ctx := context.TODO()
-	szengine := getSzEngine(ctx)
-	redoRecord, err := szengine.GetRedoRecord(ctx)
-	if err != nil {
-		fmt.Println(err)
-	}
-	flags := sz.SZ_WITH_INFO
-	result, err := szengine.ProcessRedoRecord(ctx, redoRecord, flags)
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println(result)
 	// Output:
 }
 

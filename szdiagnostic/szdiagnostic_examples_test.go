@@ -11,8 +11,36 @@ import (
 )
 
 // ----------------------------------------------------------------------------
-// Examples for godoc documentation
+// Interface functions - Examples for godoc documentation
 // ----------------------------------------------------------------------------
+
+func ExampleSzDiagnostic_CheckDatabasePerformance() {
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
+	ctx := context.TODO()
+	szDiagnostic := getSzDiagnostic(ctx)
+	secondsToRun := 1
+	result, err := szDiagnostic.CheckDatabasePerformance(ctx, secondsToRun)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(truncate(result, 25))
+	// Output: {"numRecordsInserted":...
+}
+
+// ----------------------------------------------------------------------------
+// Logging and observing
+// ----------------------------------------------------------------------------
+
+func ExampleSzdiagnostic_SetLogLevel() {
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
+	ctx := context.TODO()
+	szDiagnostic := &Szdiagnostic{}
+	err := szDiagnostic.SetLogLevel(ctx, logging.LevelInfoName)
+	if err != nil {
+		fmt.Println(err)
+	}
+	// Output:
+}
 
 func ExampleSzdiagnostic_SetObserverOrigin() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
@@ -34,29 +62,9 @@ func ExampleSzdiagnostic_GetObserverOrigin() {
 	// Output: Machine: nn; Task: UnitTest
 }
 
-func ExampleSzDiagnostic_CheckDatabasePerformance() {
-	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
-	ctx := context.TODO()
-	szDiagnostic := getSzDiagnostic(ctx)
-	secondsToRun := 1
-	result, err := szDiagnostic.CheckDatabasePerformance(ctx, secondsToRun)
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println(truncate(result, 25))
-	// Output: {"numRecordsInserted":...
-}
-
-func ExampleSzdiagnostic_SetLogLevel() {
-	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
-	ctx := context.TODO()
-	szDiagnostic := &Szdiagnostic{}
-	err := szDiagnostic.SetLogLevel(ctx, logging.LevelInfoName)
-	if err != nil {
-		fmt.Println(err)
-	}
-	// Output:
-}
+// ----------------------------------------------------------------------------
+// Object creation / destruction
+// ----------------------------------------------------------------------------
 
 func ExampleSzDiagnostic_Initialize() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
