@@ -72,11 +72,11 @@ func ExampleSzConfigManager_GetDefaultConfigId() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfigmanager/szconfigmanager_examples_test.go
 	ctx := context.TODO()
 	szConfigManager := getSzConfigManager(ctx)
-	defaultConfigId, err := szConfigManager.GetDefaultConfigId(ctx)
+	configId, err := szConfigManager.GetDefaultConfigId(ctx)
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println(defaultConfigId > 0) // Dummy output.
+	fmt.Println(configId > 0) // Dummy output.
 	// Output: true
 }
 
@@ -163,7 +163,7 @@ func ExampleSzconfigmanager_GetObserverOrigin() {
 // Object creation / destruction
 // ----------------------------------------------------------------------------
 
-func ExampleSzConfigManager_Initialize() {
+func ExampleSzconfigmanager_Initialize() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfigmanager/szconfigmanager_examples_test.go
 	ctx := context.TODO()
 	szConfigManager := &Szconfigmanager{}
@@ -180,7 +180,7 @@ func ExampleSzConfigManager_Initialize() {
 	// Output:
 }
 
-func ExampleSzConfigManager_Destroy() {
+func ExampleSzconfigmanager_Destroy() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfigmanager/szconfigmanager_examples_test.go
 	ctx := context.TODO()
 	szConfigManager := getSzConfigManager(ctx)
@@ -188,4 +188,5 @@ func ExampleSzConfigManager_Destroy() {
 	if err != nil {
 		fmt.Println(err)
 	}
+	// Output:
 }

@@ -6,7 +6,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/senzing-garage/go-helpers/jsonutil"
 	"github.com/senzing-garage/go-logging/logging"
 	"github.com/senzing-garage/sz-sdk-go/sz"
 )
@@ -15,7 +14,7 @@ import (
 // Interface functions - Examples for godoc documentation
 // ----------------------------------------------------------------------------
 
-func ExampleSzProduct_GetLicense() {
+func ExampleSzproduct_GetLicense() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szproduct/szproduct_examples_test.go
 	ctx := context.TODO()
 	szProduct := getSzProduct(ctx)
@@ -23,11 +22,11 @@ func ExampleSzProduct_GetLicense() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println(jsonutil.Flatten(jsonutil.Redact(result, "customer", "contract", "issueDate", "licenseLevel", "billing", "licenseType", "expireDate", "recordLimit")))
-	// Output: {"billing":null,"contract":null,"customer":null,"expireDate":null,"issueDate":null,"licenseLevel":null,"licenseType":null,"recordLimit":null}
+	fmt.Println(result)
+	// Output: {"customer":"Senzing Public Test License","contract":"Senzing Public Test - 50K records test","issueDate":"2023-11-02","licenseType":"EVAL (Solely for non-productive use)","licenseLevel":"STANDARD","billing":"YEARLY","expireDate":"2024-11-02","recordLimit":50000}
 }
 
-func ExampleSzProduct_GetVersion() {
+func ExampleSzproduct_GetVersion() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szproduct/szproduct_examples_test.go
 	ctx := context.TODO()
 	szProduct := getSzProduct(ctx)
@@ -78,7 +77,7 @@ func ExampleSzproduct_GetObserverOrigin() {
 // Object creation / destruction
 // ----------------------------------------------------------------------------
 
-func ExampleSzProduct_Initialize() {
+func ExampleSzproduct_Initialize() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szproduct/szproduct_examples_test.go
 	ctx := context.TODO()
 	szProduct := getSzProduct(ctx)
@@ -92,7 +91,7 @@ func ExampleSzProduct_Initialize() {
 	// Output:
 }
 
-func ExampleSzProduct_Destroy() {
+func ExampleSzproduct_Destroy() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szproduct/szproduct_examples_test.go
 	ctx := context.TODO()
 	szProduct := getSzProduct(ctx)
@@ -100,4 +99,5 @@ func ExampleSzProduct_Destroy() {
 	if err != nil {
 		fmt.Println(err)
 	}
+	// Output:
 }

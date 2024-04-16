@@ -14,7 +14,7 @@ import (
 // Interface functions - Examples for godoc documentation
 // ----------------------------------------------------------------------------
 
-func ExampleSzDiagnostic_CheckDatabasePerformance() {
+func ExampleSzdiagnostic_CheckDatabasePerformance() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
 	ctx := context.TODO()
 	szDiagnostic := getSzDiagnostic(ctx)
@@ -25,6 +25,17 @@ func ExampleSzDiagnostic_CheckDatabasePerformance() {
 	}
 	fmt.Println(truncate(result, 25))
 	// Output: {"numRecordsInserted":...
+}
+
+func ExampleSzdiagnostic_PurgeRepository() {
+	// For more information, visit https://github.com/Senzing/sz-sdk-go-grpc/blob/main/szdiagnostic/szdiagnostic_examples_test.go
+	ctx := context.TODO()
+	szDiagnostic := getSzDiagnostic(ctx)
+	err := szDiagnostic.PurgeRepository(ctx)
+	if err != nil {
+		fmt.Println(err)
+	}
+	// Output:
 }
 
 // ----------------------------------------------------------------------------
@@ -66,7 +77,7 @@ func ExampleSzdiagnostic_GetObserverOrigin() {
 // Object creation / destruction
 // ----------------------------------------------------------------------------
 
-func ExampleSzDiagnostic_Initialize() {
+func ExampleSzdiagnostic_Initialize() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
 	ctx := context.TODO()
 	szDiagnostic := &Szdiagnostic{}
@@ -84,7 +95,7 @@ func ExampleSzDiagnostic_Initialize() {
 	// Output:
 }
 
-func ExampleSzDiagnostic_Reinitialize() {
+func ExampleSzdiagnostic_Reinitialize() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
 	ctx := context.TODO()
 	szDiagnostic := getSzDiagnostic(ctx)

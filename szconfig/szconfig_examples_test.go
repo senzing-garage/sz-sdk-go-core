@@ -14,7 +14,7 @@ import (
 // Interface functions - Examples for godoc documentation
 // ----------------------------------------------------------------------------
 
-func ExampleSzConfig_AddDataSource() {
+func ExampleSzconfig_AddDataSource() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig_examples_test.go
 	ctx := context.TODO()
 	szConfig := getSzConfig(ctx)
@@ -31,7 +31,7 @@ func ExampleSzConfig_AddDataSource() {
 	// Output: {"DSRC_ID":1001}
 }
 
-func ExampleSzConfig_CloseConfig() {
+func ExampleSzconfig_CloseConfig() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig_examples_test.go
 	ctx := context.TODO()
 	szConfig := getSzConfig(ctx)
@@ -46,7 +46,7 @@ func ExampleSzConfig_CloseConfig() {
 	// Output:
 }
 
-func ExampleSzConfig_CreateConfig() {
+func ExampleSzconfig_CreateConfig() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig_examples_test.go
 	ctx := context.TODO()
 	szConfig := getSzConfig(ctx)
@@ -58,7 +58,7 @@ func ExampleSzConfig_CreateConfig() {
 	// Output: true
 }
 
-func ExampleSzConfig_DeleteDataSource() {
+func ExampleSzconfig_DeleteDataSource() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig_examples_test.go
 	ctx := context.TODO()
 	szConfig := getSzConfig(ctx)
@@ -74,7 +74,7 @@ func ExampleSzConfig_DeleteDataSource() {
 	// Output:
 }
 
-func ExampleSzConfig_ExportConfig() {
+func ExampleSzconfig_ExportConfig() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig_examples_test.go
 	ctx := context.TODO()
 	szConfig := getSzConfig(ctx)
@@ -82,15 +82,15 @@ func ExampleSzConfig_ExportConfig() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	jsonConfig, err := szConfig.ExportConfig(ctx, configHandle)
+	configDefinition, err := szConfig.ExportConfig(ctx, configHandle)
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println(truncate(jsonConfig, 207))
+	fmt.Println(truncate(configDefinition, 207))
 	// Output: {"G2_CONFIG":{"CFG_ATTR":[{"ATTR_ID":1001,"ATTR_CODE":"DATA_SOURCE","ATTR_CLASS":"OBSERVATION","FTYPE_CODE":null,"FELEM_CODE":null,"FELEM_REQ":"Yes","DEFAULT_VALUE":null,"INTERNAL":"No"},{"ATTR_ID":1003,"...
 }
 
-func ExampleSzConfig_GetDataSources() {
+func ExampleSzconfig_GetDataSources() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig_examples_test.go
 	ctx := context.TODO()
 	szConfig := getSzConfig(ctx)
@@ -106,7 +106,7 @@ func ExampleSzConfig_GetDataSources() {
 	// Output: {"DATA_SOURCES":[{"DSRC_ID":1,"DSRC_CODE":"TEST"},{"DSRC_ID":2,"DSRC_CODE":"SEARCH"}]}
 }
 
-func ExampleSzConfig_ImportConfig() {
+func ExampleSzconfig_ImportConfig() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig_examples_test.go
 	ctx := context.TODO()
 	szConfig := getSzConfig(ctx)
@@ -165,7 +165,7 @@ func ExampleSzconfig_GetObserverOrigin() {
 // Object creation / destruction
 // ----------------------------------------------------------------------------
 
-func ExampleSzConfig_Initialize() {
+func ExampleSzconfig_Initialize() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig_examples_test.go
 	ctx := context.TODO()
 	szConfig := getSzConfig(ctx)
@@ -182,7 +182,7 @@ func ExampleSzConfig_Initialize() {
 	// Output:
 }
 
-func ExampleSzConfig_Destroy() {
+func ExampleSzconfig_Destroy() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig_examples_test.go
 	ctx := context.TODO()
 	szConfig := getSzConfig(ctx)
