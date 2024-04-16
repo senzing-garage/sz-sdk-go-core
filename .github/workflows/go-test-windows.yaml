@@ -35,7 +35,7 @@ jobs:
       - name: install Senzing API
         uses: senzing-factory/github-action-install-senzing-api@v3
         with:
-          senzingapi-version: ${{ matrix.senzingapi-version }}
+          senzingapi-runtime-version: ${{ matrix.senzingapi-version }}
 
       - name: add to "Path" environment variable
         run: echo "C:\Program Files\Senzing\g2\lib" | Out-File -FilePath "$env:GITHUB_PATH" -Encoding utf8 -Append
