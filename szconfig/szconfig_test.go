@@ -238,7 +238,7 @@ func TestSzConfig_AddDataSource(test *testing.T) {
 	testError(test, err)
 }
 
-func TestSzConfig_AddDataSource_WithLoad(test *testing.T) {
+func TestSzConfig_AddDataSource_withLoad(test *testing.T) {
 	ctx := context.TODO()
 	szConfig := getTestObject(ctx, test)
 	configHandle, err := szConfig.CreateConfig(ctx)
@@ -297,7 +297,7 @@ func TestSzConfig_DeleteDataSource(test *testing.T) {
 	testError(test, err)
 }
 
-func TestSzConfig_DeleteDataSource_WithLoad(test *testing.T) {
+func TestSzConfig_DeleteDataSource_withLoad(test *testing.T) {
 	ctx := context.TODO()
 	szConfig := getTestObject(ctx, test)
 	configHandle, err := szConfig.CreateConfig(ctx)
@@ -326,6 +326,16 @@ func TestSzConfig_DeleteDataSource_WithLoad(test *testing.T) {
 	testError(test, err)
 }
 
+func TestSzConfig_ExportConfig(test *testing.T) {
+	ctx := context.TODO()
+	szConfig := getTestObject(ctx, test)
+	configHandle, err := szConfig.CreateConfig(ctx)
+	testError(test, err)
+	actual, err := szConfig.ExportConfig(ctx, configHandle)
+	testError(test, err)
+	printActual(test, actual)
+}
+
 func TestSzConfig_GetDataSources(test *testing.T) {
 	ctx := context.TODO()
 	szConfig := getTestObject(ctx, test)
@@ -350,24 +360,16 @@ func TestSzConfig_GetDataSources_asInterface(test *testing.T) {
 	testError(test, err)
 }
 
-func TestSzConfig_ExportConfig(test *testing.T) {
-	ctx := context.TODO()
-	szConfig := getTestObject(ctx, test)
-	configHandle, err := szConfig.CreateConfig(ctx)
-	testError(test, err)
-	actual, err := szConfig.ExportConfig(ctx, configHandle)
-	testError(test, err)
-	printActual(test, actual)
-}
+
 
 func TestSzConfig_ImportConfig(test *testing.T) {
 	ctx := context.TODO()
 	szConfig := getTestObject(ctx, test)
 	configHandle, err := szConfig.CreateConfig(ctx)
 	testError(test, err)
-	jsonConfig, err := szConfig.ExportConfig(ctx, configHandle)
+	configDefinition, err := szConfig.ExportConfig(ctx, configHandle)
 	testError(test, err)
-	actual, err := szConfig.ImportConfig(ctx, jsonConfig)
+	actual, err := szConfig.ImportConfig(ctx, configDefinition)
 	testError(test, err)
 	printActual(test, actual)
 }

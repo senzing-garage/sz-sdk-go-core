@@ -33,17 +33,17 @@ const (
 	verboseLogging    = sz.SZ_NO_LOGGING
 )
 
-var (
-	defaultConfigId int64
-	globalSzEngine  *Szengine
-	logger          logging.LoggingInterface
-)
-
 type GetEntityByRecordIdResponse struct {
 	ResolvedEntity struct {
 		EntityId int64 `json:"ENTITY_ID"`
 	} `json:"RESOLVED_ENTITY"`
 }
+
+var (
+	defaultConfigId int64
+	globalSzEngine  *Szengine
+	logger          logging.LoggingInterface
+)
 
 // ----------------------------------------------------------------------------
 // Internal functions
@@ -92,6 +92,15 @@ func getEntityIdString(record record.Record) string {
 	return strconv.FormatInt(entityId, 10)
 }
 
+func getTestDirectoryPath() string {
+	return filepath.FromSlash("../target/test/szengine")
+}
+
+func getTestObject(ctx context.Context, test *testing.T) *Szengine {
+	_ = test
+	return getSzEngine(ctx)
+}
+
 func getSettings() (string, error) {
 
 	// Determine Database URL.
@@ -133,15 +142,6 @@ func getSzEngine(ctx context.Context) *Szengine {
 }
 
 func getSzEngineAsInterface(ctx context.Context) sz.SzEngine {
-	return getSzEngine(ctx)
-}
-
-func getTestDirectoryPath() string {
-	return filepath.FromSlash("../target/test/szengine")
-}
-
-func getTestObject(ctx context.Context, test *testing.T) *Szengine {
-	_ = test
 	return getSzEngine(ctx)
 }
 
@@ -228,8 +228,11 @@ func setupAddRecords() error {
 	var err error = nil
 	ctx := context.TODO()
 	szEngine := getSzEngine(ctx)
-	custRecords := truthset.CustomerRecords
-	records := []record.Record{custRecords["1001"], custRecords["1002"], custRecords["1003"]}
+	records := []record.Record{
+		truthset.CustomerRecords["1001"],
+		truthset.CustomerRecords["1002"],
+		truthset.CustomerRecords["1003"],
+	}
 	flags := sz.SZ_WITHOUT_INFO
 	for _, record := range records {
 		_, err = szEngine.AddRecord(ctx, record.DataSource, record.Id, record.Json, flags)
@@ -393,22 +396,17 @@ func TestSzEngine_GetObserverOrigin(test *testing.T) {
 func TestSzEngine_AddRecord(test *testing.T) {
 	ctx := context.TODO()
 	szEngine := getTestObject(ctx, test)
-	record1, err := record.NewRecord(`{"DATA_SOURCE": "TEST", "RECORD_ID": "ADD_TEST_1", "NAME_FULL": "JIMMITY UNKNOWN"}`)
-	testError(test, err)
-
-	record2, err := record.NewRecord(`{"DATA_SOURCE": "TEST", "RECORD_ID": "ADD_TEST_2", "NAME_FULL": "SOMEBODY NOTFOUND"}`)
-	testError(test, err)
 	flags := sz.SZ_WITHOUT_INFO
-
-	actual, err := szEngine.AddRecord(ctx, record1.DataSource, record1.Id, record1.Json, flags)
-	testError(test, err)
-	defer szEngine.DeleteRecord(ctx, record1.DataSource, record1.Id, sz.SZ_NO_FLAGS)
-	printActual(test, actual)
-
-	actual, err = szEngine.AddRecord(ctx, record2.DataSource, record2.Id, record2.Json, flags)
-	testError(test, err)
-	defer szEngine.DeleteRecord(ctx, record2.DataSource, record2.Id, sz.SZ_NO_FLAGS)
-	printActual(test, actual)
+	records := []record.Record{
+		truthset.CustomerRecords["1004"],
+		truthset.CustomerRecords["1005"],
+	}
+	for _, record := range records {
+		actual, err := szEngine.AddRecord(ctx, record.DataSource, record.Id, record.Json, flags)
+		testError(test, err)
+		printActual(test, actual)
+		defer szEngine.DeleteRecord(ctx, record.DataSource, record.Id, flags)
+	}
 }
 
 func TestSzEngine_AddRecord_szBadInput(test *testing.T) {
@@ -443,45 +441,49 @@ func TestSzEngine_AddRecord_szBadInput(test *testing.T) {
 func TestSzEngine_AddRecord_withInfo(test *testing.T) {
 	ctx := context.TODO()
 	szEngine := getTestObject(ctx, test)
-	record, err := record.NewRecord(`{"DATA_SOURCE": "TEST", "RECORD_ID": "WITH_INFO_1", "NAME_FULL": "HUBERT WITHINFO"}`)
-	testError(test, err)
 	flags := sz.SZ_WITH_INFO
-
-	actual, err := szEngine.AddRecord(ctx, record.DataSource, record.Id, record.Json, flags)
-	testError(test, err)
-	defer szEngine.DeleteRecord(ctx, record.DataSource, record.Id, sz.SZ_WITHOUT_INFO)
-	printActual(test, actual)
-
-	actual, err = szEngine.DeleteRecord(ctx, record.DataSource, record.Id, flags)
-	testError(test, err)
-	printActual(test, actual)
+	records := []record.Record{
+		truthset.CustomerRecords["1004"],
+		truthset.CustomerRecords["1005"],
+	}
+	for _, record := range records {
+		actual, err := szEngine.AddRecord(ctx, record.DataSource, record.Id, record.Json, flags)
+		testError(test, err)
+		printActual(test, actual)
+		defer szEngine.DeleteRecord(ctx, record.DataSource, record.Id, flags)
+	}
 }
 
 func TestSzEngine_CountRedoRecords(test *testing.T) {
+	expected := int64(1)
 	ctx := context.TODO()
 	szEngine := getTestObject(ctx, test)
 	actual, err := szEngine.CountRedoRecords(ctx)
 	testError(test, err)
 	printActual(test, actual)
+	assert.Equal(test, expected, actual)
+
 }
 
 func TestSzEngine_CountRedoRecords_asInterface(test *testing.T) {
+	expected := int64(1)
 	ctx := context.TODO()
 	szEngine := getSzEngineAsInterface(ctx)
 	actual, err := szEngine.CountRedoRecords(ctx)
 	testError(test, err)
 	printActual(test, actual)
+	assert.Equal(test, expected, actual)
 }
 
 func TestSzEngine_ExportCsvEntityReport(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
 	expected := []string{
 		`RESOLVED_ENTITY_ID,RELATED_ENTITY_ID,MATCH_LEVEL_CODE,MATCH_KEY,DATA_SOURCE,RECORD_ID`,
 		`1,0,"","","CUSTOMERS","1001"`,
 		`1,0,"RESOLVED","+NAME+DOB+PHONE","CUSTOMERS","1002"`,
 		`1,0,"RESOLVED","+NAME+DOB+EMAIL","CUSTOMERS","1003"`,
 	}
+	ctx := context.TODO()
+	szEngine := getTestObject(ctx, test)
 	csvColumnList := ""
 	flags := sz.SZ_EXPORT_INCLUDE_ALL_ENTITIES
 	aHandle, err := szEngine.ExportCsvEntityReport(ctx, csvColumnList, flags)
@@ -491,27 +493,22 @@ func TestSzEngine_ExportCsvEntityReport(test *testing.T) {
 	}()
 	testError(test, err)
 	actualCount := 0
-	for {
-		actual, err := szEngine.FetchNext(ctx, aHandle)
-		testError(test, err)
-		if len(actual) == 0 {
-			break
-		}
-		assert.Equal(test, expected[actualCount], strings.TrimSpace(actual))
+	for actual := range szEngine.ExportCsvEntityReportIterator(ctx, csvColumnList, flags) {
+		assert.Equal(test, expected[actualCount], strings.TrimSpace(actual.Value))
 		actualCount += 1
 	}
 	assert.Equal(test, len(expected), actualCount)
 }
 
 func TestSzEngine_ExportCsvEntityReportIterator(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
 	expected := []string{
 		`RESOLVED_ENTITY_ID,RELATED_ENTITY_ID,MATCH_LEVEL_CODE,MATCH_KEY,DATA_SOURCE,RECORD_ID`,
 		`1,0,"","","CUSTOMERS","1001"`,
 		`1,0,"RESOLVED","+NAME+DOB+PHONE","CUSTOMERS","1002"`,
 		`1,0,"RESOLVED","+NAME+DOB+EMAIL","CUSTOMERS","1003"`,
 	}
+	ctx := context.TODO()
+	szEngine := getTestObject(ctx, test)
 	csvColumnList := ""
 	flags := sz.SZ_EXPORT_INCLUDE_ALL_ENTITIES
 	actualCount := 0
@@ -555,6 +552,7 @@ func TestSzEngine_ExportJsonEntityReport(test *testing.T) {
 }
 
 func TestSzEngine_ExportJsonEntityReportIterator(test *testing.T) {
+	expected := 1
 	ctx := context.TODO()
 	szEngine := getTestObject(ctx, test)
 	flags := sz.SZ_EXPORT_INCLUDE_ALL_ENTITIES
@@ -564,7 +562,7 @@ func TestSzEngine_ExportJsonEntityReportIterator(test *testing.T) {
 		printActual(test, actual.Value)
 		actualCount += 1
 	}
-	assert.Equal(test, 1, actualCount)
+	assert.Equal(test, expected, actualCount)
 }
 
 func TestSzEngine_FindNetworkByEntityId(test *testing.T) {
@@ -705,7 +703,7 @@ func TestSzEngine_FindPathByRecordId_including(test *testing.T) {
 	record1 := truthset.CustomerRecords["1001"]
 	record2 := truthset.CustomerRecords["1002"]
 	maxDegree := int64(1)
-	exclusions := sz.SZ_NO_EXCLUSIONS
+	exclusions := `{"ENTITIES": [{"ENTITY_ID": ` + getEntityIdString(record1) + `}]}`
 	requiredDataSources := `{"DATA_SOURCES": ["` + record1.DataSource + `"]}`
 	flags := sz.SZ_NO_FLAGS
 	actual, err := szEngine.FindPathByRecordId(ctx, record1.DataSource, record1.Id, record2.DataSource, record2.Id, maxDegree, exclusions, requiredDataSources, flags)
@@ -804,6 +802,26 @@ func TestSzEngine_PrimeEngine(test *testing.T) {
 	testError(test, err)
 }
 
+// TODO: Implement TestSzEngine_ProcessRedoRecord
+// func TestSzEngine_ProcessRedoRecord(test *testing.T) {
+// 	ctx := context.TODO()
+// 	szEngine := getTestObject(ctx, test)
+//  flags := sz.SZ_WITHOUT_INFO
+// 	actual, err := szEngine.ProcessRedoRecord(ctx, redoRecord, flags)
+// 	testError(test, err)
+// 	printActual(test, actual)
+// }
+
+// TODO: Implement TestSzEngine_ProcessRedoRecord_withInfo
+// func TestSzEngine_ProcessRedoRecord_withInfo(test *testing.T) {
+// 	ctx := context.TODO()
+// 	szEngine := getTestObject(ctx, test)
+//  flags := sz.SZ_WITH_INFO
+// 	actual, err := szEngine.ProcessRedoRecord(ctx, redoRecord, flags)
+// 	testError(test, err)
+// 	printActual(test, actual)
+// }
+
 func TestSzEngine_ReevaluateEntity(test *testing.T) {
 	ctx := context.TODO()
 	szEngine := getTestObject(ctx, test)
@@ -887,6 +905,14 @@ func TestSzEngine_SearchByAttributes(test *testing.T) {
 	printActual(test, actual)
 }
 
+func TestSzEngine_StreamExportCsvEntityReport(test *testing.T) {
+	// TODO: Write TestSzEngine_StreamExportCsvEntityReport
+}
+
+func TestSzEngine_StreamExportJsonEntityReport(test *testing.T) {
+	// TODO: Write TestSzEngine_StreamExportJsonEntityReport
+}
+
 func TestSzEngine_SearchByAttributes_searchProfile(test *testing.T) {
 	ctx := context.TODO()
 	szEngine := getTestObject(ctx, test)
@@ -967,8 +993,7 @@ func TestSzEngine_Reinitialize(test *testing.T) {
 func TestSzEngine_DeleteRecord(test *testing.T) {
 	ctx := context.TODO()
 	szEngine := getTestObject(ctx, test)
-	record, err := record.NewRecord(`{"DATA_SOURCE": "TEST", "RECORD_ID": "DELETE_TEST", "NAME_FULL": "GONNA B. DELETED"}`)
-	testError(test, err)
+	record := truthset.CustomerRecords["1009"]
 	flags := sz.SZ_WITHOUT_INFO
 	actual, err := szEngine.AddRecord(ctx, record.DataSource, record.Id, record.Json, flags)
 	printActual(test, actual)
@@ -981,8 +1006,7 @@ func TestSzEngine_DeleteRecord(test *testing.T) {
 func TestSzEngine_DeleteRecord_withInfo(test *testing.T) {
 	ctx := context.TODO()
 	szEngine := getTestObject(ctx, test)
-	record, err := record.NewRecord(`{"DATA_SOURCE": "TEST", "RECORD_ID": "DELETE_TEST", "NAME_FULL": "DELETE W. INFO"}`)
-	testError(test, err)
+	record := truthset.CustomerRecords["1010"]
 	flags := sz.SZ_WITH_INFO
 	actual, err := szEngine.AddRecord(ctx, record.DataSource, record.Id, record.Json, flags)
 	testError(test, err)
@@ -991,26 +1015,6 @@ func TestSzEngine_DeleteRecord_withInfo(test *testing.T) {
 	testError(test, err)
 	printActual(test, actual)
 }
-
-// TODO: Implement TestSzEngine_ProcessRedoRecord
-// func TestSzEngine_ProcessRedoRecord(test *testing.T) {
-// 	ctx := context.TODO()
-// 	szEngine := getTestObject(ctx, test)
-//  flags := sz.SZ_WITHOUT_INFO
-// 	actual, err := szEngine.ProcessRedoRecord(ctx, redoRecord, flags)
-// 	testError(test, err)
-// 	printActual(test, actual)
-// }
-
-// TODO: Implement TestSzEngine_ProcessRedoRecord_withInfo
-// func TestSzEngine_ProcessRedoRecord_withInfo(test *testing.T) {
-// 	ctx := context.TODO()
-// 	szEngine := getTestObject(ctx, test)
-//  flags := sz.SZ_WITH_INFO
-// 	actual, err := szEngine.ProcessRedoRecord(ctx, redoRecord, flags)
-// 	testError(test, err)
-// 	printActual(test, actual)
-// }
 
 func TestSzEngine_Destroy(test *testing.T) {
 	ctx := context.TODO()
