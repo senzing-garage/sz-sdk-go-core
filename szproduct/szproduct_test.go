@@ -163,14 +163,14 @@ func getTestObject(ctx context.Context, test *testing.T) *Szproduct {
 	return getSzProduct(ctx)
 }
 
+func printActual(test *testing.T, actual interface{}) {
+	printResult(test, "Actual", actual)
+}
+
 func printResult(test *testing.T, title string, result interface{}) {
 	if printResults {
 		test.Logf("%s: %v", title, truncate(fmt.Sprintf("%v", result), defaultTruncation))
 	}
-}
-
-func printActual(test *testing.T, actual interface{}) {
-	printResult(test, "Actual", actual)
 }
 
 func testError(test *testing.T, err error) {

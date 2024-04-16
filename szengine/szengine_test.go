@@ -757,15 +757,6 @@ func getEntityIdString(record record.Record) string {
 	return strconv.FormatInt(entityId, 10)
 }
 
-func getTestDirectoryPath() string {
-	return filepath.FromSlash("../target/test/szengine")
-}
-
-func getTestObject(ctx context.Context, test *testing.T) *Szengine {
-	_ = test
-	return getSzEngine(ctx)
-}
-
 func getSettings() (string, error) {
 
 	// Determine Database URL.
@@ -810,14 +801,23 @@ func getSzEngineAsInterface(ctx context.Context) sz.SzEngine {
 	return getSzEngine(ctx)
 }
 
-func printResult(test *testing.T, title string, result interface{}) {
-	if printResults {
-		test.Logf("%s: %v", title, truncate(fmt.Sprintf("%v", result), defaultTruncation))
-	}
+func getTestDirectoryPath() string {
+	return filepath.FromSlash("../target/test/szengine")
+}
+
+func getTestObject(ctx context.Context, test *testing.T) *Szengine {
+	_ = test
+	return getSzEngine(ctx)
 }
 
 func printActual(test *testing.T, actual interface{}) {
 	printResult(test, "Actual", actual)
+}
+
+func printResult(test *testing.T, title string, result interface{}) {
+	if printResults {
+		test.Logf("%s: %v", title, truncate(fmt.Sprintf("%v", result), defaultTruncation))
+	}
 }
 
 func testError(test *testing.T, err error) {

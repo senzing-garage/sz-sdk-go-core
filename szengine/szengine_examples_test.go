@@ -255,18 +255,47 @@ func ExampleSzEngine_FindPathByEntityId() {
 	// Output: {"ENTITY_PATHS":[{"START_ENTITY_ID":1,"END_ENTITY_ID":1,"ENTITIES":[1]}],"ENTITIES":[{"RESOLVED_ENTITY":...
 }
 
-func ExampleSzEngine_FindPathByEntityId_excluding() {
+func ExampleSzengine_FindPathByEntityId_excluding() {
 	// TODO: Implement ExampleSzEngine_FindPathByEntityId_excluding
+	// // For more information, visit https://github.com/senzing-garage/sz-sdk-go-grpc/blob/main/szengine/szengine_examples_test.go
+	// ctx := context.TODO()
+	// szEngine := getSzEngine(ctx)
+	// startEntityId := getEntityIdForRecord("CUSTOMERS", "1001")
+	// endEntityId := getEntityIdForRecord("CUSTOMERS", "1002")
+	// maxDegrees := int64(1)
+	// exclusions := `{"ENTITIES": [{"ENTITY_ID": ` + getEntityIdStringForRecord("CUSTOMERS", "1003") + `}]}`
+	// requiredDataSources := ""
+	// flags := sz.SZ_NO_FLAGS
+	// result, err := szEngine.FindPathByEntityId(ctx, startEntityId, endEntityId, maxDegrees, exclusions, requiredDataSources, flags)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
+	// fmt.Println(truncate(result, 107))
+	// // Output: {"ENTITY_PATHS":[{"START_ENTITY_ID":1,"END_ENTITY_ID":1,"ENTITIES":[1]}],"ENTITIES":[{"RESOLVED_ENTITY":...
 }
 
 func ExampleSzEngine_FindPathByEntityId_excludingAndIncluding() {
 	// TODO: Implement ExampleSzEngine_FindPathByEntityId_excludingAndIncluding
 }
 
-func ExampleSzEngine_FindPathByEntityId_including() {
+func ExampleSzengine_FindPathByEntityId_including() {
 	// TODO: Implement ExampleSzEngine_FindPathByEntityId_including
+	// // For more information, visit https://github.com/senzing-garage/sz-sdk-go-grpc/blob/main/szengine/szengine_examples_test.go
+	// ctx := context.TODO()
+	// szEngine := getSzEngine(ctx)
+	// startEntityId := getEntityIdForRecord("CUSTOMERS", "1001")
+	// endEntityId := getEntityIdForRecord("CUSTOMERS", "1002")
+	// maxDegree := int64(1)
+	// exclusions := `{"ENTITIES": [{"ENTITY_ID": ` + getEntityIdStringForRecord("CUSTOMERS", "1003") + `}]}`
+	// requiredDataSources := `{"DATA_SOURCES": ["CUSTOMERS"]}`
+	// flags := sz.SZ_NO_FLAGS
+	// result, err := szEngine.FindPathByEntityId(ctx, startEntityId, endEntityId, maxDegree, exclusions, requiredDataSources, flags)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
+	// fmt.Println(truncate(result, 106))
+	// // Output: {"ENTITY_PATHS":[{"START_ENTITY_ID":1,"END_ENTITY_ID":1,"ENTITIES":[]}],"ENTITIES":[{"RESOLVED_ENTITY":...
 }
-
 func ExampleSzEngine_FindPathByRecordId() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
@@ -287,16 +316,49 @@ func ExampleSzEngine_FindPathByRecordId() {
 	// Output: {"ENTITY_PATHS":[{"START_ENTITY_ID":1,"END_ENTITY_ID":1,"ENTITIES":[1]}],"ENTITIES":...
 }
 
-func ExampleSzEngine_FindPathByRecordId_excluding() {
+func ExampleSzengine_FindPathByRecordId_excluding() {
 	// TODO: Implement ExampleSzEngine_FindPathByRecordId_excluding
+	// // For more information, visit https://github.com/senzing-garage/sz-sdk-go-grpc/blob/main/szengine/szengine_examples_test.go
+	// ctx := context.TODO()
+	// szEngine := getSzEngine(ctx)
+	// startDataSourceCode := "CUSTOMERS"
+	// startRecordId := "1001"
+	// endDataSourceCode := "CUSTOMERS"
+	// endRecordId := "1002"
+	// maxDegree := int64(1)
+	// exclusions := `{"RECORDS": [{ "DATA_SOURCE": "CUSTOMERS", "RECORD_ID": "1003"}]}`
+	// requiredDataSources := ""
+	// flags := sz.SZ_NO_FLAGS
+	// result, err := szEngine.FindPathByRecordId(ctx, startDataSourceCode, startRecordId, endDataSourceCode, endRecordId, maxDegree, exclusions, requiredDataSources, flags)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
+	// fmt.Println(truncate(result, 107))
+	// // Output: {"ENTITY_PATHS":[{"START_ENTITY_ID":1,"END_ENTITY_ID":1,"ENTITIES":[1]}],"ENTITIES":[{"RESOLVED_ENTITY":...
 }
-
 func ExampleSzEngine_FindPathByRecordId_excludingAndIncluding() {
 	// TODO: Implement ExampleSzEngine_FindPathByRecordId_excludingAndIncluding
 }
 
-func ExampleSzEngine_FindPathByRecordId_including() {
+func ExampleSzengine_FindPathByRecordId_including() {
 	// TODO: Implement ExampleSzEngine_FindPathByRecordId_including
+	// // For more information, visit https://github.com/senzing-garage/sz-sdk-go-grpc/blob/main/szengine/szengine_examples_test.go
+	// ctx := context.TODO()
+	// szEngine := getSzEngine(ctx)
+	// startDataSourceCode := "CUSTOMERS"
+	// startRecordId := "1001"
+	// endDataSourceCode := "CUSTOMERS"
+	// endRecordId := "1002"
+	// maxDegrees := int64(1)
+	// exclusions := `{"ENTITIES": [{"ENTITY_ID": ` + getEntityIdStringForRecord("CUSTOMERS", "1003") + `}]}`
+	// requiredDataSources := `{"DATA_SOURCES": ["CUSTOMERS"]}`
+	// flags := sz.SZ_NO_FLAGS
+	// result, err := szEngine.FindPathByRecordId(ctx, startDataSourceCode, startRecordId, endDataSourceCode, endRecordId, maxDegrees, exclusions, requiredDataSources, flags)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
+	// fmt.Println(truncate(result, 119))
+	// // Output: {"ENTITY_PATHS":[{"START_ENTITY_ID":1,"END_ENTITY_ID":1,"ENTITIES":[]}],"ENTITIES":[{"RESOLVED_ENTITY":{"ENTITY_ID":...
 }
 
 func ExampleSzEngine_GetActiveConfigId() {
@@ -447,8 +509,8 @@ func ExampleSzEngine_ProcessRedoRecord() {
 	// Output: {}
 }
 
-// TODO: Fix Output
 func ExampleSzEngine_ProcessRedoRecord_withInfo() {
+	// TODO: Fix Output
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
 	szengine := getSzEngine(ctx)
