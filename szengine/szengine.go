@@ -37,7 +37,7 @@ import (
 // Types
 // ----------------------------------------------------------------------------
 
-// SzengineImpl is the default implementation of the Szengine interface.
+// Szengine is the default implementation of the Szengine interface.
 type Szengine struct {
 	isTrace        bool
 	logger         logging.LoggingInterface

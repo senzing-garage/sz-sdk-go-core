@@ -25,8 +25,8 @@ const (
 )
 
 var (
-	globalSzProduct *Szproduct
-	logger          logging.LoggingInterface
+	szProductSingleton *Szproduct
+	logger             logging.LoggingInterface
 )
 
 // ----------------------------------------------------------------------------
@@ -66,19 +66,19 @@ func getSettings() (string, error) {
 
 func getSzProduct(ctx context.Context) *Szproduct {
 	_ = ctx
-	if globalSzProduct == nil {
+	if szProductSingleton == nil {
 		settings, err := getSettings()
 		if err != nil {
 			fmt.Printf("getSettings() Error: %v\n", err)
 			return nil
 		}
-		globalSzProduct = &Szproduct{}
-		err = globalSzProduct.Initialize(ctx, instanceName, settings, verboseLogging)
+		szProductSingleton = &Szproduct{}
+		err = szProductSingleton.Initialize(ctx, instanceName, settings, verboseLogging)
 		if err != nil {
 			fmt.Println(err)
 		}
 	}
-	return globalSzProduct
+	return szProductSingleton
 }
 
 func getSzProductAsInterface(ctx context.Context) sz.SzProduct {
@@ -198,11 +198,11 @@ func teardown() error {
 }
 
 func teardownSzProduct(ctx context.Context) error {
-	err := globalSzProduct.Destroy(ctx)
+	err := szProductSingleton.Destroy(ctx)
 	if err != nil {
 		return err
 	}
-	globalSzProduct = nil
+	szProductSingleton = nil
 	return nil
 }
 

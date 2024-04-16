@@ -28,9 +28,9 @@ const (
 )
 
 var (
-	globalSzConfig        *szconfig.Szconfig
-	globalSzConfigManager *Szconfigmanager
-	logger                logging.LoggingInterface
+	szConfigSingleton        *szconfig.Szconfig
+	szConfigManagerSingleton *Szconfigmanager
+	logger                   logging.LoggingInterface
 )
 
 // ----------------------------------------------------------------------------
@@ -70,36 +70,36 @@ func getSettings() (string, error) {
 
 func getSzConfig(ctx context.Context) sz.SzConfig {
 	_ = ctx
-	if globalSzConfig == nil {
+	if szConfigSingleton == nil {
 		settings, err := getSettings()
 		if err != nil {
 			fmt.Printf("getSettings() Error: %v\n", err)
 			return nil
 		}
-		globalSzConfig = &szconfig.Szconfig{}
-		err = globalSzConfig.Initialize(ctx, instanceName, settings, verboseLogging)
+		szConfigSingleton = &szconfig.Szconfig{}
+		err = szConfigSingleton.Initialize(ctx, instanceName, settings, verboseLogging)
 		if err != nil {
 			fmt.Println(err)
 		}
 	}
-	return globalSzConfig
+	return szConfigSingleton
 }
 
 func getSzConfigManager(ctx context.Context) *Szconfigmanager {
 	_ = ctx
-	if globalSzConfigManager == nil {
+	if szConfigManagerSingleton == nil {
 		settings, err := getSettings()
 		if err != nil {
 			fmt.Printf("getSettings() Error: %v\n", err)
 			return nil
 		}
-		globalSzConfigManager = &Szconfigmanager{}
-		err = globalSzConfigManager.Initialize(ctx, instanceName, settings, verboseLogging)
+		szConfigManagerSingleton = &Szconfigmanager{}
+		err = szConfigManagerSingleton.Initialize(ctx, instanceName, settings, verboseLogging)
 		if err != nil {
 			fmt.Println(err)
 		}
 	}
-	return globalSzConfigManager
+	return szConfigManagerSingleton
 }
 
 func getSzConfigManagerAsInterface(ctx context.Context) sz.SzConfigManager {
@@ -314,20 +314,20 @@ func teardown() error {
 }
 
 func teardownSzConfig(ctx context.Context) error {
-	err := globalSzConfig.Destroy(ctx)
+	err := szConfigSingleton.Destroy(ctx)
 	if err != nil {
 		return err
 	}
-	globalSzConfig = nil
+	szConfigSingleton = nil
 	return nil
 }
 
 func teardownSzConfigManager(ctx context.Context) error {
-	err := globalSzConfigManager.Destroy(ctx)
+	err := szConfigManagerSingleton.Destroy(ctx)
 	if err != nil {
 		return err
 	}
-	globalSzConfigManager = nil
+	szConfigManagerSingleton = nil
 	return nil
 }
 

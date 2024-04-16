@@ -25,8 +25,8 @@ const (
 )
 
 var (
-	globalSzConfig *Szconfig
-	logger         logging.LoggingInterface
+	szConfigSingleton *Szconfig
+	logger            logging.LoggingInterface
 )
 
 // ----------------------------------------------------------------------------
@@ -65,19 +65,19 @@ func getSettings() (string, error) {
 }
 
 func getSzConfig(ctx context.Context) *Szconfig {
-	if globalSzConfig == nil {
+	if szConfigSingleton == nil {
 		settings, err := getSettings()
 		if err != nil {
 			fmt.Printf("getSettings() Error: %v\n", err)
 			return nil
 		}
-		globalSzConfig = &Szconfig{}
-		err = globalSzConfig.Initialize(ctx, instanceName, settings, verboseLogging)
+		szConfigSingleton = &Szconfig{}
+		err = szConfigSingleton.Initialize(ctx, instanceName, settings, verboseLogging)
 		if err != nil {
 			fmt.Println(err)
 		}
 	}
-	return globalSzConfig
+	return szConfigSingleton
 }
 
 func getSzConfigAsInterface(ctx context.Context) sz.SzConfig {
@@ -197,11 +197,11 @@ func teardown() error {
 }
 
 func teardownSzConfig(ctx context.Context) error {
-	err := globalSzConfig.Destroy(ctx)
+	err := szConfigSingleton.Destroy(ctx)
 	if err != nil {
 		return err
 	}
-	globalSzConfig = nil
+	szConfigSingleton = nil
 	return nil
 }
 
@@ -359,8 +359,6 @@ func TestSzConfig_GetDataSources_asInterface(test *testing.T) {
 	err = szConfig.CloseConfig(ctx, configHandle)
 	testError(test, err)
 }
-
-
 
 func TestSzConfig_ImportConfig(test *testing.T) {
 	ctx := context.TODO()

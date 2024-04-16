@@ -40,9 +40,9 @@ type GetEntityByRecordIdResponse struct {
 }
 
 var (
-	defaultConfigId int64
-	globalSzEngine  *Szengine
-	logger          logging.LoggingInterface
+	defaultConfigId   int64
+	szEngineSingleton *Szengine
+	logger            logging.LoggingInterface
 )
 
 // ----------------------------------------------------------------------------
@@ -65,8 +65,7 @@ func getEntityIdForRecord(datasource string, id string) int64 {
 	ctx := context.TODO()
 	var result int64 = 0
 	szEngine := getSzEngine(ctx)
-	flags := int64(0)
-	response, err := szEngine.GetEntityByRecordId(ctx, datasource, id, flags)
+	response, err := szEngine.GetEntityByRecordId(ctx, datasource, id, sz.SZ_WITHOUT_INFO)
 	if err != nil {
 		return result
 	}
@@ -126,19 +125,19 @@ func getSettings() (string, error) {
 
 func getSzEngine(ctx context.Context) *Szengine {
 	_ = ctx
-	if globalSzEngine == nil {
+	if szEngineSingleton == nil {
 		settings, err := getSettings()
 		if err != nil {
 			fmt.Printf("getSettings() Error: %v\n", err)
 			return nil
 		}
-		globalSzEngine = &Szengine{}
-		err = globalSzEngine.Initialize(ctx, instanceName, settings, verboseLogging, getDefaultConfigId())
+		szEngineSingleton = &Szengine{}
+		err = szEngineSingleton.Initialize(ctx, instanceName, settings, verboseLogging, getDefaultConfigId())
 		if err != nil {
 			fmt.Println(err)
 		}
 	}
-	return globalSzEngine
+	return szEngineSingleton
 }
 
 func getSzEngineAsInterface(ctx context.Context) sz.SzEngine {
@@ -364,11 +363,11 @@ func teardown() error {
 }
 
 func teardownSzEngine(ctx context.Context) error {
-	err := globalSzEngine.Destroy(ctx)
+	err := szEngineSingleton.Destroy(ctx)
 	if err != nil {
 		return err
 	}
-	globalSzEngine = nil
+	szEngineSingleton = nil
 	return nil
 }
 
@@ -435,6 +434,7 @@ func TestSzEngine_AddRecord_szBadInput(test *testing.T) {
 
 	actual, err = szEngine.DeleteRecord(ctx, record1.DataSource, record1.Id, flags)
 	testError(test, err)
+	defer szEngine.DeleteRecord(ctx, record2.DataSource, record2.Id, sz.SZ_NO_FLAGS)
 	printActual(test, actual)
 }
 
@@ -462,7 +462,6 @@ func TestSzEngine_CountRedoRecords(test *testing.T) {
 	testError(test, err)
 	printActual(test, actual)
 	assert.Equal(test, expected, actual)
-
 }
 
 func TestSzEngine_CountRedoRecords_asInterface(test *testing.T) {

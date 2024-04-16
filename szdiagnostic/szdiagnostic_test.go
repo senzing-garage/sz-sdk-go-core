@@ -30,9 +30,9 @@ const (
 )
 
 var (
-	defaultConfigId    int64
-	globalSzDiagnostic *Szdiagnostic
-	logger             logging.LoggingInterface
+	defaultConfigId       int64
+	szDiagnosticSingleton *Szdiagnostic
+	logger                logging.LoggingInterface
 )
 
 // ----------------------------------------------------------------------------
@@ -76,19 +76,19 @@ func getSettings() (string, error) {
 
 func getSzDiagnostic(ctx context.Context) *Szdiagnostic {
 	_ = ctx
-	if globalSzDiagnostic == nil {
+	if szDiagnosticSingleton == nil {
 		settings, err := getSettings()
 		if err != nil {
 			fmt.Printf("getSettings() Error: %v\n", err)
 			return nil
 		}
-		globalSzDiagnostic = &Szdiagnostic{}
-		err = globalSzDiagnostic.Initialize(ctx, instanceName, settings, verboseLogging, getDefaultConfigId())
+		szDiagnosticSingleton = &Szdiagnostic{}
+		err = szDiagnosticSingleton.Initialize(ctx, instanceName, settings, verboseLogging, getDefaultConfigId())
 		if err != nil {
 			fmt.Println(err)
 		}
 	}
-	return globalSzDiagnostic
+	return szDiagnosticSingleton
 }
 
 func getSzDiagnosticAsInterface(ctx context.Context) sz.SzDiagnostic {
@@ -335,11 +335,11 @@ func teardown() error {
 }
 
 func teardownSzDiagnostic(ctx context.Context) error {
-	err := globalSzDiagnostic.Destroy(ctx)
+	err := szDiagnosticSingleton.Destroy(ctx)
 	if err != nil {
 		return err
 	}
-	globalSzDiagnostic = nil
+	szDiagnosticSingleton = nil
 	return nil
 }
 
