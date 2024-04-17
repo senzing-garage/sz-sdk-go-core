@@ -48,6 +48,6 @@ jobs:
           cp /opt/senzing/g2/sdk/c/gohelpers/*.h ./szproduct/gohelpers
 
       - name: run Gosec Security Scanner
-        uses: securego/gosec@master
+        uses: securego/gosec@v2.19.0
         with:
           args: -exclude=G103 -verbose text ./...
