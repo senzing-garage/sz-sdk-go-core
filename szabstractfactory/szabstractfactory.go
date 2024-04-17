@@ -17,12 +17,8 @@ import (
 
 // Szconfig is the default implementation of the Szconfig interface.
 type Szabstractfactory struct {
-	ConfigId     int64
-	InstanceName string
-	// isTrace        bool
-	// logger         logging.LoggingInterface
-	// observerOrigin string
-	// observers      subject.Subject
+	ConfigId       int64
+	InstanceName   string
 	Settings       string
 	VerboseLogging int64
 }
@@ -32,7 +28,8 @@ type Szabstractfactory struct {
 // ----------------------------------------------------------------------------
 
 /*
-The CreateSzConfig method... TODO:
+TODO: Write description for CreateSzConfig
+The CreateSzConfig method...
 
 Input
   - ctx: A context to control lifecycle.
@@ -48,7 +45,8 @@ func (factory *Szabstractfactory) CreateSzConfig(ctx context.Context) (sz.SzConf
 }
 
 /*
-The CreateSzConfigManager method... TODO:
+TODO: Write description for CreateSzConfigManager
+The CreateSzConfigManager method...
 
 Input
   - ctx: A context to control lifecycle.
@@ -64,7 +62,8 @@ func (factory *Szabstractfactory) CreateSzConfigManager(ctx context.Context) (sz
 }
 
 /*
-The CreateSzDiagnostic method... TODO:
+TODO: Write description for CreateSzDiagnostic
+The CreateSzDiagnostic method...
 
 Input
   - ctx: A context to control lifecycle.
@@ -75,12 +74,13 @@ Output
 */
 func (factory *Szabstractfactory) CreateSzDiagnostic(ctx context.Context) (sz.SzDiagnostic, error) {
 	result := &szdiagnostic.Szdiagnostic{}
-	err := result.Initialize(ctx, factory.InstanceName, factory.Settings, factory.VerboseLogging, factory.ConfigId)
+	err := result.Initialize(ctx, factory.InstanceName, factory.Settings, factory.ConfigId, factory.VerboseLogging)
 	return result, err
 }
 
 /*
-The CreateSzEngine method... TODO:
+TODO: Write description for CreateSzEngine
+The CreateSzEngine method...
 
 Input
   - ctx: A context to control lifecycle.
@@ -91,12 +91,13 @@ Output
 */
 func (factory *Szabstractfactory) CreateSzEngine(ctx context.Context) (sz.SzEngine, error) {
 	result := &szengine.Szengine{}
-	err := result.Initialize(ctx, factory.InstanceName, factory.Settings, factory.VerboseLogging, factory.ConfigId)
+	err := result.Initialize(ctx, factory.InstanceName, factory.Settings, factory.ConfigId, factory.VerboseLogging)
 	return result, err
 }
 
 /*
-The CreateSzProduct method... TODO:
+TODO: Write description for CreateSzProduct
+The CreateSzProduct method...
 
 Input
   - ctx: A context to control lifecycle.

@@ -32,10 +32,6 @@ import (
 	szproductapi "github.com/senzing-garage/sz-sdk-go/szproduct"
 )
 
-// ----------------------------------------------------------------------------
-// Types
-// ----------------------------------------------------------------------------
-
 // Szproduct is an implementation of the SzProduct interface.
 type Szproduct struct {
 	isTrace        bool
@@ -44,142 +40,7 @@ type Szproduct struct {
 	observers      subject.Subject
 }
 
-// ----------------------------------------------------------------------------
-// Constants
-// ----------------------------------------------------------------------------
-
 const initialByteArraySize = 65535
-
-// ----------------------------------------------------------------------------
-// Internal methods
-// ----------------------------------------------------------------------------
-
-// --- Logging ----------------------------------------------------------------
-
-// Get the Logger singleton.
-func (client *Szproduct) getLogger() logging.LoggingInterface {
-	var err error = nil
-	if client.logger == nil {
-		options := []interface{}{
-			&logging.OptionCallerSkip{Value: 4},
-		}
-		client.logger, err = logging.NewSenzingSdkLogger(ComponentId, szproductapi.IdMessages, options...)
-		if err != nil {
-			panic(err)
-		}
-	}
-	return client.logger
-}
-
-// Trace method entry.
-func (client *Szproduct) traceEntry(errorNumber int, details ...interface{}) {
-	client.getLogger().Log(errorNumber, details...)
-}
-
-// Trace method exit.
-func (client *Szproduct) traceExit(errorNumber int, details ...interface{}) {
-	client.getLogger().Log(errorNumber, details...)
-}
-
-// --- Errors -----------------------------------------------------------------
-
-// Create a new error.
-func (client *Szproduct) newError(ctx context.Context, errorNumber int, details ...interface{}) error {
-	lastException, err := client.getLastException(ctx)
-	defer client.clearLastException(ctx)
-	message := lastException
-	if err != nil {
-		message = err.Error()
-	}
-	details = append(details, errors.New(message))
-	errorMessage := client.getLogger().Json(errorNumber, details...)
-	return szerror.SzError(szerror.SzErrorCode(message), (errorMessage))
-}
-
-// --- Sz exception handling --------------------------------------------------
-
-/*
-The clearLastException method erases the last exception message held by the Senzing G2Product object.
-
-Input
-  - ctx: A context to control lifecycle.
-*/
-func (client *Szproduct) clearLastException(ctx context.Context) error {
-	_ = ctx
-	// _DLEXPORT void G2Config_clearLastException();
-	var err error = nil
-	if client.isTrace {
-		entryTime := time.Now()
-		client.traceEntry(1)
-		defer func() { client.traceExit(2, err, time.Since(entryTime)) }()
-	}
-	C.G2Product_clearLastException()
-	return err
-}
-
-/*
-The getLastException method retrieves the last exception thrown in Senzing's client.
-
-Input
-  - ctx: A context to control lifecycle.
-
-Output
-  - A string containing the error received from Senzing's G2Product.
-*/
-func (client *Szproduct) getLastException(ctx context.Context) (string, error) {
-	// _DLEXPORT int G2Config_getLastException(char *buffer, const size_t bufSize);
-	_ = ctx
-	var err error = nil
-	var result string
-	if client.isTrace {
-		entryTime := time.Now()
-		client.traceEntry(5)
-		defer func() { client.traceExit(6, result, err, time.Since(entryTime)) }()
-	}
-	stringBuffer := client.getByteArray(initialByteArraySize)
-	C.G2Product_getLastException((*C.char)(unsafe.Pointer(&stringBuffer[0])), C.size_t(len(stringBuffer)))
-	// if result == 0 { // "result" is length of exception message.
-	// 	err = client.getLogger().Error(4002, result, time.Since(entryTime))
-	// }
-	result = string(bytes.Trim(stringBuffer, "\x00"))
-	return result, err
-}
-
-/*
-The GetLastExceptionCode method retrieves the code of the last exception thrown in Senzing's G2Product.
-
-Input:
-  - ctx: A context to control lifecycle.
-
-Output:
-  - An int containing the error received from Senzing's G2Product.
-*/
-func (client *Szproduct) getLastExceptionCode(ctx context.Context) (int, error) {
-	//  _DLEXPORT int G2Config_getLastExceptionCode();
-	_ = ctx
-	var err error = nil
-	var result int
-	if client.isTrace {
-		entryTime := time.Now()
-		client.traceEntry(7)
-		defer func() { client.traceExit(8, result, err, time.Since(entryTime)) }()
-	}
-	result = int(C.G2Product_getLastExceptionCode())
-	return result, err
-}
-
-// --- Misc -------------------------------------------------------------------
-
-// Get space for an array of bytes of a given size.
-func (client *Szproduct) getByteArrayC(size int) *C.char {
-	bytes := C.malloc(C.size_t(size))
-	return (*C.char)(bytes)
-}
-
-// Make a byte array.
-func (client *Szproduct) getByteArray(size int) []byte {
-	return make([]byte, size)
-}
 
 // ----------------------------------------------------------------------------
 // Interface methods
@@ -248,6 +109,42 @@ func (client *Szproduct) GetLicense(ctx context.Context) (string, error) {
 }
 
 /*
+The GetVersion method returns the version of the Senzing API.
+
+Input
+  - ctx: A context to control lifecycle.
+
+Output
+  - A JSON document containing metadata about the Senzing Engine version being used.
+    See the example output.
+*/
+func (client *Szproduct) GetVersion(ctx context.Context) (string, error) {
+	// _DLEXPORT char* G2Product_license();
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	var err error = nil
+	var resultResponse string
+	if client.isTrace {
+		entryTime := time.Now()
+		client.traceEntry(19)
+		defer func() { client.traceExit(20, resultResponse, err, time.Since(entryTime)) }()
+	}
+	result := C.G2Product_version()
+	resultResponse = C.GoString(result)
+	if client.observers != nil {
+		go func() {
+			details := map[string]string{}
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8006, err, details)
+		}()
+	}
+	return resultResponse, err
+}
+
+// ----------------------------------------------------------------------------
+// Public non-interface methods
+// ----------------------------------------------------------------------------
+
+/*
 The GetObserverOrigin method returns the "origin" value of past Observer messages.
 
 Input
@@ -285,39 +182,7 @@ func (client *Szproduct) GetSdkId(ctx context.Context) string {
 }
 
 /*
-The GetVersion method returns the version of the Senzing API.
-
-Input
-  - ctx: A context to control lifecycle.
-
-Output
-  - A JSON document containing metadata about the Senzing Engine version being used.
-    See the example output.
-*/
-func (client *Szproduct) GetVersion(ctx context.Context) (string, error) {
-	// _DLEXPORT char* G2Product_license();
-	runtime.LockOSThread()
-	defer runtime.UnlockOSThread()
-	var err error = nil
-	var resultResponse string
-	if client.isTrace {
-		entryTime := time.Now()
-		client.traceEntry(19)
-		defer func() { client.traceExit(20, resultResponse, err, time.Since(entryTime)) }()
-	}
-	result := C.G2Product_version()
-	resultResponse = C.GoString(result)
-	if client.observers != nil {
-		go func() {
-			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8006, err, details)
-		}()
-	}
-	return resultResponse, err
-}
-
-/*
-The Init method initializes the Senzing SzProduct object.
+The Initialize method initializes the Senzing SzProduct object.
 It must be called prior to any other calls.
 
 Input
@@ -458,4 +323,135 @@ func (client *Szproduct) UnregisterObserver(ctx context.Context, observer observ
 		client.observers = nil
 	}
 	return err
+}
+
+// ----------------------------------------------------------------------------
+// Internal methods
+// ----------------------------------------------------------------------------
+
+// --- Logging ----------------------------------------------------------------
+
+// Get the Logger singleton.
+func (client *Szproduct) getLogger() logging.LoggingInterface {
+	var err error = nil
+	if client.logger == nil {
+		options := []interface{}{
+			&logging.OptionCallerSkip{Value: 4},
+		}
+		client.logger, err = logging.NewSenzingSdkLogger(ComponentId, szproductapi.IdMessages, options...)
+		if err != nil {
+			panic(err)
+		}
+	}
+	return client.logger
+}
+
+// Trace method entry.
+func (client *Szproduct) traceEntry(errorNumber int, details ...interface{}) {
+	client.getLogger().Log(errorNumber, details...)
+}
+
+// Trace method exit.
+func (client *Szproduct) traceExit(errorNumber int, details ...interface{}) {
+	client.getLogger().Log(errorNumber, details...)
+}
+
+// --- Errors -----------------------------------------------------------------
+
+// Create a new error.
+func (client *Szproduct) newError(ctx context.Context, errorNumber int, details ...interface{}) error {
+	lastException, err := client.getLastException(ctx)
+	defer client.clearLastException(ctx)
+	message := lastException
+	if err != nil {
+		message = err.Error()
+	}
+	details = append(details, errors.New(message))
+	errorMessage := client.getLogger().Json(errorNumber, details...)
+	return szerror.SzError(szerror.SzErrorCode(message), (errorMessage))
+}
+
+// --- Sz exception handling --------------------------------------------------
+
+/*
+The clearLastException method erases the last exception message held by the Senzing G2Product object.
+
+Input
+  - ctx: A context to control lifecycle.
+*/
+func (client *Szproduct) clearLastException(ctx context.Context) error {
+	_ = ctx
+	// _DLEXPORT void G2Config_clearLastException();
+	var err error = nil
+	if client.isTrace {
+		entryTime := time.Now()
+		client.traceEntry(1)
+		defer func() { client.traceExit(2, err, time.Since(entryTime)) }()
+	}
+	C.G2Product_clearLastException()
+	return err
+}
+
+/*
+The getLastException method retrieves the last exception thrown in Senzing's client.
+
+Input
+  - ctx: A context to control lifecycle.
+
+Output
+  - A string containing the error received from Senzing's G2Product.
+*/
+func (client *Szproduct) getLastException(ctx context.Context) (string, error) {
+	// _DLEXPORT int G2Config_getLastException(char *buffer, const size_t bufSize);
+	_ = ctx
+	var err error = nil
+	var result string
+	if client.isTrace {
+		entryTime := time.Now()
+		client.traceEntry(5)
+		defer func() { client.traceExit(6, result, err, time.Since(entryTime)) }()
+	}
+	stringBuffer := client.getByteArray(initialByteArraySize)
+	C.G2Product_getLastException((*C.char)(unsafe.Pointer(&stringBuffer[0])), C.size_t(len(stringBuffer)))
+	// if result == 0 { // "result" is length of exception message.
+	// 	err = client.getLogger().Error(4002, result, time.Since(entryTime))
+	// }
+	result = string(bytes.Trim(stringBuffer, "\x00"))
+	return result, err
+}
+
+/*
+The GetLastExceptionCode method retrieves the code of the last exception thrown in Senzing's G2Product.
+
+Input:
+  - ctx: A context to control lifecycle.
+
+Output:
+  - An int containing the error received from Senzing's G2Product.
+*/
+func (client *Szproduct) getLastExceptionCode(ctx context.Context) (int, error) {
+	//  _DLEXPORT int G2Config_getLastExceptionCode();
+	_ = ctx
+	var err error = nil
+	var result int
+	if client.isTrace {
+		entryTime := time.Now()
+		client.traceEntry(7)
+		defer func() { client.traceExit(8, result, err, time.Since(entryTime)) }()
+	}
+	result = int(C.G2Product_getLastExceptionCode())
+	return result, err
+}
+
+// --- Misc -------------------------------------------------------------------
+
+// Get space for an array of bytes of a given size.
+func (client *Szproduct) getByteArrayC(size int) *C.char {
+	bytes := C.malloc(C.size_t(size))
+	return (*C.char)(bytes)
+}
+
+// Make a byte array.
+func (client *Szproduct) getByteArray(size int) []byte {
+	return make([]byte, size)
 }

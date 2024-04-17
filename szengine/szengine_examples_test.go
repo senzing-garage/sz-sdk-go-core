@@ -737,7 +737,7 @@ func ExampleSzengine_Initialize() {
 	}
 	verboseLogging := int64(0)
 	configId := sz.SZ_INITIALIZE_WITH_DEFAULT_CONFIGURATION
-	err = szEngine.Initialize(ctx, instanceName, settings, verboseLogging, configId)
+	err = szEngine.Initialize(ctx, instanceName, settings, configId, verboseLogging)
 	if err != nil {
 		fmt.Println(err)
 	}

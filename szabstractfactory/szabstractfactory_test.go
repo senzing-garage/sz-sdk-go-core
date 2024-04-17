@@ -29,6 +29,67 @@ var (
 )
 
 // ----------------------------------------------------------------------------
+// Interface functions - test
+// ----------------------------------------------------------------------------
+
+func TestSzAbstractFactory_CreateSzConfig(test *testing.T) {
+	ctx := context.TODO()
+	szAbstractFactory := getTestObject(ctx, test)
+	szConfig, err := szAbstractFactory.CreateSzConfig(ctx)
+	testError(test, ctx, szAbstractFactory, err)
+	defer szConfig.Destroy(ctx)
+	configHandle, err := szConfig.CreateConfig(ctx)
+	testError(test, ctx, szAbstractFactory, err)
+	dataSources, err := szConfig.GetDataSources(ctx, configHandle)
+	testError(test, ctx, szAbstractFactory, err)
+	printActual(test, dataSources)
+}
+
+func TestSzAbstractFactory_CreateSzConfigManager(test *testing.T) {
+	ctx := context.TODO()
+	szAbstractFactory := getTestObject(ctx, test)
+	szConfigManager, err := szAbstractFactory.CreateSzConfigManager(ctx)
+	testError(test, ctx, szAbstractFactory, err)
+	defer szConfigManager.Destroy(ctx)
+	configList, err := szConfigManager.GetConfigList(ctx)
+	testError(test, ctx, szAbstractFactory, err)
+	printActual(test, configList)
+}
+
+func TestSzAbstractFactory_CreateSzDiagnostic(test *testing.T) {
+	ctx := context.TODO()
+	szAbstractFactory := getTestObject(ctx, test)
+	szDiagnostic, err := szAbstractFactory.CreateSzDiagnostic(ctx)
+	testError(test, ctx, szAbstractFactory, err)
+	defer szDiagnostic.Destroy(ctx)
+	result, err := szDiagnostic.CheckDatabasePerformance(ctx, 1)
+	testError(test, ctx, szAbstractFactory, err)
+	printActual(test, result)
+}
+
+func TestSzAbstractFactory_CreateSzEngine(test *testing.T) {
+	ctx := context.TODO()
+	szAbstractFactory := getTestObject(ctx, test)
+	szEngine, err := szAbstractFactory.CreateSzEngine(ctx)
+	testError(test, ctx, szAbstractFactory, err)
+	defer szEngine.Destroy(ctx)
+	stats, err := szEngine.GetStats(ctx)
+	testError(test, ctx, szAbstractFactory, err)
+	printActual(test, stats)
+}
+
+func TestSzAbstractFactory_CreateSzProduct(test *testing.T) {
+	ctx := context.TODO()
+	szAbstractFactory := getTestObject(ctx, test)
+	szProduct, err := szAbstractFactory.CreateSzProduct(ctx)
+	testError(test, ctx, szAbstractFactory, err)
+	defer szProduct.Destroy(ctx)
+	version, err := szProduct.GetVersion(ctx)
+	testError(test, ctx, szAbstractFactory, err)
+	printActual(test, version)
+}
+
+// ----------------------------------------------------------------------------
 // Internal functions
 // ----------------------------------------------------------------------------
 
@@ -38,11 +99,6 @@ func createError(errorId int, err error) error {
 
 func getDatabaseTemplatePath() string {
 	return filepath.FromSlash("../testdata/sqlite/G2C.db")
-}
-
-func getTestObject(ctx context.Context, test *testing.T) sz.SzAbstractFactory {
-	_ = test
-	return getSzAbstractFactory(ctx)
 }
 
 func getSettings() (string, error) {
@@ -84,18 +140,22 @@ func getSzAbstractFactory(ctx context.Context) sz.SzAbstractFactory {
 	return result
 }
 
+func getTestObject(ctx context.Context, test *testing.T) sz.SzAbstractFactory {
+	_ = test
+	return getSzAbstractFactory(ctx)
+}
+
 func getTestDirectoryPath() string {
 	return filepath.FromSlash("../target/test/szconfig")
 }
 
+func printActual(test *testing.T, actual interface{}) {
+	printResult(test, "Actual", actual)
+}
 func printResult(test *testing.T, title string, result interface{}) {
 	if printResults {
 		test.Logf("%s: %v", title, truncate(fmt.Sprintf("%v", result), defaultTruncation))
 	}
-}
-
-func printActual(test *testing.T, actual interface{}) {
-	printResult(test, "Actual", actual)
 }
 
 func testError(test *testing.T, ctx context.Context, szAbstractFactory sz.SzAbstractFactory, err error) {
@@ -189,65 +249,4 @@ func setupDirectories() error {
 
 func teardown() error {
 	return nil
-}
-
-// ----------------------------------------------------------------------------
-// Test interface functions
-// ----------------------------------------------------------------------------
-
-func TestSzAbstractFactory_CreateSzConfig(test *testing.T) {
-	ctx := context.TODO()
-	szAbstractFactory := getTestObject(ctx, test)
-	szConfig, err := szAbstractFactory.CreateSzConfig(ctx)
-	testError(test, ctx, szAbstractFactory, err)
-	defer szConfig.Destroy(ctx)
-	configHandle, err := szConfig.CreateConfig(ctx)
-	testError(test, ctx, szAbstractFactory, err)
-	dataSources, err := szConfig.GetDataSources(ctx, configHandle)
-	testError(test, ctx, szAbstractFactory, err)
-	printActual(test, dataSources)
-}
-
-func TestSzAbstractFactory_CreateSzConfigManager(test *testing.T) {
-	ctx := context.TODO()
-	szAbstractFactory := getTestObject(ctx, test)
-	szConfigManager, err := szAbstractFactory.CreateSzConfigManager(ctx)
-	testError(test, ctx, szAbstractFactory, err)
-	defer szConfigManager.Destroy(ctx)
-	configList, err := szConfigManager.GetConfigList(ctx)
-	testError(test, ctx, szAbstractFactory, err)
-	printActual(test, configList)
-}
-
-func TestSzAbstractFactory_CreateSzDiagnostic(test *testing.T) {
-	ctx := context.TODO()
-	szAbstractFactory := getTestObject(ctx, test)
-	szDiagnostic, err := szAbstractFactory.CreateSzDiagnostic(ctx)
-	testError(test, ctx, szAbstractFactory, err)
-	defer szDiagnostic.Destroy(ctx)
-	result, err := szDiagnostic.CheckDatabasePerformance(ctx, 1)
-	testError(test, ctx, szAbstractFactory, err)
-	printActual(test, result)
-}
-
-func TestSzAbstractFactory_CreateSzEngine(test *testing.T) {
-	ctx := context.TODO()
-	szAbstractFactory := getTestObject(ctx, test)
-	szEngine, err := szAbstractFactory.CreateSzEngine(ctx)
-	testError(test, ctx, szAbstractFactory, err)
-	defer szEngine.Destroy(ctx)
-	stats, err := szEngine.GetStats(ctx)
-	testError(test, ctx, szAbstractFactory, err)
-	printActual(test, stats)
-}
-
-func TestSzAbstractFactory_CreateSzProduct(test *testing.T) {
-	ctx := context.TODO()
-	szAbstractFactory := getTestObject(ctx, test)
-	szProduct, err := szAbstractFactory.CreateSzProduct(ctx)
-	testError(test, ctx, szAbstractFactory, err)
-	defer szProduct.Destroy(ctx)
-	version, err := szProduct.GetVersion(ctx)
-	testError(test, ctx, szAbstractFactory, err)
-	printActual(test, version)
 }

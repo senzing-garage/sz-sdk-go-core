@@ -8,7 +8,7 @@ import (
 )
 
 // ----------------------------------------------------------------------------
-// Examples for godoc documentation
+// Interface functions - Examples for godoc documentation
 // ----------------------------------------------------------------------------
 
 func ExampleSzAbstractFactory_CreateSzConfig() {

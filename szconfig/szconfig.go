@@ -32,10 +32,6 @@ import (
 	"github.com/senzing-garage/sz-sdk-go/szerror"
 )
 
-// ----------------------------------------------------------------------------
-// Types
-// ----------------------------------------------------------------------------
-
 // Szconfig is the default implementation of the Szconfig interface.
 type Szconfig struct {
 	isTrace        bool
@@ -44,142 +40,7 @@ type Szconfig struct {
 	observers      subject.Subject
 }
 
-// ----------------------------------------------------------------------------
-// Constants
-// ----------------------------------------------------------------------------
-
 const initialByteArraySize = 65535
-
-// ----------------------------------------------------------------------------
-// Internal methods
-// ----------------------------------------------------------------------------
-
-// --- Logging ----------------------------------------------------------------
-
-// Get the Logger singleton.
-func (client *Szconfig) getLogger() logging.LoggingInterface {
-	var err error = nil
-	if client.logger == nil {
-		options := []interface{}{
-			&logging.OptionCallerSkip{Value: 4},
-		}
-		client.logger, err = logging.NewSenzingSdkLogger(ComponentId, szconfig.IdMessages, options...)
-		if err != nil {
-			panic(err)
-		}
-	}
-	return client.logger
-}
-
-// Trace method entry.
-func (client *Szconfig) traceEntry(errorNumber int, details ...interface{}) {
-	client.getLogger().Log(errorNumber, details...)
-}
-
-// Trace method exit.
-func (client *Szconfig) traceExit(errorNumber int, details ...interface{}) {
-	client.getLogger().Log(errorNumber, details...)
-}
-
-// --- Errors -----------------------------------------------------------------
-
-// Create a new error.
-func (client *Szconfig) newError(ctx context.Context, errorNumber int, details ...interface{}) error {
-	lastException, err := client.getLastException(ctx)
-	defer client.clearLastException(ctx)
-	message := lastException
-	if err != nil {
-		message = err.Error()
-	}
-	details = append(details, errors.New(message))
-	errorMessage := client.getLogger().Json(errorNumber, details...)
-	return szerror.SzError(szerror.SzErrorCode(message), (errorMessage))
-}
-
-// --- Sz exception handling --------------------------------------------------
-
-/*
-The clearLastException method erases the last exception message held by the Senzing Szconfig object.
-
-Input
-  - ctx: A context to control lifecycle.
-*/
-func (client *Szconfig) clearLastException(ctx context.Context) error {
-	// _DLEXPORT void G2Config_clearLastException();
-	_ = ctx
-	var err error = nil
-	if client.isTrace {
-		entryTime := time.Now()
-		client.traceEntry(3)
-		defer func() { client.traceExit(4, err, time.Since(entryTime)) }()
-	}
-	C.G2Config_clearLastException()
-	return err
-}
-
-/*
-The getLastException method retrieves the last exception thrown in Senzing's Szconfig.
-
-Input
-  - ctx: A context to control lifecycle.
-
-Output
-  - A string containing the error received from Senzing's Szconfig.
-*/
-func (client *Szconfig) getLastException(ctx context.Context) (string, error) {
-	// _DLEXPORT int G2Config_getLastException(char *buffer, const size_t bufSize);
-	_ = ctx
-	var err error = nil
-	var result string
-	if client.isTrace {
-		entryTime := time.Now()
-		client.traceEntry(13)
-		defer func() { client.traceExit(14, result, err, time.Since(entryTime)) }()
-	}
-	stringBuffer := client.getByteArray(initialByteArraySize)
-	C.G2Config_getLastException((*C.char)(unsafe.Pointer(&stringBuffer[0])), C.size_t(len(stringBuffer)))
-	// if result == 0 { // "result" is length of exception message.
-	// 	err = client.getLogger().Error(4005, result, time.Since(entryTime))
-	// }
-	result = string(bytes.Trim(stringBuffer, "\x00"))
-	return result, err
-}
-
-/*
-The getLastExceptionCode method retrieves the code of the last exception thrown in Senzing's Szconfig.
-
-Input:
-  - ctx: A context to control lifecycle.
-
-Output:
-  - An int containing the error received from Senzing's G2Config.
-*/
-func (client *Szconfig) getLastExceptionCode(ctx context.Context) (int, error) {
-	//  _DLEXPORT int G2Config_getLastExceptionCode();
-	_ = ctx
-	var err error = nil
-	var result int
-	if client.isTrace {
-		entryTime := time.Now()
-		client.traceEntry(15)
-		defer func() { client.traceExit(16, result, err, time.Since(entryTime)) }()
-	}
-	result = int(C.G2Config_getLastExceptionCode())
-	return result, err
-}
-
-// --- Misc -------------------------------------------------------------------
-
-// Get space for an array of bytes of a given size.
-func (client *Szconfig) getByteArrayC(size int) *C.char {
-	bytes := C.malloc(C.size_t(size))
-	return (*C.char)(bytes)
-}
-
-// Make a byte array.
-func (client *Szconfig) getByteArray(size int) []byte {
-	return make([]byte, size)
-}
 
 // ----------------------------------------------------------------------------
 // Interface methods
@@ -445,6 +306,47 @@ func (client *Szconfig) GetDataSources(ctx context.Context, configHandle uintptr
 }
 
 /*
+The ImportConfig method initializes the in-memory Senzing G2Config object from a JSON string.
+
+Input
+  - ctx: A context to control lifecycle.
+  - configDefinition: A JSON document containing the Senzing configuration.
+
+Output
+  - An identifier of an in-memory configuration.
+*/
+func (client *Szconfig) ImportConfig(ctx context.Context, configDefinition string) (uintptr, error) {
+	// _DLEXPORT int G2Config_load(const char *jsonConfig,ConfigHandle* configHandle);
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	var err error = nil
+	var resultResponse uintptr
+	entryTime := time.Now()
+	if client.isTrace {
+		client.traceEntry(21, configDefinition)
+		defer func() { client.traceExit(22, configDefinition, resultResponse, err, time.Since(entryTime)) }()
+	}
+	jsonConfigForC := C.CString(configDefinition)
+	defer C.free(unsafe.Pointer(jsonConfigForC))
+	result := C.G2Config_load_helper(jsonConfigForC)
+	if result.returnCode != 0 {
+		err = client.newError(ctx, 4009, configDefinition, result.returnCode, time.Since(entryTime))
+	}
+	resultResponse = uintptr(result.response)
+	if client.observers != nil {
+		go func() {
+			details := map[string]string{}
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8008, err, details)
+		}()
+	}
+	return resultResponse, err
+}
+
+// ----------------------------------------------------------------------------
+// Public non-interface methods
+// ----------------------------------------------------------------------------
+
+/*
 The GetObserverOrigin method returns the "origin" value of past Observer messages.
 
 Input
@@ -482,44 +384,7 @@ func (client *Szconfig) GetSdkId(ctx context.Context) string {
 }
 
 /*
-The ImportConfig method initializes the in-memory Senzing G2Config object from a JSON string.
-
-Input
-  - ctx: A context to control lifecycle.
-  - configDefinition: A JSON document containing the Senzing configuration.
-
-Output
-  - An identifier of an in-memory configuration.
-*/
-func (client *Szconfig) ImportConfig(ctx context.Context, configDefinition string) (uintptr, error) {
-	// _DLEXPORT int G2Config_load(const char *jsonConfig,ConfigHandle* configHandle);
-	runtime.LockOSThread()
-	defer runtime.UnlockOSThread()
-	var err error = nil
-	var resultResponse uintptr
-	entryTime := time.Now()
-	if client.isTrace {
-		client.traceEntry(21, configDefinition)
-		defer func() { client.traceExit(22, configDefinition, resultResponse, err, time.Since(entryTime)) }()
-	}
-	jsonConfigForC := C.CString(configDefinition)
-	defer C.free(unsafe.Pointer(jsonConfigForC))
-	result := C.G2Config_load_helper(jsonConfigForC)
-	if result.returnCode != 0 {
-		err = client.newError(ctx, 4009, configDefinition, result.returnCode, time.Since(entryTime))
-	}
-	resultResponse = uintptr(result.response)
-	if client.observers != nil {
-		go func() {
-			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8008, err, details)
-		}()
-	}
-	return resultResponse, err
-}
-
-/*
-The Init method initializes the Senzing Szconfig object.
+The Initialize method initializes the Senzing Szconfig object.
 It must be called prior to any other calls.
 
 Input
@@ -660,4 +525,135 @@ func (client *Szconfig) UnregisterObserver(ctx context.Context, observer observe
 		client.observers = nil
 	}
 	return err
+}
+
+// ----------------------------------------------------------------------------
+// Internal methods
+// ----------------------------------------------------------------------------
+
+// --- Logging ----------------------------------------------------------------
+
+// Get the Logger singleton.
+func (client *Szconfig) getLogger() logging.LoggingInterface {
+	var err error = nil
+	if client.logger == nil {
+		options := []interface{}{
+			&logging.OptionCallerSkip{Value: 4},
+		}
+		client.logger, err = logging.NewSenzingSdkLogger(ComponentId, szconfig.IdMessages, options...)
+		if err != nil {
+			panic(err)
+		}
+	}
+	return client.logger
+}
+
+// Trace method entry.
+func (client *Szconfig) traceEntry(errorNumber int, details ...interface{}) {
+	client.getLogger().Log(errorNumber, details...)
+}
+
+// Trace method exit.
+func (client *Szconfig) traceExit(errorNumber int, details ...interface{}) {
+	client.getLogger().Log(errorNumber, details...)
+}
+
+// --- Errors -----------------------------------------------------------------
+
+// Create a new error.
+func (client *Szconfig) newError(ctx context.Context, errorNumber int, details ...interface{}) error {
+	lastException, err := client.getLastException(ctx)
+	defer client.clearLastException(ctx)
+	message := lastException
+	if err != nil {
+		message = err.Error()
+	}
+	details = append(details, errors.New(message))
+	errorMessage := client.getLogger().Json(errorNumber, details...)
+	return szerror.SzError(szerror.SzErrorCode(message), (errorMessage))
+}
+
+// --- Sz exception handling --------------------------------------------------
+
+/*
+The clearLastException method erases the last exception message held by the Senzing Szconfig object.
+
+Input
+  - ctx: A context to control lifecycle.
+*/
+func (client *Szconfig) clearLastException(ctx context.Context) error {
+	// _DLEXPORT void G2Config_clearLastException();
+	_ = ctx
+	var err error = nil
+	if client.isTrace {
+		entryTime := time.Now()
+		client.traceEntry(3)
+		defer func() { client.traceExit(4, err, time.Since(entryTime)) }()
+	}
+	C.G2Config_clearLastException()
+	return err
+}
+
+/*
+The getLastException method retrieves the last exception thrown in Senzing's Szconfig.
+
+Input
+  - ctx: A context to control lifecycle.
+
+Output
+  - A string containing the error received from Senzing's Szconfig.
+*/
+func (client *Szconfig) getLastException(ctx context.Context) (string, error) {
+	// _DLEXPORT int G2Config_getLastException(char *buffer, const size_t bufSize);
+	_ = ctx
+	var err error = nil
+	var result string
+	if client.isTrace {
+		entryTime := time.Now()
+		client.traceEntry(13)
+		defer func() { client.traceExit(14, result, err, time.Since(entryTime)) }()
+	}
+	stringBuffer := client.getByteArray(initialByteArraySize)
+	C.G2Config_getLastException((*C.char)(unsafe.Pointer(&stringBuffer[0])), C.size_t(len(stringBuffer)))
+	// if result == 0 { // "result" is length of exception message.
+	// 	err = client.getLogger().Error(4005, result, time.Since(entryTime))
+	// }
+	result = string(bytes.Trim(stringBuffer, "\x00"))
+	return result, err
+}
+
+/*
+The getLastExceptionCode method retrieves the code of the last exception thrown in Senzing's Szconfig.
+
+Input:
+  - ctx: A context to control lifecycle.
+
+Output:
+  - An int containing the error received from Senzing's G2Config.
+*/
+func (client *Szconfig) getLastExceptionCode(ctx context.Context) (int, error) {
+	//  _DLEXPORT int G2Config_getLastExceptionCode();
+	_ = ctx
+	var err error = nil
+	var result int
+	if client.isTrace {
+		entryTime := time.Now()
+		client.traceEntry(15)
+		defer func() { client.traceExit(16, result, err, time.Since(entryTime)) }()
+	}
+	result = int(C.G2Config_getLastExceptionCode())
+	return result, err
+}
+
+// --- Misc -------------------------------------------------------------------
+
+// Get space for an array of bytes of a given size.
+func (client *Szconfig) getByteArrayC(size int) *C.char {
+	bytes := C.malloc(C.size_t(size))
+	return (*C.char)(bytes)
+}
+
+// Make a byte array.
+func (client *Szconfig) getByteArray(size int) []byte {
+	return make([]byte, size)
 }

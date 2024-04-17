@@ -96,7 +96,7 @@ func TestSzDiagnostic_Initialize(test *testing.T) {
 	testError(test, err)
 	verboseLogging := sz.SZ_NO_LOGGING
 	configId := sz.SZ_INITIALIZE_WITH_DEFAULT_CONFIGURATION
-	err = szDiagnostic.Initialize(ctx, instanceName, settings, verboseLogging, configId)
+	err = szDiagnostic.Initialize(ctx, instanceName, settings, configId, verboseLogging)
 	testError(test, err)
 }
 
@@ -108,7 +108,7 @@ func TestSzDiagnostic_Initialize_WithConfigId(test *testing.T) {
 	testError(test, err)
 	verboseLogging := sz.SZ_NO_LOGGING
 	configId := getDefaultConfigId()
-	err = szDiagnostic.Initialize(ctx, instanceName, settings, verboseLogging, configId)
+	err = szDiagnostic.Initialize(ctx, instanceName, settings, configId, verboseLogging)
 	testError(test, err)
 }
 
@@ -175,7 +175,7 @@ func getSzDiagnostic(ctx context.Context) *Szdiagnostic {
 			return nil
 		}
 		szDiagnosticSingleton = &Szdiagnostic{}
-		err = szDiagnosticSingleton.Initialize(ctx, instanceName, settings, verboseLogging, getDefaultConfigId())
+		err = szDiagnosticSingleton.Initialize(ctx, instanceName, settings, getDefaultConfigId(), verboseLogging)
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -286,7 +286,7 @@ func setupAddRecords() error {
 	// Create sz objects.
 
 	szEngine := &szengine.Szengine{}
-	err = szEngine.Initialize(ctx, instanceName, settings, verboseLogging, sz.SZ_INITIALIZE_WITH_DEFAULT_CONFIGURATION)
+	err = szEngine.Initialize(ctx, instanceName, settings, sz.SZ_INITIALIZE_WITH_DEFAULT_CONFIGURATION, verboseLogging)
 	if err != nil {
 		return createError(5916, err)
 	}

@@ -680,7 +680,7 @@ func TestSzEngine_Initialize(test *testing.T) {
 	settings, err := getSettings()
 	testError(test, err)
 	configId := sz.SZ_INITIALIZE_WITH_DEFAULT_CONFIGURATION
-	err = szEngine.Initialize(ctx, instanceName, settings, verboseLogging, configId)
+	err = szEngine.Initialize(ctx, instanceName, settings, configId, verboseLogging)
 	testError(test, err)
 }
 
@@ -690,7 +690,7 @@ func TestSzEngine_Initialize_withConfigId(test *testing.T) {
 	settings, err := getSettings()
 	testError(test, err)
 	configId := getDefaultConfigId()
-	err = szEngine.Initialize(ctx, instanceName, settings, verboseLogging, configId)
+	err = szEngine.Initialize(ctx, instanceName, settings, configId, verboseLogging)
 	testError(test, err)
 }
 
@@ -789,7 +789,7 @@ func getSzEngine(ctx context.Context) *Szengine {
 			return nil
 		}
 		szEngineSingleton = &Szengine{}
-		err = szEngineSingleton.Initialize(ctx, instanceName, settings, verboseLogging, getDefaultConfigId())
+		err = szEngineSingleton.Initialize(ctx, instanceName, settings, getDefaultConfigId(), verboseLogging)
 		if err != nil {
 			fmt.Println(err)
 		}

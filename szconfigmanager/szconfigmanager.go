@@ -32,10 +32,6 @@ import (
 	"github.com/senzing-garage/sz-sdk-go/szerror"
 )
 
-// ----------------------------------------------------------------------------
-// Types
-// ----------------------------------------------------------------------------
-
 // Szconfigmanager is the default implementation of the Szconfigmanager interface.
 type Szconfigmanager struct {
 	isTrace        bool
@@ -44,142 +40,7 @@ type Szconfigmanager struct {
 	observers      subject.Subject
 }
 
-// ----------------------------------------------------------------------------
-// Constants
-// ----------------------------------------------------------------------------
-
 const initialByteArraySize = 65535
-
-// ----------------------------------------------------------------------------
-// Internal methods
-// ----------------------------------------------------------------------------
-
-// --- Logging ----------------------------------------------------------------
-
-// Get the Logger singleton.
-func (client *Szconfigmanager) getLogger() logging.LoggingInterface {
-	var err error = nil
-	if client.logger == nil {
-		options := []interface{}{
-			&logging.OptionCallerSkip{Value: 4},
-		}
-		client.logger, err = logging.NewSenzingSdkLogger(ComponentId, szconfigmanager.IdMessages, options...)
-		if err != nil {
-			panic(err)
-		}
-	}
-	return client.logger
-}
-
-// Trace method entry.
-func (client *Szconfigmanager) traceEntry(errorNumber int, details ...interface{}) {
-	client.getLogger().Log(errorNumber, details...)
-}
-
-// Trace method exit.
-func (client *Szconfigmanager) traceExit(errorNumber int, details ...interface{}) {
-	client.getLogger().Log(errorNumber, details...)
-}
-
-// --- Errors -----------------------------------------------------------------
-
-// Create a new error.
-func (client *Szconfigmanager) newError(ctx context.Context, errorNumber int, details ...interface{}) error {
-	lastException, err := client.getLastException(ctx)
-	defer client.clearLastException(ctx)
-	message := lastException
-	if err != nil {
-		message = err.Error()
-	}
-	details = append(details, errors.New(message))
-	errorMessage := client.getLogger().Json(errorNumber, details...)
-	return szerror.SzError(szerror.SzErrorCode(message), (errorMessage))
-}
-
-// --- Sz exception handling --------------------------------------------------
-
-/*
-The clearLastException method erases the last exception message held by the Senzing G2ConfigMgr object.
-
-Input
-  - ctx: A context to control lifecycle.
-*/
-func (client *Szconfigmanager) clearLastException(ctx context.Context) error {
-	// _DLEXPORT void G2Config_clearLastException()
-	_ = ctx
-	var err error = nil
-	if client.isTrace {
-		entryTime := time.Now()
-		client.traceEntry(3)
-		defer func() { client.traceExit(4, err, time.Since(entryTime)) }()
-	}
-	C.G2ConfigMgr_clearLastException()
-	return err
-}
-
-/*
-The getLastException method retrieves the last exception thrown in Senzing's G2ConfigMgr.
-
-Input
-  - ctx: A context to control lifecycle.
-
-Output
-  - A string containing the error received from Senzing's G2ConfigMgr.
-*/
-func (client *Szconfigmanager) getLastException(ctx context.Context) (string, error) {
-	// _DLEXPORT int G2Config_getLastException(char *buffer, const size_t bufSize);
-	_ = ctx
-	var err error = nil
-	var result string
-	if client.isTrace {
-		entryTime := time.Now()
-		client.traceEntry(13)
-		defer func() { client.traceExit(14, result, err, time.Since(entryTime)) }()
-	}
-	stringBuffer := client.getByteArray(initialByteArraySize)
-	C.G2ConfigMgr_getLastException((*C.char)(unsafe.Pointer(&stringBuffer[0])), C.size_t(len(stringBuffer)))
-	// if result == 0 { // "result" is length of exception message.
-	// 	err = client.getLogger().Error(4006, result, time.Since(entryTime))
-	// }
-	result = string(bytes.Trim(stringBuffer, "\x00"))
-	return result, err
-}
-
-/*
-The getLastExceptionCode method retrieves the code of the last exception thrown in Senzing's G2ConfigMgr.
-
-Input:
-  - ctx: A context to control lifecycle.
-
-Output:
-  - An int containing the error received from Senzing's G2ConfigMgr.
-*/
-func (client *Szconfigmanager) getLastExceptionCode(ctx context.Context) (int, error) {
-	//  _DLEXPORT int G2Config_getLastExceptionCode();
-	_ = ctx
-	var err error = nil
-	var result int
-	if client.isTrace {
-		entryTime := time.Now()
-		client.traceEntry(15)
-		defer func() { client.traceExit(16, result, err, time.Since(entryTime)) }()
-	}
-	result = int(C.G2ConfigMgr_getLastExceptionCode())
-	return result, err
-}
-
-// --- Misc -------------------------------------------------------------------
-
-// Get space for an array of bytes of a given size.
-func (client *Szconfigmanager) getByteArrayC(size int) *C.char {
-	bytes := C.malloc(C.size_t(size))
-	return (*C.char)(bytes)
-}
-
-// Make a byte array.
-func (client *Szconfigmanager) getByteArray(size int) []byte {
-	return make([]byte, size)
-}
 
 // ----------------------------------------------------------------------------
 // Interface methods
@@ -367,6 +228,79 @@ func (client *Szconfigmanager) GetDefaultConfigId(ctx context.Context) (int64, e
 }
 
 /*
+The ReplaceDefaultConfigId method replaces the old configuration identifier with a new configuration identifier in the Senzing database.
+It is like a "compare-and-swap" instruction to serialize concurrent editing of configuration.
+If oldConfigID is no longer the "old configuration identifier", the operation will fail.
+To simply set the default configuration ID, use SetDefaultConfigId().
+
+Input
+  - ctx: A context to control lifecycle.
+  - oldConfigID: The configuration identifier to replace.
+  - newConfigID: The configuration identifier to use as the default.
+*/
+func (client *Szconfigmanager) ReplaceDefaultConfigId(ctx context.Context, currentDefaultConfigId int64, newDefaultConfigId int64) error {
+	// _DLEXPORT int G2ConfigMgr_replaceDefaultConfigID(const long long oldConfigID, const long long newConfigID);
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	var err error = nil
+	entryTime := time.Now()
+	if client.isTrace {
+		client.traceEntry(19, currentDefaultConfigId, newDefaultConfigId)
+		defer func() { client.traceExit(20, currentDefaultConfigId, newDefaultConfigId, err, time.Since(entryTime)) }()
+	}
+	result := C.G2ConfigMgr_replaceDefaultConfigID(C.longlong(currentDefaultConfigId), C.longlong(newDefaultConfigId))
+	if result != 0 {
+		err = client.newError(ctx, 4008, currentDefaultConfigId, newDefaultConfigId, result, time.Since(entryTime))
+	}
+	if client.observers != nil {
+		go func() {
+			details := map[string]string{
+				"newConfigID": strconv.FormatInt(newDefaultConfigId, 10),
+			}
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8007, err, details)
+		}()
+	}
+	return err
+}
+
+/*
+The SetDefaultConfigId method replaces the sets a new configuration identifier in the Senzing database.
+To serialize modifying of the configuration identifier, see ReplaceDefaultConfigID().
+
+Input
+  - ctx: A context to control lifecycle.
+  - configID: The configuration identifier of the Senzing Engine configuration to use as the default.
+*/
+func (client *Szconfigmanager) SetDefaultConfigId(ctx context.Context, configId int64) error {
+	// _DLEXPORT int G2ConfigMgr_setDefaultConfigID(const long long configID);
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	var err error = nil
+	entryTime := time.Now()
+	if client.isTrace {
+		client.traceEntry(21, configId)
+		defer func() { client.traceExit(22, configId, err, time.Since(entryTime)) }()
+	}
+	result := C.G2ConfigMgr_setDefaultConfigID(C.longlong(configId))
+	if result != 0 {
+		err = client.newError(ctx, 4009, configId, result, time.Since(entryTime))
+	}
+	if client.observers != nil {
+		go func() {
+			details := map[string]string{
+				"configID": strconv.FormatInt(configId, 10),
+			}
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8008, err, details)
+		}()
+	}
+	return err
+}
+
+// ----------------------------------------------------------------------------
+// Public non-interface methods
+// ----------------------------------------------------------------------------
+
+/*
 The GetObserverOrigin method returns the "origin" value of past Observer messages.
 
 Input
@@ -404,7 +338,7 @@ func (client *Szconfigmanager) GetSdkId(ctx context.Context) string {
 }
 
 /*
-The Init method initializes the Senzing G2ConfigMgr object.
+The Initialize method initializes the Senzing G2ConfigMgr object.
 It must be called prior to any other calls.
 
 Input
@@ -468,75 +402,6 @@ func (client *Szconfigmanager) RegisterObserver(ctx context.Context, observer ob
 				"observerID": observer.GetObserverId(ctx),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8010, err, details)
-		}()
-	}
-	return err
-}
-
-/*
-The ReplaceDefaultConfigID method replaces the old configuration identifier with a new configuration identifier in the Senzing database.
-It is like a "compare-and-swap" instruction to serialize concurrent editing of configuration.
-If oldConfigID is no longer the "old configuration identifier", the operation will fail.
-To simply set the default configuration ID, use SetDefaultConfigId().
-
-Input
-  - ctx: A context to control lifecycle.
-  - oldConfigID: The configuration identifier to replace.
-  - newConfigID: The configuration identifier to use as the default.
-*/
-func (client *Szconfigmanager) ReplaceDefaultConfigId(ctx context.Context, currentDefaultConfigId int64, newDefaultConfigId int64) error {
-	// _DLEXPORT int G2ConfigMgr_replaceDefaultConfigID(const long long oldConfigID, const long long newConfigID);
-	runtime.LockOSThread()
-	defer runtime.UnlockOSThread()
-	var err error = nil
-	entryTime := time.Now()
-	if client.isTrace {
-		client.traceEntry(19, currentDefaultConfigId, newDefaultConfigId)
-		defer func() { client.traceExit(20, currentDefaultConfigId, newDefaultConfigId, err, time.Since(entryTime)) }()
-	}
-	result := C.G2ConfigMgr_replaceDefaultConfigID(C.longlong(currentDefaultConfigId), C.longlong(newDefaultConfigId))
-	if result != 0 {
-		err = client.newError(ctx, 4008, currentDefaultConfigId, newDefaultConfigId, result, time.Since(entryTime))
-	}
-	if client.observers != nil {
-		go func() {
-			details := map[string]string{
-				"newConfigID": strconv.FormatInt(newDefaultConfigId, 10),
-			}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8007, err, details)
-		}()
-	}
-	return err
-}
-
-/*
-The SetDefaultConfigId method replaces the sets a new configuration identifier in the Senzing database.
-To serialize modifying of the configuration identifier, see ReplaceDefaultConfigID().
-
-Input
-  - ctx: A context to control lifecycle.
-  - configID: The configuration identifier of the Senzing Engine configuration to use as the default.
-*/
-func (client *Szconfigmanager) SetDefaultConfigId(ctx context.Context, configId int64) error {
-	// _DLEXPORT int G2ConfigMgr_setDefaultConfigID(const long long configID);
-	runtime.LockOSThread()
-	defer runtime.UnlockOSThread()
-	var err error = nil
-	entryTime := time.Now()
-	if client.isTrace {
-		client.traceEntry(21, configId)
-		defer func() { client.traceExit(22, configId, err, time.Since(entryTime)) }()
-	}
-	result := C.G2ConfigMgr_setDefaultConfigID(C.longlong(configId))
-	if result != 0 {
-		err = client.newError(ctx, 4009, configId, result, time.Since(entryTime))
-	}
-	if client.observers != nil {
-		go func() {
-			details := map[string]string{
-				"configID": strconv.FormatInt(configId, 10),
-			}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8008, err, details)
 		}()
 	}
 	return err
@@ -614,4 +479,135 @@ func (client *Szconfigmanager) UnregisterObserver(ctx context.Context, observer 
 		client.observers = nil
 	}
 	return err
+}
+
+// ----------------------------------------------------------------------------
+// Internal methods
+// ----------------------------------------------------------------------------
+
+// --- Logging ----------------------------------------------------------------
+
+// Get the Logger singleton.
+func (client *Szconfigmanager) getLogger() logging.LoggingInterface {
+	var err error = nil
+	if client.logger == nil {
+		options := []interface{}{
+			&logging.OptionCallerSkip{Value: 4},
+		}
+		client.logger, err = logging.NewSenzingSdkLogger(ComponentId, szconfigmanager.IdMessages, options...)
+		if err != nil {
+			panic(err)
+		}
+	}
+	return client.logger
+}
+
+// Trace method entry.
+func (client *Szconfigmanager) traceEntry(errorNumber int, details ...interface{}) {
+	client.getLogger().Log(errorNumber, details...)
+}
+
+// Trace method exit.
+func (client *Szconfigmanager) traceExit(errorNumber int, details ...interface{}) {
+	client.getLogger().Log(errorNumber, details...)
+}
+
+// --- Errors -----------------------------------------------------------------
+
+// Create a new error.
+func (client *Szconfigmanager) newError(ctx context.Context, errorNumber int, details ...interface{}) error {
+	lastException, err := client.getLastException(ctx)
+	defer client.clearLastException(ctx)
+	message := lastException
+	if err != nil {
+		message = err.Error()
+	}
+	details = append(details, errors.New(message))
+	errorMessage := client.getLogger().Json(errorNumber, details...)
+	return szerror.SzError(szerror.SzErrorCode(message), (errorMessage))
+}
+
+// --- Sz exception handling --------------------------------------------------
+
+/*
+The clearLastException method erases the last exception message held by the Senzing G2ConfigMgr object.
+
+Input
+  - ctx: A context to control lifecycle.
+*/
+func (client *Szconfigmanager) clearLastException(ctx context.Context) error {
+	// _DLEXPORT void G2Config_clearLastException()
+	_ = ctx
+	var err error = nil
+	if client.isTrace {
+		entryTime := time.Now()
+		client.traceEntry(3)
+		defer func() { client.traceExit(4, err, time.Since(entryTime)) }()
+	}
+	C.G2ConfigMgr_clearLastException()
+	return err
+}
+
+/*
+The getLastException method retrieves the last exception thrown in Senzing's G2ConfigMgr.
+
+Input
+  - ctx: A context to control lifecycle.
+
+Output
+  - A string containing the error received from Senzing's G2ConfigMgr.
+*/
+func (client *Szconfigmanager) getLastException(ctx context.Context) (string, error) {
+	// _DLEXPORT int G2Config_getLastException(char *buffer, const size_t bufSize);
+	_ = ctx
+	var err error = nil
+	var result string
+	if client.isTrace {
+		entryTime := time.Now()
+		client.traceEntry(13)
+		defer func() { client.traceExit(14, result, err, time.Since(entryTime)) }()
+	}
+	stringBuffer := client.getByteArray(initialByteArraySize)
+	C.G2ConfigMgr_getLastException((*C.char)(unsafe.Pointer(&stringBuffer[0])), C.size_t(len(stringBuffer)))
+	// if result == 0 { // "result" is length of exception message.
+	// 	err = client.getLogger().Error(4006, result, time.Since(entryTime))
+	// }
+	result = string(bytes.Trim(stringBuffer, "\x00"))
+	return result, err
+}
+
+/*
+The getLastExceptionCode method retrieves the code of the last exception thrown in Senzing's G2ConfigMgr.
+
+Input:
+  - ctx: A context to control lifecycle.
+
+Output:
+  - An int containing the error received from Senzing's G2ConfigMgr.
+*/
+func (client *Szconfigmanager) getLastExceptionCode(ctx context.Context) (int, error) {
+	//  _DLEXPORT int G2Config_getLastExceptionCode();
+	_ = ctx
+	var err error = nil
+	var result int
+	if client.isTrace {
+		entryTime := time.Now()
+		client.traceEntry(15)
+		defer func() { client.traceExit(16, result, err, time.Since(entryTime)) }()
+	}
+	result = int(C.G2ConfigMgr_getLastExceptionCode())
+	return result, err
+}
+
+// --- Misc -------------------------------------------------------------------
+
+// Get space for an array of bytes of a given size.
+func (client *Szconfigmanager) getByteArrayC(size int) *C.char {
+	bytes := C.malloc(C.size_t(size))
+	return (*C.char)(bytes)
+}
+
+// Make a byte array.
+func (client *Szconfigmanager) getByteArray(size int) []byte {
+	return make([]byte, size)
 }
