@@ -195,59 +195,59 @@ func teardown() error {
 // Test interface functions
 // ----------------------------------------------------------------------------
 
-func TestSzAbstractFactory_CreateConfig(test *testing.T) {
+func TestSzAbstractFactory_CreateSzConfig(test *testing.T) {
 	ctx := context.TODO()
 	szAbstractFactory := getTestObject(ctx, test)
-	config, err := szAbstractFactory.CreateConfig(ctx)
+	szConfig, err := szAbstractFactory.CreateSzConfig(ctx)
 	testError(test, ctx, szAbstractFactory, err)
-	defer config.Destroy(ctx)
-	configHandle, err := config.CreateConfig(ctx)
+	defer szConfig.Destroy(ctx)
+	configHandle, err := szConfig.CreateConfig(ctx)
 	testError(test, ctx, szAbstractFactory, err)
-	dataSources, err := config.GetDataSources(ctx, configHandle)
+	dataSources, err := szConfig.GetDataSources(ctx, configHandle)
 	testError(test, ctx, szAbstractFactory, err)
 	printActual(test, dataSources)
 }
 
-func TestSzAbstractFactory_CreateConfigManager(test *testing.T) {
+func TestSzAbstractFactory_CreateSzConfigManager(test *testing.T) {
 	ctx := context.TODO()
 	szAbstractFactory := getTestObject(ctx, test)
-	configManager, err := szAbstractFactory.CreateConfigManager(ctx)
+	szConfigManager, err := szAbstractFactory.CreateSzConfigManager(ctx)
 	testError(test, ctx, szAbstractFactory, err)
-	defer configManager.Destroy(ctx)
-	configList, err := configManager.GetConfigList(ctx)
+	defer szConfigManager.Destroy(ctx)
+	configList, err := szConfigManager.GetConfigList(ctx)
 	testError(test, ctx, szAbstractFactory, err)
 	printActual(test, configList)
 }
 
-func TestSzAbstractFactory_CreateDiagnostic(test *testing.T) {
+func TestSzAbstractFactory_CreateSzDiagnostic(test *testing.T) {
 	ctx := context.TODO()
 	szAbstractFactory := getTestObject(ctx, test)
-	diagnostic, err := szAbstractFactory.CreateDiagnostic(ctx)
+	szDiagnostic, err := szAbstractFactory.CreateSzDiagnostic(ctx)
 	testError(test, ctx, szAbstractFactory, err)
-	defer diagnostic.Destroy(ctx)
-	result, err := diagnostic.CheckDatabasePerformance(ctx, 1)
+	defer szDiagnostic.Destroy(ctx)
+	result, err := szDiagnostic.CheckDatabasePerformance(ctx, 1)
 	testError(test, ctx, szAbstractFactory, err)
 	printActual(test, result)
 }
 
-func TestSzAbstractFactory_CreateEngine(test *testing.T) {
+func TestSzAbstractFactory_CreateSzEngine(test *testing.T) {
 	ctx := context.TODO()
 	szAbstractFactory := getTestObject(ctx, test)
-	engine, err := szAbstractFactory.CreateEngine(ctx)
+	szEngine, err := szAbstractFactory.CreateSzEngine(ctx)
 	testError(test, ctx, szAbstractFactory, err)
-	defer engine.Destroy(ctx)
-	stats, err := engine.GetStats(ctx)
+	defer szEngine.Destroy(ctx)
+	stats, err := szEngine.GetStats(ctx)
 	testError(test, ctx, szAbstractFactory, err)
 	printActual(test, stats)
 }
 
-func TestSzAbstractFactory_CreateProduct(test *testing.T) {
+func TestSzAbstractFactory_CreateSzProduct(test *testing.T) {
 	ctx := context.TODO()
 	szAbstractFactory := getTestObject(ctx, test)
-	product, err := szAbstractFactory.CreateProduct(ctx)
+	szProduct, err := szAbstractFactory.CreateSzProduct(ctx)
 	testError(test, ctx, szAbstractFactory, err)
-	defer product.Destroy(ctx)
-	version, err := product.GetVersion(ctx)
+	defer szProduct.Destroy(ctx)
+	version, err := szProduct.GetVersion(ctx)
 	testError(test, ctx, szAbstractFactory, err)
 	printActual(test, version)
 }

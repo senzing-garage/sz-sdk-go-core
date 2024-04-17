@@ -32,7 +32,7 @@ type Szabstractfactory struct {
 // ----------------------------------------------------------------------------
 
 /*
-The CreateConfig method... TODO:
+The CreateSzConfig method... TODO:
 
 Input
   - ctx: A context to control lifecycle.
@@ -41,14 +41,14 @@ Output
   - An sz.SzConfig object.
     See the example output.
 */
-func (factory *Szabstractfactory) CreateConfig(ctx context.Context) (sz.SzConfig, error) {
+func (factory *Szabstractfactory) CreateSzConfig(ctx context.Context) (sz.SzConfig, error) {
 	result := &szconfig.Szconfig{}
 	err := result.Initialize(ctx, factory.InstanceName, factory.Settings, factory.VerboseLogging)
 	return result, err
 }
 
 /*
-The CreateConfigManager method... TODO:
+The CreateSzConfigManager method... TODO:
 
 Input
   - ctx: A context to control lifecycle.
@@ -57,14 +57,14 @@ Output
   - An sz.CreateConfigManager object.
     See the example output.
 */
-func (factory *Szabstractfactory) CreateConfigManager(ctx context.Context) (sz.SzConfigManager, error) {
+func (factory *Szabstractfactory) CreateSzConfigManager(ctx context.Context) (sz.SzConfigManager, error) {
 	result := &szconfigmanager.Szconfigmanager{}
 	err := result.Initialize(ctx, factory.InstanceName, factory.Settings, factory.VerboseLogging)
 	return result, err
 }
 
 /*
-The CreateDiagnostic method... TODO:
+The CreateSzDiagnostic method... TODO:
 
 Input
   - ctx: A context to control lifecycle.
@@ -73,14 +73,14 @@ Output
   - An sz.SzDiagnostic object.
     See the example output.
 */
-func (factory *Szabstractfactory) CreateDiagnostic(ctx context.Context) (sz.SzDiagnostic, error) {
+func (factory *Szabstractfactory) CreateSzDiagnostic(ctx context.Context) (sz.SzDiagnostic, error) {
 	result := &szdiagnostic.Szdiagnostic{}
 	err := result.Initialize(ctx, factory.InstanceName, factory.Settings, factory.VerboseLogging, factory.ConfigId)
 	return result, err
 }
 
 /*
-The CreateEngine method... TODO:
+The CreateSzEngine method... TODO:
 
 Input
   - ctx: A context to control lifecycle.
@@ -89,14 +89,14 @@ Output
   - An sz.SzEngine object.
     See the example output.
 */
-func (factory *Szabstractfactory) CreateEngine(ctx context.Context) (sz.SzEngine, error) {
+func (factory *Szabstractfactory) CreateSzEngine(ctx context.Context) (sz.SzEngine, error) {
 	result := &szengine.Szengine{}
 	err := result.Initialize(ctx, factory.InstanceName, factory.Settings, factory.VerboseLogging, factory.ConfigId)
 	return result, err
 }
 
 /*
-The CreateProduct method... TODO:
+The CreateSzProduct method... TODO:
 
 Input
   - ctx: A context to control lifecycle.
@@ -105,7 +105,7 @@ Output
   - An sz.SzProduct object.
     See the example output.
 */
-func (factory *Szabstractfactory) CreateProduct(ctx context.Context) (sz.SzProduct, error) {
+func (factory *Szabstractfactory) CreateSzProduct(ctx context.Context) (sz.SzProduct, error) {
 	result := &szproduct.Szproduct{}
 	err := result.Initialize(ctx, factory.InstanceName, factory.Settings, factory.VerboseLogging)
 	return result, err

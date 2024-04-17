@@ -125,13 +125,13 @@ func demonstrateConfigFunctions(ctx context.Context, szAbstractFactory sz.SzAbst
 
 	// Create Senzing objects.
 
-	szConfig, err := szAbstractFactory.CreateConfig(ctx)
+	szConfig, err := szAbstractFactory.CreateSzConfig(ctx)
 	if err != nil {
 		return logger.NewError(5101, err)
 	}
 	defer szConfig.Destroy(ctx)
 
-	szConfigManager, err := szAbstractFactory.CreateConfigManager(ctx)
+	szConfigManager, err := szAbstractFactory.CreateSzConfigManager(ctx)
 	if err != nil {
 		return logger.NewError(5102, err)
 	}
@@ -182,19 +182,19 @@ func demonstrateSenzingFunctions(ctx context.Context, szAbstractFactory sz.SzAbs
 
 	// Create Senzing objects.
 
-	szDiagnostic, err := szAbstractFactory.CreateDiagnostic(ctx)
+	szDiagnostic, err := szAbstractFactory.CreateSzDiagnostic(ctx)
 	if err != nil {
 		return logger.NewError(9999, err)
 	}
 	defer szDiagnostic.Destroy(ctx)
 
-	szEngine, err := szAbstractFactory.CreateEngine(ctx)
+	szEngine, err := szAbstractFactory.CreateSzEngine(ctx)
 	if err != nil {
 		return logger.NewError(9999, err)
 	}
 	defer szEngine.Destroy(ctx)
 
-	szProduct, err := szAbstractFactory.CreateProduct(ctx)
+	szProduct, err := szAbstractFactory.CreateSzProduct(ctx)
 	if err != nil {
 		return logger.NewError(9999, err)
 	}
