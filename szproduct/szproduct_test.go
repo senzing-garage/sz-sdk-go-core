@@ -87,6 +87,7 @@ func TestSzProduct_Initialize(test *testing.T) {
 	instanceName := "Test name"
 	settings, err := getSettings()
 	testError(test, err)
+	verboseLogging := sz.SZ_NO_LOGGING
 	err = szProduct.Initialize(ctx, instanceName, settings, verboseLogging)
 	testError(test, err)
 }

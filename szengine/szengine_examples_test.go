@@ -86,7 +86,7 @@ func ExampleSzengine_CountRedoRecords() {
 		fmt.Println(err)
 	}
 	fmt.Println(result)
-	// Output: 1
+	// Output: 0
 }
 
 func ExampleSzengine_DeleteRecord() {
@@ -496,7 +496,7 @@ func ExampleSzengine_PrimeEngine() {
 }
 
 func ExampleSzEngine_ProcessRedoRecord() {
-	// TODO: Uncomment after it has been implemented
+	// TODO: Uncomment after it has been implemented.
 	// // For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	// ctx := context.TODO()
 	// szEngine := getSzEngine(ctx)
@@ -587,38 +587,6 @@ func ExampleSzengine_ReevaluateRecord_withInfo() {
 	}
 	fmt.Println(result)
 	// Output: {"DATA_SOURCE":"CUSTOMERS","RECORD_ID":"1001","AFFECTED_ENTITIES":[{"ENTITY_ID":1}],"INTERESTING_ENTITIES":{"ENTITIES":[]}}
-}
-
-func ExampleSzengine_ReplaceRecord() {
-	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
-	ctx := context.TODO()
-	szEngine := getSzEngine(ctx)
-	dataSourceCode := "CUSTOMERS"
-	recordId := "1001"
-	recordDefinition := `{"DATA_SOURCE": "CUSTOMERS", "RECORD_ID": "1001", "RECORD_TYPE": "PERSON", "PRIMARY_NAME_LAST": "Smith", "PRIMARY_NAME_FIRST": "Robert", "DATE_OF_BIRTH": "12/11/1978", "ADDR_TYPE": "MAILING", "ADDR_LINE1": "123 Main Street, Las Vegas NV 89132", "PHONE_TYPE": "HOME", "PHONE_NUMBER": "702-919-1300", "EMAIL_ADDRESS": "bsmith@work.com", "DATE": "1/2/18", "STATUS": "Active", "AMOUNT": "100"}`
-	flags := sz.SZ_WITHOUT_INFO
-	result, err := szEngine.ReplaceRecord(ctx, dataSourceCode, recordId, recordDefinition, flags)
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println(result)
-	// Output: {}
-}
-
-func ExampleSzengine_ReplaceRecord_withInfo() {
-	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
-	ctx := context.TODO()
-	szEngine := getSzEngine(ctx)
-	dataSourceCode := "CUSTOMERS"
-	recordId := "1001"
-	recordDefinition := `{"DATA_SOURCE": "CUSTOMERS", "RECORD_ID": "1001", "RECORD_TYPE": "PERSON", "PRIMARY_NAME_LAST": "Smith", "PRIMARY_NAME_FIRST": "Robert", "DATE_OF_BIRTH": "12/11/1978", "ADDR_TYPE": "MAILING", "ADDR_LINE1": "123 Main Street, Las Vegas NV 89132", "PHONE_TYPE": "HOME", "PHONE_NUMBER": "702-919-1300", "EMAIL_ADDRESS": "bsmith@work.com", "DATE": "1/2/18", "STATUS": "Active", "AMOUNT": "100"}`
-	flags := sz.SZ_WITH_INFO
-	result, err := szEngine.ReplaceRecord(ctx, dataSourceCode, recordId, recordDefinition, flags)
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println(result)
-	// Output: {"DATA_SOURCE":"CUSTOMERS","RECORD_ID":"1001","AFFECTED_ENTITIES":[],"INTERESTING_ENTITIES":{"ENTITIES":[]}}
 }
 
 func ExampleSzengine_SearchByAttributes() {
@@ -735,7 +703,7 @@ func ExampleSzengine_Initialize() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	verboseLogging := int64(0)
+	verboseLogging := sz.SZ_NO_LOGGING
 	configId := sz.SZ_INITIALIZE_WITH_DEFAULT_CONFIGURATION
 	err = szEngine.Initialize(ctx, instanceName, settings, configId, verboseLogging)
 	if err != nil {
@@ -760,7 +728,7 @@ func ExampleSzEngine_Reinitialize() {
 	// Output:
 }
 
-func ExampleSzEngine_Destroy() {
+func ExampleSzengine_Destroy() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
 	szEngine := getSzEngine(ctx)

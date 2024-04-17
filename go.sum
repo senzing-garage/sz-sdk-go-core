@@ -20,8 +20,8 @@ github.com/senzing-garage/go-messaging v1.4.0 h1:XNnOsx4yHslhggNJkZD+p3/Fv/zwhbx
 github.com/senzing-garage/go-messaging v1.4.0/go.mod h1:V/B3SZSZY7cw2Nc7rZQkLaJu/PRyDA4AbviccDRjW1I=
 github.com/senzing-garage/go-observing v0.3.0 h1:uWKZtiW4dwQJx8i7Y+7QrdrBJ8NPSOTZu2+6q0gy1DI=
 github.com/senzing-garage/go-observing v0.3.0/go.mod h1:Bxl4c7G9hQ8iqSxZp/omolUhmkEdrbCzLt0s0VkPdnw=
-github.com/senzing-garage/sz-sdk-go v0.11.2-0.20240417134454-168cacac3e78 h1:Ab+fffZsamYSg/ZMFwvCuAff+Wqzv5i67wtcyaeuroY=
-github.com/senzing-garage/sz-sdk-go v0.11.2-0.20240417134454-168cacac3e78/go.mod h1:L/d0Oy6JO5B+o5FI5kuHzYseWSq3YJUbLChF50YUUFY=
+github.com/senzing-garage/sz-sdk-go v0.11.2-0.20240417201722-795456c22f04 h1:9tq1fPf7qIcbYPYYPo6mo0BUHjXEjNsZ1zFP4kJIrR0=
+github.com/senzing-garage/sz-sdk-go v0.11.2-0.20240417201722-795456c22f04/go.mod h1:L/d0Oy6JO5B+o5FI5kuHzYseWSq3YJUbLChF50YUUFY=
 github.com/stretchr/testify v1.9.0 h1:HtqpIVDClZ4nwg75+f6Lvsy/wHu+3BoSGCbBAcpTsTg=
 github.com/stretchr/testify v1.9.0/go.mod h1:r2ic/lqez/lEtzL7wO/rwa5dbSLXVDPFyf8C91i36aY=
 golang.org/x/exp v0.0.0-20240416160154-fe59bbe5cc7f h1:99ci1mjWVBWwJiEKYY6jWa4d2nTQVIEhZIptnrVb1XY=

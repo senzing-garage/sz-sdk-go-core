@@ -545,38 +545,6 @@ func TestSzEngine_ReevaluateRecord_withInfo(test *testing.T) {
 	printActual(test, actual)
 }
 
-func TestSzEngine_ReplaceRecord(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
-	dataSourceCode := "CUSTOMERS"
-	recordId := "1001"
-	recordDefinition := `{"SOCIAL_HANDLE": "flavorh", "DATE_OF_BIRTH": "4/8/1984", "ADDR_STATE": "LA", "ADDR_POSTAL_CODE": "71232", "SSN_NUMBER": "053-39-3251", "ENTITY_TYPE": "CUSTOMERS", "GENDER": "F", "srccode": "MDMPER", "CC_ACCOUNT_NUMBER": "5534202208773608", "RECORD_ID": "1001", "DSRC_ACTION": "A", "ADDR_CITY": "Delhi", "DRIVERS_LICENSE_STATE": "DE", "PHONE_NUMBER": "225-671-0796", "NAME_LAST": "JOHNSON", "entityid": "284430058", "ADDR_LINE1": "772 Armstrong RD"}`
-	flags := sz.SZ_WITHOUT_INFO
-	actual, err := szEngine.ReplaceRecord(ctx, dataSourceCode, recordId, recordDefinition, flags)
-	testError(test, err)
-	printActual(test, actual)
-	record := truthset.CustomerRecords["1001"]
-	actual, err = szEngine.ReplaceRecord(ctx, record.DataSource, record.Id, record.Json, flags)
-	testError(test, err)
-	printActual(test, actual)
-}
-
-func TestSzEngine_ReplaceRecord_withInfo(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
-	dataSourceCode := "CUSTOMERS"
-	recordId := "1001"
-	recordDefinition := `{"SOCIAL_HANDLE": "flavorh", "DATE_OF_BIRTH": "4/8/1985", "ADDR_STATE": "LA", "ADDR_POSTAL_CODE": "71232", "SSN_NUMBER": "053-39-3251", "ENTITY_TYPE": "CUSTOMERS", "GENDER": "F", "srccode": "MDMPER", "CC_ACCOUNT_NUMBER": "5534202208773608", "RECORD_ID": "1001", "DSRC_ACTION": "A", "ADDR_CITY": "Delhi", "DRIVERS_LICENSE_STATE": "DE", "PHONE_NUMBER": "225-671-0796", "NAME_LAST": "JOHNSON", "entityid": "284430058", "ADDR_LINE1": "772 Armstrong RD"}`
-	flags := sz.SZ_WITH_INFO
-	actual, err := szEngine.ReplaceRecord(ctx, dataSourceCode, recordId, recordDefinition, flags)
-	testError(test, err)
-	printActual(test, actual)
-	record := truthset.CustomerRecords["1001"]
-	actual, err = szEngine.ReplaceRecord(ctx, record.DataSource, record.Id, record.Json, flags)
-	testError(test, err)
-	printActual(test, actual)
-}
-
 func TestSzEngine_SearchByAttributes(test *testing.T) {
 	ctx := context.TODO()
 	szEngine := getTestObject(ctx, test)
@@ -665,7 +633,7 @@ func TestSzEngine_GetObserverOrigin(test *testing.T) {
 // ----------------------------------------------------------------------------
 
 func TestSzEngine_AsInterface(test *testing.T) {
-	expected := int64(1)
+	expected := int64(0)
 	ctx := context.TODO()
 	szEngine := getSzEngineAsInterface(ctx)
 	actual, err := szEngine.CountRedoRecords(ctx)

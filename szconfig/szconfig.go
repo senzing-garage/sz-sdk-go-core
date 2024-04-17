@@ -444,7 +444,7 @@ func (client *Szconfig) RegisterObserver(ctx context.Context, observer observer.
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
-				"observerID": observer.GetObserverId(ctx),
+				"observerId": observer.GetObserverId(ctx),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8011, err, details)
 		}()
@@ -457,7 +457,7 @@ The SetLogLevel method sets the level of logging.
 
 Input
   - ctx: A context to control lifecycle.
-  - logLevel: The desired log level. TRACE, DEBUG, INFO, WARN, ERROR, FATAL or PANIC.
+  - logLevelName: The desired log level. TRACE, DEBUG, INFO, WARN, ERROR, FATAL or PANIC.
 */
 func (client *Szconfig) SetLogLevel(ctx context.Context, logLevelName string) error {
 	runtime.LockOSThread()
@@ -515,7 +515,7 @@ func (client *Szconfig) UnregisterObserver(ctx context.Context, observer observe
 		// In client.notify, each observer will get notified in a goroutine.
 		// Then client.observers may be set to nil, but observer goroutines will be OK.
 		details := map[string]string{
-			"observerID": observer.GetObserverId(ctx),
+			"observerId": observer.GetObserverId(ctx),
 		}
 		notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8013, err, details)
 	}

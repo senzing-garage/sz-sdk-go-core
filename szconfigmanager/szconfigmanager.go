@@ -50,7 +50,7 @@ The AddConfig method adds a Senzing configuration JSON document to the Senzing d
 
 Input
   - ctx: A context to control lifecycle.
-  - configStr: The Senzing configuration JSON document.
+  - configDefinition: The Senzing configuration JSON document.
   - configComment: A free-form string describing the configuration document.
 
 Output
@@ -124,7 +124,7 @@ The GetConfig method retrieves a specific Senzing configuration JSON document fr
 
 Input
   - ctx: A context to control lifecycle.
-  - configID: The configuration identifier of the desired Senzing Engine configuration JSON document to retrieve.
+  - configId: The configuration identifier of the desired Senzing Engine configuration JSON document to retrieve.
 
 Output
   - A JSON document containing the Senzing configuration.
@@ -229,13 +229,13 @@ func (client *Szconfigmanager) GetDefaultConfigId(ctx context.Context) (int64, e
 /*
 The ReplaceDefaultConfigId method replaces the old configuration identifier with a new configuration identifier in the Senzing database.
 It is like a "compare-and-swap" instruction to serialize concurrent editing of configuration.
-If oldConfigID is no longer the "old configuration identifier", the operation will fail.
+If currentDefaultConfigId is no longer the "old configuration identifier", the operation will fail.
 To simply set the default configuration ID, use SetDefaultConfigId().
 
 Input
   - ctx: A context to control lifecycle.
-  - oldConfigID: The configuration identifier to replace.
-  - newConfigID: The configuration identifier to use as the default.
+  - currentDefaultConfigId: The configuration identifier to replace.
+  - newDefaultConfigId: The configuration identifier to use as the default.
 */
 func (client *Szconfigmanager) ReplaceDefaultConfigId(ctx context.Context, currentDefaultConfigId int64, newDefaultConfigId int64) error {
 	// _DLEXPORT int G2ConfigMgr_replaceDefaultConfigID(const long long oldConfigID, const long long newConfigID);
@@ -264,11 +264,11 @@ func (client *Szconfigmanager) ReplaceDefaultConfigId(ctx context.Context, curre
 
 /*
 The SetDefaultConfigId method replaces the sets a new configuration identifier in the Senzing database.
-To serialize modifying of the configuration identifier, see ReplaceDefaultConfigID().
+To serialize modifying of the configuration identifier, see ReplaceDefaultConfigId().
 
 Input
   - ctx: A context to control lifecycle.
-  - configID: The configuration identifier of the Senzing Engine configuration to use as the default.
+  - configId: The configuration identifier of the Senzing Engine configuration to use as the default.
 */
 func (client *Szconfigmanager) SetDefaultConfigId(ctx context.Context, configId int64) error {
 	// _DLEXPORT int G2ConfigMgr_setDefaultConfigID(const long long configID);
@@ -342,8 +342,8 @@ It must be called prior to any other calls.
 
 Input
   - ctx: A context to control lifecycle.
-  - moduleName: A name for the auditing node, to help identify it within system logs.
-  - iniParams: A JSON string containing configuration parameters.
+  - instanceName: A name for the auditing node, to help identify it within system logs.
+  - settings: A JSON string containing configuration parameters.
   - verboseLogging: A flag to enable deeper logging of the G2 processing. 0 for no Senzing logging; 1 for logging.
 */
 func (client *Szconfigmanager) Initialize(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
@@ -398,7 +398,7 @@ func (client *Szconfigmanager) RegisterObserver(ctx context.Context, observer ob
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
-				"observerID": observer.GetObserverId(ctx),
+				"observerId": observer.GetObserverId(ctx),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8010, err, details)
 		}()
@@ -411,7 +411,7 @@ The SetLogLevel method sets the level of logging.
 
 Input
   - ctx: A context to control lifecycle.
-  - logLevel: The desired log level. TRACE, DEBUG, INFO, WARN, ERROR, FATAL or PANIC.
+  - logLevelName: The desired log level. TRACE, DEBUG, INFO, WARN, ERROR, FATAL or PANIC.
 */
 func (client *Szconfigmanager) SetLogLevel(ctx context.Context, logLevelName string) error {
 	runtime.LockOSThread()
@@ -469,7 +469,7 @@ func (client *Szconfigmanager) UnregisterObserver(ctx context.Context, observer 
 		// In client.notify, each observer will get notified in a goroutine.
 		// Then client.observers may be set to nil, but observer goroutines will be OK.
 		details := map[string]string{
-			"observerID": observer.GetObserverId(ctx),
+			"observerId": observer.GetObserverId(ctx),
 		}
 		notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8012, err, details)
 	}

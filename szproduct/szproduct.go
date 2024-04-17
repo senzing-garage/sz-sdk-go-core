@@ -158,7 +158,7 @@ func (client *Szproduct) GetObserverOrigin(ctx context.Context) string {
 
 /*
 The GetSdkId method returns the identifier of this particular Software Development Kit (SDK).
-It is handy when working with multiple implementations of the same szProduct interface.
+It is handy when working with multiple implementations of the same SzProduct interface.
 For this implementation, "base" is returned.
 
 Input
@@ -242,7 +242,7 @@ func (client *Szproduct) RegisterObserver(ctx context.Context, observer observer
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
-				"observerID": observer.GetObserverId(ctx),
+				"observerId": observer.GetObserverId(ctx),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8008, err, details)
 		}()
@@ -313,7 +313,7 @@ func (client *Szproduct) UnregisterObserver(ctx context.Context, observer observ
 		// In client.notify, each observer will get notified in a goroutine.
 		// Then client.observers may be set to nil, but observer goroutines will be OK.
 		details := map[string]string{
-			"observerID": observer.GetObserverId(ctx),
+			"observerId": observer.GetObserverId(ctx),
 		}
 		notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8010, err, details)
 	}
