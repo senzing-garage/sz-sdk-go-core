@@ -33,7 +33,6 @@ import (
 	"github.com/senzing-garage/sz-sdk-go/szerror"
 )
 
-// Szdiagnostic is the default implementation of the Szdiagnostic interface.
 type Szdiagnostic struct {
 	isTrace        bool
 	logger         logging.LoggingInterface
@@ -44,7 +43,7 @@ type Szdiagnostic struct {
 const initialByteArraySize = 65535
 
 // ----------------------------------------------------------------------------
-// Interface methods
+// sz-sdk-go.SzDiagnostic interface methods
 // ----------------------------------------------------------------------------
 
 /*

@@ -32,7 +32,6 @@ import (
 	"github.com/senzing-garage/sz-sdk-go/szerror"
 )
 
-// Szconfigmanager is the default implementation of the Szconfigmanager interface.
 type Szconfigmanager struct {
 	isTrace        bool
 	logger         logging.LoggingInterface
@@ -43,7 +42,7 @@ type Szconfigmanager struct {
 const initialByteArraySize = 65535
 
 // ----------------------------------------------------------------------------
-// Interface methods
+// sz-sdk-go.SzConfigManager interface methods
 // ----------------------------------------------------------------------------
 
 /*

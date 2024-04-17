@@ -33,7 +33,6 @@ import (
 	"github.com/senzing-garage/sz-sdk-go/szerror"
 )
 
-// Szengine is the default implementation of the Szengine interface.
 type Szengine struct {
 	isTrace        bool
 	logger         logging.LoggingInterface
@@ -44,7 +43,7 @@ type Szengine struct {
 const initialByteArraySize = 65535
 
 // ----------------------------------------------------------------------------
-// Interface methods
+// sz-sdk-go.SzEngine interface methods
 // ----------------------------------------------------------------------------
 
 /*
@@ -1463,7 +1462,7 @@ func (client *Szengine) getByteArray(size int) []byte {
 }
 
 // ----------------------------------------------------------------------------
-// Delegated methods for interface methods
+// Private, delegated methods for interface methods
 // ----------------------------------------------------------------------------
 
 /*

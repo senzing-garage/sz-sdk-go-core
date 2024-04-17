@@ -32,7 +32,6 @@ import (
 	szproductapi "github.com/senzing-garage/sz-sdk-go/szproduct"
 )
 
-// Szproduct is an implementation of the SzProduct interface.
 type Szproduct struct {
 	isTrace        bool
 	logger         logging.LoggingInterface
@@ -43,7 +42,7 @@ type Szproduct struct {
 const initialByteArraySize = 65535
 
 // ----------------------------------------------------------------------------
-// Interface methods
+// sz-sdk-go.SzProduct interface methods
 // ----------------------------------------------------------------------------
 
 /*
