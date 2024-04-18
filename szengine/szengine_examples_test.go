@@ -716,7 +716,7 @@ func ExampleSzengine_Initialize_withConfigId() {
 	// TODO: Implement ExampleSzEngine_Initialize_withConfigId
 }
 
-func ExampleSzEngine_Reinitialize() {
+func ExampleSzengine_Reinitialize() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
 	szEngine := getSzEngine(ctx)

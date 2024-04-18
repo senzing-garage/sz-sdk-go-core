@@ -274,7 +274,7 @@ func (client *Szproduct) SetLogLevel(ctx context.Context, logLevelName string) e
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
-				"logLevel": logLevelName,
+				"logLevelName": logLevelName,
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8009, err, details)
 		}()

@@ -83,7 +83,7 @@ func (client *Szconfig) AddDataSource(ctx context.Context, configHandle uintptr,
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
-				"inputJson": dataSourceCode,
+				"dataSourceCode": dataSourceCode,
 				"return":    resultResponse,
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8001, err, details)
@@ -190,7 +190,7 @@ func (client *Szconfig) DeleteDataSource(ctx context.Context, configHandle uintp
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
-				"inputJson": dataSourceCode,
+				"dataSourceCode": dataSourceCode,
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8004, err, details)
 		}()

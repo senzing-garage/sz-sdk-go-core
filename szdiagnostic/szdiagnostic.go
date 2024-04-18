@@ -172,7 +172,7 @@ func (client *Szdiagnostic) Reinitialize(ctx context.Context, configId int64) er
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
-				"initConfigId": strconv.FormatInt(configId, 10),
+				"configId": strconv.FormatInt(configId, 10),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8023, err, details)
 		}()

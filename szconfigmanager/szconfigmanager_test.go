@@ -99,7 +99,7 @@ func TestSzconfigmanager_ReplaceDefaultConfigId(test *testing.T) {
 	currentDefaultConfigId, err1 := szConfigManager.GetDefaultConfigId(ctx)
 	if err1 != nil {
 		test.Log("Error:", err1.Error())
-		assert.FailNow(test, "szConfigManager.GetDefaultConfigID()")
+		assert.FailNow(test, "szConfigManager.GetDefaultConfigId()")
 	}
 
 	// TODO: This is kind of a cheater.
@@ -152,8 +152,8 @@ func TestSzconfigmanager_GetObserverOrigin(test *testing.T) {
 
 func TestSzconfigmanager_AsInterface(test *testing.T) {
 	ctx := context.TODO()
-	szconfigmanager := getSzConfigManagerAsInterface(ctx)
-	actual, err := szconfigmanager.GetConfigList(ctx)
+	szConfigManager := getSzConfigManagerAsInterface(ctx)
+	actual, err := szConfigManager.GetConfigList(ctx)
 	testError(test, err)
 	printActual(test, actual)
 }

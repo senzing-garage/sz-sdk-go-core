@@ -254,7 +254,7 @@ func (client *Szconfigmanager) ReplaceDefaultConfigId(ctx context.Context, curre
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
-				"newConfigID": strconv.FormatInt(newDefaultConfigId, 10),
+				"newDefaultConfigId": strconv.FormatInt(newDefaultConfigId, 10),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8007, err, details)
 		}()
@@ -287,7 +287,7 @@ func (client *Szconfigmanager) SetDefaultConfigId(ctx context.Context, configId 
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
-				"configID": strconv.FormatInt(configId, 10),
+				"configId": strconv.FormatInt(configId, 10),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8008, err, details)
 		}()
@@ -430,7 +430,7 @@ func (client *Szconfigmanager) SetLogLevel(ctx context.Context, logLevelName str
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
-				"logLevel": logLevelName,
+				"logLevelName": logLevelName,
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8011, err, details)
 		}()

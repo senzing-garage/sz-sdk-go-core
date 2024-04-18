@@ -695,6 +695,10 @@ func getDefaultConfigId() int64 {
 	return defaultConfigId
 }
 
+func getEntityId(record record.Record) int64 {
+	return getEntityIdForRecord(record.DataSource, record.Id)
+}
+
 func getEntityIdForRecord(datasource string, id string) int64 {
 	ctx := context.TODO()
 	var result int64 = 0
@@ -711,17 +715,13 @@ func getEntityIdForRecord(datasource string, id string) int64 {
 	return getEntityByRecordIdResponse.ResolvedEntity.EntityId
 }
 
-func getEntityIdStringForRecord(datasource string, id string) string {
-	entityId := getEntityIdForRecord(datasource, id)
+func getEntityIdString(record record.Record) string {
+	entityId := getEntityId(record)
 	return strconv.FormatInt(entityId, 10)
 }
 
-func getEntityId(record record.Record) int64 {
-	return getEntityIdForRecord(record.DataSource, record.Id)
-}
-
-func getEntityIdString(record record.Record) string {
-	entityId := getEntityId(record)
+func getEntityIdStringForRecord(datasource string, id string) string {
+	entityId := getEntityIdForRecord(datasource, id)
 	return strconv.FormatInt(entityId, 10)
 }
 

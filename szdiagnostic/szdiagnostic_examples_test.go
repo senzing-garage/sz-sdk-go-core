@@ -81,7 +81,7 @@ func ExampleSzdiagnostic_Initialize() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
 	ctx := context.TODO()
 	szDiagnostic := &Szdiagnostic{}
-	instanceName := "Test module name"
+	instanceName := "Test name"
 	settings, err := getSettings()
 	if err != nil {
 		fmt.Println(err)
@@ -107,7 +107,7 @@ func ExampleSzdiagnostic_Reinitialize() {
 	// Output:
 }
 
-func ExampleSzDiagnostic_Destroy() {
+func ExampleSzdiagnostic_Destroy() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
 	ctx := context.TODO()
 	szDiagnostic := getSzDiagnostic(ctx)

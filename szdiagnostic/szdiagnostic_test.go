@@ -91,7 +91,7 @@ func TestSzdiagnostic_AsInterface(test *testing.T) {
 func TestSzdiagnostic_Initialize(test *testing.T) {
 	ctx := context.TODO()
 	szDiagnostic := &Szdiagnostic{}
-	instanceName := "Test module name"
+	instanceName := "Test name"
 	settings, err := getSettings()
 	testError(test, err)
 	verboseLogging := sz.SZ_NO_LOGGING
@@ -100,10 +100,10 @@ func TestSzdiagnostic_Initialize(test *testing.T) {
 	testError(test, err)
 }
 
-func TestSzdiagnostic_Initialize_WithConfigId(test *testing.T) {
+func TestSzdiagnostic_Initialize_withConfigId(test *testing.T) {
 	ctx := context.TODO()
 	szDiagnostic := &Szdiagnostic{}
-	instanceName := "Test module name"
+	instanceName := "Test name"
 	settings, err := getSettings()
 	testError(test, err)
 	verboseLogging := sz.SZ_NO_LOGGING
