@@ -39,7 +39,7 @@ var (
 // Interface functions - test
 // ----------------------------------------------------------------------------
 
-func TestSzDiagnostic_CheckDatabasePerformance(test *testing.T) {
+func TestSzdiagnostic_CheckDatabasePerformance(test *testing.T) {
 	ctx := context.TODO()
 	szDiagnostic := getTestObject(ctx, test)
 	secondsToRun := 1
@@ -48,7 +48,7 @@ func TestSzDiagnostic_CheckDatabasePerformance(test *testing.T) {
 	printActual(test, actual)
 }
 
-func TestSzDiagnostic_PurgeRepository(test *testing.T) {
+func TestSzdiagnostic_PurgeRepository(test *testing.T) {
 	ctx := context.TODO()
 	szDiagnostic := getTestObject(ctx, test)
 	err := szDiagnostic.PurgeRepository(ctx)
@@ -59,14 +59,14 @@ func TestSzDiagnostic_PurgeRepository(test *testing.T) {
 // Logging and observing
 // ----------------------------------------------------------------------------
 
-func TestSzDiagnostic_SetObserverOrigin(test *testing.T) {
+func TestSzdiagnostic_SetObserverOrigin(test *testing.T) {
 	ctx := context.TODO()
 	szDiagnostic := getTestObject(ctx, test)
 	origin := "Machine: nn; Task: UnitTest"
 	szDiagnostic.SetObserverOrigin(ctx, origin)
 }
 
-func TestSzDiagnostic_GetObserverOrigin(test *testing.T) {
+func TestSzdiagnostic_GetObserverOrigin(test *testing.T) {
 	ctx := context.TODO()
 	szDiagnostic := getTestObject(ctx, test)
 	origin := "Machine: nn; Task: UnitTest"
@@ -79,7 +79,7 @@ func TestSzDiagnostic_GetObserverOrigin(test *testing.T) {
 // Object creation / destruction
 // ----------------------------------------------------------------------------
 
-func TestSzDiagnostic_AsInterface(test *testing.T) {
+func TestSzdiagnostic_AsInterface(test *testing.T) {
 	ctx := context.TODO()
 	szDiagnostic := getSzDiagnosticAsInterface(ctx)
 	secondsToRun := 1
@@ -88,7 +88,7 @@ func TestSzDiagnostic_AsInterface(test *testing.T) {
 	printActual(test, actual)
 }
 
-func TestSzDiagnostic_Initialize(test *testing.T) {
+func TestSzdiagnostic_Initialize(test *testing.T) {
 	ctx := context.TODO()
 	szDiagnostic := &Szdiagnostic{}
 	instanceName := "Test module name"
@@ -100,7 +100,7 @@ func TestSzDiagnostic_Initialize(test *testing.T) {
 	testError(test, err)
 }
 
-func TestSzDiagnostic_Initialize_WithConfigId(test *testing.T) {
+func TestSzdiagnostic_Initialize_WithConfigId(test *testing.T) {
 	ctx := context.TODO()
 	szDiagnostic := &Szdiagnostic{}
 	instanceName := "Test module name"
@@ -112,7 +112,7 @@ func TestSzDiagnostic_Initialize_WithConfigId(test *testing.T) {
 	testError(test, err)
 }
 
-func TestSzDiagnostic_Reinitialize(test *testing.T) {
+func TestSzdiagnostic_Reinitialize(test *testing.T) {
 	ctx := context.TODO()
 	szDiagnostic := getTestObject(ctx, test)
 	configId := getDefaultConfigId()
@@ -120,7 +120,7 @@ func TestSzDiagnostic_Reinitialize(test *testing.T) {
 	testErrorNoFail(test, err)
 }
 
-func TestSzDiagnostic_Destroy(test *testing.T) {
+func TestSzdiagnostic_Destroy(test *testing.T) {
 	ctx := context.TODO()
 	szDiagnostic := getTestObject(ctx, test)
 	err := szDiagnostic.Destroy(ctx)

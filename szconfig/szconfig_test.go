@@ -33,7 +33,7 @@ var (
 // Interface functions - test
 // ----------------------------------------------------------------------------
 
-func TestSzConfig_AddDataSource(test *testing.T) {
+func TestSzconfig_AddDataSource(test *testing.T) {
 	ctx := context.TODO()
 	szConfig := getTestObject(ctx, test)
 	configHandle, err := szConfig.CreateConfig(ctx)
@@ -46,7 +46,7 @@ func TestSzConfig_AddDataSource(test *testing.T) {
 	testError(test, err)
 }
 
-func TestSzConfig_AddDataSource_withLoad(test *testing.T) {
+func TestSzconfig_AddDataSource_withLoad(test *testing.T) {
 	ctx := context.TODO()
 	szConfig := getTestObject(ctx, test)
 	configHandle, err := szConfig.CreateConfig(ctx)
@@ -65,7 +65,7 @@ func TestSzConfig_AddDataSource_withLoad(test *testing.T) {
 	testError(test, err)
 }
 
-func TestSzConfig_CloseConfig(test *testing.T) {
+func TestSzconfig_CloseConfig(test *testing.T) {
 	ctx := context.TODO()
 	szConfig := getTestObject(ctx, test)
 	configHandle, err := szConfig.CreateConfig(ctx)
@@ -74,7 +74,7 @@ func TestSzConfig_CloseConfig(test *testing.T) {
 	testError(test, err)
 }
 
-func TestSzConfig_CreateConfig(test *testing.T) {
+func TestSzconfig_CreateConfig(test *testing.T) {
 	ctx := context.TODO()
 	szConfig := getTestObject(ctx, test)
 	actual, err := szConfig.CreateConfig(ctx)
@@ -82,7 +82,7 @@ func TestSzConfig_CreateConfig(test *testing.T) {
 	printActual(test, actual)
 }
 
-func TestSzConfig_DeleteDataSource(test *testing.T) {
+func TestSzconfig_DeleteDataSource(test *testing.T) {
 	ctx := context.TODO()
 	szConfig := getTestObject(ctx, test)
 	configHandle, err := szConfig.CreateConfig(ctx)
@@ -105,7 +105,7 @@ func TestSzConfig_DeleteDataSource(test *testing.T) {
 	testError(test, err)
 }
 
-func TestSzConfig_DeleteDataSource_withLoad(test *testing.T) {
+func TestSzconfig_DeleteDataSource_withLoad(test *testing.T) {
 	ctx := context.TODO()
 	szConfig := getTestObject(ctx, test)
 	configHandle, err := szConfig.CreateConfig(ctx)
@@ -134,7 +134,7 @@ func TestSzConfig_DeleteDataSource_withLoad(test *testing.T) {
 	testError(test, err)
 }
 
-func TestSzConfig_ExportConfig(test *testing.T) {
+func TestSzconfig_ExportConfig(test *testing.T) {
 	ctx := context.TODO()
 	szConfig := getTestObject(ctx, test)
 	configHandle, err := szConfig.CreateConfig(ctx)
@@ -144,7 +144,7 @@ func TestSzConfig_ExportConfig(test *testing.T) {
 	printActual(test, actual)
 }
 
-func TestSzConfig_GetDataSources(test *testing.T) {
+func TestSzconfig_GetDataSources(test *testing.T) {
 	ctx := context.TODO()
 	szConfig := getTestObject(ctx, test)
 	configHandle, err := szConfig.CreateConfig(ctx)
@@ -156,7 +156,7 @@ func TestSzConfig_GetDataSources(test *testing.T) {
 	testError(test, err)
 }
 
-func TestSzConfig_ImportConfig(test *testing.T) {
+func TestSzconfig_ImportConfig(test *testing.T) {
 	ctx := context.TODO()
 	szConfig := getTestObject(ctx, test)
 	configHandle, err := szConfig.CreateConfig(ctx)
@@ -172,14 +172,14 @@ func TestSzConfig_ImportConfig(test *testing.T) {
 // Logging and observing
 // ----------------------------------------------------------------------------
 
-func TestSzConfig_SetObserverOrigin(test *testing.T) {
+func TestSzconfig_SetObserverOrigin(test *testing.T) {
 	ctx := context.TODO()
 	szConfig := getTestObject(ctx, test)
 	origin := "Machine: nn; Task: UnitTest"
 	szConfig.SetObserverOrigin(ctx, origin)
 }
 
-func TestSzConfig_GetObserverOrigin(test *testing.T) {
+func TestSzconfig_GetObserverOrigin(test *testing.T) {
 	ctx := context.TODO()
 	szConfig := getTestObject(ctx, test)
 	origin := "Machine: nn; Task: UnitTest"
@@ -192,7 +192,7 @@ func TestSzConfig_GetObserverOrigin(test *testing.T) {
 // Object creation / destruction
 // ----------------------------------------------------------------------------
 
-func TestSzConfig_AsInterface(test *testing.T) {
+func TestSzconfig_AsInterface(test *testing.T) {
 	ctx := context.TODO()
 	szConfig := getSzConfigAsInterface(ctx)
 	configHandle, err := szConfig.CreateConfig(ctx)
@@ -204,7 +204,7 @@ func TestSzConfig_AsInterface(test *testing.T) {
 	testError(test, err)
 }
 
-func TestSzConfig_Initialize(test *testing.T) {
+func TestSzconfig_Initialize(test *testing.T) {
 	ctx := context.TODO()
 	szConfig := getTestObject(ctx, test)
 	instanceName := "Test name"
@@ -215,7 +215,7 @@ func TestSzConfig_Initialize(test *testing.T) {
 	testError(test, err)
 }
 
-func TestSzConfig_Destroy(test *testing.T) {
+func TestSzconfig_Destroy(test *testing.T) {
 	ctx := context.TODO()
 	szConfig := getTestObject(ctx, test)
 	err := szConfig.Destroy(ctx)

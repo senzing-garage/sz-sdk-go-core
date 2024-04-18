@@ -33,7 +33,7 @@ var (
 // Interface functions - test
 // ----------------------------------------------------------------------------
 
-func TestSzProduct_GetLicense(test *testing.T) {
+func TestSzproduct_GetLicense(test *testing.T) {
 	ctx := context.TODO()
 	szProduct := getTestObject(ctx, test)
 	actual, err := szProduct.GetLicense(ctx)
@@ -41,7 +41,7 @@ func TestSzProduct_GetLicense(test *testing.T) {
 	printActual(test, actual)
 }
 
-func TestSzProduct_GetVersion(test *testing.T) {
+func TestSzproduct_GetVersion(test *testing.T) {
 	ctx := context.TODO()
 	szProduct := getTestObject(ctx, test)
 	actual, err := szProduct.GetVersion(ctx)
@@ -53,14 +53,14 @@ func TestSzProduct_GetVersion(test *testing.T) {
 // Logging and observing
 // ----------------------------------------------------------------------------
 
-func TestSzProduct_SetObserverOrigin(test *testing.T) {
+func TestSzproduct_SetObserverOrigin(test *testing.T) {
 	ctx := context.TODO()
 	szProduct := getTestObject(ctx, test)
 	origin := "Machine: nn; Task: UnitTest"
 	szProduct.SetObserverOrigin(ctx, origin)
 }
 
-func TestSzProduct_GetObserverOrigin(test *testing.T) {
+func TestSzproduct_GetObserverOrigin(test *testing.T) {
 	ctx := context.TODO()
 	szProduct := getTestObject(ctx, test)
 	origin := "Machine: nn; Task: UnitTest"
@@ -73,7 +73,7 @@ func TestSzProduct_GetObserverOrigin(test *testing.T) {
 // Object creation / destruction
 // ----------------------------------------------------------------------------
 
-func TestSzProduct_AsInterface(test *testing.T) {
+func TestSzproduct_AsInterface(test *testing.T) {
 	ctx := context.TODO()
 	szProduct := getSzProductAsInterface(ctx)
 	actual, err := szProduct.GetLicense(ctx)
@@ -81,7 +81,7 @@ func TestSzProduct_AsInterface(test *testing.T) {
 	printActual(test, actual)
 }
 
-func TestSzProduct_Initialize(test *testing.T) {
+func TestSzproduct_Initialize(test *testing.T) {
 	ctx := context.TODO()
 	szProduct := &Szproduct{}
 	instanceName := "Test name"
@@ -92,7 +92,7 @@ func TestSzProduct_Initialize(test *testing.T) {
 	testError(test, err)
 }
 
-func TestSzProduct_Destroy(test *testing.T) {
+func TestSzproduct_Destroy(test *testing.T) {
 	ctx := context.TODO()
 	szProduct := getTestObject(ctx, test)
 	err := szProduct.Destroy(ctx)

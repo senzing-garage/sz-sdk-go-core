@@ -37,7 +37,7 @@ var (
 // Interface functions - test
 // ----------------------------------------------------------------------------
 
-func TestSzConfigManager_AddConfig(test *testing.T) {
+func TestSzconfigmanager_AddConfig(test *testing.T) {
 	ctx := context.TODO()
 	szConfigManager := getTestObject(ctx, test)
 	now := time.Now()
@@ -64,7 +64,7 @@ func TestSzConfigManager_AddConfig(test *testing.T) {
 	printActual(test, actual)
 }
 
-func TestSzConfigManager_GetConfig(test *testing.T) {
+func TestSzconfigmanager_GetConfig(test *testing.T) {
 	ctx := context.TODO()
 	szConfigManager := getTestObject(ctx, test)
 	configId, err1 := szConfigManager.GetDefaultConfigId(ctx)
@@ -77,7 +77,7 @@ func TestSzConfigManager_GetConfig(test *testing.T) {
 	printActual(test, actual)
 }
 
-func TestSzConfigManager_GetConfigList(test *testing.T) {
+func TestSzconfigmanager_GetConfigList(test *testing.T) {
 	ctx := context.TODO()
 	szConfigManager := getTestObject(ctx, test)
 	actual, err := szConfigManager.GetConfigList(ctx)
@@ -85,7 +85,7 @@ func TestSzConfigManager_GetConfigList(test *testing.T) {
 	printActual(test, actual)
 }
 
-func TestSzConfigManager_GetDefaultConfigId(test *testing.T) {
+func TestSzconfigmanager_GetDefaultConfigId(test *testing.T) {
 	ctx := context.TODO()
 	szConfigManager := getTestObject(ctx, test)
 	actual, err := szConfigManager.GetDefaultConfigId(ctx)
@@ -93,7 +93,7 @@ func TestSzConfigManager_GetDefaultConfigId(test *testing.T) {
 	printActual(test, actual)
 }
 
-func TestSzConfigManager_ReplaceDefaultConfigId(test *testing.T) {
+func TestSzconfigmanager_ReplaceDefaultConfigId(test *testing.T) {
 	ctx := context.TODO()
 	szConfigManager := getTestObject(ctx, test)
 	currentDefaultConfigId, err1 := szConfigManager.GetDefaultConfigId(ctx)
@@ -114,7 +114,7 @@ func TestSzConfigManager_ReplaceDefaultConfigId(test *testing.T) {
 	testError(test, err)
 }
 
-func TestSzConfigManager_SetDefaultConfigId(test *testing.T) {
+func TestSzconfigmanager_SetDefaultConfigId(test *testing.T) {
 	ctx := context.TODO()
 	szConfigManager := getTestObject(ctx, test)
 	configId, err1 := szConfigManager.GetDefaultConfigId(ctx)
@@ -130,14 +130,14 @@ func TestSzConfigManager_SetDefaultConfigId(test *testing.T) {
 // Logging and observing
 // ----------------------------------------------------------------------------
 
-func TestSzConfigManager_SetObserverOrigin(test *testing.T) {
+func TestSzconfigmanager_SetObserverOrigin(test *testing.T) {
 	ctx := context.TODO()
 	szConfigManager := getTestObject(ctx, test)
 	origin := "Machine: nn; Task: UnitTest"
 	szConfigManager.SetObserverOrigin(ctx, origin)
 }
 
-func TestSzConfigManager_GetObserverOrigin(test *testing.T) {
+func TestSzconfigmanager_GetObserverOrigin(test *testing.T) {
 	ctx := context.TODO()
 	szConfigManager := getTestObject(ctx, test)
 	origin := "Machine: nn; Task: UnitTest"
@@ -150,7 +150,7 @@ func TestSzConfigManager_GetObserverOrigin(test *testing.T) {
 // Object creation / destruction
 // ----------------------------------------------------------------------------
 
-func TestSzConfigManager_AsInterface(test *testing.T) {
+func TestSzconfigmanager_AsInterface(test *testing.T) {
 	ctx := context.TODO()
 	szconfigmanager := getSzConfigManagerAsInterface(ctx)
 	actual, err := szconfigmanager.GetConfigList(ctx)
@@ -158,7 +158,7 @@ func TestSzConfigManager_AsInterface(test *testing.T) {
 	printActual(test, actual)
 }
 
-func TestSzConfigManager_Initialize(test *testing.T) {
+func TestSzconfigmanager_Initialize(test *testing.T) {
 	ctx := context.TODO()
 	szConfigManager := getTestObject(ctx, test)
 	instanceName := "Test name"
@@ -169,7 +169,7 @@ func TestSzConfigManager_Initialize(test *testing.T) {
 	testError(test, err)
 }
 
-func TestSzConfigManager_Destroy(test *testing.T) {
+func TestSzconfigmanager_Destroy(test *testing.T) {
 	ctx := context.TODO()
 	szConfigManager := getTestObject(ctx, test)
 	err := szConfigManager.Destroy(ctx)
