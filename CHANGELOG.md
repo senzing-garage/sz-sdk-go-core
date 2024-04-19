@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed in 0.7.0
 
+- Move from `g2-sdk-go-base` to `sz-sdk-go-core`
 - Updated dependencies
   - github.com/stretchr/testify v1.9.0
   - google.golang.org/grpc v1.63.2
