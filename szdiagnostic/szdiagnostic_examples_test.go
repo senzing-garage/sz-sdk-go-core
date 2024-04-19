@@ -45,7 +45,7 @@ func ExampleSzdiagnostic_PurgeRepository() {
 func ExampleSzdiagnostic_SetLogLevel() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
 	ctx := context.TODO()
-	szDiagnostic := &Szdiagnostic{}
+	szDiagnostic := getSzDiagnostic(ctx)
 	err := szDiagnostic.SetLogLevel(ctx, logging.LevelInfoName)
 	if err != nil {
 		fmt.Println(err)

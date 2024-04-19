@@ -7,7 +7,6 @@ import (
 	"fmt"
 
 	"github.com/senzing-garage/go-logging/logging"
-	"github.com/senzing-garage/sz-sdk-go-core/szconfig"
 	"github.com/senzing-garage/sz-sdk-go/sz"
 )
 
@@ -83,7 +82,7 @@ func ExampleSzconfigmanager_GetDefaultConfigId() {
 func ExampleSzconfigmanager_ReplaceDefaultConfigId() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfigmanager/szconfigmanager_examples_test.go
 	ctx := context.TODO()
-	szConfig := &szconfig.Szconfig{}
+	szConfig := getSzConfig(ctx)
 	configHandle, err := szConfig.CreateConfig(ctx)
 	if err != nil {
 		fmt.Println(err)

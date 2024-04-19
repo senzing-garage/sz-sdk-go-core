@@ -149,7 +149,7 @@ func ExampleSzengine_ExportCsvEntityReportIterator() {
 	// Output: RESOLVED_ENTITY_ID,RELATED_ENTITY_ID,MATCH_LEVEL_CODE,MATCH_KEY,DATA_SOURCE,RECORD_ID
 }
 
-func ExampleSzEngine_ExportJsonEntityReport() {
+func ExampleSzengine_ExportJsonEntityReport() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
 	szEngine := getSzEngine(ctx)
@@ -162,7 +162,7 @@ func ExampleSzEngine_ExportJsonEntityReport() {
 	// Output: true
 }
 
-func ExampleSzEngine_ExportJsonEntityReportIterator() {
+func ExampleSzengine_ExportJsonEntityReportIterator() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
 	szEngine := getSzEngine(ctx)
@@ -611,7 +611,7 @@ func ExampleSzEngine_SearchByAttributes_searchProfile() {
 func ExampleSzengine_WhyEntities() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	szEngine := &Szengine{}
+	szEngine := getSzEngine(ctx)
 	entityId1 := getEntityId(truthset.CustomerRecords["1001"])
 	entityId2 := getEntityId(truthset.CustomerRecords["1002"])
 	flags := sz.SZ_NO_FLAGS

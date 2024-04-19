@@ -84,7 +84,7 @@ func (client *Szconfig) AddDataSource(ctx context.Context, configHandle uintptr,
 		go func() {
 			details := map[string]string{
 				"dataSourceCode": dataSourceCode,
-				"return":    resultResponse,
+				"return":         resultResponse,
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8001, err, details)
 		}()

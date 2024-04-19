@@ -11,10 +11,6 @@ import (
 	"github.com/senzing-garage/sz-sdk-go/sz"
 )
 
-// ----------------------------------------------------------------------------
-// Types
-// ----------------------------------------------------------------------------
-
 // Szconfig is the default implementation of the Szconfig interface.
 type Szabstractfactory struct {
 	ConfigId       int64
