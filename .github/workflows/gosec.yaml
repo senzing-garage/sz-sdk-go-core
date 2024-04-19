@@ -28,7 +28,7 @@ jobs:
       - name: Install Senzing API
         uses: senzing-factory/github-action-install-senzing-api@v3
         with:
-          senzingapi-version: production-v3
+          senzingapi-runtime-version: staging-v4
 
       - run: |
           mkdir ./szconfig/gohelpers
