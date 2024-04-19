@@ -69,7 +69,7 @@ func (client *Szdiagnostic) CheckDatabasePerformance(ctx context.Context, second
 		client.traceEntry(1, secondsToRun)
 		defer func() { client.traceExit(2, secondsToRun, resultResponse, err, time.Since(entryTime)) }()
 	}
-	result := C.G2Diagnostic_checkDBPerf_helper(C.int(secondsToRun))
+	result := C.G2Diagnostic_checkDatastorePerformance_helper(C.int(secondsToRun))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4001, secondsToRun, result.returnCode, time.Since(entryTime))
 	}
