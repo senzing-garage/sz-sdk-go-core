@@ -60,27 +60,31 @@ Output
 */
 func (client *Szdiagnostic) CheckDatabasePerformance(ctx context.Context, secondsToRun int) (string, error) {
 	// _DLEXPORT int G2Diagnostic_checkDBPerf(int secondsToRun, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize) );
+	// TODO: Fix CheckDatabasePerformance
+
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error = nil
-	var resultResponse string
-	entryTime := time.Now()
-	if client.isTrace {
-		client.traceEntry(1, secondsToRun)
-		defer func() { client.traceExit(2, secondsToRun, resultResponse, err, time.Since(entryTime)) }()
-	}
-	result := C.G2Diagnostic_checkDatastorePerformance_helper(C.int(secondsToRun))
-	if result.returnCode != 0 {
-		err = client.newError(ctx, 4001, secondsToRun, result.returnCode, time.Since(entryTime))
-	}
-	resultResponse = C.GoString(result.response)
-	C.G2GoHelper_free(unsafe.Pointer(result.response))
-	if client.observers != nil {
-		go func() {
-			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8001, err, details)
-		}()
-	}
+	var resultResponse string = `{"numRecordsInserted":...` // TODO: Remove default value
+	// entryTime := time.Now()
+	// if client.isTrace {
+	// 	client.traceEntry(1, secondsToRun)
+	// 	defer func() { client.traceExit(2, secondsToRun, resultResponse, err, time.Since(entryTime)) }()
+	// }
+	// // TODO: result := C.G2Diagnostic_checkDatastorePerformance_helper(C.int(secondsToRun))
+	// result := C.G2Diagnostic_checkDBPerf_helper(C.int(secondsToRun))
+
+	// if result.returnCode != 0 {
+	// 	err = client.newError(ctx, 4001, secondsToRun, result.returnCode, time.Since(entryTime))
+	// }
+	// resultResponse = C.GoString(result.response)
+	// C.G2GoHelper_free(unsafe.Pointer(result.response))
+	// if client.observers != nil {
+	// 	go func() {
+	// 		details := map[string]string{}
+	// 		notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8001, err, details)
+	// 	}()
+	// }
 	return resultResponse, err
 }
 
