@@ -1,4 +1,4 @@
-# g2-sdk-go-base examples
+# sz-sdk-go-core examples
 
 ## Command line examples
 

@@ -9,7 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 -
--
+
+## [0.7.1] - 2024-04-26
+
+### Changed in 0.7.1
+
+## [0.7.0] - 2024-04-19
+
+### Changed in 0.7.0
+
+- Move from `g2-sdk-go-base` to `sz-sdk-go-core`
+- Updated dependencies
+  - github.com/stretchr/testify v1.9.0
+  - google.golang.org/grpc v1.63.2
 
 ## [0.6.1] - 2024-02-29
 
@@ -28,7 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed in 0.5.0
 
-- Renamed module to `github.com/senzing-garage/g2-sdk-go-base`
+- Renamed module to `github.com/senzing-garage/sz-sdk-go-core`
 - Refactor to [template-go](https://github.com/senzing-garage/template-go)
 - Update dependencies
   - github.com/senzing-garage/g2-sdk-go v0.9.0
