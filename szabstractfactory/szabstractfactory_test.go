@@ -62,7 +62,7 @@ func TestSzAbstractFactory_CreateSzDiagnostic(test *testing.T) {
 	szDiagnostic, err := szAbstractFactory.CreateSzDiagnostic(ctx)
 	testError(test, ctx, szAbstractFactory, err)
 	defer szDiagnostic.Destroy(ctx)
-	result, err := szDiagnostic.CheckDatabasePerformance(ctx, 1)
+	result, err := szDiagnostic.CheckDatastorePerformance(ctx, 1)
 	testError(test, ctx, szAbstractFactory, err)
 	printActual(test, result)
 }

@@ -14,12 +14,12 @@ import (
 // Interface functions - Examples for godoc documentation
 // ----------------------------------------------------------------------------
 
-func ExampleSzdiagnostic_CheckDatabasePerformance() {
+func ExampleSzdiagnostic_CheckDatastorePerformance() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
 	ctx := context.TODO()
 	szDiagnostic := getSzDiagnostic(ctx)
 	secondsToRun := 1
-	result, err := szDiagnostic.CheckDatabasePerformance(ctx, secondsToRun)
+	result, err := szDiagnostic.CheckDatastorePerformance(ctx, secondsToRun)
 	if err != nil {
 		fmt.Println(err)
 	}
