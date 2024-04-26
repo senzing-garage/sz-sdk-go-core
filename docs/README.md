@@ -1,5 +1,5 @@
-# g2-sdk-go-base
+# sz-sdk-go-core
 
 Placeholder for [GitHub pages](https://pages.github.com/).
 
-See [https://senzing.github.io/g2-sdk-go-base](https://senzing.github.io/g2-sdk-go-base).
+See [https://senzing.github.io/sz-sdk-go-core](https://senzing.github.io/sz-sdk-go-core).

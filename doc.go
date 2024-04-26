@@ -1,15 +1,15 @@
 /*
 # Synopsis
 
-The Senzing g2-sdk-go-base packages are wrappers over Senzing's C-based library.
+The Senzing sz-sdk-go-core packages are wrappers over Senzing's C-based library.
 
 # Overview
 
-The Senzing g2-sdk-go-base packages enable Go programs to call Senzing library functions.
-Under the covers, Golang's CGO is used by the g2-sdk-go-base packages to make the calls
+The Senzing sz-sdk-go-core packages enable Go programs to call Senzing library functions.
+Under the covers, Golang's CGO is used by the sz-sdk-go-core packages to make the calls
 to the Senzing functions.
 
-More information at https://github.com/senzing-garage/g2-sdk-go-base
+More information at https://github.com/senzing-garage/sz-sdk-go-core
 
 # Installing Senzing library
 
