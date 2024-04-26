@@ -4,11 +4,8 @@ github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc h1:U9qPSI2PIWSS1
 github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/google/go-cmp v0.6.0 h1:ofyhxvXcZhMsU5ulbFiLKl/XBFqE1GSq7atu8tAmTRI=
 github.com/google/go-cmp v0.6.0/go.mod h1:17dUlkBOakJ0+DkrSSNjCkIjxS6bF9zb3elmeNGIjoY=
-github.com/kr/pretty v0.2.1/go.mod h1:ipq/a2n7PKx3OHsz4KJII5eveXtPO4qwEXGdVfWzfnI=
 github.com/kr/pretty v0.3.1 h1:flRD4NNwYAUpkphVc1HcthR4KEIFJ65n8Mw5qdRn3LE=
 github.com/kr/pretty v0.3.1/go.mod h1:hoEshYVHaxMs3cyo3Yncou5ZscifuDolrwPKZanG3xk=
-github.com/kr/pty v1.1.1/go.mod h1:pFQYn66WHrOpPYNljwOMqo10TkYh1fy3cYio2l3bCsQ=
-github.com/kr/text v0.1.0/go.mod h1:4Jbv+DJW3UT/LiOwJeYQe1efqtUx/iVham/4vfdArNI=
 github.com/kr/text v0.2.0 h1:5Nx0Ya0ZqY2ygV366QzturHI13Jq95ApcVaJBhpS+AY=
 github.com/kr/text v0.2.0/go.mod h1:eLer722TekiGuMkidMxC/pM04lWEeraHUUmBw8l2grE=
 github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 h1:Jamvg5psRIccs7FGNTlIRMkT8wgtp5eCXdBlqhYGL6U=
@@ -23,8 +20,8 @@ github.com/senzing-garage/go-messaging v1.4.1 h1:ZdFcemh1iACP+HJWGS5/QLaUSD7PUYV
 github.com/senzing-garage/go-messaging v1.4.1/go.mod h1:7tEicOa0baYz0lh0w1BJEiQ6ry1FIQl/67JAWwFpcRY=
 github.com/senzing-garage/go-observing v0.3.1 h1:EGqe+Uix8VNQ9HCwm5xZkAF0hGoHaC1URAaT/5FW37A=
 github.com/senzing-garage/go-observing v0.3.1/go.mod h1:x60vlRIR0ZdJrHDuK82nzmQG4sN0G6oqdLE9vQl9pVc=
-github.com/senzing-garage/sz-sdk-go v0.12.1-0.20240426131258-921df57cfd41 h1:bdLEc+a4PrdgbOrSzAYXUnIukTgJK4MeQ6NQHhkDcYg=
-github.com/senzing-garage/sz-sdk-go v0.12.1-0.20240426131258-921df57cfd41/go.mod h1:L/d0Oy6JO5B+o5FI5kuHzYseWSq3YJUbLChF50YUUFY=
+github.com/senzing-garage/sz-sdk-go v0.12.1 h1:W+4rotdlN6O/eGWNITrCz+LZ30YQ9Pog1Id0XtWPo9c=
+github.com/senzing-garage/sz-sdk-go v0.12.1/go.mod h1:K+tiyY6W5FnUrzBZXIg5x7cWbZKpO/6rzpkCoKhcK6o=
 github.com/stretchr/testify v1.9.0 h1:HtqpIVDClZ4nwg75+f6Lvsy/wHu+3BoSGCbBAcpTsTg=
 github.com/stretchr/testify v1.9.0/go.mod h1:r2ic/lqez/lEtzL7wO/rwa5dbSLXVDPFyf8C91i36aY=
 golang.org/x/exp v0.0.0-20240416160154-fe59bbe5cc7f h1:99ci1mjWVBWwJiEKYY6jWa4d2nTQVIEhZIptnrVb1XY=
