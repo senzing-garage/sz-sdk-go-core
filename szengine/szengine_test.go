@@ -440,14 +440,6 @@ func TestSzengine_GetRedoRecord(test *testing.T) {
 	printActual(test, actual)
 }
 
-func TestSzengine_GetRepositoryLastModifiedTime(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
-	actual, err := szEngine.GetRepositoryLastModifiedTime(ctx)
-	testError(test, err)
-	printActual(test, actual)
-}
-
 func TestSzengine_GetStats(test *testing.T) {
 	ctx := context.TODO()
 	szEngine := getTestObject(ctx, test)

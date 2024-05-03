@@ -792,41 +792,6 @@ func (client *Szengine) GetRedoRecord(ctx context.Context) (string, error) {
 }
 
 /*
-The GetRepositoryLastModifiedTime method retrieves the last modified time of the Senzing repository,
-measured in the number of seconds between the last modified time and January 1, 1970 12:00am GMT (epoch time).
-
-Input
-  - ctx: A context to control lifecycle.
-
-Output
-  - A Unix Timestamp.
-*/
-func (client *Szengine) GetRepositoryLastModifiedTime(ctx context.Context) (int64, error) {
-	//  _DLEXPORT int G2_getRepositoryLastModifiedTime(long long* lastModifiedTime);
-	runtime.LockOSThread()
-	defer runtime.UnlockOSThread()
-	var err error = nil
-	var resultTime int64
-	entryTime := time.Now()
-	if client.isTrace {
-		client.traceEntry(89)
-		defer func() { client.traceExit(90, resultTime, err, time.Since(entryTime)) }()
-	}
-	result := C.G2_getRepositoryLastModifiedTime_helper()
-	if result.returnCode != 0 {
-		err = client.newError(ctx, 4042, result.returnCode, result, time.Since(entryTime))
-	}
-	resultTime = int64(result.time)
-	if client.observers != nil {
-		go func() {
-			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8042, err, details)
-		}()
-	}
-	return resultTime, err
-}
-
-/*
 The GetStats method retrieves workload statistics for the current process.
 These statistics will automatically reset after retrieval.
 
