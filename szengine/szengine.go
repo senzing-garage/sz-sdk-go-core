@@ -430,18 +430,19 @@ func (client *Szengine) FetchNext(ctx context.Context, exportHandle uintptr) (st
 }
 
 /*
-The FindInterestingEntitiesByEntityID method FIXME:
+TODO: Document FindInterestingEntitiesByEntityId
+The FindInterestingEntitiesByEntityId method...
 
 Input
   - ctx: A context to control lifecycle.
-  - entityID: The unique identifier of an entity.
+  - entityId: The unique identifier of an entity.
   - flags: Flags used to control information returned.
 
 Output
   - A JSON document.
     See the example output.
 */
-func (client *Szengine) FindInterestingEntitiesByEntityId(ctx context.Context, entityID int64, flags int64) (string, error) {
+func (client *Szengine) FindInterestingEntitiesByEntityId(ctx context.Context, entityId int64, flags int64) (string, error) {
 	//  _DLEXPORT int G2_findInterestingEntitiesByEntityID(const long long entityID, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -449,19 +450,19 @@ func (client *Szengine) FindInterestingEntitiesByEntityId(ctx context.Context, e
 	var resultResponse string
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(33, entityID, flags)
-		defer func() { client.traceExit(34, entityID, flags, resultResponse, err, time.Since(entryTime)) }()
+		client.traceEntry(33, entityId, flags)
+		defer func() { client.traceExit(34, entityId, flags, resultResponse, err, time.Since(entryTime)) }()
 	}
-	result := C.G2_findInterestingEntitiesByEntityID_helper(C.longlong(entityID), C.longlong(flags))
+	result := C.G2_findInterestingEntitiesByEntityID_helper(C.longlong(entityId), C.longlong(flags))
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4015, entityID, flags, result.returnCode, time.Since(entryTime))
+		err = client.newError(ctx, 4015, entityId, flags, result.returnCode, time.Since(entryTime))
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
-				"entityID": strconv.FormatInt(entityID, 10),
+				"entityID": strconv.FormatInt(entityId, 10),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8016, err, details)
 		}()
@@ -470,19 +471,20 @@ func (client *Szengine) FindInterestingEntitiesByEntityId(ctx context.Context, e
 }
 
 /*
-The FindInterestingEntitiesByRecordID method FIXME:
+TODO: Document FindInterestingEntitiesByRecordId
+The FindInterestingEntitiesByRecordId method...
 
 Input
   - ctx: A context to control lifecycle.
   - dataSourceCode: Identifies the provenance of the data.
-  - recordID: The unique identifier within the records of the same data source.
+  - recordId: The unique identifier within the records of the same data source.
   - flags: Flags used to control information returned.
 
 Output
   - A JSON document.
     See the example output.
 */
-func (client *Szengine) FindInterestingEntitiesByRecordId(ctx context.Context, dataSourceCode string, recordID string, flags int64) (string, error) {
+func (client *Szengine) FindInterestingEntitiesByRecordId(ctx context.Context, dataSourceCode string, recordId string, flags int64) (string, error) {
 	//  _DLEXPORT int G2_findInterestingEntitiesByRecordID(const char* dataSourceCode, const char* recordID, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -490,18 +492,18 @@ func (client *Szengine) FindInterestingEntitiesByRecordId(ctx context.Context, d
 	var resultResponse string
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(35, dataSourceCode, recordID, flags)
+		client.traceEntry(35, dataSourceCode, recordId, flags)
 		defer func() {
-			client.traceExit(36, dataSourceCode, recordID, flags, resultResponse, err, time.Since(entryTime))
+			client.traceExit(36, dataSourceCode, recordId, flags, resultResponse, err, time.Since(entryTime))
 		}()
 	}
 	dataSourceCodeForC := C.CString(dataSourceCode)
 	defer C.free(unsafe.Pointer(dataSourceCodeForC))
-	recordIDForC := C.CString(recordID)
+	recordIDForC := C.CString(recordId)
 	defer C.free(unsafe.Pointer(recordIDForC))
 	result := C.G2_findInterestingEntitiesByRecordID_helper(dataSourceCodeForC, recordIDForC, C.longlong(flags))
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4016, dataSourceCode, recordID, flags, result.returnCode, time.Since(entryTime))
+		err = client.newError(ctx, 4016, dataSourceCode, recordId, flags, result.returnCode, time.Since(entryTime))
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
@@ -509,7 +511,7 @@ func (client *Szengine) FindInterestingEntitiesByRecordId(ctx context.Context, d
 		go func() {
 			details := map[string]string{
 				"dataSourceCode": dataSourceCode,
-				"recordID":       recordID,
+				"recordID":       recordId,
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8017, err, details)
 		}()
