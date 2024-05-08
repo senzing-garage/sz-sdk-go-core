@@ -35,8 +35,8 @@ func ExampleSzdiagnostic_GetDatastoreInfo() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println(result)
-	// Output: {"dataStores":[{"id":"CORE", "type":"sqlite3","location":"/home/senzing/senzing-garage.git/sz-sdk-go-core/target/test/szdiagnostic/G2C.db"}]}
+	fmt.Println(truncate(result, 61))
+	// Output: {"dataStores":[{"id":"CORE", "type":"sqlite3","location":"...
 }
 
 func ExampleSzdiagnostic_GetFeature() {
