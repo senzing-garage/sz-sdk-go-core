@@ -430,6 +430,96 @@ func (client *Szengine) FetchNext(ctx context.Context, exportHandle uintptr) (st
 }
 
 /*
+TODO: Document FindInterestingEntitiesByEntityId
+The FindInterestingEntitiesByEntityId method...
+
+Input
+  - ctx: A context to control lifecycle.
+  - entityId: The unique identifier of an entity.
+  - flags: Flags used to control information returned.
+
+Output
+  - A JSON document.
+    See the example output.
+*/
+func (client *Szengine) FindInterestingEntitiesByEntityId(ctx context.Context, entityId int64, flags int64) (string, error) {
+	//  _DLEXPORT int G2_findInterestingEntitiesByEntityID(const long long entityID, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	var err error = nil
+	var resultResponse string
+	entryTime := time.Now()
+	if client.isTrace {
+		client.traceEntry(33, entityId, flags)
+		defer func() { client.traceExit(34, entityId, flags, resultResponse, err, time.Since(entryTime)) }()
+	}
+	result := C.G2_findInterestingEntitiesByEntityID_helper(C.longlong(entityId), C.longlong(flags))
+	if result.returnCode != 0 {
+		err = client.newError(ctx, 4015, entityId, flags, result.returnCode, time.Since(entryTime))
+	}
+	resultResponse = C.GoString(result.response)
+	C.G2GoHelper_free(unsafe.Pointer(result.response))
+	if client.observers != nil {
+		go func() {
+			details := map[string]string{
+				"entityID": strconv.FormatInt(entityId, 10),
+			}
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8016, err, details)
+		}()
+	}
+	return resultResponse, err
+}
+
+/*
+TODO: Document FindInterestingEntitiesByRecordId
+The FindInterestingEntitiesByRecordId method...
+
+Input
+  - ctx: A context to control lifecycle.
+  - dataSourceCode: Identifies the provenance of the data.
+  - recordId: The unique identifier within the records of the same data source.
+  - flags: Flags used to control information returned.
+
+Output
+  - A JSON document.
+    See the example output.
+*/
+func (client *Szengine) FindInterestingEntitiesByRecordId(ctx context.Context, dataSourceCode string, recordId string, flags int64) (string, error) {
+	//  _DLEXPORT int G2_findInterestingEntitiesByRecordID(const char* dataSourceCode, const char* recordID, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	var err error = nil
+	var resultResponse string
+	entryTime := time.Now()
+	if client.isTrace {
+		client.traceEntry(35, dataSourceCode, recordId, flags)
+		defer func() {
+			client.traceExit(36, dataSourceCode, recordId, flags, resultResponse, err, time.Since(entryTime))
+		}()
+	}
+	dataSourceCodeForC := C.CString(dataSourceCode)
+	defer C.free(unsafe.Pointer(dataSourceCodeForC))
+	recordIDForC := C.CString(recordId)
+	defer C.free(unsafe.Pointer(recordIDForC))
+	result := C.G2_findInterestingEntitiesByRecordID_helper(dataSourceCodeForC, recordIDForC, C.longlong(flags))
+	if result.returnCode != 0 {
+		err = client.newError(ctx, 4016, dataSourceCode, recordId, flags, result.returnCode, time.Since(entryTime))
+	}
+	resultResponse = C.GoString(result.response)
+	C.G2GoHelper_free(unsafe.Pointer(result.response))
+	if client.observers != nil {
+		go func() {
+			details := map[string]string{
+				"dataSourceCode": dataSourceCode,
+				"recordID":       recordId,
+			}
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8017, err, details)
+		}()
+	}
+	return resultResponse, err
+}
+
+/*
 The FindNetworkByEntityId method finds all entities surrounding a requested set of entities.
 This includes the requested entities, paths between them, and relations to other nearby entities.
 
@@ -789,41 +879,6 @@ func (client *Szengine) GetRedoRecord(ctx context.Context) (string, error) {
 		}()
 	}
 	return resultResponse, err
-}
-
-/*
-The GetRepositoryLastModifiedTime method retrieves the last modified time of the Senzing repository,
-measured in the number of seconds between the last modified time and January 1, 1970 12:00am GMT (epoch time).
-
-Input
-  - ctx: A context to control lifecycle.
-
-Output
-  - A Unix Timestamp.
-*/
-func (client *Szengine) GetRepositoryLastModifiedTime(ctx context.Context) (int64, error) {
-	//  _DLEXPORT int G2_getRepositoryLastModifiedTime(long long* lastModifiedTime);
-	runtime.LockOSThread()
-	defer runtime.UnlockOSThread()
-	var err error = nil
-	var resultTime int64
-	entryTime := time.Now()
-	if client.isTrace {
-		client.traceEntry(89)
-		defer func() { client.traceExit(90, resultTime, err, time.Since(entryTime)) }()
-	}
-	result := C.G2_getRepositoryLastModifiedTime_helper()
-	if result.returnCode != 0 {
-		err = client.newError(ctx, 4042, result.returnCode, result, time.Since(entryTime))
-	}
-	resultTime = int64(result.time)
-	if client.observers != nil {
-		go func() {
-			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8042, err, details)
-		}()
-	}
-	return resultTime, err
 }
 
 /*

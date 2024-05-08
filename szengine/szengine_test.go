@@ -248,6 +248,26 @@ func TestSzengine_FetchNext(test *testing.T) {
 	//  - TestSzengine_ExportJsonEntityReport
 }
 
+func TestSzengine_FindInterestingEntitiesByEntityId(test *testing.T) {
+	ctx := context.TODO()
+	szEngine := getTestObject(ctx, test)
+	entityID := getEntityId(truthset.CustomerRecords["1001"])
+	flags := int64(0)
+	actual, err := szEngine.FindInterestingEntitiesByEntityId(ctx, entityID, flags)
+	testError(test, err)
+	printActual(test, actual)
+}
+
+func TestSzengine_FindInterestingEntitiesByRecordId(test *testing.T) {
+	ctx := context.TODO()
+	szEngine := getTestObject(ctx, test)
+	record := truthset.CustomerRecords["1001"]
+	flags := int64(0)
+	actual, err := szEngine.FindInterestingEntitiesByRecordId(ctx, record.DataSource, record.Id, flags)
+	testError(test, err)
+	printActual(test, actual)
+}
+
 func TestSzengine_FindNetworkByEntityId(test *testing.T) {
 	ctx := context.TODO()
 	szEngine := getTestObject(ctx, test)
@@ -436,14 +456,6 @@ func TestSzengine_GetRedoRecord(test *testing.T) {
 	ctx := context.TODO()
 	szEngine := getTestObject(ctx, test)
 	actual, err := szEngine.GetRedoRecord(ctx)
-	testError(test, err)
-	printActual(test, actual)
-}
-
-func TestSzengine_GetRepositoryLastModifiedTime(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
-	actual, err := szEngine.GetRepositoryLastModifiedTime(ctx)
 	testError(test, err)
 	printActual(test, actual)
 }

@@ -204,6 +204,35 @@ func ExampleSzengine_FetchNext() {
 	// Output: true
 }
 
+func ExampleSzengine_FindInterestingEntitiesByEntityId() {
+	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
+	ctx := context.TODO()
+	szEngine := getSzEngine(ctx)
+	entityId := getEntityIdForRecord("CUSTOMERS", "1001")
+	flags := int64(0)
+	result, err := szEngine.FindInterestingEntitiesByEntityId(ctx, entityId, flags)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(result)
+	// Output: {"INTERESTING_ENTITIES":{"ENTITIES":[]}}
+}
+
+func ExampleSzengine_FindInterestingEntitiesByRecordId() {
+	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
+	ctx := context.TODO()
+	szEngine := getSzEngine(ctx)
+	dataSourceCode := "CUSTOMERS"
+	recordId := "1001"
+	flags := int64(0)
+	result, err := szEngine.FindInterestingEntitiesByRecordId(ctx, dataSourceCode, recordId, flags)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(result)
+	// Output: {"INTERESTING_ENTITIES":{"ENTITIES":[]}}
+}
+
 func ExampleSzengine_FindNetworkByEntityId() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
@@ -430,18 +459,6 @@ func ExampleSzengine_GetRedoRecord() {
 	}
 	fmt.Println(result)
 	// Output: {"REASON":"deferred delete","DATA_SOURCE":"CUSTOMERS","RECORD_ID":"1001","DSRC_ACTION":"X"}
-}
-
-func ExampleSzengine_GetRepositoryLastModifiedTime() {
-	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
-	ctx := context.TODO()
-	szEngine := getSzEngine(ctx)
-	result, err := szEngine.GetRepositoryLastModifiedTime(ctx)
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println(result > 0) // Dummy output.
-	// Output: true
 }
 
 func ExampleSzengine_GetStats() {
