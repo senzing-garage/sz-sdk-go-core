@@ -155,6 +155,41 @@ func (client *Szdiagnostic) GetDatastoreInfo(ctx context.Context) (string, error
 }
 
 /*
+The Reinitialize method re-initializes the Senzing G2Diagnostic object.
+
+Input
+  - ctx: A context to control lifecycle.
+  - configId: The configuration ID used for the initialization.
+*/
+func (client *Szdiagnostic) GetFeature(ctx context.Context, featureId int64) (string, error) {
+	//  _DLEXPORT int G2Diagnostic_getFeature(const long long libFeatID);
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	var err error = nil
+	var resultResponse string
+	entryTime := time.Now()
+	if client.isTrace {
+		client.traceEntry(99, featureId)
+		defer func() { client.traceExit(99, featureId, err, time.Since(entryTime)) }()
+	}
+	result := C.G2Diagnostic_getFeature_helper(C.longlong(featureId))
+	if result.returnCode != 0 {
+		err = client.newError(ctx, 9999, featureId, result, time.Since(entryTime))
+	}
+	resultResponse = C.GoString(result.response)
+	C.G2GoHelper_free(unsafe.Pointer(result.response))
+	if client.observers != nil {
+		go func() {
+			details := map[string]string{
+				"featureId": strconv.FormatInt(featureId, 10),
+			}
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 9999, err, details)
+		}()
+	}
+	return resultResponse, err
+}
+
+/*
 The PurgeRepository method removes every record in the Senzing repository.
 Before calling purgeRepository() all other instances of the Senzing API
 (whether in custom code, REST API, stream-loader, redoer, G2Loader, etc)

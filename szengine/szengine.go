@@ -430,6 +430,94 @@ func (client *Szengine) FetchNext(ctx context.Context, exportHandle uintptr) (st
 }
 
 /*
+The FindInterestingEntitiesByEntityID method FIXME:
+
+Input
+  - ctx: A context to control lifecycle.
+  - entityID: The unique identifier of an entity.
+  - flags: Flags used to control information returned.
+
+Output
+  - A JSON document.
+    See the example output.
+*/
+func (client *Szengine) FindInterestingEntitiesByEntityId(ctx context.Context, entityID int64, flags int64) (string, error) {
+	//  _DLEXPORT int G2_findInterestingEntitiesByEntityID(const long long entityID, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	var err error = nil
+	var resultResponse string
+	entryTime := time.Now()
+	if client.isTrace {
+		client.traceEntry(33, entityID, flags)
+		defer func() { client.traceExit(34, entityID, flags, resultResponse, err, time.Since(entryTime)) }()
+	}
+	result := C.G2_findInterestingEntitiesByEntityID_helper(C.longlong(entityID), C.longlong(flags))
+	if result.returnCode != 0 {
+		err = client.newError(ctx, 4015, entityID, flags, result.returnCode, time.Since(entryTime))
+	}
+	resultResponse = C.GoString(result.response)
+	C.G2GoHelper_free(unsafe.Pointer(result.response))
+	if client.observers != nil {
+		go func() {
+			details := map[string]string{
+				"entityID": strconv.FormatInt(entityID, 10),
+			}
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8016, err, details)
+		}()
+	}
+	return resultResponse, err
+}
+
+/*
+The FindInterestingEntitiesByRecordID method FIXME:
+
+Input
+  - ctx: A context to control lifecycle.
+  - dataSourceCode: Identifies the provenance of the data.
+  - recordID: The unique identifier within the records of the same data source.
+  - flags: Flags used to control information returned.
+
+Output
+  - A JSON document.
+    See the example output.
+*/
+func (client *Szengine) FindInterestingEntitiesByRecordId(ctx context.Context, dataSourceCode string, recordID string, flags int64) (string, error) {
+	//  _DLEXPORT int G2_findInterestingEntitiesByRecordID(const char* dataSourceCode, const char* recordID, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	var err error = nil
+	var resultResponse string
+	entryTime := time.Now()
+	if client.isTrace {
+		client.traceEntry(35, dataSourceCode, recordID, flags)
+		defer func() {
+			client.traceExit(36, dataSourceCode, recordID, flags, resultResponse, err, time.Since(entryTime))
+		}()
+	}
+	dataSourceCodeForC := C.CString(dataSourceCode)
+	defer C.free(unsafe.Pointer(dataSourceCodeForC))
+	recordIDForC := C.CString(recordID)
+	defer C.free(unsafe.Pointer(recordIDForC))
+	result := C.G2_findInterestingEntitiesByRecordID_helper(dataSourceCodeForC, recordIDForC, C.longlong(flags))
+	if result.returnCode != 0 {
+		err = client.newError(ctx, 4016, dataSourceCode, recordID, flags, result.returnCode, time.Since(entryTime))
+	}
+	resultResponse = C.GoString(result.response)
+	C.G2GoHelper_free(unsafe.Pointer(result.response))
+	if client.observers != nil {
+		go func() {
+			details := map[string]string{
+				"dataSourceCode": dataSourceCode,
+				"recordID":       recordID,
+			}
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8017, err, details)
+		}()
+	}
+	return resultResponse, err
+}
+
+/*
 The FindNetworkByEntityId method finds all entities surrounding a requested set of entities.
 This includes the requested entities, paths between them, and relations to other nearby entities.
 
