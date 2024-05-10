@@ -574,8 +574,8 @@ This includes the requested entities, paths between them, and relations to other
 
 Input
   - ctx: A context to control lifecycle.
-  - entityList: A JSON document listing entities.
-    Example: `{"ENTITIES": [{"ENTITY_ID": 1}, {"ENTITY_ID": 2}, {"ENTITY_ID": 3}]}`
+  - recordList: A JSON document listing entities.
+    Example: `{"RECORDS": [{"DATA_SOURCE": "CUSTOMERS", "RECORD_ID": "1001"}]}`
   - maxDegree: The maximum number of degrees in paths between search entities.
   - buildOutDegree: The number of degrees of relationships to show around each search entity.
   - maxEntities: The maximum number of entities to return in the discovered network.
@@ -925,7 +925,7 @@ The GetVirtualEntityByRecordId method...
 Input
   - ctx: A context to control lifecycle.
   - recordList: A JSON document.
-    Example: `{"RECORDS": [{"DATA_SOURCE": "TEST","RECORD_ID": "111"},{"DATA_SOURCE": "TEST","RECORD_ID": "222"}]}`
+    Example: `{"RECORDS": [{"DATA_SOURCE": "CUSTOMERS", "RECORD_ID": "1001"}]}`
   - flags: Flags used to control information returned.
 
 Output
