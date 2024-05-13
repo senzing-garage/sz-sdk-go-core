@@ -11,7 +11,7 @@ import (
 	"github.com/senzing-garage/sz-sdk-go/sz"
 )
 
-// Szconfig is the default implementation of the Szconfig interface.
+// Szabstractfactory is an implementation of the sz.SzAbstractFactory interface.
 type Szabstractfactory struct {
 	ConfigId       int64
 	InstanceName   string
@@ -20,7 +20,7 @@ type Szabstractfactory struct {
 }
 
 // ----------------------------------------------------------------------------
-// Interface methods
+// sz.SzAbstractFactory interface methods
 // ----------------------------------------------------------------------------
 
 /*
