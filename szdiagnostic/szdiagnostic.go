@@ -69,10 +69,8 @@ func (client *Szdiagnostic) CheckDatastorePerformance(ctx context.Context, secon
 		client.traceEntry(1, secondsToRun)
 		defer func() { client.traceExit(2, secondsToRun, resultResponse, err, time.Since(entryTime)) }()
 	}
-	// TODO: Fix when C works
+	// TODO: Fix CheckDatastorePerformance when C works
 	// result := C.G2Diagnostic_checkDatastorePerformance_helper(C.int(secondsToRun))
-	// result := C.G2Diagnostic_checkDatastorPerf_helper(C.int(secondsToRun))
-
 	// if result.returnCode != 0 {
 	// 	err = client.newError(ctx, 4001, secondsToRun, result.returnCode, time.Since(entryTime))
 	// }
@@ -168,6 +166,7 @@ func (client *Szdiagnostic) GetFeature(ctx context.Context, featureId int64) (st
 	var err error = nil
 	var resultResponse string
 	entryTime := time.Now()
+	// TODO: In GetFeature, fix trace, error, and notifier IDs.
 	if client.isTrace {
 		client.traceEntry(99, featureId)
 		defer func() { client.traceExit(99, featureId, err, time.Since(entryTime)) }()
@@ -207,10 +206,7 @@ func (client *Szdiagnostic) PurgeRepository(ctx context.Context) error {
 		client.traceEntry(117)
 		defer func() { client.traceExit(118, err, time.Since(entryTime)) }()
 	}
-	// TODO: Change to following when appropriate.
-	// result := C.G2Diagnostic_purgeRepository()
 	result := C.G2Diagnostic_purgeRepository()
-
 	if result != 0 {
 		err = client.newError(ctx, 4056, result, time.Since(entryTime))
 	}
@@ -625,14 +621,6 @@ func (client *Szdiagnostic) initialize(ctx context.Context, instanceName string,
 	if result != 0 {
 		err = client.newError(ctx, 4018, instanceName, settings, verboseLogging, result, time.Since(entryTime))
 	}
-
-	// TODO: Temporary code until G2Diagnostic_purgeRepository() is available.
-	result = C.G2_init(moduleNameForC, iniParamsForC, C.longlong(verboseLogging))
-	if result != 0 {
-		err = client.newError(ctx, 4018, instanceName, settings, verboseLogging, result, time.Since(entryTime))
-	}
-	// End of TODO:
-
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{

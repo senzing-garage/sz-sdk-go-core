@@ -63,7 +63,7 @@ func ExampleSzproduct_SetObserverOrigin() {
 }
 
 func ExampleSzproduct_GetObserverOrigin() {
-	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szproduct/szproduct_test.go
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szproduct/szproduct_examples_test.go
 	ctx := context.TODO()
 	szProduct := getSzProduct(ctx)
 	origin := "Machine: nn; Task: UnitTest"

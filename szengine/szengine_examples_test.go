@@ -697,7 +697,7 @@ func ExampleSzengine_SetObserverOrigin() {
 }
 
 func ExampleSzengine_GetObserverOrigin() {
-	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_test.go
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
 	szEngine := getSzEngine(ctx)
 	origin := "Machine: nn; Task: UnitTest"

@@ -65,6 +65,7 @@ func TestSzdiagnostic_GetFeature(test *testing.T) {
 	printActual(test, actual)
 }
 
+// TODO:  Determine if PurgeRepository can be tested without disturbing other testcases
 // func TestSzdiagnostic_PurgeRepository(test *testing.T) {
 // 	ctx := context.TODO()
 // 	szDiagnostic := getTestObject(ctx, test)
