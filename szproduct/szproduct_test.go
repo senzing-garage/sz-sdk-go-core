@@ -92,12 +92,13 @@ func TestSzproduct_Initialize(test *testing.T) {
 	testError(test, err)
 }
 
-func TestSzproduct_Destroy(test *testing.T) {
-	ctx := context.TODO()
-	szProduct := getTestObject(ctx, test)
-	err := szProduct.Destroy(ctx)
-	testError(test, err)
-}
+// TODO: Uncomment after bug introduced in Senzing 4.0.0.24131 is fixed.
+// func TestSzproduct_Destroy(test *testing.T) {
+// 	ctx := context.TODO()
+// 	szProduct := getTestObject(ctx, test)
+// 	err := szProduct.Destroy(ctx)
+// 	testError(test, err)
+// }
 
 // ----------------------------------------------------------------------------
 // Internal functions
@@ -268,10 +269,11 @@ func teardown() error {
 }
 
 func teardownSzProduct(ctx context.Context) error {
-	err := szProductSingleton.Destroy(ctx)
-	if err != nil {
-		return err
-	}
+	// TODO: Uncomment after bug introduced in Senzing 4.0.0.24131 is fixed.
+	// err := szProductSingleton.Destroy(ctx)
+	// if err != nil {
+	// 	return err
+	// }
 	szProductSingleton = nil
 	return nil
 }
