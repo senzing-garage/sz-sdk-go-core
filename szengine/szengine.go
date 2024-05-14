@@ -66,8 +66,8 @@ func (client *Szengine) AddRecord(ctx context.Context, dataSourceCode string, re
 			client.traceExit(2, dataSourceCode, recordId, recordDefinition, flags, err, time.Since(entryTime))
 		}()
 	}
-	if (flags & sz.SZ_WITH_INFO) > 0 {
-		finalFlags := flags ^ sz.SZ_WITH_INFO
+	if (flags & sz.SZ_WITH_INFO) != 0 {
+		finalFlags := flags & ^sz.SZ_WITH_INFO
 		result, err = client.addRecordWithInfo(ctx, dataSourceCode, recordId, recordDefinition, finalFlags)
 	} else {
 		result, err = client.addRecord(ctx, dataSourceCode, recordId, recordDefinition)
@@ -163,8 +163,8 @@ func (client *Szengine) DeleteRecord(ctx context.Context, dataSourceCode string,
 		client.traceEntry(9, dataSourceCode, recordId, flags)
 		defer func() { client.traceExit(10, dataSourceCode, recordId, flags, err, time.Since(entryTime)) }()
 	}
-	if (flags & sz.SZ_WITH_INFO) > 0 {
-		finalFlags := flags ^ sz.SZ_WITH_INFO
+	if (flags & sz.SZ_WITH_INFO) != 0 {
+		finalFlags := flags & ^sz.SZ_WITH_INFO
 		result, err = client.deleteRecordWithInfo(ctx, dataSourceCode, recordId, finalFlags)
 	} else {
 		result, err = client.deleteRecord(ctx, dataSourceCode, recordId)
@@ -1132,7 +1132,7 @@ func (client *Szengine) ProcessRedoRecord(ctx context.Context, redoRecord string
 		defer func() { client.traceExit(60, redoRecord, flags, result, err, time.Since(entryTime)) }()
 	}
 	if (flags & sz.SZ_WITH_INFO) > 0 {
-		finalFlags := flags ^ sz.SZ_WITH_INFO
+		finalFlags := flags & ^sz.SZ_WITH_INFO
 		result, err = client.processRedoRecordWithInfo(ctx, finalFlags)
 	} else {
 		result, err = client.processRedoRecord(ctx, flags)
@@ -1164,7 +1164,7 @@ func (client *Szengine) ReevaluateEntity(ctx context.Context, entityId int64, fl
 		defer func() { client.traceExit(62, entityId, flags, result, err, time.Since(entryTime)) }()
 	}
 	if (flags & sz.SZ_WITH_INFO) > 0 {
-		finalFlags := flags ^ sz.SZ_WITH_INFO
+		finalFlags := flags & ^sz.SZ_WITH_INFO
 		result, err = client.reevaluateEntityWithInfo(ctx, entityId, finalFlags)
 	} else {
 		result, err = client.reevaluateEntity(ctx, entityId, flags)
@@ -1199,7 +1199,7 @@ func (client *Szengine) ReevaluateRecord(ctx context.Context, dataSourceCode str
 		defer func() { client.traceExit(64, dataSourceCode, recordId, flags, err, time.Since(entryTime)) }()
 	}
 	if (flags & sz.SZ_WITH_INFO) > 0 {
-		finalFlags := flags ^ sz.SZ_WITH_INFO
+		finalFlags := flags & ^sz.SZ_WITH_INFO
 		result, err = client.reevaluateRecordWithInfo(ctx, dataSourceCode, recordId, finalFlags)
 	} else {
 		result, err = client.reevaluateRecord(ctx, dataSourceCode, recordId, flags)
