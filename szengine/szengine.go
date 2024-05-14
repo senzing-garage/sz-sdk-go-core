@@ -677,9 +677,9 @@ func (client *Szengine) FindPathByEntityId(ctx context.Context, startEntityId in
 	var err error = nil
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(31, startEntityId, endEntityId, maxDegrees, exclusions, requiredDataSources)
+		client.traceEntry(31, startEntityId, endEntityId, maxDegrees, exclusions, requiredDataSources, flags)
 		defer func() {
-			client.traceExit(32, startEntityId, endEntityId, maxDegrees, exclusions, requiredDataSources, result, err, time.Since(entryTime))
+			client.traceExit(32, startEntityId, endEntityId, maxDegrees, exclusions, requiredDataSources, flags, result, err, time.Since(entryTime))
 		}()
 	}
 	if len(requiredDataSources) > 0 {
@@ -1267,8 +1267,8 @@ func (client *Szengine) SearchByAttributes(ctx context.Context, attributes strin
 	var err error = nil
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(69, attributes)
-		defer func() { client.traceExit(70, attributes, result, err, time.Since(entryTime)) }()
+		client.traceEntry(69, attributes, searchProfile, flags)
+		defer func() { client.traceExit(70, attributes, searchProfile, flags, result, err, time.Since(entryTime)) }()
 	}
 	if len(searchProfile) > 0 {
 		result, err = client.searchByAttributes_V3(ctx, attributes, searchProfile, flags)
@@ -1377,9 +1377,9 @@ func (client *Szengine) WhyRecords(ctx context.Context, dataSourceCode1 string, 
 	var err error = nil
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(75, dataSourceCode1, recordId1, dataSourceCode2, recordId2)
+		client.traceEntry(75, dataSourceCode1, recordId1, dataSourceCode2, recordId2, flags)
 		defer func() {
-			client.traceExit(76, dataSourceCode1, recordId1, dataSourceCode2, recordId2, result, err, time.Since(entryTime))
+			client.traceExit(76, dataSourceCode1, recordId1, dataSourceCode2, recordId2, flags, result, err, time.Since(entryTime))
 		}()
 	}
 	result, err = client.whyRecords_V2(ctx, dataSourceCode1, recordId1, dataSourceCode2, recordId2, flags)
@@ -1453,8 +1453,10 @@ func (client *Szengine) Initialize(ctx context.Context, instanceName string, set
 	var err error = nil
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(55, instanceName, settings, verboseLogging)
-		defer func() { client.traceExit(56, instanceName, settings, verboseLogging, err, time.Since(entryTime)) }()
+		client.traceEntry(55, instanceName, settings, configId, verboseLogging)
+		defer func() {
+			client.traceExit(56, instanceName, settings, configId, verboseLogging, err, time.Since(entryTime))
+		}()
 	}
 	if configId > 0 {
 		err = client.initializeWithConfigId(ctx, instanceName, settings, configId, verboseLogging)
