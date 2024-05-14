@@ -61,9 +61,9 @@ func (client *Szengine) AddRecord(ctx context.Context, dataSourceCode string, re
 	var err error = nil
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(1, dataSourceCode, recordId, recordDefinition)
+		client.traceEntry(1, dataSourceCode, recordId, recordDefinition, flags)
 		defer func() {
-			client.traceExit(2, dataSourceCode, recordId, recordDefinition, err, time.Since(entryTime))
+			client.traceExit(2, dataSourceCode, recordId, recordDefinition, flags, err, time.Since(entryTime))
 		}()
 	}
 	if (flags & sz.SZ_WITH_INFO) > 0 {
@@ -100,17 +100,17 @@ func (client *Szengine) CloseExport(ctx context.Context, exportHandle uintptr) e
 	var err error = nil
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(13, exportHandle)
-		defer func() { client.traceExit(14, exportHandle, err, time.Since(entryTime)) }()
+		client.traceEntry(5, exportHandle)
+		defer func() { client.traceExit(6, exportHandle, err, time.Since(entryTime)) }()
 	}
 	result := C.G2_closeExport_helper(C.uintptr_t(exportHandle))
 	if result != 0 {
-		err = client.newError(ctx, 4006, exportHandle, result, time.Since(entryTime))
+		err = client.newError(ctx, 4003, exportHandle, result, time.Since(entryTime))
 	}
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8006, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8002, err, details)
 		}()
 	}
 	return err
@@ -133,14 +133,14 @@ func (client *Szengine) CountRedoRecords(ctx context.Context) (int64, error) {
 	var result int64 = 0
 	if client.isTrace {
 		entryTime := time.Now()
-		client.traceEntry(15)
-		defer func() { client.traceExit(16, result, err, time.Since(entryTime)) }()
+		client.traceEntry(7)
+		defer func() { client.traceExit(8, result, err, time.Since(entryTime)) }()
 	}
 	result = int64(C.G2_countRedoRecords())
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8007, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8003, err, details)
 		}()
 	}
 	return result, err
@@ -160,8 +160,8 @@ func (client *Szengine) DeleteRecord(ctx context.Context, dataSourceCode string,
 	var err error = nil
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(17, dataSourceCode, recordId)
-		defer func() { client.traceExit(18, dataSourceCode, recordId, err, time.Since(entryTime)) }()
+		client.traceEntry(9, dataSourceCode, recordId, flags)
+		defer func() { client.traceExit(10, dataSourceCode, recordId, flags, err, time.Since(entryTime)) }()
 	}
 	if (flags & sz.SZ_WITH_INFO) > 0 {
 		finalFlags := flags ^ sz.SZ_WITH_INFO
@@ -175,7 +175,7 @@ func (client *Szengine) DeleteRecord(ctx context.Context, dataSourceCode string,
 				"dataSourceCode": dataSourceCode,
 				"recordId":       recordId,
 			}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8008, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8004, err, details)
 		}()
 	}
 	return result, err
@@ -195,17 +195,17 @@ func (client *Szengine) Destroy(ctx context.Context) error {
 	var err error = nil
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(21)
-		defer func() { client.traceExit(22, err, time.Since(entryTime)) }()
+		client.traceEntry(11)
+		defer func() { client.traceExit(12, err, time.Since(entryTime)) }()
 	}
 	result := C.G2_destroy()
 	if result != 0 {
-		err = client.newError(ctx, 4009, result, time.Since(entryTime))
+		err = client.newError(ctx, 4006, result, time.Since(entryTime))
 	}
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8010, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8005, err, details)
 		}()
 	}
 	return err
@@ -232,20 +232,20 @@ func (client *Szengine) ExportCsvEntityReport(ctx context.Context, csvColumnList
 	var resultExportHandle uintptr
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(27, csvColumnList, flags)
-		defer func() { client.traceExit(28, csvColumnList, flags, resultExportHandle, err, time.Since(entryTime)) }()
+		client.traceEntry(13, csvColumnList, flags)
+		defer func() { client.traceExit(14, csvColumnList, flags, resultExportHandle, err, time.Since(entryTime)) }()
 	}
 	csvColumnListForC := C.CString(csvColumnList)
 	defer C.free(unsafe.Pointer(csvColumnListForC))
 	result := C.G2_exportCSVEntityReport_helper(csvColumnListForC, C.longlong(flags))
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4012, csvColumnList, flags, result.returnCode, result, time.Since(entryTime))
+		err = client.newError(ctx, 4007, csvColumnList, flags, result.returnCode, result, time.Since(entryTime))
 	}
 	resultExportHandle = (uintptr)(result.exportHandle)
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8013, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8006, err, details)
 		}()
 	}
 	return resultExportHandle, err
@@ -274,8 +274,8 @@ func (client *Szengine) ExportCsvEntityReportIterator(ctx context.Context, csvCo
 		var err error = nil
 		if client.isTrace {
 			entryTime := time.Now()
-			client.traceEntry(163, csvColumnList, flags)
-			defer func() { client.traceExit(164, csvColumnList, flags, err, time.Since(entryTime)) }()
+			client.traceEntry(15, csvColumnList, flags)
+			defer func() { client.traceExit(16, csvColumnList, flags, err, time.Since(entryTime)) }()
 		}
 		reportHandle, err := client.ExportCsvEntityReport(ctx, csvColumnList, flags)
 		if err != nil {
@@ -315,7 +315,7 @@ func (client *Szengine) ExportCsvEntityReportIterator(ctx context.Context, csvCo
 		if client.observers != nil {
 			go func() {
 				details := map[string]string{}
-				notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8079, err, details)
+				notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8007, err, details)
 			}()
 		}
 	}()
@@ -342,18 +342,18 @@ func (client *Szengine) ExportJsonEntityReport(ctx context.Context, flags int64)
 	var resultExportHandle uintptr
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(29, flags)
-		defer func() { client.traceExit(30, flags, resultExportHandle, err, time.Since(entryTime)) }()
+		client.traceEntry(17, flags)
+		defer func() { client.traceExit(18, flags, resultExportHandle, err, time.Since(entryTime)) }()
 	}
 	result := C.G2_exportJSONEntityReport_helper(C.longlong(flags))
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4013, flags, result.returnCode, result, time.Since(entryTime))
+		err = client.newError(ctx, 4008, flags, result.returnCode, result, time.Since(entryTime))
 	}
 	resultExportHandle = (uintptr)(result.exportHandle)
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8014, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8008, err, details)
 		}()
 	}
 	return resultExportHandle, err
@@ -381,8 +381,8 @@ func (client *Szengine) ExportJsonEntityReportIterator(ctx context.Context, flag
 		var err error = nil
 		if client.isTrace {
 			entryTime := time.Now()
-			client.traceEntry(165, flags)
-			defer func() { client.traceExit(166, flags, err, time.Since(entryTime)) }()
+			client.traceEntry(19, flags)
+			defer func() { client.traceExit(20, flags, err, time.Since(entryTime)) }()
 		}
 		reportHandle, err := client.ExportJsonEntityReport(ctx, flags)
 		if err != nil {
@@ -422,7 +422,7 @@ func (client *Szengine) ExportJsonEntityReportIterator(ctx context.Context, flag
 		if client.observers != nil {
 			go func() {
 				details := map[string]string{}
-				notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8080, err, details)
+				notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8009, err, details)
 			}()
 		}
 	}()
@@ -449,19 +449,19 @@ func (client *Szengine) FetchNext(ctx context.Context, exportHandle uintptr) (st
 	var resultResponse string
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(31, exportHandle)
-		defer func() { client.traceExit(32, exportHandle, resultResponse, err, time.Since(entryTime)) }()
+		client.traceEntry(21, exportHandle)
+		defer func() { client.traceExit(22, exportHandle, resultResponse, err, time.Since(entryTime)) }()
 	}
 	result := C.G2_fetchNext_helper(C.uintptr_t(exportHandle))
 	if result.returnCode < 0 {
-		err = client.newError(ctx, 4014, exportHandle, result.returnCode, result, time.Since(entryTime))
+		err = client.newError(ctx, 4009, exportHandle, result.returnCode, result, time.Since(entryTime))
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8015, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8010, err, details)
 		}()
 	}
 	return resultResponse, err
@@ -488,12 +488,12 @@ func (client *Szengine) FindInterestingEntitiesByEntityId(ctx context.Context, e
 	var resultResponse string
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(33, entityId, flags)
-		defer func() { client.traceExit(34, entityId, flags, resultResponse, err, time.Since(entryTime)) }()
+		client.traceEntry(23, entityId, flags)
+		defer func() { client.traceExit(24, entityId, flags, resultResponse, err, time.Since(entryTime)) }()
 	}
 	result := C.G2_findInterestingEntitiesByEntityID_helper(C.longlong(entityId), C.longlong(flags))
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4015, entityId, flags, result.returnCode, time.Since(entryTime))
+		err = client.newError(ctx, 4010, entityId, flags, result.returnCode, time.Since(entryTime))
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
@@ -502,7 +502,7 @@ func (client *Szengine) FindInterestingEntitiesByEntityId(ctx context.Context, e
 			details := map[string]string{
 				"entityID": strconv.FormatInt(entityId, 10),
 			}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8016, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8011, err, details)
 		}()
 	}
 	return resultResponse, err
@@ -530,9 +530,9 @@ func (client *Szengine) FindInterestingEntitiesByRecordId(ctx context.Context, d
 	var resultResponse string
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(35, dataSourceCode, recordId, flags)
+		client.traceEntry(25, dataSourceCode, recordId, flags)
 		defer func() {
-			client.traceExit(36, dataSourceCode, recordId, flags, resultResponse, err, time.Since(entryTime))
+			client.traceExit(26, dataSourceCode, recordId, flags, resultResponse, err, time.Since(entryTime))
 		}()
 	}
 	dataSourceCodeForC := C.CString(dataSourceCode)
@@ -541,7 +541,7 @@ func (client *Szengine) FindInterestingEntitiesByRecordId(ctx context.Context, d
 	defer C.free(unsafe.Pointer(recordIdForC))
 	result := C.G2_findInterestingEntitiesByRecordID_helper(dataSourceCodeForC, recordIdForC, C.longlong(flags))
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4016, dataSourceCode, recordId, flags, result.returnCode, time.Since(entryTime))
+		err = client.newError(ctx, 4011, dataSourceCode, recordId, flags, result.returnCode, time.Since(entryTime))
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
@@ -551,7 +551,7 @@ func (client *Szengine) FindInterestingEntitiesByRecordId(ctx context.Context, d
 				"dataSourceCode": dataSourceCode,
 				"recordID":       recordId,
 			}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8017, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8012, err, details)
 		}()
 	}
 	return resultResponse, err
@@ -582,16 +582,16 @@ func (client *Szengine) FindNetworkByEntityId(ctx context.Context, entityList st
 	var resultResponse string
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(39, entityList, maxDegrees, buildOutDegree, maxDegrees, flags)
+		client.traceEntry(27, entityList, maxDegrees, buildOutDegree, maxDegrees, flags)
 		defer func() {
-			client.traceExit(40, entityList, maxDegrees, buildOutDegree, maxDegrees, flags, resultResponse, err, time.Since(entryTime))
+			client.traceExit(28, entityList, maxDegrees, buildOutDegree, maxDegrees, flags, resultResponse, err, time.Since(entryTime))
 		}()
 	}
 	entityListForC := C.CString(entityList)
 	defer C.free(unsafe.Pointer(entityListForC))
 	result := C.G2_findNetworkByEntityID_V2_helper(entityListForC, C.longlong(maxDegrees), C.longlong(buildOutDegree), C.longlong(maxEntities), C.longlong(flags))
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4018, entityList, maxDegrees, buildOutDegree, maxEntities, flags, result.returnCode, time.Since(entryTime))
+		err = client.newError(ctx, 4013, entityList, maxDegrees, buildOutDegree, maxEntities, flags, result.returnCode, time.Since(entryTime))
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
@@ -600,7 +600,7 @@ func (client *Szengine) FindNetworkByEntityId(ctx context.Context, entityList st
 			details := map[string]string{
 				"entityList": entityList,
 			}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8019, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8013, err, details)
 		}()
 	}
 	return resultResponse, err
@@ -631,16 +631,16 @@ func (client *Szengine) FindNetworkByRecordId(ctx context.Context, recordList st
 	var resultResponse string
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(43, recordList, maxDegrees, buildOutDegree, maxDegrees, flags)
+		client.traceEntry(39, recordList, maxDegrees, buildOutDegree, maxDegrees, flags)
 		defer func() {
-			client.traceExit(44, recordList, maxDegrees, buildOutDegree, maxDegrees, flags, resultResponse, err, time.Since(entryTime))
+			client.traceExit(40, recordList, maxDegrees, buildOutDegree, maxDegrees, flags, resultResponse, err, time.Since(entryTime))
 		}()
 	}
 	recordListForC := C.CString(recordList)
 	defer C.free(unsafe.Pointer(recordListForC))
 	result := C.G2_findNetworkByRecordID_V2_helper(recordListForC, C.longlong(maxDegrees), C.longlong(buildOutDegree), C.longlong(maxEntities), C.longlong(flags))
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4020, recordList, maxDegrees, buildOutDegree, maxEntities, flags, result.returnCode, time.Since(entryTime))
+		err = client.newError(ctx, 4015, recordList, maxDegrees, buildOutDegree, maxEntities, flags, result.returnCode, time.Since(entryTime))
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
@@ -649,7 +649,7 @@ func (client *Szengine) FindNetworkByRecordId(ctx context.Context, recordList st
 			details := map[string]string{
 				"recordList": recordList,
 			}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8021, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8014, err, details)
 		}()
 	}
 	return resultResponse, err
@@ -677,9 +677,9 @@ func (client *Szengine) FindPathByEntityId(ctx context.Context, startEntityId in
 	var err error = nil
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(61, startEntityId, endEntityId, maxDegrees, exclusions, requiredDataSources)
+		client.traceEntry(31, startEntityId, endEntityId, maxDegrees, exclusions, requiredDataSources)
 		defer func() {
-			client.traceExit(62, startEntityId, endEntityId, maxDegrees, exclusions, requiredDataSources, result, err, time.Since(entryTime))
+			client.traceExit(32, startEntityId, endEntityId, maxDegrees, exclusions, requiredDataSources, result, err, time.Since(entryTime))
 		}()
 	}
 	if len(requiredDataSources) > 0 {
@@ -695,7 +695,7 @@ func (client *Szengine) FindPathByEntityId(ctx context.Context, startEntityId in
 				"startEntityId": strconv.FormatInt(startEntityId, 10),
 				"endEntityId":   strconv.FormatInt(endEntityId, 10),
 			}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8030, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8015, err, details)
 		}()
 	}
 	return result, err
@@ -727,9 +727,9 @@ func (client *Szengine) FindPathByRecordId(ctx context.Context, startDataSourceC
 	var err error = nil
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(67, startDataSourceCode, startRecordId, endDataSourceCode, endRecordId, maxDegrees, exclusions, requiredDataSources, flags)
+		client.traceEntry(33, startDataSourceCode, startRecordId, endDataSourceCode, endRecordId, maxDegrees, exclusions, requiredDataSources, flags)
 		defer func() {
-			client.traceExit(68, startDataSourceCode, startRecordId, endDataSourceCode, endRecordId, maxDegrees, exclusions, requiredDataSources, flags, result, err, time.Since(entryTime))
+			client.traceExit(34, startDataSourceCode, startRecordId, endDataSourceCode, endRecordId, maxDegrees, exclusions, requiredDataSources, flags, result, err, time.Since(entryTime))
 		}()
 	}
 	if len(requiredDataSources) > 0 {
@@ -747,7 +747,7 @@ func (client *Szengine) FindPathByRecordId(ctx context.Context, startDataSourceC
 				"endDataSourceCode":   endDataSourceCode,
 				"endRecordId":         endRecordId,
 			}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8033, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8016, err, details)
 		}()
 	}
 	return result, err
@@ -770,18 +770,18 @@ func (client *Szengine) GetActiveConfigId(ctx context.Context) (int64, error) {
 	var resultConfigId int64
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(69)
-		defer func() { client.traceExit(70, resultConfigId, err, time.Since(entryTime)) }()
+		client.traceEntry(35)
+		defer func() { client.traceExit(36, resultConfigId, err, time.Since(entryTime)) }()
 	}
 	result := C.G2_getActiveConfigID_helper()
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4033, result.returnCode, result, time.Since(entryTime))
+		err = client.newError(ctx, 4028, result.returnCode, result, time.Since(entryTime))
 	}
 	resultConfigId = int64(C.longlong(result.configID))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8034, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8017, err, details)
 		}()
 	}
 	return resultConfigId, err
@@ -808,12 +808,12 @@ func (client *Szengine) GetEntityByEntityId(ctx context.Context, entityId int64,
 	var resultResponse string
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(73, entityId, flags)
-		defer func() { client.traceExit(74, entityId, flags, resultResponse, err, time.Since(entryTime)) }()
+		client.traceEntry(37, entityId, flags)
+		defer func() { client.traceExit(38, entityId, flags, resultResponse, err, time.Since(entryTime)) }()
 	}
 	result := C.G2_getEntityByEntityID_V2_helper(C.longlong(entityId), C.longlong(flags))
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4035, entityId, flags, result.returnCode, time.Since(entryTime))
+		err = client.newError(ctx, 4030, entityId, flags, result.returnCode, time.Since(entryTime))
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
@@ -822,7 +822,7 @@ func (client *Szengine) GetEntityByEntityId(ctx context.Context, entityId int64,
 			details := map[string]string{
 				"entityId": strconv.FormatInt(entityId, 10),
 			}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8036, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8018, err, details)
 		}()
 	}
 	return resultResponse, err
@@ -849,9 +849,9 @@ func (client *Szengine) GetEntityByRecordId(ctx context.Context, dataSourceCode 
 	var resultResponse string
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(77, dataSourceCode, recordId, flags)
+		client.traceEntry(39, dataSourceCode, recordId, flags)
 		defer func() {
-			client.traceExit(78, dataSourceCode, recordId, flags, resultResponse, err, time.Since(entryTime))
+			client.traceExit(40, dataSourceCode, recordId, flags, resultResponse, err, time.Since(entryTime))
 		}()
 	}
 	dataSourceCodeForC := C.CString(dataSourceCode)
@@ -860,7 +860,7 @@ func (client *Szengine) GetEntityByRecordId(ctx context.Context, dataSourceCode 
 	defer C.free(unsafe.Pointer(recordIdForC))
 	result := C.G2_getEntityByRecordID_V2_helper(dataSourceCodeForC, recordIdForC, C.longlong(flags))
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4037, dataSourceCode, recordId, flags, result.returnCode, time.Since(entryTime))
+		err = client.newError(ctx, 4032, dataSourceCode, recordId, flags, result.returnCode, time.Since(entryTime))
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
@@ -870,7 +870,7 @@ func (client *Szengine) GetEntityByRecordId(ctx context.Context, dataSourceCode 
 				"dataSourceCode": dataSourceCode,
 				"recordId":       recordId,
 			}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8038, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8019, err, details)
 		}()
 	}
 	return resultResponse, err
@@ -897,9 +897,9 @@ func (client *Szengine) GetRecord(ctx context.Context, dataSourceCode string, re
 	var resultResponse string
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(85, dataSourceCode, recordId, flags)
+		client.traceEntry(45, dataSourceCode, recordId, flags)
 		defer func() {
-			client.traceExit(86, dataSourceCode, recordId, flags, resultResponse, err, time.Since(entryTime))
+			client.traceExit(46, dataSourceCode, recordId, flags, resultResponse, err, time.Since(entryTime))
 		}()
 	}
 	dataSourceCodeForC := C.CString(dataSourceCode)
@@ -908,7 +908,7 @@ func (client *Szengine) GetRecord(ctx context.Context, dataSourceCode string, re
 	defer C.free(unsafe.Pointer(recordIdForC))
 	result := C.G2_getRecord_V2_helper(dataSourceCodeForC, recordIdForC, C.longlong(flags))
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4040, dataSourceCode, recordId, flags, result.returnCode, time.Since(entryTime))
+		err = client.newError(ctx, 4035, dataSourceCode, recordId, flags, result.returnCode, time.Since(entryTime))
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
@@ -918,7 +918,7 @@ func (client *Szengine) GetRecord(ctx context.Context, dataSourceCode string, re
 				"dataSourceCode": dataSourceCode,
 				"recordId":       recordId,
 			}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8040, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8020, err, details)
 		}()
 	}
 	return resultResponse, err
@@ -943,19 +943,19 @@ func (client *Szengine) GetRedoRecord(ctx context.Context) (string, error) {
 	var resultResponse string
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(87)
-		defer func() { client.traceExit(88, resultResponse, err, time.Since(entryTime)) }()
+		client.traceEntry(47)
+		defer func() { client.traceExit(48, resultResponse, err, time.Since(entryTime)) }()
 	}
 	result := C.G2_getRedoRecord_helper()
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4041, result.returnCode, result, time.Since(entryTime))
+		err = client.newError(ctx, 4036, result.returnCode, result, time.Since(entryTime))
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8041, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8021, err, details)
 		}()
 	}
 	return resultResponse, err
@@ -980,19 +980,19 @@ func (client *Szengine) GetStats(ctx context.Context) (string, error) {
 	var resultResponse string
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(139)
-		defer func() { client.traceExit(140, resultResponse, err, time.Since(entryTime)) }()
+		client.traceEntry(49)
+		defer func() { client.traceExit(50, resultResponse, err, time.Since(entryTime)) }()
 	}
 	result := C.G2_stats_helper()
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4066, result.returnCode, time.Since(entryTime))
+		err = client.newError(ctx, 4054, result.returnCode, time.Since(entryTime))
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8066, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8022, err, details)
 		}()
 	}
 	return resultResponse, err
@@ -1020,14 +1020,14 @@ func (client *Szengine) GetVirtualEntityByRecordId(ctx context.Context, recordLi
 	var resultResponse string
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(93, recordList, flags)
-		defer func() { client.traceExit(94, recordList, flags, resultResponse, err, time.Since(entryTime)) }()
+		client.traceEntry(51, recordList, flags)
+		defer func() { client.traceExit(52, recordList, flags, resultResponse, err, time.Since(entryTime)) }()
 	}
 	recordListForC := C.CString(recordList)
 	defer C.free(unsafe.Pointer(recordListForC))
 	result := C.G2_getVirtualEntityByRecordID_V2_helper(recordListForC, C.longlong(flags))
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4044, recordList, flags, result.returnCode, time.Since(entryTime))
+		err = client.newError(ctx, 4038, recordList, flags, result.returnCode, time.Since(entryTime))
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
@@ -1035,7 +1035,7 @@ func (client *Szengine) GetVirtualEntityByRecordId(ctx context.Context, recordLi
 		go func() {
 			details := map[string]string{
 				"recordList": recordList}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8043, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8023, err, details)
 		}()
 	}
 	return resultResponse, err
@@ -1062,12 +1062,12 @@ func (client *Szengine) HowEntityByEntityId(ctx context.Context, entityId int64,
 	var resultResponse string
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(97, entityId, flags)
-		defer func() { client.traceExit(98, entityId, flags, resultResponse, err, time.Since(entryTime)) }()
+		client.traceEntry(53, entityId, flags)
+		defer func() { client.traceExit(54, entityId, flags, resultResponse, err, time.Since(entryTime)) }()
 	}
 	result := C.G2_howEntityByEntityID_V2_helper(C.longlong(entityId), C.longlong(flags))
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4046, entityId, flags, result.returnCode, time.Since(entryTime))
+		err = client.newError(ctx, 4040, entityId, flags, result.returnCode, time.Since(entryTime))
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
@@ -1076,7 +1076,7 @@ func (client *Szengine) HowEntityByEntityId(ctx context.Context, entityId int64,
 			details := map[string]string{
 				"entityId": strconv.FormatInt(entityId, 10),
 			}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8046, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8024, err, details)
 		}()
 	}
 	return resultResponse, err
@@ -1097,17 +1097,17 @@ func (client *Szengine) PrimeEngine(ctx context.Context) error {
 	var err error = nil
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(103)
-		defer func() { client.traceExit(104, err, time.Since(entryTime)) }()
+		client.traceEntry(57)
+		defer func() { client.traceExit(58, err, time.Since(entryTime)) }()
 	}
 	result := C.G2_primeEngine()
 	if result != 0 {
-		err = client.newError(ctx, 4049, result, time.Since(entryTime))
+		err = client.newError(ctx, 4043, result, time.Since(entryTime))
 	}
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8049, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8026, err, details)
 		}()
 	}
 	return err
@@ -1128,8 +1128,8 @@ func (client *Szengine) ProcessRedoRecord(ctx context.Context, redoRecord string
 	var err error = nil
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(121, redoRecord, flags)
-		defer func() { client.traceExit(122, redoRecord, flags, result, err, time.Since(entryTime)) }()
+		client.traceEntry(59, redoRecord, flags)
+		defer func() { client.traceExit(60, redoRecord, flags, result, err, time.Since(entryTime)) }()
 	}
 	if (flags & sz.SZ_WITH_INFO) > 0 {
 		finalFlags := flags ^ sz.SZ_WITH_INFO
@@ -1140,7 +1140,7 @@ func (client *Szengine) ProcessRedoRecord(ctx context.Context, redoRecord string
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8058, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8027, err, details)
 		}()
 	}
 	return result, err
@@ -1160,8 +1160,8 @@ func (client *Szengine) ReevaluateEntity(ctx context.Context, entityId int64, fl
 	var err error = nil
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(121, entityId, flags)
-		defer func() { client.traceExit(122, entityId, flags, result, err, time.Since(entryTime)) }()
+		client.traceEntry(61, entityId, flags)
+		defer func() { client.traceExit(62, entityId, flags, result, err, time.Since(entryTime)) }()
 	}
 	if (flags & sz.SZ_WITH_INFO) > 0 {
 		finalFlags := flags ^ sz.SZ_WITH_INFO
@@ -1174,7 +1174,7 @@ func (client *Szengine) ReevaluateEntity(ctx context.Context, entityId int64, fl
 			details := map[string]string{
 				"entityId": strconv.FormatInt(entityId, 10),
 			}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8058, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8028, err, details)
 		}()
 	}
 	return result, err
@@ -1195,8 +1195,8 @@ func (client *Szengine) ReevaluateRecord(ctx context.Context, dataSourceCode str
 	var err error = nil
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(123, dataSourceCode, recordId, flags)
-		defer func() { client.traceExit(124, dataSourceCode, recordId, flags, err, time.Since(entryTime)) }()
+		client.traceEntry(63, dataSourceCode, recordId, flags)
+		defer func() { client.traceExit(64, dataSourceCode, recordId, flags, err, time.Since(entryTime)) }()
 	}
 	if (flags & sz.SZ_WITH_INFO) > 0 {
 		finalFlags := flags ^ sz.SZ_WITH_INFO
@@ -1210,7 +1210,7 @@ func (client *Szengine) ReevaluateRecord(ctx context.Context, dataSourceCode str
 				"dataSourceCode": dataSourceCode,
 				"recordId":       recordId,
 			}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8059, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8029, err, details)
 		}()
 	}
 	return result, err
@@ -1230,19 +1230,19 @@ func (client *Szengine) Reinitialize(ctx context.Context, configId int64) error 
 	var err error = nil
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(127, configId)
-		defer func() { client.traceExit(128, configId, err, time.Since(entryTime)) }()
+		client.traceEntry(65, configId)
+		defer func() { client.traceExit(66, configId, err, time.Since(entryTime)) }()
 	}
 	result := C.G2_reinit(C.longlong(configId))
 	if result != 0 {
-		err = client.newError(ctx, 4061, configId, result, time.Since(entryTime))
+		err = client.newError(ctx, 4050, configId, result, time.Since(entryTime))
 	}
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
 				"configId": strconv.FormatInt(configId, 10),
 			}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8061, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8030, err, details)
 		}()
 	}
 	return err
@@ -1267,8 +1267,8 @@ func (client *Szengine) SearchByAttributes(ctx context.Context, attributes strin
 	var err error = nil
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(133, attributes)
-		defer func() { client.traceExit(134, attributes, result, err, time.Since(entryTime)) }()
+		client.traceEntry(69, attributes)
+		defer func() { client.traceExit(70, attributes, result, err, time.Since(entryTime)) }()
 	}
 	if len(searchProfile) > 0 {
 		result, err = client.searchByAttributes_V3(ctx, attributes, searchProfile, flags)
@@ -1278,7 +1278,7 @@ func (client *Szengine) SearchByAttributes(ctx context.Context, attributes strin
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8064, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8031, err, details)
 		}()
 	}
 	return result, err
@@ -1305,8 +1305,8 @@ func (client *Szengine) WhyEntities(ctx context.Context, entityId1 int64, entity
 	var err error = nil
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(143, entityId1, entityId2, flags)
-		defer func() { client.traceExit(144, entityId1, entityId2, flags, result, err, time.Since(entryTime)) }()
+		client.traceEntry(71, entityId1, entityId2, flags)
+		defer func() { client.traceExit(72, entityId1, entityId2, flags, result, err, time.Since(entryTime)) }()
 	}
 	result, err = client.whyEntities_V2(ctx, entityId1, entityId2, flags)
 	if client.observers != nil {
@@ -1315,7 +1315,7 @@ func (client *Szengine) WhyEntities(ctx context.Context, entityId1 int64, entity
 				"entityId1": strconv.FormatInt(entityId1, 10),
 				"entityId2": strconv.FormatInt(entityId2, 10),
 			}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8068, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8032, err, details)
 		}()
 	}
 	return result, err
@@ -1341,8 +1341,8 @@ func (client *Szengine) WhyRecordInEntity(ctx context.Context, dataSourceCode st
 	var err error = nil
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(143, dataSourceCode, recordId, flags)
-		defer func() { client.traceExit(144, dataSourceCode, recordId, flags, result, err, time.Since(entryTime)) }()
+		client.traceEntry(73, dataSourceCode, recordId, flags)
+		defer func() { client.traceExit(74, dataSourceCode, recordId, flags, result, err, time.Since(entryTime)) }()
 	}
 	result, err = client.whyRecordInEntity_V2(ctx, dataSourceCode, recordId, flags)
 	if client.observers != nil {
@@ -1351,7 +1351,7 @@ func (client *Szengine) WhyRecordInEntity(ctx context.Context, dataSourceCode st
 				"dataSourceCode": dataSourceCode,
 				"recordId":       recordId,
 			}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8068, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8033, err, details)
 		}()
 	}
 	return result, err
@@ -1377,9 +1377,9 @@ func (client *Szengine) WhyRecords(ctx context.Context, dataSourceCode1 string, 
 	var err error = nil
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(153, dataSourceCode1, recordId1, dataSourceCode2, recordId2)
+		client.traceEntry(75, dataSourceCode1, recordId1, dataSourceCode2, recordId2)
 		defer func() {
-			client.traceExit(154, dataSourceCode1, recordId1, dataSourceCode2, recordId2, result, err, time.Since(entryTime))
+			client.traceExit(76, dataSourceCode1, recordId1, dataSourceCode2, recordId2, result, err, time.Since(entryTime))
 		}()
 	}
 	result, err = client.whyRecords_V2(ctx, dataSourceCode1, recordId1, dataSourceCode2, recordId2, flags)
@@ -1391,7 +1391,7 @@ func (client *Szengine) WhyRecords(ctx context.Context, dataSourceCode1 string, 
 				"dataSourceCode2": dataSourceCode2,
 				"recordId2":       recordId2,
 			}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8073, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8034, err, details)
 		}()
 	}
 	return result, err
@@ -1426,13 +1426,13 @@ func (client *Szengine) GetSdkId(ctx context.Context) string {
 	var err error = nil
 	if client.isTrace {
 		entryTime := time.Now()
-		client.traceEntry(161)
-		defer func() { client.traceExit(162, err, time.Since(entryTime)) }()
+		client.traceEntry(701)
+		defer func() { client.traceExit(702, err, time.Since(entryTime)) }()
 	}
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8075, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8701, err, details)
 		}()
 	}
 	return "base"
@@ -1453,8 +1453,8 @@ func (client *Szengine) Initialize(ctx context.Context, instanceName string, set
 	var err error = nil
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(99, instanceName, settings, verboseLogging)
-		defer func() { client.traceExit(100, instanceName, settings, verboseLogging, err, time.Since(entryTime)) }()
+		client.traceEntry(55, instanceName, settings, verboseLogging)
+		defer func() { client.traceExit(56, instanceName, settings, verboseLogging, err, time.Since(entryTime)) }()
 	}
 	if configId > 0 {
 		err = client.initializeWithConfigId(ctx, instanceName, settings, configId, verboseLogging)
@@ -1468,7 +1468,7 @@ func (client *Szengine) Initialize(ctx context.Context, instanceName string, set
 				"settings":       settings,
 				"verboseLogging": strconv.FormatInt(verboseLogging, 10),
 			}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8047, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8025, err, details)
 		}()
 	}
 	return err
@@ -1485,8 +1485,8 @@ func (client *Szengine) RegisterObserver(ctx context.Context, observer observer.
 	var err error = nil
 	if client.isTrace {
 		entryTime := time.Now()
-		client.traceEntry(157, observer.GetObserverId(ctx))
-		defer func() { client.traceExit(158, observer.GetObserverId(ctx), err, time.Since(entryTime)) }()
+		client.traceEntry(703, observer.GetObserverId(ctx))
+		defer func() { client.traceExit(704, observer.GetObserverId(ctx), err, time.Since(entryTime)) }()
 	}
 	if client.observers == nil {
 		client.observers = &subject.SubjectImpl{}
@@ -1497,7 +1497,7 @@ func (client *Szengine) RegisterObserver(ctx context.Context, observer observer.
 			details := map[string]string{
 				"observerId": observer.GetObserverId(ctx),
 			}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8076, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8702, err, details)
 		}()
 	}
 	return err
@@ -1516,8 +1516,8 @@ func (client *Szengine) SetLogLevel(ctx context.Context, logLevelName string) er
 	var err error = nil
 	if client.isTrace {
 		entryTime := time.Now()
-		client.traceEntry(137, logLevelName)
-		defer func() { client.traceExit(138, logLevelName, err, time.Since(entryTime)) }()
+		client.traceEntry(705, logLevelName)
+		defer func() { client.traceExit(706, logLevelName, err, time.Since(entryTime)) }()
 	}
 	if !logging.IsValidLogLevelName(logLevelName) {
 		return fmt.Errorf("invalid error level: %s", logLevelName)
@@ -1529,7 +1529,7 @@ func (client *Szengine) SetLogLevel(ctx context.Context, logLevelName string) er
 			details := map[string]string{
 				"logLevelName": logLevelName,
 			}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8077, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8703, err, details)
 		}()
 	}
 	return err
@@ -1568,7 +1568,7 @@ func (client *Szengine) UnregisterObserver(ctx context.Context, observer observe
 		details := map[string]string{
 			"observerId": observer.GetObserverId(ctx),
 		}
-		notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8078, err, details)
+		notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8704, err, details)
 	}
 	err = client.observers.UnregisterObserver(ctx, observer)
 	if !client.observers.HasObservers(ctx) {
@@ -1665,7 +1665,7 @@ func (client *Szengine) deleteRecord(ctx context.Context, dataSourceCode string,
 	defer C.free(unsafe.Pointer(recordIdForC))
 	result := C.G2_deleteRecord(dataSourceCodeForC, recordIdForC)
 	if result != 0 {
-		err = client.newError(ctx, 4007, dataSourceCode, recordId, result, time.Since(entryTime))
+		err = client.newError(ctx, 4004, dataSourceCode, recordId, result, time.Since(entryTime))
 	}
 	return "{}", err
 }
@@ -1696,7 +1696,7 @@ func (client *Szengine) deleteRecordWithInfo(ctx context.Context, dataSourceCode
 	defer C.free(unsafe.Pointer(recordIdForC))
 	result := C.G2_deleteRecordWithInfo_helper(dataSourceCodeForC, recordIdForC, C.longlong(flags))
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4008, dataSourceCode, recordId, flags, result.returnCode, time.Since(entryTime))
+		err = client.newError(ctx, 4005, dataSourceCode, recordId, flags, result.returnCode, time.Since(entryTime))
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
@@ -1727,7 +1727,7 @@ func (client *Szengine) findPathByEntityId_V2(ctx context.Context, startEntityId
 	entryTime := time.Now()
 	result := C.G2_findPathByEntityID_V2_helper(C.longlong(startEntityId), C.longlong(endEntityId), C.longlong(maxDegrees), C.longlong(flags))
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4022, startEntityId, endEntityId, maxDegrees, flags, result.returnCode, time.Since(entryTime))
+		err = client.newError(ctx, 4017, startEntityId, endEntityId, maxDegrees, flags, result.returnCode, time.Since(entryTime))
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
@@ -1770,7 +1770,7 @@ func (client *Szengine) findPathByRecordId_V2(ctx context.Context, startDataSour
 	defer C.free(unsafe.Pointer(endRecordIdForC))
 	result := C.G2_findPathByRecordID_V2_helper(startDataSourceCodeForC, startRecordIdForC, endDataSourceCodeForC, endRecordIdForC, C.longlong(maxDegrees), C.longlong(flags))
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4024, startDataSourceCode, startRecordId, endDataSourceCode, endRecordId, maxDegrees, flags, result.returnCode, time.Since(entryTime))
+		err = client.newError(ctx, 4019, startDataSourceCode, startRecordId, endDataSourceCode, endRecordId, maxDegrees, flags, result.returnCode, time.Since(entryTime))
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
@@ -1811,7 +1811,7 @@ func (client *Szengine) findPathExcludingByEntityId_V2(ctx context.Context, star
 	defer C.free(unsafe.Pointer(exclusionsForC))
 	result := C.G2_findPathExcludingByEntityID_V2_helper(C.longlong(startEntityId), C.longlong(endEntityId), C.longlong(maxDegrees), exclusionsForC, C.longlong(flags))
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4026, startEntityId, endEntityId, maxDegrees, exclusions, flags, result.returnCode, time.Since(entryTime))
+		err = client.newError(ctx, 4021, startEntityId, endEntityId, maxDegrees, exclusions, flags, result.returnCode, time.Since(entryTime))
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
@@ -1862,7 +1862,7 @@ func (client *Szengine) findPathExcludingByRecordId_V2(ctx context.Context, star
 	defer C.free(unsafe.Pointer(exclusionsForC))
 	result := C.G2_findPathExcludingByRecordID_V2_helper(startDataSourceCodeForC, startRecordIdForC, endDataSourceCodeForC, endRecordIdForC, C.longlong(maxDegrees), exclusionsForC, C.longlong(flags))
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4028, startDataSourceCode, startRecordId, endDataSourceCode, endRecordId, maxDegrees, exclusions, flags, result.returnCode, time.Since(entryTime))
+		err = client.newError(ctx, 4023, startDataSourceCode, startRecordId, endDataSourceCode, endRecordId, maxDegrees, exclusions, flags, result.returnCode, time.Since(entryTime))
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
@@ -1902,7 +1902,7 @@ func (client *Szengine) findPathIncludingSourceByEntityId_V2(ctx context.Context
 	defer C.free(unsafe.Pointer(requiredDataSourcesForC))
 	result := C.G2_findPathIncludingSourceByEntityID_V2_helper(C.longlong(startEntityId), C.longlong(endEntityId), C.longlong(maxDegrees), exclusionsForC, requiredDataSourcesForC, C.longlong(flags))
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4030, startEntityId, endEntityId, maxDegrees, exclusions, requiredDataSources, flags, result.returnCode, time.Since(entryTime))
+		err = client.newError(ctx, 4025, startEntityId, endEntityId, maxDegrees, exclusions, requiredDataSources, flags, result.returnCode, time.Since(entryTime))
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
@@ -1952,7 +1952,7 @@ func (client *Szengine) findPathIncludingSourceByRecordId_V2(ctx context.Context
 	defer C.free(unsafe.Pointer(requiredDataSourcesForC))
 	result := C.G2_findPathIncludingSourceByRecordID_V2_helper(startDataSourceCodeForC, startRecordIdForC, endDataSourceCodeForC, endRecordIdForC, C.longlong(maxDegrees), exclusionsForC, requiredDataSourcesForC, C.longlong(flags))
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4032, startDataSourceCode, startRecordId, endDataSourceCode, endRecordId, maxDegrees, exclusions, requiredDataSources, flags, result.returnCode, time.Since(entryTime))
+		err = client.newError(ctx, 4027, startDataSourceCode, startRecordId, endDataSourceCode, endRecordId, maxDegrees, exclusions, requiredDataSources, flags, result.returnCode, time.Since(entryTime))
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
@@ -1981,7 +1981,7 @@ func (client *Szengine) initialize(ctx context.Context, instanceName string, set
 	defer C.free(unsafe.Pointer(settingsForC))
 	result := C.G2_init(instanceNameForC, settingsForC, C.longlong(verboseLogging))
 	if result != 0 {
-		err = client.newError(ctx, 4047, instanceName, settings, verboseLogging, result, time.Since(entryTime))
+		err = client.newError(ctx, 4041, instanceName, settings, verboseLogging, result, time.Since(entryTime))
 	}
 	return err
 }
@@ -2009,7 +2009,7 @@ func (client *Szengine) initializeWithConfigId(ctx context.Context, instanceName
 	defer C.free(unsafe.Pointer(settingsForC))
 	result := C.G2_initWithConfigID(instanceNameForC, settingsForC, C.longlong(configId), C.longlong(verboseLogging))
 	if result != 0 {
-		err = client.newError(ctx, 4048, instanceName, settings, configId, verboseLogging, result, time.Since(entryTime))
+		err = client.newError(ctx, 4042, instanceName, settings, configId, verboseLogging, result, time.Since(entryTime))
 	}
 	return err
 }
@@ -2030,7 +2030,7 @@ func (client *Szengine) processRedoRecord(ctx context.Context, flags int64) (str
 	// result := C.G2_processRedoRecord_helper()
 	//
 	//	if result.returnCode != 0 {
-	//		err = client.newError(ctx, 4051, result.returnCode, result, time.Since(entryTime))
+	//		err = client.newError(ctx, 4044, result.returnCode, result, time.Since(entryTime))
 	//	}
 	//
 	// resultResponse = C.GoString(result.response)
@@ -2079,7 +2079,7 @@ func (client *Szengine) reevaluateEntity(ctx context.Context, entityId int64, fl
 	entryTime := time.Now()
 	result := C.G2_reevaluateEntity(C.longlong(entityId), C.longlong(flags))
 	if result != 0 {
-		err = client.newError(ctx, 4057, entityId, flags, result, time.Since(entryTime))
+		err = client.newError(ctx, 4046, entityId, flags, result, time.Since(entryTime))
 	}
 	return "{}", err
 }
@@ -2107,7 +2107,7 @@ func (client *Szengine) reevaluateEntityWithInfo(ctx context.Context, entityId i
 	entryTime := time.Now()
 	result := C.G2_reevaluateEntityWithInfo_helper(C.longlong(entityId), C.longlong(flags))
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4058, entityId, flags, result.returnCode, time.Since(entryTime))
+		err = client.newError(ctx, 4047, entityId, flags, result.returnCode, time.Since(entryTime))
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
@@ -2136,7 +2136,7 @@ func (client *Szengine) reevaluateRecord(ctx context.Context, dataSourceCode str
 	defer C.free(unsafe.Pointer(recordIdForC))
 	result := C.G2_reevaluateRecord(dataSourceCodeForC, recordIdForC, C.longlong(flags))
 	if result != 0 {
-		err = client.newError(ctx, 4059, dataSourceCode, recordId, flags, result, time.Since(entryTime))
+		err = client.newError(ctx, 4048, dataSourceCode, recordId, flags, result, time.Since(entryTime))
 	}
 	return "{}", err
 }
@@ -2169,7 +2169,7 @@ func (client *Szengine) reevaluateRecordWithInfo(ctx context.Context, dataSource
 	defer C.free(unsafe.Pointer(recordIdForC))
 	result := C.G2_reevaluateRecordWithInfo_helper(dataSourceCodeForC, recordIdForC, C.longlong(flags))
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4060, dataSourceCode, recordId, flags, result.returnCode, time.Since(entryTime))
+		err = client.newError(ctx, 4049, dataSourceCode, recordId, flags, result.returnCode, time.Since(entryTime))
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
@@ -2200,7 +2200,7 @@ func (client *Szengine) searchByAttributes_V2(ctx context.Context, attributes st
 	defer C.free(unsafe.Pointer(attributesForC))
 	result := C.G2_searchByAttributes_V2_helper(attributesForC, C.longlong(flags))
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4065, attributes, flags, result.returnCode, time.Since(entryTime))
+		err = client.newError(ctx, 4052, attributes, flags, result.returnCode, time.Since(entryTime))
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
@@ -2259,7 +2259,7 @@ func (client *Szengine) whyEntities_V2(ctx context.Context, entityId1 int64, ent
 	entryTime := time.Now()
 	result := C.G2_whyEntities_V2_helper(C.longlong(entityId1), C.longlong(entityId2), C.longlong(flags))
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4068, entityId1, entityId2, flags, result.returnCode, time.Since(entryTime))
+		err = client.newError(ctx, 4056, entityId1, entityId2, flags, result.returnCode, time.Since(entryTime))
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
@@ -2327,7 +2327,7 @@ func (client *Szengine) whyRecords_V2(ctx context.Context, dataSourceCode1 strin
 	defer C.free(unsafe.Pointer(recordId2ForC))
 	result := C.G2_whyRecords_V2_helper(dataSource1CodeForC, recordId1ForC, dataSource2CodeForC, recordId2ForC, C.longlong(flags))
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4074, dataSourceCode1, recordId1, dataSourceCode2, recordId2, flags, result.returnCode, time.Since(entryTime))
+		err = client.newError(ctx, 4060, dataSourceCode1, recordId1, dataSourceCode2, recordId2, flags, result.returnCode, time.Since(entryTime))
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
@@ -2402,8 +2402,8 @@ func (client *Szengine) clearLastException(ctx context.Context) error {
 	var err error = nil
 	if client.isTrace {
 		entryTime := time.Now()
-		client.traceEntry(11)
-		defer func() { client.traceExit(12, err, time.Since(entryTime)) }()
+		client.traceEntry(3)
+		defer func() { client.traceExit(4, err, time.Since(entryTime)) }()
 	}
 	C.G2_clearLastException()
 	return err
@@ -2425,8 +2425,8 @@ func (client *Szengine) getLastException(ctx context.Context) (string, error) {
 	var result string
 	if client.isTrace {
 		entryTime := time.Now()
-		client.traceEntry(79)
-		defer func() { client.traceExit(80, result, err, time.Since(entryTime)) }()
+		client.traceEntry(41)
+		defer func() { client.traceExit(42, result, err, time.Since(entryTime)) }()
 	}
 	stringBuffer := client.getByteArray(initialByteArraySize)
 	C.G2_getLastException((*C.char)(unsafe.Pointer(&stringBuffer[0])), C.size_t(len(stringBuffer)))
@@ -2453,8 +2453,8 @@ func (client *Szengine) getLastExceptionCode(ctx context.Context) (int, error) {
 	var result int
 	if client.isTrace {
 		entryTime := time.Now()
-		client.traceEntry(81)
-		defer func() { client.traceExit(82, result, err, time.Since(entryTime)) }()
+		client.traceEntry(43)
+		defer func() { client.traceExit(44, result, err, time.Since(entryTime)) }()
 	}
 	result = int(C.G2_getLastExceptionCode())
 	return result, err
