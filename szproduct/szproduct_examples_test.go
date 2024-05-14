@@ -91,13 +91,14 @@ func ExampleSzproduct_Initialize() {
 	// Output:
 }
 
-func ExampleSzproduct_Destroy() {
-	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szproduct/szproduct_examples_test.go
-	ctx := context.TODO()
-	szProduct := getSzProduct(ctx)
-	err := szProduct.Destroy(ctx)
-	if err != nil {
-		fmt.Println(err)
-	}
-	// Output:
-}
+// func ExampleSzproduct_Destroy() {
+// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szproduct/szproduct_examples_test.go
+// TODO: Uncomment after bug introduced in Senzing 4.0.0.24131 is fixed.
+// ctx := context.TODO()
+// szProduct := getSzProduct(ctx)
+// err := szProduct.Destroy(ctx)
+// if err != nil {
+// 	fmt.Println(err)
+// }
+// Output:
+// }
