@@ -248,8 +248,8 @@ func (client *Szconfig) ExportConfig(ctx context.Context, configHandle uintptr) 
 	var resultResponse string
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(23, configHandle)
-		defer func() { client.traceExit(24, configHandle, resultResponse, err, time.Since(entryTime)) }()
+		client.traceEntry(13, configHandle)
+		defer func() { client.traceExit(14, configHandle, resultResponse, err, time.Since(entryTime)) }()
 	}
 	result := C.G2Config_save_helper(C.uintptr_t(configHandle))
 	if result.returnCode != 0 {
@@ -260,7 +260,7 @@ func (client *Szconfig) ExportConfig(ctx context.Context, configHandle uintptr) 
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8009, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8006, err, details)
 		}()
 	}
 	return resultResponse, err
@@ -286,8 +286,8 @@ func (client *Szconfig) GetDataSources(ctx context.Context, configHandle uintptr
 	var resultResponse string
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(19, configHandle)
-		defer func() { client.traceExit(20, configHandle, resultResponse, err, time.Since(entryTime)) }()
+		client.traceEntry(15, configHandle)
+		defer func() { client.traceExit(16, configHandle, resultResponse, err, time.Since(entryTime)) }()
 	}
 	result := C.G2Config_listDataSources_helper(C.uintptr_t(configHandle))
 	if result.returnCode != 0 {
@@ -370,13 +370,13 @@ func (client *Szconfig) GetSdkId(ctx context.Context) string {
 	var err error = nil
 	if client.isTrace {
 		entryTime := time.Now()
-		client.traceEntry(31)
-		defer func() { client.traceExit(32, err, time.Since(entryTime)) }()
+		client.traceEntry(701)
+		defer func() { client.traceExit(702, err, time.Since(entryTime)) }()
 	}
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8010, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8701, err, details)
 		}()
 	}
 	return "base"
@@ -399,8 +399,8 @@ func (client *Szconfig) Initialize(ctx context.Context, instanceName string, set
 	var err error = nil
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(17, instanceName, settings, verboseLogging)
-		defer func() { client.traceExit(18, instanceName, settings, verboseLogging, err, time.Since(entryTime)) }()
+		client.traceEntry(23, instanceName, settings, verboseLogging)
+		defer func() { client.traceExit(24, instanceName, settings, verboseLogging, err, time.Since(entryTime)) }()
 	}
 	instanceNameForC := C.CString(instanceName)
 	defer C.free(unsafe.Pointer(instanceNameForC))
@@ -417,7 +417,7 @@ func (client *Szconfig) Initialize(ctx context.Context, instanceName string, set
 				"settings":       settings,
 				"verboseLogging": strconv.FormatInt(verboseLogging, 10),
 			}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8006, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8009, err, details)
 		}()
 	}
 	return err
@@ -434,8 +434,8 @@ func (client *Szconfig) RegisterObserver(ctx context.Context, observer observer.
 	var err error = nil
 	if client.isTrace {
 		entryTime := time.Now()
-		client.traceEntry(27, observer.GetObserverId(ctx))
-		defer func() { client.traceExit(28, observer.GetObserverId(ctx), err, time.Since(entryTime)) }()
+		client.traceEntry(703, observer.GetObserverId(ctx))
+		defer func() { client.traceExit(704, observer.GetObserverId(ctx), err, time.Since(entryTime)) }()
 	}
 	if client.observers == nil {
 		client.observers = &subject.SubjectImpl{}
@@ -446,7 +446,7 @@ func (client *Szconfig) RegisterObserver(ctx context.Context, observer observer.
 			details := map[string]string{
 				"observerId": observer.GetObserverId(ctx),
 			}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8011, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8702, err, details)
 		}()
 	}
 	return err
@@ -465,8 +465,8 @@ func (client *Szconfig) SetLogLevel(ctx context.Context, logLevelName string) er
 	var err error = nil
 	if client.isTrace {
 		entryTime := time.Now()
-		client.traceEntry(25, logLevelName)
-		defer func() { client.traceExit(26, logLevelName, err, time.Since(entryTime)) }()
+		client.traceEntry(705, logLevelName)
+		defer func() { client.traceExit(706, logLevelName, err, time.Since(entryTime)) }()
 	}
 	if !logging.IsValidLogLevelName(logLevelName) {
 		return fmt.Errorf("invalid error level: %s", logLevelName)
@@ -478,7 +478,7 @@ func (client *Szconfig) SetLogLevel(ctx context.Context, logLevelName string) er
 			details := map[string]string{
 				"logLevel": logLevelName,
 			}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8012, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8703, err, details)
 		}()
 	}
 	return err
@@ -506,8 +506,8 @@ func (client *Szconfig) UnregisterObserver(ctx context.Context, observer observe
 	var err error = nil
 	if client.isTrace {
 		entryTime := time.Now()
-		client.traceEntry(29, observer.GetObserverId(ctx))
-		defer func() { client.traceExit(30, observer.GetObserverId(ctx), err, time.Since(entryTime)) }()
+		client.traceEntry(707, observer.GetObserverId(ctx))
+		defer func() { client.traceExit(708, observer.GetObserverId(ctx), err, time.Since(entryTime)) }()
 	}
 	if client.observers != nil {
 		// Tricky code:
@@ -517,7 +517,7 @@ func (client *Szconfig) UnregisterObserver(ctx context.Context, observer observe
 		details := map[string]string{
 			"observerId": observer.GetObserverId(ctx),
 		}
-		notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8013, err, details)
+		notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8704, err, details)
 	}
 	err = client.observers.UnregisterObserver(ctx, observer)
 	if !client.observers.HasObservers(ctx) {
@@ -609,8 +609,8 @@ func (client *Szconfig) getLastException(ctx context.Context) (string, error) {
 	var result string
 	if client.isTrace {
 		entryTime := time.Now()
-		client.traceEntry(13)
-		defer func() { client.traceExit(14, result, err, time.Since(entryTime)) }()
+		client.traceEntry(17)
+		defer func() { client.traceExit(18, result, err, time.Since(entryTime)) }()
 	}
 	stringBuffer := client.getByteArray(initialByteArraySize)
 	C.G2Config_getLastException((*C.char)(unsafe.Pointer(&stringBuffer[0])), C.size_t(len(stringBuffer)))
@@ -637,8 +637,8 @@ func (client *Szconfig) getLastExceptionCode(ctx context.Context) (int, error) {
 	var result int
 	if client.isTrace {
 		entryTime := time.Now()
-		client.traceEntry(15)
-		defer func() { client.traceExit(16, result, err, time.Since(entryTime)) }()
+		client.traceEntry(19)
+		defer func() { client.traceExit(20, result, err, time.Since(entryTime)) }()
 	}
 	result = int(C.G2Config_getLastExceptionCode())
 	return result, err

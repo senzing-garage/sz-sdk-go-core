@@ -93,15 +93,15 @@ func (client *Szproduct) GetLicense(ctx context.Context) (string, error) {
 	var resultResponse string
 	if client.isTrace {
 		entryTime := time.Now()
-		client.traceEntry(11)
-		defer func() { client.traceExit(12, resultResponse, err, time.Since(entryTime)) }()
+		client.traceEntry(9)
+		defer func() { client.traceExit(10, resultResponse, err, time.Since(entryTime)) }()
 	}
 	result := C.G2Product_license()
 	resultResponse = C.GoString(result)
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8003, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8002, err, details)
 		}()
 	}
 	return resultResponse, err
@@ -125,15 +125,15 @@ func (client *Szproduct) GetVersion(ctx context.Context) (string, error) {
 	var resultResponse string
 	if client.isTrace {
 		entryTime := time.Now()
-		client.traceEntry(19)
-		defer func() { client.traceExit(20, resultResponse, err, time.Since(entryTime)) }()
+		client.traceEntry(11)
+		defer func() { client.traceExit(12, resultResponse, err, time.Since(entryTime)) }()
 	}
 	result := C.G2Product_version()
 	resultResponse = C.GoString(result)
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8006, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8003, err, details)
 		}()
 	}
 	return resultResponse, err
@@ -168,13 +168,13 @@ func (client *Szproduct) GetSdkId(ctx context.Context) string {
 	var err error = nil
 	if client.isTrace {
 		entryTime := time.Now()
-		client.traceEntry(25)
-		defer func() { client.traceExit(26, err, time.Since(entryTime)) }()
+		client.traceEntry(701)
+		defer func() { client.traceExit(702, err, time.Since(entryTime)) }()
 	}
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8007, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8701, err, details)
 		}()
 	}
 	return "base"
@@ -197,8 +197,8 @@ func (client *Szproduct) Initialize(ctx context.Context, instanceName string, se
 	var err error = nil
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(9, instanceName, settings, verboseLogging)
-		defer func() { client.traceExit(10, instanceName, settings, verboseLogging, err, time.Since(entryTime)) }()
+		client.traceEntry(13, instanceName, settings, verboseLogging)
+		defer func() { client.traceExit(14, instanceName, settings, verboseLogging, err, time.Since(entryTime)) }()
 	}
 	moduleNameForC := C.CString(instanceName)
 	defer C.free(unsafe.Pointer(moduleNameForC))
@@ -215,7 +215,7 @@ func (client *Szproduct) Initialize(ctx context.Context, instanceName string, se
 				"settings":       settings,
 				"verboseLogging": strconv.FormatInt(verboseLogging, 10),
 			}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8002, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8004, err, details)
 		}()
 	}
 	return err
@@ -232,8 +232,8 @@ func (client *Szproduct) RegisterObserver(ctx context.Context, observer observer
 	var err error = nil
 	if client.isTrace {
 		entryTime := time.Now()
-		client.traceEntry(21, observer.GetObserverId(ctx))
-		defer func() { client.traceExit(22, observer.GetObserverId(ctx), err, time.Since(entryTime)) }()
+		client.traceEntry(703, observer.GetObserverId(ctx))
+		defer func() { client.traceExit(704, observer.GetObserverId(ctx), err, time.Since(entryTime)) }()
 	}
 	if client.observers == nil {
 		client.observers = &subject.SubjectImpl{}
@@ -244,7 +244,7 @@ func (client *Szproduct) RegisterObserver(ctx context.Context, observer observer
 			details := map[string]string{
 				"observerId": observer.GetObserverId(ctx),
 			}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8008, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8702, err, details)
 		}()
 	}
 	return err
@@ -263,8 +263,8 @@ func (client *Szproduct) SetLogLevel(ctx context.Context, logLevelName string) e
 	var err error = nil
 	if client.isTrace {
 		entryTime := time.Now()
-		client.traceEntry(13, logLevelName)
-		defer func() { client.traceExit(14, logLevelName, err, time.Since(entryTime)) }()
+		client.traceEntry(705, logLevelName)
+		defer func() { client.traceExit(706, logLevelName, err, time.Since(entryTime)) }()
 	}
 	if !logging.IsValidLogLevelName(logLevelName) {
 		return fmt.Errorf("invalid error level: %s", logLevelName)
@@ -276,7 +276,7 @@ func (client *Szproduct) SetLogLevel(ctx context.Context, logLevelName string) e
 			details := map[string]string{
 				"logLevelName": logLevelName,
 			}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8009, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8703, err, details)
 		}()
 	}
 	return err
@@ -304,8 +304,8 @@ func (client *Szproduct) UnregisterObserver(ctx context.Context, observer observ
 	var err error = nil
 	if client.isTrace {
 		entryTime := time.Now()
-		client.traceEntry(23, observer.GetObserverId(ctx))
-		defer func() { client.traceExit(24, observer.GetObserverId(ctx), err, time.Since(entryTime)) }()
+		client.traceEntry(707, observer.GetObserverId(ctx))
+		defer func() { client.traceExit(708, observer.GetObserverId(ctx), err, time.Since(entryTime)) }()
 	}
 	if client.observers != nil {
 		// Tricky code:
@@ -315,7 +315,7 @@ func (client *Szproduct) UnregisterObserver(ctx context.Context, observer observ
 		details := map[string]string{
 			"observerId": observer.GetObserverId(ctx),
 		}
-		notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8010, err, details)
+		notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8704, err, details)
 	}
 	err = client.observers.UnregisterObserver(ctx, observer)
 	if !client.observers.HasObservers(ctx) {
