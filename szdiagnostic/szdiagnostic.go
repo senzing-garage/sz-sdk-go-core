@@ -99,17 +99,17 @@ func (client *Szdiagnostic) Destroy(ctx context.Context) error {
 	var err error = nil
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(7)
-		defer func() { client.traceExit(8, err, time.Since(entryTime)) }()
+		client.traceEntry(5)
+		defer func() { client.traceExit(6, err, time.Since(entryTime)) }()
 	}
 	result := C.G2Diagnostic_destroy()
 	if result != 0 {
-		err = client.newError(ctx, 4003, result, time.Since(entryTime))
+		err = client.newError(ctx, 4002, result, time.Since(entryTime))
 	}
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8003, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8002, err, details)
 		}()
 	}
 	return err
@@ -133,20 +133,20 @@ func (client *Szdiagnostic) GetDatastoreInfo(ctx context.Context) (string, error
 	var resultResponse string
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(1)
-		defer func() { client.traceExit(2, resultResponse, err, time.Since(entryTime)) }()
+		client.traceEntry(7)
+		defer func() { client.traceExit(8, resultResponse, err, time.Since(entryTime)) }()
 	}
 	result := C.G2Diagnostic_getDatastoreInfo_helper()
 
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4001, result.returnCode, time.Since(entryTime))
+		err = client.newError(ctx, 4003, result.returnCode, time.Since(entryTime))
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8001, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8003, err, details)
 		}()
 	}
 	return resultResponse, err
@@ -166,14 +166,13 @@ func (client *Szdiagnostic) GetFeature(ctx context.Context, featureId int64) (st
 	var err error = nil
 	var resultResponse string
 	entryTime := time.Now()
-	// TODO: In GetFeature, fix trace, error, and notifier IDs.
 	if client.isTrace {
-		client.traceEntry(99, featureId)
-		defer func() { client.traceExit(99, featureId, err, time.Since(entryTime)) }()
+		client.traceEntry(9, featureId)
+		defer func() { client.traceExit(10, featureId, err, time.Since(entryTime)) }()
 	}
 	result := C.G2Diagnostic_getFeature_helper(C.longlong(featureId))
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 9999, featureId, result, time.Since(entryTime))
+		err = client.newError(ctx, 4004, featureId, result, time.Since(entryTime))
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
@@ -182,7 +181,7 @@ func (client *Szdiagnostic) GetFeature(ctx context.Context, featureId int64) (st
 			details := map[string]string{
 				"featureId": strconv.FormatInt(featureId, 10),
 			}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 9999, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8004, err, details)
 		}()
 	}
 	return resultResponse, err
@@ -203,17 +202,17 @@ func (client *Szdiagnostic) PurgeRepository(ctx context.Context) error {
 	var err error = nil
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(117)
-		defer func() { client.traceExit(118, err, time.Since(entryTime)) }()
+		client.traceEntry(17)
+		defer func() { client.traceExit(18, err, time.Since(entryTime)) }()
 	}
 	result := C.G2Diagnostic_purgeRepository()
 	if result != 0 {
-		err = client.newError(ctx, 4056, result, time.Since(entryTime))
+		err = client.newError(ctx, 4008, result, time.Since(entryTime))
 	}
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8056, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8006, err, details)
 		}()
 	}
 	return err
@@ -233,19 +232,19 @@ func (client *Szdiagnostic) Reinitialize(ctx context.Context, configId int64) er
 	var err error = nil
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(51, configId)
-		defer func() { client.traceExit(52, configId, err, time.Since(entryTime)) }()
+		client.traceEntry(19, configId)
+		defer func() { client.traceExit(20, configId, err, time.Since(entryTime)) }()
 	}
 	result := C.G2Diagnostic_reinit(C.longlong(configId))
 	if result != 0 {
-		err = client.newError(ctx, 4020, configId, result, time.Since(entryTime))
+		err = client.newError(ctx, 4009, configId, result, time.Since(entryTime))
 	}
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
 				"configId": strconv.FormatInt(configId, 10),
 			}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8023, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8007, err, details)
 		}()
 	}
 	return err
@@ -280,13 +279,13 @@ func (client *Szdiagnostic) GetSdkId(ctx context.Context) string {
 	var err error = nil
 	if client.isTrace {
 		entryTime := time.Now()
-		client.traceEntry(59)
-		defer func() { client.traceExit(60, err, time.Since(entryTime)) }()
+		client.traceEntry(701)
+		defer func() { client.traceExit(702, err, time.Since(entryTime)) }()
 	}
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8024, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8701, err, details)
 		}()
 	}
 	return "base"
@@ -304,10 +303,31 @@ Input
   - verboseLogging: A flag to enable deeper logging of the G2 processing. 0 for no Senzing logging; 1 for logging.
 */
 func (client *Szdiagnostic) Initialize(ctx context.Context, instanceName string, settings string, configId int64, verboseLogging int64) error {
-	if configId > 0 {
-		return client.initializeWithConfigId(ctx, instanceName, settings, configId, verboseLogging)
+	var err error = nil
+	entryTime := time.Now()
+	if client.isTrace {
+		client.traceEntry(15, instanceName, settings, configId, verboseLogging)
+		defer func() {
+			client.traceExit(16, instanceName, settings, configId, verboseLogging, err, time.Since(entryTime))
+		}()
 	}
-	return client.initialize(ctx, instanceName, settings, verboseLogging)
+	if configId > 0 {
+		err = client.initializeWithConfigId(ctx, instanceName, settings, configId, verboseLogging)
+	} else {
+		err = client.initialize(ctx, instanceName, settings, verboseLogging)
+	}
+	if client.observers != nil {
+		go func() {
+			details := map[string]string{
+				"iniParams":      settings,
+				"initConfigID":   strconv.FormatInt(configId, 10),
+				"moduleName":     instanceName,
+				"verboseLogging": strconv.FormatInt(verboseLogging, 10),
+			}
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8005, err, details)
+		}()
+	}
+	return err
 }
 
 /*
@@ -321,8 +341,8 @@ func (client *Szdiagnostic) RegisterObserver(ctx context.Context, observer obser
 	var err error = nil
 	if client.isTrace {
 		entryTime := time.Now()
-		client.traceEntry(55, observer.GetObserverId(ctx))
-		defer func() { client.traceExit(56, observer.GetObserverId(ctx), err, time.Since(entryTime)) }()
+		client.traceEntry(703, observer.GetObserverId(ctx))
+		defer func() { client.traceExit(704, observer.GetObserverId(ctx), err, time.Since(entryTime)) }()
 	}
 	if client.observers == nil {
 		client.observers = &subject.SubjectImpl{}
@@ -333,7 +353,7 @@ func (client *Szdiagnostic) RegisterObserver(ctx context.Context, observer obser
 			details := map[string]string{
 				"observerId": observer.GetObserverId(ctx),
 			}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8025, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8702, err, details)
 		}()
 	}
 	return err
@@ -352,8 +372,8 @@ func (client *Szdiagnostic) SetLogLevel(ctx context.Context, logLevelName string
 	var err error = nil
 	if client.isTrace {
 		entryTime := time.Now()
-		client.traceEntry(53, logLevelName)
-		defer func() { client.traceExit(54, logLevelName, err, time.Since(entryTime)) }()
+		client.traceEntry(705, logLevelName)
+		defer func() { client.traceExit(706, logLevelName, err, time.Since(entryTime)) }()
 	}
 	if !logging.IsValidLogLevelName(logLevelName) {
 		return fmt.Errorf("invalid error level: %s", logLevelName)
@@ -365,7 +385,7 @@ func (client *Szdiagnostic) SetLogLevel(ctx context.Context, logLevelName string
 			details := map[string]string{
 				"logLevel": logLevelName,
 			}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8026, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8703, err, details)
 		}()
 	}
 	return err
@@ -393,8 +413,8 @@ func (client *Szdiagnostic) UnregisterObserver(ctx context.Context, observer obs
 	var err error = nil
 	if client.isTrace {
 		entryTime := time.Now()
-		client.traceEntry(57, observer.GetObserverId(ctx))
-		defer func() { client.traceExit(58, observer.GetObserverId(ctx), err, time.Since(entryTime)) }()
+		client.traceEntry(707, observer.GetObserverId(ctx))
+		defer func() { client.traceExit(708, observer.GetObserverId(ctx), err, time.Since(entryTime)) }()
 	}
 	if client.observers != nil {
 		// Tricky code:
@@ -404,7 +424,7 @@ func (client *Szdiagnostic) UnregisterObserver(ctx context.Context, observer obs
 		details := map[string]string{
 			"observerId": observer.GetObserverId(ctx),
 		}
-		notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8027, err, details)
+		notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8704, err, details)
 	}
 	err = client.observers.UnregisterObserver(ctx, observer)
 	if !client.observers.HasObservers(ctx) {
@@ -496,8 +516,8 @@ func (client *Szdiagnostic) getLastException(ctx context.Context) (string, error
 	var result string
 	if client.isTrace {
 		entryTime := time.Now()
-		client.traceEntry(31)
-		defer func() { client.traceExit(32, result, err, time.Since(entryTime)) }()
+		client.traceEntry(11)
+		defer func() { client.traceExit(12, result, err, time.Since(entryTime)) }()
 	}
 	stringBuffer := client.getByteArray(initialByteArraySize)
 	C.G2Diagnostic_getLastException((*C.char)(unsafe.Pointer(&stringBuffer[0])), C.size_t(len(stringBuffer)))
@@ -524,8 +544,8 @@ func (client *Szdiagnostic) getLastExceptionCode(ctx context.Context) (int, erro
 	var result int
 	if client.isTrace {
 		entryTime := time.Now()
-		client.traceEntry(33)
-		defer func() { client.traceExit(34, result, err, time.Since(entryTime)) }()
+		client.traceEntry(13)
+		defer func() { client.traceExit(14, result, err, time.Since(entryTime)) }()
 	}
 	result = int(C.G2Diagnostic_getLastExceptionCode())
 	return result, err
@@ -549,6 +569,33 @@ func (client *Szdiagnostic) getByteArray(size int) []byte {
 // ----------------------------------------------------------------------------
 
 /*
+The initialize method initializes the Senzing SzDiagnostic object.
+It must be called prior to any other calls.
+
+Input
+  - ctx: A context to control lifecycle.
+  - instanceName: A name for the auditing node, to help identify it within system logs.
+  - settings: A JSON string containing configuration parameters.
+  - verboseLogging: A flag to enable deeper logging of the G2 processing. 0 for no Senzing logging; 1 for logging.
+*/
+func (client *Szdiagnostic) initialize(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
+	// _DLEXPORT int G2Diagnostic_init(const char *moduleName, const char *iniParams, const int verboseLogging);
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	var err error = nil
+	entryTime := time.Now()
+	instanceNameForC := C.CString(instanceName)
+	defer C.free(unsafe.Pointer(instanceNameForC))
+	settingsForC := C.CString(settings)
+	defer C.free(unsafe.Pointer(settingsForC))
+	result := C.G2Diagnostic_init(instanceNameForC, settingsForC, C.longlong(verboseLogging))
+	if result != 0 {
+		err = client.newError(ctx, 4006, instanceName, settings, verboseLogging, result, time.Since(entryTime))
+	}
+	return err
+}
+
+/*
 The initializeWithConfigId method initializes the Senzing SzDiagnostic object with a non-default configuration ID.
 It must be called prior to any other calls.
 
@@ -565,71 +612,13 @@ func (client *Szdiagnostic) initializeWithConfigId(ctx context.Context, instance
 	defer runtime.UnlockOSThread()
 	var err error = nil
 	entryTime := time.Now()
-	if client.isTrace {
-		client.traceEntry(49, instanceName, settings, configId, verboseLogging)
-		defer func() {
-			client.traceExit(50, instanceName, settings, configId, verboseLogging, err, time.Since(entryTime))
-		}()
-	}
-	moduleNameForC := C.CString(instanceName)
-	defer C.free(unsafe.Pointer(moduleNameForC))
-	iniParamsForC := C.CString(settings)
-	defer C.free(unsafe.Pointer(iniParamsForC))
-	result := C.G2Diagnostic_initWithConfigID(moduleNameForC, iniParamsForC, C.longlong(configId), C.longlong(verboseLogging))
+	instanceNameForC := C.CString(instanceName)
+	defer C.free(unsafe.Pointer(instanceNameForC))
+	settingsForC := C.CString(settings)
+	defer C.free(unsafe.Pointer(settingsForC))
+	result := C.G2Diagnostic_initWithConfigID(instanceNameForC, settingsForC, C.longlong(configId), C.longlong(verboseLogging))
 	if result != 0 {
-		err = client.newError(ctx, 4019, instanceName, settings, configId, verboseLogging, result, time.Since(entryTime))
-	}
-	if client.observers != nil {
-		go func() {
-			details := map[string]string{
-				"iniParams":      settings,
-				"initConfigID":   strconv.FormatInt(configId, 10),
-				"moduleName":     instanceName,
-				"verboseLogging": strconv.FormatInt(verboseLogging, 10),
-			}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8022, err, details)
-		}()
-	}
-	return err
-}
-
-/*
-The Init method initializes the Senzing SzDiagnostic object.
-It must be called prior to any other calls.
-
-Input
-  - ctx: A context to control lifecycle.
-  - instanceName: A name for the auditing node, to help identify it within system logs.
-  - settings: A JSON string containing configuration parameters.
-  - verboseLogging: A flag to enable deeper logging of the G2 processing. 0 for no Senzing logging; 1 for logging.
-*/
-func (client *Szdiagnostic) initialize(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
-	// _DLEXPORT int G2Diagnostic_init(const char *moduleName, const char *iniParams, const int verboseLogging);
-	runtime.LockOSThread()
-	defer runtime.UnlockOSThread()
-	var err error = nil
-	entryTime := time.Now()
-	if client.isTrace {
-		client.traceEntry(47, instanceName, settings, verboseLogging)
-		defer func() { client.traceExit(48, instanceName, settings, verboseLogging, err, time.Since(entryTime)) }()
-	}
-	moduleNameForC := C.CString(instanceName)
-	defer C.free(unsafe.Pointer(moduleNameForC))
-	iniParamsForC := C.CString(settings)
-	defer C.free(unsafe.Pointer(iniParamsForC))
-	result := C.G2Diagnostic_init(moduleNameForC, iniParamsForC, C.longlong(verboseLogging))
-	if result != 0 {
-		err = client.newError(ctx, 4018, instanceName, settings, verboseLogging, result, time.Since(entryTime))
-	}
-	if client.observers != nil {
-		go func() {
-			details := map[string]string{
-				"instanceName":   instanceName,
-				"settings":       settings,
-				"verboseLogging": strconv.FormatInt(verboseLogging, 10),
-			}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8021, err, details)
-		}()
+		err = client.newError(ctx, 4007, instanceName, settings, configId, verboseLogging, result, time.Since(entryTime))
 	}
 	return err
 }

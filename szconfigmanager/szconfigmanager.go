@@ -324,13 +324,13 @@ func (client *Szconfigmanager) GetSdkId(ctx context.Context) string {
 	var err error = nil
 	if client.isTrace {
 		entryTime := time.Now()
-		client.traceEntry(29)
-		defer func() { client.traceExit(30, err, time.Since(entryTime)) }()
+		client.traceEntry(701)
+		defer func() { client.traceExit(702, err, time.Since(entryTime)) }()
 	}
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8010, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8701, err, details)
 		}()
 	}
 	return "base"
@@ -388,8 +388,8 @@ func (client *Szconfigmanager) RegisterObserver(ctx context.Context, observer ob
 	var err error = nil
 	if client.isTrace {
 		entryTime := time.Now()
-		client.traceEntry(25, observer.GetObserverId(ctx))
-		defer func() { client.traceExit(26, observer.GetObserverId(ctx), err, time.Since(entryTime)) }()
+		client.traceEntry(703, observer.GetObserverId(ctx))
+		defer func() { client.traceExit(704, observer.GetObserverId(ctx), err, time.Since(entryTime)) }()
 	}
 	if client.observers == nil {
 		client.observers = &subject.SubjectImpl{}
@@ -400,7 +400,7 @@ func (client *Szconfigmanager) RegisterObserver(ctx context.Context, observer ob
 			details := map[string]string{
 				"observerId": observer.GetObserverId(ctx),
 			}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8010, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8702, err, details)
 		}()
 	}
 	return err
@@ -419,8 +419,8 @@ func (client *Szconfigmanager) SetLogLevel(ctx context.Context, logLevelName str
 	var err error = nil
 	if client.isTrace {
 		entryTime := time.Now()
-		client.traceEntry(23, logLevelName)
-		defer func() { client.traceExit(24, logLevelName, err, time.Since(entryTime)) }()
+		client.traceEntry(705, logLevelName)
+		defer func() { client.traceExit(706, logLevelName, err, time.Since(entryTime)) }()
 	}
 	if !logging.IsValidLogLevelName(logLevelName) {
 		return fmt.Errorf("invalid error level: %s", logLevelName)
@@ -432,7 +432,7 @@ func (client *Szconfigmanager) SetLogLevel(ctx context.Context, logLevelName str
 			details := map[string]string{
 				"logLevelName": logLevelName,
 			}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8011, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8703, err, details)
 		}()
 	}
 	return err
@@ -460,8 +460,8 @@ func (client *Szconfigmanager) UnregisterObserver(ctx context.Context, observer 
 	var err error = nil
 	if client.isTrace {
 		entryTime := time.Now()
-		client.traceEntry(27, observer.GetObserverId(ctx))
-		defer func() { client.traceExit(28, observer.GetObserverId(ctx), err, time.Since(entryTime)) }()
+		client.traceEntry(707, observer.GetObserverId(ctx))
+		defer func() { client.traceExit(708, observer.GetObserverId(ctx), err, time.Since(entryTime)) }()
 	}
 	if client.observers != nil {
 		// Tricky code:
@@ -471,7 +471,7 @@ func (client *Szconfigmanager) UnregisterObserver(ctx context.Context, observer 
 		details := map[string]string{
 			"observerId": observer.GetObserverId(ctx),
 		}
-		notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8012, err, details)
+		notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8704, err, details)
 	}
 	err = client.observers.UnregisterObserver(ctx, observer)
 	if !client.observers.HasObservers(ctx) {
