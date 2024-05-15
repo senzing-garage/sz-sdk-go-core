@@ -1,7 +1,5 @@
 name: go test darwin
 
-# TODO: Once "arm64" is available, rename file to "go-test-darwin.yaml"
-
 on: [push]
 
 env:
