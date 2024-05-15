@@ -130,11 +130,6 @@ func TestSzengine_CountRedoRecords(test *testing.T) {
 func TestSzengine_DeleteRecord(test *testing.T) {
 	ctx := context.TODO()
 	szEngine := getTestObject(ctx, test)
-
-	records := [
-		truthset.CustomerRecords["1009"],
-	]
-
 	record := truthset.CustomerRecords["1009"]
 	flags := sz.SZ_WITHOUT_INFO
 	actual, err := szEngine.AddRecord(ctx, record.DataSource, record.Id, record.Json, flags)
@@ -708,8 +703,7 @@ func TestSzengine_Destroy(test *testing.T) {
 // Internal functions
 // ----------------------------------------------------------------------------
 
-
-func addRecords(ctx, records []record.Record) error {
+func addRecords(ctx context.Context, records []record.Record) error {
 	var err error = nil
 	szEngine := getSzEngine(ctx)
 	flags := sz.SZ_WITHOUT_INFO
@@ -726,7 +720,7 @@ func createError(errorId int, err error) error {
 	return szerror.Cast(logger.NewError(errorId, err), err)
 }
 
-func deleteRecords(ctx, records []record.Record) error {
+func deleteRecords(ctx context.Context, records []record.Record) error {
 	var err error = nil
 	szEngine := getSzEngine(ctx)
 	flags := sz.SZ_WITHOUT_INFO
