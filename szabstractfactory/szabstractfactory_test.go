@@ -117,6 +117,9 @@ func getSettings() (string, error) {
 	// Create Senzing engine configuration JSON.
 
 	configAttrMap := map[string]string{"databaseUrl": databaseUrl}
+
+	fmt.Printf("\n\n>>>>>>  %s\n\n", databaseUrl)
+
 	settings, err := engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingMap(configAttrMap)
 	if err != nil {
 		err = createError(5902, err)
