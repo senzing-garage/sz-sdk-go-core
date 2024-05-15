@@ -13,6 +13,7 @@ import (
 	"github.com/senzing-garage/go-helpers/engineconfigurationjson"
 	"github.com/senzing-garage/go-helpers/fileutil"
 	"github.com/senzing-garage/go-logging/logging"
+	"github.com/senzing-garage/go-observing/observer"
 	"github.com/senzing-garage/sz-sdk-go-core/szconfig"
 	"github.com/senzing-garage/sz-sdk-go/sz"
 	"github.com/senzing-garage/sz-sdk-go/szconfigmanager"
@@ -28,9 +29,13 @@ const (
 )
 
 var (
-	szConfigSingleton        *szconfig.Szconfig
+	logger            logging.LoggingInterface
+	observerSingleton = &observer.ObserverNull{
+		Id:       "Observer 1",
+		IsSilent: true,
+	}
 	szConfigManagerSingleton *Szconfigmanager
-	logger                   logging.LoggingInterface
+	szConfigSingleton        *szconfig.Szconfig
 )
 
 // ----------------------------------------------------------------------------
@@ -220,6 +225,8 @@ func getSzConfig(ctx context.Context) sz.SzConfig {
 			return nil
 		}
 		szConfigSingleton = &szconfig.Szconfig{}
+		szConfigSingleton.SetLogLevel(ctx, "TRACE")
+		szConfigSingleton.RegisterObserver(ctx, observerSingleton)
 		err = szConfigSingleton.Initialize(ctx, instanceName, settings, verboseLogging)
 		if err != nil {
 			fmt.Println(err)
@@ -237,6 +244,8 @@ func getSzConfigManager(ctx context.Context) *Szconfigmanager {
 			return nil
 		}
 		szConfigManagerSingleton = &Szconfigmanager{}
+		szConfigManagerSingleton.SetLogLevel(ctx, "TRACE")
+		szConfigManagerSingleton.RegisterObserver(ctx, observerSingleton)
 		err = szConfigManagerSingleton.Initialize(ctx, instanceName, settings, verboseLogging)
 		if err != nil {
 			fmt.Println(err)
@@ -466,7 +475,14 @@ func teardownSzConfig(ctx context.Context) error {
 }
 
 func teardownSzConfigManager(ctx context.Context) error {
-	err := szConfigManagerSingleton.Destroy(ctx)
+	szConfigSingleton.UnregisterObserver(ctx, observerSingleton)
+	err := szConfigSingleton.Destroy(ctx)
+	if err != nil {
+		return err
+	}
+	szConfigSingleton = nil
+	szConfigManagerSingleton.UnregisterObserver(ctx, observerSingleton)
+	err = szConfigManagerSingleton.Destroy(ctx)
 	if err != nil {
 		return err
 	}

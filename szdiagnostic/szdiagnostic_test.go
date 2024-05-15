@@ -14,6 +14,7 @@ import (
 	"github.com/senzing-garage/go-helpers/record"
 	"github.com/senzing-garage/go-helpers/truthset"
 	"github.com/senzing-garage/go-logging/logging"
+	"github.com/senzing-garage/go-observing/observer"
 	"github.com/senzing-garage/sz-sdk-go-core/szconfig"
 	"github.com/senzing-garage/sz-sdk-go-core/szconfigmanager"
 	"github.com/senzing-garage/sz-sdk-go-core/szengine"
@@ -31,10 +32,14 @@ const (
 )
 
 var (
-	defaultConfigId       int64
+	defaultConfigId   int64
+	logger            logging.LoggingInterface
+	observerSingleton = &observer.ObserverNull{
+		Id:       "Observer 1",
+		IsSilent: true,
+	}
 	szDiagnosticSingleton *Szdiagnostic
 	szEngineSingleton     *szengine.Szengine
-	logger                logging.LoggingInterface
 )
 
 // ----------------------------------------------------------------------------
@@ -227,6 +232,8 @@ func getSzDiagnostic(ctx context.Context) *Szdiagnostic {
 			return nil
 		}
 		szDiagnosticSingleton = &Szdiagnostic{}
+		szDiagnosticSingleton.SetLogLevel(ctx, "TRACE")
+		szDiagnosticSingleton.RegisterObserver(ctx, observerSingleton)
 		err = szDiagnosticSingleton.Initialize(ctx, instanceName, settings, getDefaultConfigId(), verboseLogging)
 		if err != nil {
 			fmt.Println(err)
@@ -244,6 +251,8 @@ func getSzEngine(ctx context.Context) *szengine.Szengine {
 			return nil
 		}
 		szEngineSingleton = &szengine.Szengine{}
+		szEngineSingleton.SetLogLevel(ctx, "TRACE")
+		szEngineSingleton.RegisterObserver(ctx, observerSingleton)
 		err = szEngineSingleton.Initialize(ctx, instanceName, settings, getDefaultConfigId(), verboseLogging)
 		if err != nil {
 			fmt.Println(err)
@@ -461,11 +470,13 @@ func teardown() error {
 }
 
 func teardownSzDiagnostic(ctx context.Context) error {
+	szDiagnosticSingleton.UnregisterObserver(ctx, observerSingleton)
 	err := szDiagnosticSingleton.Destroy(ctx)
 	if err != nil {
 		return err
 	}
 	szDiagnosticSingleton = nil
+	szEngineSingleton.UnregisterObserver(ctx, observerSingleton)
 	err = szEngineSingleton.Destroy(ctx)
 	if err != nil {
 		return err

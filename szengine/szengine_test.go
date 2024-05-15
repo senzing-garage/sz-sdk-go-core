@@ -18,6 +18,7 @@ import (
 	"github.com/senzing-garage/go-helpers/testfixtures"
 	"github.com/senzing-garage/go-helpers/truthset"
 	"github.com/senzing-garage/go-logging/logging"
+	"github.com/senzing-garage/go-observing/observer"
 	"github.com/senzing-garage/sz-sdk-go-core/szconfig"
 	"github.com/senzing-garage/sz-sdk-go-core/szconfigmanager"
 	"github.com/senzing-garage/sz-sdk-go/sz"
@@ -1008,6 +1009,12 @@ func getSzEngine(ctx context.Context) *Szengine {
 			return nil
 		}
 		szEngineSingleton = &Szengine{}
+		szEngineSingleton.SetLogLevel(ctx, "TRACE")
+		anObserver := &observer.ObserverNull{
+			Id:       "Observer 1",
+			IsSilent: true,
+		}
+		szEngineSingleton.RegisterObserver(ctx, anObserver)
 		err = szEngineSingleton.Initialize(ctx, instanceName, settings, getDefaultConfigId(), verboseLogging)
 		if err != nil {
 			fmt.Println(err)

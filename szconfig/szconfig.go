@@ -366,21 +366,21 @@ For this implementation, "base" is returned.
 Input
   - ctx: A context to control lifecycle.
 */
-func (client *Szconfig) GetSdkId(ctx context.Context) string {
-	var err error = nil
-	if client.isTrace {
-		entryTime := time.Now()
-		client.traceEntry(701)
-		defer func() { client.traceExit(702, err, time.Since(entryTime)) }()
-	}
-	if client.observers != nil {
-		go func() {
-			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8701, err, details)
-		}()
-	}
-	return "base"
-}
+// func (client *Szconfig) GetSdkId(ctx context.Context) string {
+// 	var err error = nil
+// 	if client.IsTrace {
+// 		entryTime := time.Now()
+// 		client.traceEntry(701)
+// 		defer func() { client.traceExit(702, err, time.Since(entryTime)) }()
+// 	}
+// 	if client.observers != nil {
+// 		go func() {
+// 			details := map[string]string{}
+// 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8701, err, details)
+// 		}()
+// 	}
+// 	return "base"
+// }
 
 /*
 The Initialize method initializes the Senzing Szconfig object.

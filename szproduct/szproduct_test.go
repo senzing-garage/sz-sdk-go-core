@@ -11,6 +11,7 @@ import (
 	"github.com/senzing-garage/go-helpers/engineconfigurationjson"
 	"github.com/senzing-garage/go-helpers/fileutil"
 	"github.com/senzing-garage/go-logging/logging"
+	"github.com/senzing-garage/go-observing/observer"
 	"github.com/senzing-garage/sz-sdk-go/sz"
 	"github.com/senzing-garage/sz-sdk-go/szerror"
 	"github.com/senzing-garage/sz-sdk-go/szproduct"
@@ -25,8 +26,12 @@ const (
 )
 
 var (
+	logger            logging.LoggingInterface
+	observerSingleton = &observer.ObserverNull{
+		Id:       "Observer 1",
+		IsSilent: true,
+	}
 	szProductSingleton *Szproduct
-	logger             logging.LoggingInterface
 )
 
 // ----------------------------------------------------------------------------
@@ -144,6 +149,8 @@ func getSzProduct(ctx context.Context) *Szproduct {
 			return nil
 		}
 		szProductSingleton = &Szproduct{}
+		szProductSingleton.SetLogLevel(ctx, "TRACE")
+		szProductSingleton.RegisterObserver(ctx, observerSingleton)
 		err = szProductSingleton.Initialize(ctx, instanceName, settings, verboseLogging)
 		if err != nil {
 			fmt.Println(err)
@@ -269,6 +276,7 @@ func teardown() error {
 }
 
 func teardownSzProduct(ctx context.Context) error {
+	szProductSingleton.UnregisterObserver(ctx, observerSingleton)
 	// TODO: Uncomment after bug introduced in Senzing 4.0.0.24131 is fixed.
 	// err := szProductSingleton.Destroy(ctx)
 	// if err != nil {

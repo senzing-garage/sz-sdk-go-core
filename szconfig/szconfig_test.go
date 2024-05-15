@@ -11,6 +11,7 @@ import (
 	"github.com/senzing-garage/go-helpers/engineconfigurationjson"
 	"github.com/senzing-garage/go-helpers/fileutil"
 	"github.com/senzing-garage/go-logging/logging"
+	"github.com/senzing-garage/go-observing/observer"
 	"github.com/senzing-garage/sz-sdk-go/sz"
 	"github.com/senzing-garage/sz-sdk-go/szconfig"
 	"github.com/senzing-garage/sz-sdk-go/szerror"
@@ -25,8 +26,12 @@ const (
 )
 
 var (
-	szConfigSingleton *Szconfig
 	logger            logging.LoggingInterface
+	observerSingleton = &observer.ObserverNull{
+		Id:       "Observer 1",
+		IsSilent: true,
+	}
+	szConfigSingleton *Szconfig
 )
 
 // ----------------------------------------------------------------------------
@@ -265,6 +270,8 @@ func getSzConfig(ctx context.Context) *Szconfig {
 			return nil
 		}
 		szConfigSingleton = &Szconfig{}
+		szConfigSingleton.SetLogLevel(ctx, "TRACE")
+		szConfigSingleton.RegisterObserver(ctx, observerSingleton)
 		err = szConfigSingleton.Initialize(ctx, instanceName, settings, verboseLogging)
 		if err != nil {
 			fmt.Println(err)
@@ -390,6 +397,7 @@ func teardown() error {
 }
 
 func teardownSzConfig(ctx context.Context) error {
+	szConfigSingleton.UnregisterObserver(ctx, observerSingleton)
 	err := szConfigSingleton.Destroy(ctx)
 	if err != nil {
 		return err
