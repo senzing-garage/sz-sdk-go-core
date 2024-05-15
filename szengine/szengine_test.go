@@ -118,8 +118,22 @@ func TestSzengine_CloseExport(test *testing.T) {
 }
 
 func TestSzengine_CountRedoRecords(test *testing.T) {
-	expected := int64(1)
 	ctx := context.TODO()
+	records := []record.Record{
+		truthset.CustomerRecords["1001"],
+		truthset.CustomerRecords["1002"],
+		truthset.CustomerRecords["1003"],
+		truthset.CustomerRecords["1004"],
+		truthset.CustomerRecords["1005"],
+		truthset.CustomerRecords["1039"],
+		truthset.CustomerRecords["1040"],
+		truthset.CustomerRecords["1009"],
+		truthset.CustomerRecords["1010"],
+	}
+	defer deleteRecords(ctx, records)
+	err := addRecords(ctx, records)
+	testError(test, err)
+	expected := int64(1)
 	szEngine := getTestObject(ctx, test)
 	actual, err := szEngine.CountRedoRecords(ctx)
 	testError(test, err)
@@ -146,7 +160,6 @@ func TestSzengine_DeleteRecord(test *testing.T) {
 func TestSzengine_DeleteRecord_withInfo(test *testing.T) {
 	ctx := context.TODO()
 	szEngine := getTestObject(ctx, test)
-
 	records := []record.Record{
 		truthset.CustomerRecords["1010"],
 	}
@@ -160,13 +173,21 @@ func TestSzengine_DeleteRecord_withInfo(test *testing.T) {
 }
 
 func TestSzengine_ExportCsvEntityReport(test *testing.T) {
+	ctx := context.TODO()
+	records := []record.Record{
+		truthset.CustomerRecords["1001"],
+		truthset.CustomerRecords["1002"],
+		truthset.CustomerRecords["1003"],
+	}
+	defer deleteRecords(ctx, records)
+	err := addRecords(ctx, records)
+	testError(test, err)
 	expected := []string{
 		`RESOLVED_ENTITY_ID,RELATED_ENTITY_ID,MATCH_LEVEL_CODE,MATCH_KEY,DATA_SOURCE,RECORD_ID`,
-		`1,0,"","","CUSTOMERS","1001"`,
-		`1,0,"RESOLVED","+NAME+DOB+PHONE","CUSTOMERS","1002"`,
-		`1,0,"RESOLVED","+NAME+DOB+EMAIL","CUSTOMERS","1003"`,
+		`15,0,"","","CUSTOMERS","1001"`,
+		`15,0,"RESOLVED","+NAME+DOB+PHONE","CUSTOMERS","1002"`,
+		`15,0,"RESOLVED","+NAME+DOB+EMAIL","CUSTOMERS","1003"`,
 	}
-	ctx := context.TODO()
 	szEngine := getTestObject(ctx, test)
 	csvColumnList := ""
 	flags := sz.SZ_EXPORT_INCLUDE_ALL_ENTITIES
@@ -185,13 +206,21 @@ func TestSzengine_ExportCsvEntityReport(test *testing.T) {
 }
 
 func TestSzengine_ExportCsvEntityReportIterator(test *testing.T) {
+	ctx := context.TODO()
+	records := []record.Record{
+		truthset.CustomerRecords["1001"],
+		truthset.CustomerRecords["1002"],
+		truthset.CustomerRecords["1003"],
+	}
+	defer deleteRecords(ctx, records)
+	err := addRecords(ctx, records)
+	testError(test, err)
 	expected := []string{
 		`RESOLVED_ENTITY_ID,RELATED_ENTITY_ID,MATCH_LEVEL_CODE,MATCH_KEY,DATA_SOURCE,RECORD_ID`,
-		`1,0,"","","CUSTOMERS","1001"`,
-		`1,0,"RESOLVED","+NAME+DOB+PHONE","CUSTOMERS","1002"`,
-		`1,0,"RESOLVED","+NAME+DOB+EMAIL","CUSTOMERS","1003"`,
+		`18,0,"","","CUSTOMERS","1001"`,
+		`18,0,"RESOLVED","+NAME+DOB+PHONE","CUSTOMERS","1002"`,
+		`18,0,"RESOLVED","+NAME+DOB+EMAIL","CUSTOMERS","1003"`,
 	}
-	ctx := context.TODO()
 	szEngine := getTestObject(ctx, test)
 	csvColumnList := ""
 	flags := sz.SZ_EXPORT_INCLUDE_ALL_ENTITIES
@@ -206,6 +235,14 @@ func TestSzengine_ExportCsvEntityReportIterator(test *testing.T) {
 
 func TestSzengine_ExportJsonEntityReport(test *testing.T) {
 	ctx := context.TODO()
+	records := []record.Record{
+		truthset.CustomerRecords["1001"],
+		truthset.CustomerRecords["1002"],
+		truthset.CustomerRecords["1003"],
+	}
+	defer deleteRecords(ctx, records)
+	err := addRecords(ctx, records)
+	testError(test, err)
 	szEngine := getTestObject(ctx, test)
 	aRecord := testfixtures.FixtureRecords["65536-periods"]
 	flags := sz.SZ_WITH_INFO
@@ -256,6 +293,14 @@ func TestSzengine_FetchNext(test *testing.T) {
 
 func TestSzengine_FindInterestingEntitiesByEntityId(test *testing.T) {
 	ctx := context.TODO()
+	records := []record.Record{
+		truthset.CustomerRecords["1001"],
+		truthset.CustomerRecords["1002"],
+		truthset.CustomerRecords["1003"],
+	}
+	defer deleteRecords(ctx, records)
+	err := addRecords(ctx, records)
+	testError(test, err)
 	szEngine := getTestObject(ctx, test)
 	entityID := getEntityId(truthset.CustomerRecords["1001"])
 	flags := int64(0)

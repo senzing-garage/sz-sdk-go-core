@@ -11,6 +11,7 @@ import (
 	truncator "github.com/aquilax/truncate"
 	"github.com/senzing-garage/go-helpers/engineconfigurationjson"
 	"github.com/senzing-garage/go-helpers/fileutil"
+	"github.com/senzing-garage/go-helpers/record"
 	"github.com/senzing-garage/go-helpers/truthset"
 	"github.com/senzing-garage/go-logging/logging"
 	"github.com/senzing-garage/sz-sdk-go-core/szconfig"
@@ -32,6 +33,7 @@ const (
 var (
 	defaultConfigId       int64
 	szDiagnosticSingleton *Szdiagnostic
+	szEngineSingleton     *szengine.Szengine
 	logger                logging.LoggingInterface
 )
 
@@ -58,6 +60,12 @@ func TestSzdiagnostic_GetDatastoreInfo(test *testing.T) {
 
 func TestSzdiagnostic_GetFeature(test *testing.T) {
 	ctx := context.TODO()
+	records := []record.Record{
+		truthset.CustomerRecords["1001"],
+	}
+	defer deleteRecords(ctx, records)
+	err := addRecords(ctx, records)
+	testError(test, err)
 	szDiagnostic := getTestObject(ctx, test)
 	featureId := int64(1)
 	actual, err := szDiagnostic.GetFeature(ctx, int64(featureId))
@@ -149,8 +157,34 @@ func TestSzdiagnostic_Destroy(test *testing.T) {
 // Internal functions
 // ----------------------------------------------------------------------------
 
+func addRecords(ctx context.Context, records []record.Record) error {
+	var err error = nil
+	szEngine := getSzEngine(ctx)
+	flags := sz.SZ_WITHOUT_INFO
+	for _, record := range records {
+		_, err = szEngine.AddRecord(ctx, record.DataSource, record.Id, record.Json, flags)
+		if err != nil {
+			return err
+		}
+	}
+	return err
+}
+
 func createError(errorId int, err error) error {
 	return szerror.Cast(logger.NewError(errorId, err), err)
+}
+
+func deleteRecords(ctx context.Context, records []record.Record) error {
+	var err error = nil
+	szEngine := getSzEngine(ctx)
+	flags := sz.SZ_WITHOUT_INFO
+	for _, record := range records {
+		_, err = szEngine.DeleteRecord(ctx, record.DataSource, record.Id, flags)
+		if err != nil {
+			return err
+		}
+	}
+	return err
 }
 
 func getDatabaseTemplatePath() string {
@@ -199,6 +233,23 @@ func getSzDiagnostic(ctx context.Context) *Szdiagnostic {
 		}
 	}
 	return szDiagnosticSingleton
+}
+
+func getSzEngine(ctx context.Context) *szengine.Szengine {
+	_ = ctx
+	if szEngineSingleton == nil {
+		settings, err := getSettings()
+		if err != nil {
+			fmt.Printf("getSettings() Error: %v\n", err)
+			return nil
+		}
+		szEngineSingleton = &szengine.Szengine{}
+		err = szEngineSingleton.Initialize(ctx, instanceName, settings, getDefaultConfigId(), verboseLogging)
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
+	return szEngineSingleton
 }
 
 func getSzDiagnosticAsInterface(ctx context.Context) sz.SzDiagnostic {
@@ -286,41 +337,6 @@ func setup() error {
 	if err != nil {
 		return createError(5920, err)
 	}
-	err = setupAddRecords()
-	if err != nil {
-		return createError(5922, err)
-	}
-	return err
-}
-
-func setupAddRecords() error {
-	ctx := context.TODO()
-
-	settings, err := getSettings()
-	if err != nil {
-		return createError(9999, err)
-	}
-
-	// Create sz objects.
-
-	szEngine := &szengine.Szengine{}
-	err = szEngine.Initialize(ctx, instanceName, settings, sz.SZ_INITIALIZE_WITH_DEFAULT_CONFIGURATION, verboseLogging)
-	if err != nil {
-		return createError(5916, err)
-	}
-	defer szEngine.Destroy(ctx)
-
-	// Add records into Senzing.
-
-	testRecordIds := []string{"1001", "1002", "1003", "1004", "1005", "1039", "1040"}
-	for _, testRecordId := range testRecordIds {
-		testRecord := truthset.CustomerRecords[testRecordId]
-		_, err := szEngine.AddRecord(ctx, testRecord.DataSource, testRecord.Id, testRecord.Json, sz.SZ_NO_FLAGS)
-		if err != nil {
-			return createError(5917, err)
-		}
-	}
-
 	return err
 }
 
@@ -450,5 +466,10 @@ func teardownSzDiagnostic(ctx context.Context) error {
 		return err
 	}
 	szDiagnosticSingleton = nil
+	err = szEngineSingleton.Destroy(ctx)
+	if err != nil {
+		return err
+	}
+	szEngineSingleton = nil
 	return nil
 }
