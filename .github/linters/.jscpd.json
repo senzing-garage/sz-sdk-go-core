@@ -1,0 +1,5 @@
+{
+  "ignore": [
+    "**/*.go,**/go-test*.yaml"
+  ]
+}
