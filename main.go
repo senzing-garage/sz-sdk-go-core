@@ -78,7 +78,7 @@ func setupDatabase() (string, error) {
 				dbTargetPath, err)
 			return "", err
 		}
-		databaseUrl = fmt.Sprintf("sqlite3://na:na@%s", dbTargetPath)
+		databaseUrl = fmt.Sprintf("sqlite3://na:na@nowhere/%s", dbTargetPath)
 
 		// Copy template file to test directory.
 
