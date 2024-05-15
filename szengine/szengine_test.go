@@ -311,6 +311,12 @@ func TestSzengine_FindInterestingEntitiesByEntityId(test *testing.T) {
 
 func TestSzengine_FindInterestingEntitiesByRecordId(test *testing.T) {
 	ctx := context.TODO()
+	records := []record.Record{
+		truthset.CustomerRecords["1001"],
+	}
+	defer deleteRecords(ctx, records)
+	err := addRecords(ctx, records)
+	testError(test, err)
 	szEngine := getTestObject(ctx, test)
 	record := truthset.CustomerRecords["1001"]
 	flags := int64(0)
@@ -321,6 +327,13 @@ func TestSzengine_FindInterestingEntitiesByRecordId(test *testing.T) {
 
 func TestSzengine_FindNetworkByEntityId(test *testing.T) {
 	ctx := context.TODO()
+	records := []record.Record{
+		truthset.CustomerRecords["1001"],
+		truthset.CustomerRecords["1002"],
+	}
+	defer deleteRecords(ctx, records)
+	err := addRecords(ctx, records)
+	testError(test, err)
 	szEngine := getTestObject(ctx, test)
 	record1 := truthset.CustomerRecords["1001"]
 	record2 := truthset.CustomerRecords["1002"]
