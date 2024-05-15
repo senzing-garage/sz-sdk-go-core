@@ -63,19 +63,18 @@ func (client *Szdiagnostic) CheckDatastorePerformance(ctx context.Context, secon
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error = nil
-	var resultResponse string = `{"numRecordsInserted":0,"insertTime":0}`
+	var resultResponse string = ""
 	entryTime := time.Now()
 	if client.isTrace {
 		client.traceEntry(1, secondsToRun)
 		defer func() { client.traceExit(2, secondsToRun, resultResponse, err, time.Since(entryTime)) }()
 	}
-	// TODO: Fix CheckDatastorePerformance when C works
-	// result := C.G2Diagnostic_checkDatastorePerformance_helper(C.int(secondsToRun))
-	// if result.returnCode != 0 {
-	// 	err = client.newError(ctx, 4001, secondsToRun, result.returnCode, time.Since(entryTime))
-	// }
-	// resultResponse = C.GoString(result.response)
-	// C.G2GoHelper_free(unsafe.Pointer(result.response))
+	result := C.G2Diagnostic_checkDatastorePerformance_helper(C.longlong(secondsToRun))
+	if result.returnCode != 0 {
+		err = client.newError(ctx, 4001, secondsToRun, result.returnCode, time.Since(entryTime))
+	}
+	resultResponse = C.GoString(result.response)
+	C.G2GoHelper_free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}

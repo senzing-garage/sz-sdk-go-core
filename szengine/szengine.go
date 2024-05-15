@@ -66,8 +66,8 @@ func (client *Szengine) AddRecord(ctx context.Context, dataSourceCode string, re
 			client.traceExit(2, dataSourceCode, recordId, recordDefinition, flags, err, time.Since(entryTime))
 		}()
 	}
-	if (flags & sz.SZ_WITH_INFO) > 0 {
-		finalFlags := flags ^ sz.SZ_WITH_INFO
+	if (flags & sz.SZ_WITH_INFO) != 0 {
+		finalFlags := flags & ^sz.SZ_WITH_INFO
 		result, err = client.addRecordWithInfo(ctx, dataSourceCode, recordId, recordDefinition, finalFlags)
 	} else {
 		result, err = client.addRecord(ctx, dataSourceCode, recordId, recordDefinition)
@@ -163,8 +163,8 @@ func (client *Szengine) DeleteRecord(ctx context.Context, dataSourceCode string,
 		client.traceEntry(9, dataSourceCode, recordId, flags)
 		defer func() { client.traceExit(10, dataSourceCode, recordId, flags, err, time.Since(entryTime)) }()
 	}
-	if (flags & sz.SZ_WITH_INFO) > 0 {
-		finalFlags := flags ^ sz.SZ_WITH_INFO
+	if (flags & sz.SZ_WITH_INFO) != 0 {
+		finalFlags := flags & ^sz.SZ_WITH_INFO
 		result, err = client.deleteRecordWithInfo(ctx, dataSourceCode, recordId, finalFlags)
 	} else {
 		result, err = client.deleteRecord(ctx, dataSourceCode, recordId)
@@ -999,7 +999,7 @@ func (client *Szengine) GetStats(ctx context.Context) (string, error) {
 }
 
 /*
-TODO: Write description for GetVirtualEntityByRecordId
+TODO: Document GetVirtualEntityByRecordId
 The GetVirtualEntityByRecordId method...
 
 Input
@@ -1042,7 +1042,7 @@ func (client *Szengine) GetVirtualEntityByRecordId(ctx context.Context, recordLi
 }
 
 /*
-TODO: Write description for HowEntityByEntityId
+TODO: Document HowEntityByEntityId
 The HowEntityByEntityId method...
 
 Input
@@ -1132,10 +1132,9 @@ func (client *Szengine) ProcessRedoRecord(ctx context.Context, redoRecord string
 		defer func() { client.traceExit(60, redoRecord, flags, result, err, time.Since(entryTime)) }()
 	}
 	if (flags & sz.SZ_WITH_INFO) > 0 {
-		finalFlags := flags ^ sz.SZ_WITH_INFO
-		result, err = client.processRedoRecordWithInfo(ctx, finalFlags)
+		result, err = client.processRedoRecordWithInfo(ctx, redoRecord)
 	} else {
-		result, err = client.processRedoRecord(ctx, flags)
+		result, err = client.processRedoRecord(ctx, redoRecord)
 	}
 	if client.observers != nil {
 		go func() {
@@ -1147,7 +1146,7 @@ func (client *Szengine) ProcessRedoRecord(ctx context.Context, redoRecord string
 }
 
 /*
-TODO: Write description for ReevaluateEntity
+TODO: Document ReevaluateEntity
 The ReevaluateEntity method...
 
 Input
@@ -1164,7 +1163,7 @@ func (client *Szengine) ReevaluateEntity(ctx context.Context, entityId int64, fl
 		defer func() { client.traceExit(62, entityId, flags, result, err, time.Since(entryTime)) }()
 	}
 	if (flags & sz.SZ_WITH_INFO) > 0 {
-		finalFlags := flags ^ sz.SZ_WITH_INFO
+		finalFlags := flags & ^sz.SZ_WITH_INFO
 		result, err = client.reevaluateEntityWithInfo(ctx, entityId, finalFlags)
 	} else {
 		result, err = client.reevaluateEntity(ctx, entityId, flags)
@@ -1181,7 +1180,7 @@ func (client *Szengine) ReevaluateEntity(ctx context.Context, entityId int64, fl
 }
 
 /*
-TODO: Write description for ReevaluateRecord
+TODO: Document ReevaluateRecord
 The ReevaluateRecord method...
 
 Input
@@ -1199,7 +1198,7 @@ func (client *Szengine) ReevaluateRecord(ctx context.Context, dataSourceCode str
 		defer func() { client.traceExit(64, dataSourceCode, recordId, flags, err, time.Since(entryTime)) }()
 	}
 	if (flags & sz.SZ_WITH_INFO) > 0 {
-		finalFlags := flags ^ sz.SZ_WITH_INFO
+		finalFlags := flags & ^sz.SZ_WITH_INFO
 		result, err = client.reevaluateRecordWithInfo(ctx, dataSourceCode, recordId, finalFlags)
 	} else {
 		result, err = client.reevaluateRecord(ctx, dataSourceCode, recordId, flags)
@@ -1322,8 +1321,7 @@ func (client *Szengine) WhyEntities(ctx context.Context, entityId1 int64, entity
 }
 
 /*
-TODO: Write description for WhyRecordInEntity
-TODO: Assign entry/exit trace IDs
+TODO: Document WhyRecordInEntity
 The WhyRecordInEntity method...
 
 Input
@@ -2016,31 +2014,30 @@ func (client *Szengine) initializeWithConfigId(ctx context.Context, instanceName
 	return err
 }
 
-// TODO: https://senzing.atlassian.net/browse/GDEV-3771
-// TODO: Implement processRedoRecord
-func (client *Szengine) processRedoRecord(ctx context.Context, flags int64) (string, error) {
-	_ = ctx
-	_ = flags
-	// //  _DLEXPORT int G2_processRedoRecord(char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize) );
-	// runtime.LockOSThread()
-	// defer runtime.UnlockOSThread()
-	// var err error = nil
-	// var resultResponse string
-	// entryTime := time.Now()
-	//
-	//
-	// result := C.G2_processRedoRecord_helper()
-	//
-	//	if result.returnCode != 0 {
-	//		err = client.newError(ctx, 4044, result.returnCode, result, time.Since(entryTime))
-	//	}
-	//
-	// resultResponse = C.GoString(result.response)
-	// C.G2GoHelper_free(unsafe.Pointer(result.response))
-	//
-	//
-	// return resultResponse, err
-	return "{}", nil
+/*
+The processRedoRecord method processes given redo record.
+Calling processRedoRecord() has the potential to create more redo records in certain situations.
+
+Input
+  - ctx: A context to control lifecycle.
+  - redoRecord: The redo record to be processed.
+
+Output
+  - An empty JSON document.
+*/
+func (client *Szengine) processRedoRecord(ctx context.Context, redoRecord string) (string, error) {
+	// _DLEXPORT long long G2_processRedoRecord(const char *redoRecord);
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	var err error = nil
+	entryTime := time.Now()
+	redoRecordForC := C.CString(redoRecord)
+	defer C.free(unsafe.Pointer(redoRecordForC))
+	result := C.G2_processRedoRecord(redoRecordForC)
+	if result != 0 {
+		err = client.newError(ctx, 4044, result, time.Since(entryTime))
+	}
+	return "{}", err
 }
 
 /*
@@ -2049,23 +2046,31 @@ Calling processRedoRecordWithInfo() has the potential to create more redo record
 
 Input
   - ctx: A context to control lifecycle.
-  - flags: Flags used to control information returned.
+  - redoRecord: The redo record to be processed.
 
 Output
-  - A JSON document with the record that was re-done.
   - A JSON document with affected entities.
 */
-func (client *Szengine) processRedoRecordWithInfo(ctx context.Context, flags int64) (string, error) {
-	_ = ctx
-	_ = flags
-
-	// TODO: Implement processRedoRecordWithInfo
-
-	return "", nil
+func (client *Szengine) processRedoRecordWithInfo(ctx context.Context, redoRecord string) (string, error) {
+	// _DLEXPORT struct G2_processRedoRecordWithInfo_result G2_processRedoRecordWithInfo_helper(const char *jsonData);
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	var err error = nil
+	var resultResponse string
+	entryTime := time.Now()
+	redoRecordForC := C.CString(redoRecord)
+	defer C.free(unsafe.Pointer(redoRecordForC))
+	result := C.G2_processRedoRecordWithInfo_helper(redoRecordForC)
+	if result.returnCode != 0 {
+		err = client.newError(ctx, 4045, result.returnCode, time.Since(entryTime))
+	}
+	resultResponse = C.GoString(result.response)
+	C.G2GoHelper_free(unsafe.Pointer(result.response))
+	return resultResponse, err
 }
 
 /*
-TODO: Write description for reevaluateEntity
+TODO: Document reevaluateEntity
 The reevaluateEntity method...
 
 Input
@@ -2087,7 +2092,7 @@ func (client *Szengine) reevaluateEntity(ctx context.Context, entityId int64, fl
 }
 
 /*
-TODO: Write description for reevaluateEntityWithInfo
+TODO: Document reevaluateEntityWithInfo
 The reevaluateEntityWithInfo method...
 
 Input
@@ -2117,7 +2122,7 @@ func (client *Szengine) reevaluateEntityWithInfo(ctx context.Context, entityId i
 }
 
 /*
-TODO: Write description for reevaluateRecord
+TODO: Document reevaluateRecord
 The reevaluateRecord method...
 
 Input
@@ -2144,7 +2149,7 @@ func (client *Szengine) reevaluateRecord(ctx context.Context, dataSourceCode str
 }
 
 /*
-TODO: Write description for reevaluateRecordWithInfo
+TODO: Document reevaluateRecordWithInfo
 The reevaluateRecordWithInfo method...
 
 Input
@@ -2210,7 +2215,7 @@ func (client *Szengine) searchByAttributes_V2(ctx context.Context, attributes st
 }
 
 /*
-TODO: Write description for searchByAttributes_V3
+TODO: DocumentsearchByAttributes_V3
 The searchByAttributes_V3 method...
 
 Input
@@ -2223,15 +2228,22 @@ Output
     See the example output.
 */
 func (client *Szengine) searchByAttributes_V3(ctx context.Context, attributes string, searchProfile string, flags int64) (string, error) {
+	// _DLEXPORT struct G2_searchByAttributes_V3_result G2_searchByAttributes_V3_helper(const char *jsonData, const char* profile, const long long flags);
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
 	var err error = nil
 	var resultResponse string
-	_ = ctx
-	_ = attributes
-	_ = searchProfile
-	_ = flags
-
-	// TODO: implement searchByAttributes_V3
-
+	entryTime := time.Now()
+	attributesForC := C.CString(attributes)
+	defer C.free(unsafe.Pointer(attributesForC))
+	searchProfileForC := C.CString(searchProfile)
+	defer C.free(unsafe.Pointer(searchProfileForC))
+	result := C.G2_searchByAttributes_V3_helper(attributesForC, searchProfileForC, C.longlong(flags))
+	if result.returnCode != 0 {
+		err = client.newError(ctx, 4053, attributes, searchProfile, flags, result.returnCode, time.Since(entryTime))
+	}
+	resultResponse = C.GoString(result.response)
+	C.G2GoHelper_free(unsafe.Pointer(result.response))
 	return resultResponse, err
 }
 
@@ -2269,7 +2281,7 @@ func (client *Szengine) whyEntities_V2(ctx context.Context, entityId1 int64, ent
 }
 
 /*
-TODO: Write description for whyRecordInEntity_V2
+TODO: Document whyRecordInEntity_V2
 The whyRecordInEntity_V2 method...
 
 Input
@@ -2283,16 +2295,21 @@ Output
     See the example output.
 */
 func (client *Szengine) whyRecordInEntity_V2(ctx context.Context, dataSourceCode string, recordId string, flags int64) (string, error) {
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
 	var err error = nil
 	var resultResponse string
-
-	_ = ctx
-	_ = dataSourceCode
-	_ = recordId
-	_ = flags
-
-	// TODO: Implement whyRecordInEntity_V2
-
+	entryTime := time.Now()
+	dataSourceCodeForC := C.CString(dataSourceCode)
+	defer C.free(unsafe.Pointer(dataSourceCodeForC))
+	recordIdForC := C.CString(recordId)
+	defer C.free(unsafe.Pointer(recordIdForC))
+	result := C.G2_whyRecordInEntity_V2_helper(dataSourceCodeForC, recordIdForC, C.longlong(flags))
+	if result.returnCode != 0 {
+		err = client.newError(ctx, 4058, dataSourceCode, recordId, flags, result.returnCode, time.Since(entryTime))
+	}
+	resultResponse = C.GoString(result.response)
+	C.G2GoHelper_free(unsafe.Pointer(result.response))
 	return resultResponse, err
 }
 

@@ -85,6 +85,10 @@ build: build-osarch-specific
 .PHONY: test
 test: test-osarch-specific
 
+
+.PHONY: coverage
+coverage: coverage-osarch-specific
+
 # -----------------------------------------------------------------------------
 # Run
 # -----------------------------------------------------------------------------
