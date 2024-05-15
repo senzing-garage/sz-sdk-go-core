@@ -499,22 +499,30 @@ func TestSzengine_PrimeEngine(test *testing.T) {
 
 func TestSzengine_ProcessRedoRecord(test *testing.T) {
 	// TODO: Implement TestSzengine_ProcessRedoRecord
-	// ctx := context.TODO()
-	// szEngine := getTestObject(ctx, test)
-	// flags := sz.SZ_WITHOUT_INFO
-	// actual, err := szEngine.ProcessRedoRecord(ctx, redoRecord, flags)
-	// testError(test, err)
-	// printActual(test, actual)
+	ctx := context.TODO()
+	szEngine := getTestObject(ctx, test)
+	redoRecord, err := szEngine.GetRedoRecord(ctx)
+	testError(test, err)
+	if len(redoRecord) > 0 {
+		flags := sz.SZ_WITHOUT_INFO
+		actual, err := szEngine.ProcessRedoRecord(ctx, redoRecord, flags)
+		testError(test, err)
+		printActual(test, actual)
+	}
 }
 
 func TestSzengine_ProcessRedoRecord_withInfo(test *testing.T) {
 	// TODO: Implement TestSzengine_ProcessRedoRecord_withInfo
-	// ctx := context.TODO()
-	// szEngine := getTestObject(ctx, test)
-	// flags := sz.SZ_WITH_INFO
-	// actual, err := szEngine.ProcessRedoRecord(ctx, redoRecord, flags)
-	// testError(test, err)
-	// printActual(test, actual)
+	ctx := context.TODO()
+	szEngine := getTestObject(ctx, test)
+	redoRecord, err := szEngine.GetRedoRecord(ctx)
+	testError(test, err)
+	if len(redoRecord) > 0 {
+		flags := sz.SZ_WITH_INFO
+		actual, err := szEngine.ProcessRedoRecord(ctx, redoRecord, flags)
+		testError(test, err)
+		printActual(test, actual)
+	}
 }
 
 func TestSzengine_ReevaluateEntity(test *testing.T) {
