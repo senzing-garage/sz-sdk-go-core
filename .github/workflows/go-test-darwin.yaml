@@ -1,15 +1,17 @@
-name: go test windows
+name: go test darwin
 
 on: [push]
 
 env:
-  SENZING_TOOLS_DATABASE_URL: sqlite3://na:na@nowhere/C:\Temp\sqlite\G2C.db
+  DYLD_LIBRARY_PATH: /opt/senzing/g2/lib:/opt/senzing/g2/lib/macos
+  LD_LIBRARY_PATH: /opt/senzing/g2/lib:/opt/senzing/g2/lib/macos
+  SENZING_TOOLS_DATABASE_URL: sqlite3://na:na@nowhere/tmp/sqlite/G2C.db
 
 permissions:
   contents: read
 
 jobs:
-  go-test-windows:
+  go-test-darwin:
     env:
       GO111MODULE: on
       CGO_ENABLED: 1
@@ -18,7 +20,7 @@ jobs:
     strategy:
       matrix:
         go: ["1.21"]
-        os: [windows-latest]
+        os: [macos-13]
         senzingapi-version: [staging-v4]
 
     steps:
@@ -37,14 +39,11 @@ jobs:
         with:
           senzingapi-version: ${{ matrix.senzingapi-version }}
 
-      - name: add to "Path" environment variable
-        run: echo "C:\Program Files\Senzing\g2\lib" | Out-File -FilePath "$env:GITHUB_PATH" -Encoding utf8 -Append
-
       - name: copy /etc files
-        run: copy testdata/senzing-license/g2.lic "C:\Program Files\Senzing\g2\etc\g2.lic"
+        run: sudo cp testdata/senzing-license/g2.lic /opt/senzing/g2/etc/g2.lic
 
       - name: copy test database files
-        run: mkdir "C:\Temp\sqlite" && copy testdata/sqlite/G2C.db "C:\Temp\sqlite\G2C.db"
+        run: mkdir /tmp/sqlite && cp testdata/sqlite/G2C.db /tmp/sqlite/G2C.db
 
       - name: run go test
-        run: go test -v -p 1 ./...
+        run: go test -exec /Users/runner/work/sz-sdk-go-core/sz-sdk-go-core/bin/macos_exec_dyld.sh -v -p 1 ./...
