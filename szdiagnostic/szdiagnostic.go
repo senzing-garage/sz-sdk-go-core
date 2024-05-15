@@ -63,7 +63,7 @@ func (client *Szdiagnostic) CheckDatastorePerformance(ctx context.Context, secon
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error = nil
-	var resultResponse string = `{"numRecordsInserted":0,"insertTime":0}`
+	var resultResponse string = ""
 	entryTime := time.Now()
 	if client.isTrace {
 		client.traceEntry(1, secondsToRun)
