@@ -16,6 +16,8 @@ import (
 // Interface functions - Examples for godoc documentation
 // ----------------------------------------------------------------------------
 
+func ExampleSzengine() {}
+
 func ExampleSzengine_AddRecord() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
@@ -61,7 +63,7 @@ func ExampleSzengine_AddRecord_withInfo() {
 		fmt.Println(err)
 	}
 	fmt.Println(result)
-	// Output: {"DATA_SOURCE":"CUSTOMERS","RECORD_ID":"1003","AFFECTED_ENTITIES":[],"INTERESTING_ENTITIES":{"ENTITIES":[]}}
+	// Output: {"DATA_SOURCE":"CUSTOMERS","RECORD_ID":"1003","AFFECTED_ENTITIES":[{"ENTITY_ID":100001}],"INTERESTING_ENTITIES":{"ENTITIES":[]}}
 }
 
 func ExampleSzengine_CloseExport() {
@@ -86,7 +88,7 @@ func ExampleSzengine_CountRedoRecords() {
 		fmt.Println(err)
 	}
 	fmt.Println(result)
-	// Output: 0
+	// Output: 2
 }
 
 func ExampleSzengine_DeleteRecord() {
@@ -247,7 +249,7 @@ func ExampleSzengine_FindNetworkByEntityId() {
 		fmt.Println(err)
 	}
 	fmt.Println(result)
-	// Output: {"ENTITY_PATHS":[],"ENTITIES":[{"RESOLVED_ENTITY":{"ENTITY_ID":1}}]}
+	// Output: {"ENTITY_PATHS":[],"ENTITIES":[{"RESOLVED_ENTITY":{"ENTITY_ID":100001}}]}
 }
 
 func ExampleSzengine_FindNetworkByRecordId() {
@@ -264,7 +266,7 @@ func ExampleSzengine_FindNetworkByRecordId() {
 		fmt.Println(err)
 	}
 	fmt.Println(result)
-	// Output: {"ENTITY_PATHS":[],"ENTITIES":[{"RESOLVED_ENTITY":{"ENTITY_ID":1}}]}
+	// Output: {"ENTITY_PATHS":[],"ENTITIES":[{"RESOLVED_ENTITY":{"ENTITY_ID":100001}}]}
 }
 
 func ExampleSzengine_FindPathByEntityId() {
@@ -282,7 +284,7 @@ func ExampleSzengine_FindPathByEntityId() {
 		fmt.Println(err)
 	}
 	fmt.Println(truncate(result, 107))
-	// Output: {"ENTITY_PATHS":[{"START_ENTITY_ID":1,"END_ENTITY_ID":1,"ENTITIES":[1]}],"ENTITIES":[{"RESOLVED_ENTITY":...
+	// Output: {"ENTITY_PATHS":[{"START_ENTITY_ID":100001,"END_ENTITY_ID":100001,"ENTITIES":[100001]}],"ENTITIES":[{"RE...
 }
 
 func ExampleSzengine_FindPathByEntityId_excluding() {
@@ -344,7 +346,7 @@ func ExampleSzengine_FindPathByRecordId() {
 		fmt.Println(err)
 	}
 	fmt.Println(truncate(result, 87))
-	// Output: {"ENTITY_PATHS":[{"START_ENTITY_ID":1,"END_ENTITY_ID":1,"ENTITIES":[1]}],"ENTITIES":...
+	// Output: {"ENTITY_PATHS":[{"START_ENTITY_ID":100001,"END_ENTITY_ID":100001,"ENTITIES":[100001...
 }
 
 func ExampleSzengine_FindPathByRecordId_excluding() {
@@ -416,7 +418,7 @@ func ExampleSzengine_GetEntityByEntityId() {
 		fmt.Println(err)
 	}
 	fmt.Println(result)
-	// Output: {"RESOLVED_ENTITY":{"ENTITY_ID":1}}
+	// Output: {"RESOLVED_ENTITY":{"ENTITY_ID":100001}}
 }
 
 func ExampleSzengine_GetEntityByRecordId() {
@@ -431,7 +433,7 @@ func ExampleSzengine_GetEntityByRecordId() {
 		fmt.Println(err)
 	}
 	fmt.Println(result)
-	// Output: {"RESOLVED_ENTITY":{"ENTITY_ID":1}}
+	// Output: {"RESOLVED_ENTITY":{"ENTITY_ID":100001}}
 }
 
 func ExampleSzengine_GetRecord() {
@@ -458,7 +460,7 @@ func ExampleSzengine_GetRedoRecord() {
 		fmt.Println(err)
 	}
 	fmt.Println(result)
-	// Output: {"REASON":"deferred delete","DATA_SOURCE":"CUSTOMERS","RECORD_ID":"1001","DSRC_ACTION":"X"}
+	// Output: {"REASON":"deferred delete","DATA_SOURCE":"CUSTOMERS","RECORD_ID":"1003","DSRC_ACTION":"X"}
 }
 
 func ExampleSzengine_GetStats() {
@@ -484,7 +486,7 @@ func ExampleSzengine_GetVirtualEntityByRecordId() {
 		fmt.Println(err)
 	}
 	fmt.Println(result)
-	// Output: {"RESOLVED_ENTITY":{"ENTITY_ID":1}}
+	// Output: {"RESOLVED_ENTITY":{"ENTITY_ID":100001}}
 }
 
 func ExampleSzengine_HowEntityByEntityId() {
@@ -498,7 +500,7 @@ func ExampleSzengine_HowEntityByEntityId() {
 		fmt.Println(err)
 	}
 	fmt.Println(jsonutil.Flatten(jsonutil.NormalizeAndSort(jsonutil.Flatten(jsonutil.Redact(result, "RECORD_ID", "INBOUND_FEAT_USAGE_TYPE")))))
-	// Output: {"HOW_RESULTS":{"FINAL_STATE":{"NEED_REEVALUATION":0,"VIRTUAL_ENTITIES":[{"MEMBER_RECORDS":[{"INTERNAL_ID":1,"RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":null}]},{"INTERNAL_ID":2,"RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":null}]}],"VIRTUAL_ENTITY_ID":"V1-S1"}]},"RESOLUTION_STEPS":[{"INBOUND_VIRTUAL_ENTITY_ID":"V2","MATCH_INFO":{"ERRULE_CODE":"CNAME_CFF_CEXCL","MATCH_KEY":"+NAME+DOB+PHONE"},"RESULT_VIRTUAL_ENTITY_ID":"V1-S1","STEP":1,"VIRTUAL_ENTITY_1":{"MEMBER_RECORDS":[{"INTERNAL_ID":1,"RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":null}]}],"VIRTUAL_ENTITY_ID":"V1"},"VIRTUAL_ENTITY_2":{"MEMBER_RECORDS":[{"INTERNAL_ID":2,"RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":null}]}],"VIRTUAL_ENTITY_ID":"V2"}}]}}
+	// Output: {"HOW_RESULTS":{"FINAL_STATE":{"NEED_REEVALUATION":0,"VIRTUAL_ENTITIES":[{"MEMBER_RECORDS":[{"INTERNAL_ID":100001,"RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":null}]},{"INTERNAL_ID":100002,"RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":null}]}],"VIRTUAL_ENTITY_ID":"V100001-S1"}]},"RESOLUTION_STEPS":[{"INBOUND_VIRTUAL_ENTITY_ID":"V100002","MATCH_INFO":{"ERRULE_CODE":"CNAME_CFF_CEXCL","MATCH_KEY":"+NAME+DOB+PHONE"},"RESULT_VIRTUAL_ENTITY_ID":"V100001-S1","STEP":1,"VIRTUAL_ENTITY_1":{"MEMBER_RECORDS":[{"INTERNAL_ID":100001,"RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":null}]}],"VIRTUAL_ENTITY_ID":"V100001"},"VIRTUAL_ENTITY_2":{"MEMBER_RECORDS":[{"INTERNAL_ID":100002,"RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":null}]}],"VIRTUAL_ENTITY_ID":"V100002"}}]}}
 }
 
 func ExampleSzengine_PrimeEngine() {
@@ -573,7 +575,7 @@ func ExampleSzengine_ReevaluateEntity_withInfo() {
 		fmt.Println(err)
 	}
 	fmt.Println(result)
-	// Output: {"DATA_SOURCE":"CUSTOMERS","RECORD_ID":"1001","AFFECTED_ENTITIES":[{"ENTITY_ID":1}],"INTERESTING_ENTITIES":{"ENTITIES":[]}}
+	// Output: {"DATA_SOURCE":"CUSTOMERS","RECORD_ID":"1001","AFFECTED_ENTITIES":[{"ENTITY_ID":100001}],"INTERESTING_ENTITIES":{"ENTITIES":[]}}
 }
 
 func ExampleSzengine_ReevaluateRecord() {
@@ -603,7 +605,7 @@ func ExampleSzengine_ReevaluateRecord_withInfo() {
 		fmt.Println(err)
 	}
 	fmt.Println(result)
-	// Output: {"DATA_SOURCE":"CUSTOMERS","RECORD_ID":"1001","AFFECTED_ENTITIES":[{"ENTITY_ID":1}],"INTERESTING_ENTITIES":{"ENTITIES":[]}}
+	// Output: {"DATA_SOURCE":"CUSTOMERS","RECORD_ID":"1001","AFFECTED_ENTITIES":[{"ENTITY_ID":100001}],"INTERESTING_ENTITIES":{"ENTITIES":[]}}
 }
 
 func ExampleSzengine_SearchByAttributes() {
@@ -618,7 +620,7 @@ func ExampleSzengine_SearchByAttributes() {
 		fmt.Println(err)
 	}
 	fmt.Println(jsonutil.Flatten(jsonutil.Redact(jsonutil.Flatten(jsonutil.NormalizeAndSort(result)), "FIRST_SEEN_DT", "LAST_SEEN_DT")))
-	// Output: {"RESOLVED_ENTITIES":[{"ENTITY":{"RESOLVED_ENTITY":{"ENTITY_ID":1}},"MATCH_INFO":{"ERRULE_CODE":"SF1","MATCH_KEY":"+PNAME+EMAIL","MATCH_LEVEL_CODE":"POSSIBLY_RELATED"}}]}
+	// Output: {"RESOLVED_ENTITIES":[{"ENTITY":{"RESOLVED_ENTITY":{"ENTITY_ID":100001}},"MATCH_INFO":{"ERRULE_CODE":"SF1","MATCH_KEY":"+PNAME+EMAIL","MATCH_LEVEL_CODE":"POSSIBLY_RELATED"}}]}
 }
 
 func ExampleSzEngine_SearchByAttributes_searchProfile() {
@@ -637,7 +639,7 @@ func ExampleSzengine_WhyEntities() {
 		fmt.Println(err)
 	}
 	fmt.Println(truncate(result, 74))
-	// Output: {"WHY_RESULTS":[{"ENTITY_ID":1,"ENTITY_ID_2":1,"MATCH_INFO":{"WHY_KEY":...
+	// Output: {"WHY_RESULTS":[{"ENTITY_ID":100001,"ENTITY_ID_2":100001,"MATCH_INFO":{...
 }
 
 func ExampleSzengine_WhyRecordInEntity() {
@@ -652,7 +654,7 @@ func ExampleSzengine_WhyRecordInEntity() {
 		fmt.Println(err)
 	}
 	fmt.Println(result)
-	// Output: {"WHY_RESULTS":[{"INTERNAL_ID":1,"ENTITY_ID":1,"FOCUS_RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":"1001"}],"MATCH_INFO":{"WHY_KEY":"+NAME+DOB+PHONE","WHY_ERRULE_CODE":"CNAME_CFF_CEXCL","MATCH_LEVEL_CODE":"RESOLVED"}}],"ENTITIES":[{"RESOLVED_ENTITY":{"ENTITY_ID":1}}]}
+	// Output: {"WHY_RESULTS":[{"INTERNAL_ID":100001,"ENTITY_ID":100001,"FOCUS_RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":"1001"}],"MATCH_INFO":{"WHY_KEY":"+NAME+DOB+PHONE","WHY_ERRULE_CODE":"CNAME_CFF_CEXCL","MATCH_LEVEL_CODE":"RESOLVED"}}],"ENTITIES":[{"RESOLVED_ENTITY":{"ENTITY_ID":100001}}]}
 }
 
 func ExampleSzengine_WhyRecords() {
@@ -669,7 +671,7 @@ func ExampleSzengine_WhyRecords() {
 		fmt.Println(err)
 	}
 	fmt.Println(truncate(result, 115))
-	// Output: {"WHY_RESULTS":[{"INTERNAL_ID":1,"ENTITY_ID":1,"FOCUS_RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID":"1001"}],...
+	// Output: {"WHY_RESULTS":[{"INTERNAL_ID":100001,"ENTITY_ID":100001,"FOCUS_RECORDS":[{"DATA_SOURCE":"CUSTOMERS","RECORD_ID"...
 }
 
 // ----------------------------------------------------------------------------

@@ -12,8 +12,8 @@ import (
 	"github.com/senzing-garage/go-helpers/fileutil"
 	"github.com/senzing-garage/go-logging/logging"
 	"github.com/senzing-garage/sz-sdk-go/sz"
-	"github.com/senzing-garage/sz-sdk-go/szengine"
 	"github.com/senzing-garage/sz-sdk-go/szerror"
+	"github.com/senzing-garage/sz-sdk-go/szproduct"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -206,7 +206,7 @@ func TestMain(m *testing.M) {
 
 func setup() error {
 	var err error = nil
-	logger, err = logging.NewSenzingSdkLogger(ComponentId, szengine.IdMessages)
+	logger, err = logging.NewSenzingSdkLogger(ComponentId, szproduct.IdMessages)
 	if err != nil {
 		return createError(5901, err)
 	}
