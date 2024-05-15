@@ -130,12 +130,15 @@ func TestSzengine_CountRedoRecords(test *testing.T) {
 func TestSzengine_DeleteRecord(test *testing.T) {
 	ctx := context.TODO()
 	szEngine := getTestObject(ctx, test)
+	records := []record.Record{
+		truthset.CustomerRecords["1009"],
+	}
+	err := addRecords(ctx, records)
+	testError(test, err)
 	record := truthset.CustomerRecords["1009"]
 	flags := sz.SZ_WITHOUT_INFO
-	actual, err := szEngine.AddRecord(ctx, record.DataSource, record.Id, record.Json, flags)
-	printActual(test, actual)
 	testError(test, err)
-	actual, err = szEngine.DeleteRecord(ctx, record.DataSource, record.Id, flags)
+	actual, err := szEngine.DeleteRecord(ctx, record.DataSource, record.Id, flags)
 	testError(test, err)
 	printActual(test, actual)
 }
@@ -143,12 +146,15 @@ func TestSzengine_DeleteRecord(test *testing.T) {
 func TestSzengine_DeleteRecord_withInfo(test *testing.T) {
 	ctx := context.TODO()
 	szEngine := getTestObject(ctx, test)
+
+	records := []record.Record{
+		truthset.CustomerRecords["1010"],
+	}
+	err := addRecords(ctx, records)
+	testError(test, err)
 	record := truthset.CustomerRecords["1010"]
 	flags := sz.SZ_WITH_INFO
-	actual, err := szEngine.AddRecord(ctx, record.DataSource, record.Id, record.Json, flags)
-	testError(test, err)
-	printActual(test, actual)
-	actual, err = szEngine.DeleteRecord(ctx, record.DataSource, record.Id, flags)
+	actual, err := szEngine.DeleteRecord(ctx, record.DataSource, record.Id, flags)
 	testError(test, err)
 	printActual(test, actual)
 }
@@ -905,20 +911,20 @@ func setup() error {
 
 func setupAddRecords() error {
 	var err error = nil
-	ctx := context.TODO()
-	szEngine := getSzEngine(ctx)
-	records := []record.Record{
-		truthset.CustomerRecords["1001"],
-		truthset.CustomerRecords["1002"],
-		truthset.CustomerRecords["1003"],
-	}
-	flags := sz.SZ_WITHOUT_INFO
-	for _, record := range records {
-		_, err = szEngine.AddRecord(ctx, record.DataSource, record.Id, record.Json, flags)
-		if err != nil {
-			return err
-		}
-	}
+	// ctx := context.TODO()
+	// szEngine := getSzEngine(ctx)
+	// records := []record.Record{
+	// 	truthset.CustomerRecords["1001"],
+	// 	truthset.CustomerRecords["1002"],
+	// 	truthset.CustomerRecords["1003"],
+	// }
+	// flags := sz.SZ_WITHOUT_INFO
+	// for _, record := range records {
+	// 	_, err = szEngine.AddRecord(ctx, record.DataSource, record.Id, record.Json, flags)
+	// 	if err != nil {
+	// 		return err
+	// 	}
+	// }
 	return err
 }
 
