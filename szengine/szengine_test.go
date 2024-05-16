@@ -44,6 +44,11 @@ var (
 	defaultConfigId   int64
 	szEngineSingleton *Szengine
 	logger            logging.LoggingInterface
+	logLevel          = "INFO"
+	observerSingleton = &observer.ObserverNull{
+		Id:       "Observer 1",
+		IsSilent: true,
+	}
 )
 
 // ----------------------------------------------------------------------------
@@ -1009,12 +1014,10 @@ func getSzEngine(ctx context.Context) *Szengine {
 			return nil
 		}
 		szEngineSingleton = &Szengine{}
-		szEngineSingleton.SetLogLevel(ctx, "TRACE")
-		anObserver := &observer.ObserverNull{
-			Id:       "Observer 1",
-			IsSilent: true,
+		szEngineSingleton.SetLogLevel(ctx, logLevel)
+		if logLevel == "TRACE" {
+			szEngineSingleton.RegisterObserver(ctx, observerSingleton)
 		}
-		szEngineSingleton.RegisterObserver(ctx, anObserver)
 		err = szEngineSingleton.Initialize(ctx, instanceName, settings, getDefaultConfigId(), verboseLogging)
 		if err != nil {
 			fmt.Println(err)
@@ -1095,6 +1098,10 @@ func setup() error {
 	logger, err = logging.NewSenzingSdkLogger(ComponentId, szengine.IdMessages)
 	if err != nil {
 		return createError(5901, err)
+	}
+	osenvLogLevel := os.Getenv("SENZING_LOG_LEVEL")
+	if len(osenvLogLevel) > 0 {
+		logLevel = osenvLogLevel
 	}
 	err = setupDirectories()
 	if err != nil {

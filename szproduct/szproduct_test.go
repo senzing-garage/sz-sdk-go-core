@@ -27,6 +27,7 @@ const (
 
 var (
 	logger            logging.LoggingInterface
+	logLevel          = "INFO"
 	observerSingleton = &observer.ObserverNull{
 		Id:       "Observer 1",
 		IsSilent: true,
@@ -149,8 +150,10 @@ func getSzProduct(ctx context.Context) *Szproduct {
 			return nil
 		}
 		szProductSingleton = &Szproduct{}
-		szProductSingleton.SetLogLevel(ctx, "TRACE")
-		szProductSingleton.RegisterObserver(ctx, observerSingleton)
+		szProductSingleton.SetLogLevel(ctx, logLevel)
+		if logLevel == "TRACE" {
+			szProductSingleton.RegisterObserver(ctx, observerSingleton)
+		}
 		err = szProductSingleton.Initialize(ctx, instanceName, settings, verboseLogging)
 		if err != nil {
 			fmt.Println(err)
@@ -216,6 +219,10 @@ func setup() error {
 	logger, err = logging.NewSenzingSdkLogger(ComponentId, szproduct.IdMessages)
 	if err != nil {
 		return createError(5901, err)
+	}
+	osenvLogLevel := os.Getenv("SENZING_LOG_LEVEL")
+	if len(osenvLogLevel) > 0 {
+		logLevel = osenvLogLevel
 	}
 	err = setupDirectories()
 	if err != nil {

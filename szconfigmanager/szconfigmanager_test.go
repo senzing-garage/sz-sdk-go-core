@@ -30,6 +30,7 @@ const (
 
 var (
 	logger            logging.LoggingInterface
+	logLevel          = "INFO"
 	observerSingleton = &observer.ObserverNull{
 		Id:       "Observer 1",
 		IsSilent: true,
@@ -225,8 +226,10 @@ func getSzConfig(ctx context.Context) sz.SzConfig {
 			return nil
 		}
 		szConfigSingleton = &szconfig.Szconfig{}
-		szConfigSingleton.SetLogLevel(ctx, "TRACE")
-		szConfigSingleton.RegisterObserver(ctx, observerSingleton)
+		szConfigSingleton.SetLogLevel(ctx, logLevel)
+		if logLevel == "TRACE" {
+			szConfigSingleton.RegisterObserver(ctx, observerSingleton)
+		}
 		err = szConfigSingleton.Initialize(ctx, instanceName, settings, verboseLogging)
 		if err != nil {
 			fmt.Println(err)
@@ -244,8 +247,10 @@ func getSzConfigManager(ctx context.Context) *Szconfigmanager {
 			return nil
 		}
 		szConfigManagerSingleton = &Szconfigmanager{}
-		szConfigManagerSingleton.SetLogLevel(ctx, "TRACE")
-		szConfigManagerSingleton.RegisterObserver(ctx, observerSingleton)
+		szConfigManagerSingleton.SetLogLevel(ctx, logLevel)
+		if logLevel == "TRACE" {
+			szConfigManagerSingleton.RegisterObserver(ctx, observerSingleton)
+		}
 		err = szConfigManagerSingleton.Initialize(ctx, instanceName, settings, verboseLogging)
 		if err != nil {
 			fmt.Println(err)
@@ -320,6 +325,10 @@ func setup() error {
 	logger, err = logging.NewSenzingSdkLogger(ComponentId, szconfigmanager.IdMessages)
 	if err != nil {
 		return createError(5901, err)
+	}
+	osenvLogLevel := os.Getenv("SENZING_LOG_LEVEL")
+	if len(osenvLogLevel) > 0 {
+		logLevel = osenvLogLevel
 	}
 	err = setupDirectories()
 	if err != nil {
@@ -466,6 +475,7 @@ func teardown() error {
 }
 
 func teardownSzConfig(ctx context.Context) error {
+	szConfigSingleton.UnregisterObserver(ctx, observerSingleton)
 	err := szConfigSingleton.Destroy(ctx)
 	if err != nil {
 		return err
@@ -475,14 +485,8 @@ func teardownSzConfig(ctx context.Context) error {
 }
 
 func teardownSzConfigManager(ctx context.Context) error {
-	szConfigSingleton.UnregisterObserver(ctx, observerSingleton)
-	err := szConfigSingleton.Destroy(ctx)
-	if err != nil {
-		return err
-	}
-	szConfigSingleton = nil
 	szConfigManagerSingleton.UnregisterObserver(ctx, observerSingleton)
-	err = szConfigManagerSingleton.Destroy(ctx)
+	err := szConfigManagerSingleton.Destroy(ctx)
 	if err != nil {
 		return err
 	}
