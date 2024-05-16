@@ -157,30 +157,6 @@ func (client *Szproduct) GetObserverOrigin(ctx context.Context) string {
 }
 
 /*
-The GetSdkId method returns the identifier of this particular Software Development Kit (SDK).
-It is handy when working with multiple implementations of the same SzProduct interface.
-For this implementation, "base" is returned.
-
-Input
-  - ctx: A context to control lifecycle.
-*/
-func (client *Szproduct) GetSdkId(ctx context.Context) string {
-	var err error = nil
-	if client.isTrace {
-		entryTime := time.Now()
-		client.traceEntry(701)
-		defer func() { client.traceExit(702, err, time.Since(entryTime)) }()
-	}
-	if client.observers != nil {
-		go func() {
-			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8701, err, details)
-		}()
-	}
-	return "base"
-}
-
-/*
 The Initialize method initializes the Senzing SzProduct object.
 It must be called prior to any other calls.
 
@@ -316,10 +292,10 @@ func (client *Szproduct) UnregisterObserver(ctx context.Context, observer observ
 			"observerId": observer.GetObserverId(ctx),
 		}
 		notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8704, err, details)
-	}
-	err = client.observers.UnregisterObserver(ctx, observer)
-	if !client.observers.HasObservers(ctx) {
-		client.observers = nil
+		err = client.observers.UnregisterObserver(ctx, observer)
+		if !client.observers.HasObservers(ctx) {
+			client.observers = nil
+		}
 	}
 	return err
 }

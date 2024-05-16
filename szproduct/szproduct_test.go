@@ -20,7 +20,8 @@ import (
 
 const (
 	defaultTruncation = 76
-	instanceName      = "Product Test"
+	instanceName      = "SzProduct Test"
+	observerOrigin    = "SzProduct observer"
 	printResults      = false
 	verboseLogging    = sz.SZ_NO_LOGGING
 )
@@ -73,6 +74,13 @@ func TestSzproduct_GetObserverOrigin(test *testing.T) {
 	szProduct.SetObserverOrigin(ctx, origin)
 	actual := szProduct.GetObserverOrigin(ctx)
 	assert.Equal(test, origin, actual)
+}
+
+func TestSzproduct_UnregisterObserver(test *testing.T) {
+	ctx := context.TODO()
+	szProduct := getTestObject(ctx, test)
+	err := szProduct.UnregisterObserver(ctx, observerSingleton)
+	testError(test, err)
 }
 
 // ----------------------------------------------------------------------------
@@ -152,7 +160,9 @@ func getSzProduct(ctx context.Context) *Szproduct {
 		szProductSingleton = &Szproduct{}
 		szProductSingleton.SetLogLevel(ctx, logLevel)
 		if logLevel == "TRACE" {
+			szProductSingleton.SetObserverOrigin(ctx, observerOrigin)
 			szProductSingleton.RegisterObserver(ctx, observerSingleton)
+			szProductSingleton.SetLogLevel(ctx, logLevel) // Duplicated for coverage testing
 		}
 		err = szProductSingleton.Initialize(ctx, instanceName, settings, verboseLogging)
 		if err != nil {

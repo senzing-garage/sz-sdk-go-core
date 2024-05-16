@@ -29,7 +29,8 @@ import (
 
 const (
 	defaultTruncation = 76
-	instanceName      = "Engine Test"
+	instanceName      = "SzEngine Test"
+	observerOrigin    = "SzEngine observer"
 	printResults      = false
 	verboseLogging    = sz.SZ_NO_LOGGING
 )
@@ -767,6 +768,25 @@ func TestSzengine_SearchByAttributes(test *testing.T) {
 	printActual(test, actual)
 }
 
+func TestSzengine_SearchByAttributes_withSearchProfile(test *testing.T) {
+	ctx := context.TODO()
+	records := []record.Record{
+		truthset.CustomerRecords["1001"],
+		truthset.CustomerRecords["1002"],
+		truthset.CustomerRecords["1003"],
+	}
+	defer deleteRecords(ctx, records)
+	err := addRecords(ctx, records)
+	testError(test, err)
+	szEngine := getTestObject(ctx, test)
+	attributes := `{"NAMES": [{"NAME_TYPE": "PRIMARY", "NAME_LAST": "JOHNSON"}], "SSN_NUMBER": "053-39-3251"}`
+	searchProfile := "SEARCH"
+	flags := sz.SZ_NO_FLAGS
+	actual, err := szEngine.SearchByAttributes(ctx, attributes, searchProfile, flags)
+	testError(test, err)
+	printActual(test, actual)
+}
+
 func TestSzengine_StreamExportCsvEntityReport(test *testing.T) {
 	// TODO: Write TestSzengine_StreamExportCsvEntityReport
 }
@@ -857,6 +877,13 @@ func TestSzengine_GetObserverOrigin(test *testing.T) {
 	actual := szEngine.GetObserverOrigin(ctx)
 	assert.Equal(test, origin, actual)
 	printActual(test, actual)
+}
+
+func TestSzengine_UnregisterObserver(test *testing.T) {
+	ctx := context.TODO()
+	szEngine := getTestObject(ctx, test)
+	err := szEngine.UnregisterObserver(ctx, observerSingleton)
+	testError(test, err)
 }
 
 // ----------------------------------------------------------------------------
@@ -1016,7 +1043,9 @@ func getSzEngine(ctx context.Context) *Szengine {
 		szEngineSingleton = &Szengine{}
 		szEngineSingleton.SetLogLevel(ctx, logLevel)
 		if logLevel == "TRACE" {
+			szEngineSingleton.SetObserverOrigin(ctx, observerOrigin)
 			szEngineSingleton.RegisterObserver(ctx, observerSingleton)
+			szEngineSingleton.SetLogLevel(ctx, logLevel) // Duplicated for coverage testing
 		}
 		err = szEngineSingleton.Initialize(ctx, instanceName, settings, getDefaultConfigId(), verboseLogging)
 		if err != nil {

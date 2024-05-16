@@ -23,7 +23,8 @@ import (
 
 const (
 	defaultTruncation = 76
-	instanceName      = "ConfigManager Test"
+	instanceName      = "SzConfigManager Test"
+	observerOrigin    = "SzConfigManager observer"
 	printResults      = false
 	verboseLogging    = sz.SZ_NO_LOGGING
 )
@@ -152,6 +153,13 @@ func TestSzconfigmanager_GetObserverOrigin(test *testing.T) {
 	assert.Equal(test, origin, actual)
 }
 
+func TestSzconfigmanager_UnregisterObserver(test *testing.T) {
+	ctx := context.TODO()
+	szConfigManager := getTestObject(ctx, test)
+	err := szConfigManager.UnregisterObserver(ctx, observerSingleton)
+	testError(test, err)
+}
+
 // ----------------------------------------------------------------------------
 // Object creation / destruction
 // ----------------------------------------------------------------------------
@@ -228,7 +236,9 @@ func getSzConfig(ctx context.Context) sz.SzConfig {
 		szConfigSingleton = &szconfig.Szconfig{}
 		szConfigSingleton.SetLogLevel(ctx, logLevel)
 		if logLevel == "TRACE" {
+			szConfigSingleton.SetObserverOrigin(ctx, observerOrigin)
 			szConfigSingleton.RegisterObserver(ctx, observerSingleton)
+			szConfigSingleton.SetLogLevel(ctx, logLevel) // Duplicated for coverage testing
 		}
 		err = szConfigSingleton.Initialize(ctx, instanceName, settings, verboseLogging)
 		if err != nil {
@@ -249,7 +259,9 @@ func getSzConfigManager(ctx context.Context) *Szconfigmanager {
 		szConfigManagerSingleton = &Szconfigmanager{}
 		szConfigManagerSingleton.SetLogLevel(ctx, logLevel)
 		if logLevel == "TRACE" {
+			szConfigManagerSingleton.SetObserverOrigin(ctx, observerOrigin)
 			szConfigManagerSingleton.RegisterObserver(ctx, observerSingleton)
+			szConfigManagerSingleton.SetLogLevel(ctx, logLevel) // Duplicated for coverage testing
 		}
 		err = szConfigManagerSingleton.Initialize(ctx, instanceName, settings, verboseLogging)
 		if err != nil {

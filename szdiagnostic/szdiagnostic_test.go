@@ -26,7 +26,8 @@ import (
 
 const (
 	defaultTruncation = 76
-	instanceName      = "Diagnostic Test"
+	instanceName      = "SzDiagnostic Test"
+	observerOrigin    = "SzDiagnostic observer"
 	printResults      = false
 	verboseLogging    = sz.SZ_NO_LOGGING
 )
@@ -105,6 +106,13 @@ func TestSzdiagnostic_GetObserverOrigin(test *testing.T) {
 	szDiagnostic.SetObserverOrigin(ctx, origin)
 	actual := szDiagnostic.GetObserverOrigin(ctx)
 	assert.Equal(test, origin, actual)
+}
+
+func TestSzdiagnostic_UnregisterObserver(test *testing.T) {
+	ctx := context.TODO()
+	szDiagnostic := getTestObject(ctx, test)
+	err := szDiagnostic.UnregisterObserver(ctx, observerSingleton)
+	testError(test, err)
 }
 
 // ----------------------------------------------------------------------------
@@ -235,7 +243,9 @@ func getSzDiagnostic(ctx context.Context) *Szdiagnostic {
 		szDiagnosticSingleton = &Szdiagnostic{}
 		szDiagnosticSingleton.SetLogLevel(ctx, logLevel)
 		if logLevel == "TRACE" {
+			szDiagnosticSingleton.SetObserverOrigin(ctx, observerOrigin)
 			szDiagnosticSingleton.RegisterObserver(ctx, observerSingleton)
+			szDiagnosticSingleton.SetLogLevel(ctx, logLevel) // Duplicated for coverage testing
 		}
 		err = szDiagnosticSingleton.Initialize(ctx, instanceName, settings, getDefaultConfigId(), verboseLogging)
 		if err != nil {
@@ -256,7 +266,9 @@ func getSzEngine(ctx context.Context) *szengine.Szengine {
 		szEngineSingleton = &szengine.Szengine{}
 		szEngineSingleton.SetLogLevel(ctx, logLevel)
 		if logLevel == "TRACE" {
+			szEngineSingleton.SetObserverOrigin(ctx, observerOrigin)
 			szEngineSingleton.RegisterObserver(ctx, observerSingleton)
+			szEngineSingleton.SetLogLevel(ctx, logLevel) // Duplicated for coverage testing
 		}
 		err = szEngineSingleton.Initialize(ctx, instanceName, settings, getDefaultConfigId(), verboseLogging)
 		if err != nil {
