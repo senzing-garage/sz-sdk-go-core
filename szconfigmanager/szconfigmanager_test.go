@@ -71,6 +71,17 @@ func TestSzconfigmanager_AddConfig(test *testing.T) {
 	printActual(test, actual)
 }
 
+// TODO: Implement TestSzconfigmanager_AddConfig_badConfigDefinition
+// func TestSzconfigmanager_AddConfig_badConfigDefinition(test *testing.T) {
+// 	ctx := context.TODO()
+// 	szConfigManager := getTestObject(ctx, test)
+// 	now := time.Now()
+// 	badConfigDefinition := `{"bob": "not bob"}`
+// 	configComment := fmt.Sprintf("szconfigmanager_test at %s", now.UTC())
+// 	_, err := szConfigManager.AddConfig(ctx, badConfigDefinition, configComment)
+// 	expectError(test, szerror.SzBaseError{}, err)
+// }
+
 func TestSzconfigmanager_GetConfig(test *testing.T) {
 	ctx := context.TODO()
 	szConfigManager := getTestObject(ctx, test)
@@ -84,13 +95,25 @@ func TestSzconfigmanager_GetConfig(test *testing.T) {
 	printActual(test, actual)
 }
 
-func TestSzconfigmanager_GetConfigList(test *testing.T) {
+func TestSzconfigmanager_GetConfig_badConfigId(test *testing.T) {
+	ctx := context.TODO()
+	szConfigManager := getTestObject(ctx, test)
+	badConfigId := int64(0)
+	actual, err := szConfigManager.GetConfig(ctx, badConfigId)
+	assert.Equal(test, "", actual)
+	expectError(test, szerror.SzConfigurationError{}, err)
+}
+
+func TestSzconfigmanager_GetConfigs(test *testing.T) {
 	ctx := context.TODO()
 	szConfigManager := getTestObject(ctx, test)
 	actual, err := szConfigManager.GetConfigList(ctx)
 	testError(test, err)
 	printActual(test, actual)
 }
+
+// TODO: Implement TestSzconfigmanager_GetConfigs_badXxxx
+// func TestSzconfigmanager_GetConfigs_badXxxx(test *testing.T) {}
 
 func TestSzconfigmanager_GetDefaultConfigId(test *testing.T) {
 	ctx := context.TODO()
@@ -99,6 +122,9 @@ func TestSzconfigmanager_GetDefaultConfigId(test *testing.T) {
 	testError(test, err)
 	printActual(test, actual)
 }
+
+// TODO: Implement TestSzconfigmanager_GetDefaultConfigId_badXxxx
+// func TestSzconfigmanager_GetDefaultConfigId_badXxxx(test *testing.T) {}
 
 func TestSzconfigmanager_ReplaceDefaultConfigId(test *testing.T) {
 	ctx := context.TODO()
@@ -121,6 +147,32 @@ func TestSzconfigmanager_ReplaceDefaultConfigId(test *testing.T) {
 	testError(test, err)
 }
 
+func TestSzconfigmanager_ReplaceDefaultConfigId_badCurrentDefaultConfigId(test *testing.T) {
+	ctx := context.TODO()
+	szConfigManager := getTestObject(ctx, test)
+	badCurrentDefaultConfigId := int64(0)
+	newDefaultConfigId, err2 := szConfigManager.GetDefaultConfigId(ctx)
+	if err2 != nil {
+		test.Log("Error:", err2.Error())
+		assert.FailNow(test, "szConfigManager.GetDefaultConfigId()-2")
+	}
+	err := szConfigManager.ReplaceDefaultConfigId(ctx, badCurrentDefaultConfigId, newDefaultConfigId)
+	expectError(test, szerror.SzConfigurationError{}, err)
+}
+
+func TestSzconfigmanager_ReplaceDefaultConfigId_badNewDefaultConfigId(test *testing.T) {
+	ctx := context.TODO()
+	szConfigManager := getTestObject(ctx, test)
+	currentDefaultConfigId, err1 := szConfigManager.GetDefaultConfigId(ctx)
+	if err1 != nil {
+		test.Log("Error:", err1.Error())
+		assert.FailNow(test, "szConfigManager.GetDefaultConfigId()")
+	}
+	newDefaultConfigId := int64(0)
+	err := szConfigManager.ReplaceDefaultConfigId(ctx, currentDefaultConfigId, newDefaultConfigId)
+	expectError(test, szerror.SzConfigurationError{}, err)
+}
+
 func TestSzconfigmanager_SetDefaultConfigId(test *testing.T) {
 	ctx := context.TODO()
 	szConfigManager := getTestObject(ctx, test)
@@ -133,9 +185,24 @@ func TestSzconfigmanager_SetDefaultConfigId(test *testing.T) {
 	testError(test, err)
 }
 
+func TestSzconfigmanager_SetDefaultConfigId_badConfigId(test *testing.T) {
+	ctx := context.TODO()
+	szConfigManager := getTestObject(ctx, test)
+	badConfigId := int64(0)
+	err := szConfigManager.SetDefaultConfigId(ctx, badConfigId)
+	expectError(test, szerror.SzConfigurationError{}, err)
+}
+
 // ----------------------------------------------------------------------------
 // Logging and observing
 // ----------------------------------------------------------------------------
+
+func TestSzconfig_SetLogLevel_badLogLevelName(test *testing.T) {
+	ctx := context.TODO()
+	szConfigManager := getTestObject(ctx, test)
+	badLogLevelName := "BadLogLevelName"
+	_ = szConfigManager.SetLogLevel(ctx, badLogLevelName)
+}
 
 func TestSzconfigmanager_SetObserverOrigin(test *testing.T) {
 	ctx := context.TODO()
@@ -183,6 +250,9 @@ func TestSzconfigmanager_Initialize(test *testing.T) {
 	testError(test, err)
 }
 
+// TODO: Implement TestSzconfig_Initialize_badSettings
+// func TestSzconfig_Initialize_badSettings(test *testing.T) {}
+
 func TestSzconfigmanager_Destroy(test *testing.T) {
 	ctx := context.TODO()
 	szConfigManager := getTestObject(ctx, test)
@@ -190,12 +260,30 @@ func TestSzconfigmanager_Destroy(test *testing.T) {
 	testError(test, err)
 }
 
+func TestSzconfigmanager_Destroy_withObserver(test *testing.T) {
+	ctx := context.TODO()
+	szConfigManagerSingleton = nil
+	szConfigManager := getTestObject(ctx, test)
+	err := szConfigManager.Destroy(ctx)
+	testError(test, err)
+}
+
+// TODO: Implement TestSzconfig_Destroy_badXxx
+// func TestSzconfig_Destroy_badXxx(test *testing.T) {}
+
 // ----------------------------------------------------------------------------
 // Internal functions
 // ----------------------------------------------------------------------------
 
 func createError(errorId int, err error) error {
 	return szerror.Cast(logger.NewError(errorId, err), err)
+}
+
+func expectError(test *testing.T, expectedType interface{}, err interface{}) {
+	if err == nil {
+		assert.FailNowf(test, "expected error", "expected error type: %T", expectedType)
+	}
+	assert.IsType(test, expectedType, err)
 }
 
 func getDatabaseTemplatePath() string {
@@ -226,7 +314,6 @@ func getSettings() (string, error) {
 }
 
 func getSzConfig(ctx context.Context) sz.SzConfig {
-	_ = ctx
 	if szConfigSingleton == nil {
 		settings, err := getSettings()
 		if err != nil {
@@ -487,7 +574,6 @@ func teardown() error {
 }
 
 func teardownSzConfig(ctx context.Context) error {
-	szConfigSingleton.UnregisterObserver(ctx, observerSingleton)
 	err := szConfigSingleton.Destroy(ctx)
 	if err != nil {
 		return err
@@ -497,7 +583,6 @@ func teardownSzConfig(ctx context.Context) error {
 }
 
 func teardownSzConfigManager(ctx context.Context) error {
-	szConfigManagerSingleton.UnregisterObserver(ctx, observerSingleton)
 	err := szConfigManagerSingleton.Destroy(ctx)
 	if err != nil {
 		return err

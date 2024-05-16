@@ -167,6 +167,14 @@ func TestSzdiagnostic_Destroy(test *testing.T) {
 	testError(test, err)
 }
 
+func TestSzdiagnostic_Destroy_withObserver(test *testing.T) {
+	ctx := context.TODO()
+	szDiagnosticSingleton = nil
+	szDiagnostic := getTestObject(ctx, test)
+	err := szDiagnostic.Destroy(ctx)
+	testError(test, err)
+}
+
 // ----------------------------------------------------------------------------
 // Internal functions
 // ----------------------------------------------------------------------------

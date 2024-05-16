@@ -114,6 +114,15 @@ func TestSzproduct_Initialize(test *testing.T) {
 // 	testError(test, err)
 // }
 
+// TODO: Uncomment after bug introduced in Senzing 4.0.0.24131 is fixed.
+// func TestSzconfig_Destroy_withObserver(test *testing.T) {
+// 	ctx := context.TODO()
+// 	szProductSingleton = nil
+// 	szProduct := getTestObject(ctx, test)
+// 	err := szProduct.Destroy(ctx)
+// 	testError(test, err)
+// }
+
 // ----------------------------------------------------------------------------
 // Internal functions
 // ----------------------------------------------------------------------------

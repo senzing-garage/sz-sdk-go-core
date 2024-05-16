@@ -72,6 +72,17 @@ func TestSzconfig_AddDataSource_withLoad(test *testing.T) {
 	testError(test, err)
 }
 
+func TestSzconfig_AddDataSource_badDataSourceCode(test *testing.T) {
+	ctx := context.TODO()
+	szConfig := getTestObject(ctx, test)
+	configHandle, err := szConfig.CreateConfig(ctx)
+	testError(test, err)
+	badDataSourceCode := "\n\tGO_TEST"
+	actual, err := szConfig.AddDataSource(ctx, configHandle, badDataSourceCode)
+	expectError(test, szerror.SzBadInputError{}, err)
+	printActual(test, actual)
+}
+
 func TestSzconfig_CloseConfig(test *testing.T) {
 	ctx := context.TODO()
 	szConfig := getTestObject(ctx, test)
@@ -81,6 +92,15 @@ func TestSzconfig_CloseConfig(test *testing.T) {
 	testError(test, err)
 }
 
+// TODO: Implement TestSzconfig_CloseConfig_badConfigHandle
+// func TestSzconfig_CloseConfig_badConfigHandle(test *testing.T) {
+// 	ctx := context.TODO()
+// 	szConfig := getTestObject(ctx, test)
+// 	badConfigHandle := uintptr(0)
+// 	err := szConfig.CloseConfig(ctx, badConfigHandle)
+// 	expectError(test, szerror.SzUnhandledError{}, err)
+// }
+
 func TestSzconfig_CreateConfig(test *testing.T) {
 	ctx := context.TODO()
 	szConfig := getTestObject(ctx, test)
@@ -88,6 +108,9 @@ func TestSzconfig_CreateConfig(test *testing.T) {
 	testError(test, err)
 	printActual(test, actual)
 }
+
+// TODO: Implement TestSzconfig_CreateConfig_badXxx
+// func TestSzconfig_CreateConfig_badXxx(test *testing.T) {}
 
 func TestSzconfig_DeleteDataSource(test *testing.T) {
 	ctx := context.TODO()
@@ -141,6 +164,25 @@ func TestSzconfig_DeleteDataSource_withLoad(test *testing.T) {
 	testError(test, err)
 }
 
+func TestSzconfig_DeleteDataSource_badConfigHandle(test *testing.T) {
+	ctx := context.TODO()
+	szConfig := getTestObject(ctx, test)
+	badConfigHandle := uintptr(0)
+	dataSourceCode := "GO_TEST"
+	err := szConfig.DeleteDataSource(ctx, badConfigHandle, dataSourceCode)
+	expectError(test, szerror.SzBaseError{}, err)
+}
+
+func TestSzconfig_DeleteDataSource_badDataSourceCode(test *testing.T) {
+	ctx := context.TODO()
+	szConfig := getTestObject(ctx, test)
+	configHandle, err := szConfig.CreateConfig(ctx)
+	testError(test, err)
+	badDataSourceCode := "\n\tGO_TEST"
+	err = szConfig.DeleteDataSource(ctx, configHandle, badDataSourceCode)
+	expectError(test, szerror.SzBadInputError{}, err)
+}
+
 func TestSzconfig_ExportConfig(test *testing.T) {
 	ctx := context.TODO()
 	szConfig := getTestObject(ctx, test)
@@ -149,6 +191,15 @@ func TestSzconfig_ExportConfig(test *testing.T) {
 	actual, err := szConfig.ExportConfig(ctx, configHandle)
 	testError(test, err)
 	printActual(test, actual)
+}
+
+func TestSzconfig_ExportConfig_badConfigHandle(test *testing.T) {
+	ctx := context.TODO()
+	szConfig := getTestObject(ctx, test)
+	badConfigHandle := uintptr(0)
+	actual, err := szConfig.ExportConfig(ctx, badConfigHandle)
+	assert.Equal(test, "", actual)
+	expectError(test, szerror.SzBaseError{}, err)
 }
 
 func TestSzconfig_GetDataSources(test *testing.T) {
@@ -163,6 +214,15 @@ func TestSzconfig_GetDataSources(test *testing.T) {
 	testError(test, err)
 }
 
+func TestSzconfig_GetDataSources_badConfigHandle(test *testing.T) {
+	ctx := context.TODO()
+	szConfig := getTestObject(ctx, test)
+	badConfigHandle := uintptr(0)
+	actual, err := szConfig.GetDataSources(ctx, badConfigHandle)
+	assert.Equal(test, "", actual)
+	expectError(test, szerror.SzBaseError{}, err)
+}
+
 func TestSzconfig_ImportConfig(test *testing.T) {
 	ctx := context.TODO()
 	szConfig := getTestObject(ctx, test)
@@ -175,9 +235,24 @@ func TestSzconfig_ImportConfig(test *testing.T) {
 	printActual(test, actual)
 }
 
+func TestSzconfig_ImportConfig_badConfigDefinition(test *testing.T) {
+	ctx := context.TODO()
+	szConfig := getTestObject(ctx, test)
+	badConfigDefinition := "}{"
+	_, err := szConfig.ImportConfig(ctx, badConfigDefinition)
+	expectError(test, szerror.SzBadInputError{}, err)
+}
+
 // ----------------------------------------------------------------------------
 // Logging and observing
 // ----------------------------------------------------------------------------
+
+func TestSzconfig_SetLogLevel_badLogLevelName(test *testing.T) {
+	ctx := context.TODO()
+	szConfig := getTestObject(ctx, test)
+	badLogLevelName := "BadLogLevelName"
+	_ = szConfig.SetLogLevel(ctx, badLogLevelName)
+}
 
 func TestSzconfig_SetObserverOrigin(test *testing.T) {
 	ctx := context.TODO()
@@ -229,6 +304,17 @@ func TestSzconfig_Initialize(test *testing.T) {
 	testError(test, err)
 }
 
+// TODO: Implement TestSzconfig_Initialize_badSettings
+// func TestSzconfig_Initialize_badSettings(test *testing.T) {
+// 	ctx := context.TODO()
+// 	szConfig := getTestObject(ctx, test)
+// 	instanceName := "Test name"
+// 	verboseLogging := sz.SZ_NO_LOGGING
+// 	badSettings := "\n\t"
+// 	err := szConfig.Initialize(ctx, instanceName, badSettings, verboseLogging)
+// 	expectError(test, szerror.SzBaseError{}, err)
+// }
+
 func TestSzconfig_Destroy(test *testing.T) {
 	ctx := context.TODO()
 	szConfig := getTestObject(ctx, test)
@@ -236,12 +322,30 @@ func TestSzconfig_Destroy(test *testing.T) {
 	testError(test, err)
 }
 
+func TestSzconfig_Destroy_withObserver(test *testing.T) {
+	ctx := context.TODO()
+	szConfigSingleton = nil
+	szConfig := getTestObject(ctx, test)
+	err := szConfig.Destroy(ctx)
+	testError(test, err)
+}
+
+// TODO: Implement TestSzconfig_Destroy_badXxx
+// func TestSzconfig_Destroy_badXxx(test *testing.T) {}
+
 // ----------------------------------------------------------------------------
 // Internal functions
 // ----------------------------------------------------------------------------
 
 func createError(errorId int, err error) error {
 	return szerror.Cast(logger.NewError(errorId, err), err)
+}
+
+func expectError(test *testing.T, expectedType interface{}, err interface{}) {
+	if err == nil {
+		assert.FailNowf(test, "expected error", "expected error type: %T", expectedType)
+	}
+	assert.IsType(test, expectedType, err)
 }
 
 func getDatabaseTemplatePath() string {

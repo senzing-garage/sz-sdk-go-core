@@ -937,6 +937,14 @@ func TestSzengine_Destroy(test *testing.T) {
 	testError(test, err)
 }
 
+func TestSzengine_Destroy_withObserver(test *testing.T) {
+	ctx := context.TODO()
+	szEngineSingleton = nil
+	szEngine := getTestObject(ctx, test)
+	err := szEngine.Destroy(ctx)
+	testError(test, err)
+}
+
 // ----------------------------------------------------------------------------
 // Internal functions
 // ----------------------------------------------------------------------------

@@ -574,7 +574,7 @@ Output
   - A JSON document.
     Example: `{"ENTITY_PATHS":[{"START_ENTITY_ID":1,"END_ENTITY_ID":2,"ENTITIES":[1,2]}],"ENTITIES":[{"RESOLVED_ENTITY":{"ENTITY_ID":1,"ENTITY_NAME":"SEAMAN","RECORD_SUMMARY":[{"DATA_SOURCE":"TEST","RECORD_COUNT":2,"FIRST_SEEN_DT":"2022-11-29 22:25:18.997","LAST_SEEN_DT":"2022-11-29 22:25:19.005"}],"LAST_SEEN_DT":"2022-11-29 22:25:19.005"},"RELATED_ENTITIES":[{"ENTITY_ID":2,"MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED","MATCH_KEY":"+PHONE+ACCT_NUM-DOB-SSN","ERRULE_CODE":"SF1","IS_DISCLOSED":0,"IS_AMBIGUOUS":0}]},{"RESOLVED_ENTITY":{"ENTITY_ID":2,"ENTITY_NAME":"Smith","RECORD_SUMMARY":[{"DATA_SOURCE":"TEST","RECORD_COUNT":1,"FIRST_SEEN_DT":"2022-11-29 22:25:19.009","LAST_SEEN_DT":"2022-11-29 22:25:19.009"}],"LAST_SEEN_DT":"2022-11-29 22:25:19.009"},"RELATED_ENTITIES":[{"ENTITY_ID":1,"MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED","MATCH_KEY":"+PHONE+ACCT_NUM-DOB-SSN","ERRULE_CODE":"SF1","IS_DISCLOSED":0,"IS_AMBIGUOUS":0}]}]}`
 */
-func (client *Szengine) FindNetworkByEntityId(ctx context.Context, entityList string, maxDegrees int64, buildOutDegree int64, maxEntities int64, flags int64) (string, error) {
+func (client *Szengine) FindNetworkByEntityId(ctx context.Context, entityIds string, maxDegrees int64, buildOutDegree int64, buildOutMaxEntities int64, flags int64) (string, error) {
 	//  _DLEXPORT int G2_findNetworkByEntityID_V2(const char* entityList, const int maxDegree, const int buildOutDegree, const int maxEntities, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -582,23 +582,23 @@ func (client *Szengine) FindNetworkByEntityId(ctx context.Context, entityList st
 	var resultResponse string
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(27, entityList, maxDegrees, buildOutDegree, maxDegrees, flags)
+		client.traceEntry(27, entityIds, maxDegrees, buildOutDegree, maxDegrees, flags)
 		defer func() {
-			client.traceExit(28, entityList, maxDegrees, buildOutDegree, maxDegrees, flags, resultResponse, err, time.Since(entryTime))
+			client.traceExit(28, entityIds, maxDegrees, buildOutDegree, maxDegrees, flags, resultResponse, err, time.Since(entryTime))
 		}()
 	}
-	entityListForC := C.CString(entityList)
+	entityListForC := C.CString(entityIds)
 	defer C.free(unsafe.Pointer(entityListForC))
-	result := C.G2_findNetworkByEntityID_V2_helper(entityListForC, C.longlong(maxDegrees), C.longlong(buildOutDegree), C.longlong(maxEntities), C.longlong(flags))
+	result := C.G2_findNetworkByEntityID_V2_helper(entityListForC, C.longlong(maxDegrees), C.longlong(buildOutDegree), C.longlong(buildOutMaxEntities), C.longlong(flags))
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4013, entityList, maxDegrees, buildOutDegree, maxEntities, flags, result.returnCode, time.Since(entryTime))
+		err = client.newError(ctx, 4013, entityIds, maxDegrees, buildOutDegree, buildOutMaxEntities, flags, result.returnCode, time.Since(entryTime))
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
-				"entityList": entityList,
+				"entityList": entityIds,
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8013, err, details)
 		}()
@@ -623,7 +623,7 @@ Output
   - A JSON document.
     Example: `{"ENTITY_PATHS":[{"START_ENTITY_ID":1,"END_ENTITY_ID":2,"ENTITIES":[1,2]}],"ENTITIES":[{"RESOLVED_ENTITY":{"ENTITY_ID":1,"ENTITY_NAME":"JOHNSON","RECORD_SUMMARY":[{"DATA_SOURCE":"TEST","RECORD_COUNT":2,"FIRST_SEEN_DT":"2022-12-06 14:40:34.285","LAST_SEEN_DT":"2022-12-06 14:40:34.420"}],"LAST_SEEN_DT":"2022-12-06 14:40:34.420"},"RELATED_ENTITIES":[{"ENTITY_ID":2,"MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED","MATCH_KEY":"+PHONE+ACCT_NUM-SSN","ERRULE_CODE":"SF1","IS_DISCLOSED":0,"IS_AMBIGUOUS":0},{"ENTITY_ID":3,"MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED","MATCH_KEY":"+PHONE+ACCT_NUM-DOB-SSN","ERRULE_CODE":"SF1","IS_DISCLOSED":0,"IS_AMBIGUOUS":0}]},{"RESOLVED_ENTITY":{"ENTITY_ID":2,"ENTITY_NAME":"OCEANGUY","RECORD_SUMMARY":[{"DATA_SOURCE":"TEST","RECORD_COUNT":1,"FIRST_SEEN_DT":"2022-12-06 14:40:34.359","LAST_SEEN_DT":"2022-12-06 14:40:34.359"}],"LAST_SEEN_DT":"2022-12-06 14:40:34.359"},"RELATED_ENTITIES":[{"ENTITY_ID":1,"MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED","MATCH_KEY":"+PHONE+ACCT_NUM-SSN","ERRULE_CODE":"SF1","IS_DISCLOSED":0,"IS_AMBIGUOUS":0},{"ENTITY_ID":3,"MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED","MATCH_KEY":"+ADDRESS+PHONE+ACCT_NUM-DOB-SSN","ERRULE_CODE":"SF1","IS_DISCLOSED":0,"IS_AMBIGUOUS":0}]},{"RESOLVED_ENTITY":{"ENTITY_ID":3,"ENTITY_NAME":"Smith","RECORD_SUMMARY":[{"DATA_SOURCE":"TEST","RECORD_COUNT":1,"FIRST_SEEN_DT":"2022-12-06 14:40:34.424","LAST_SEEN_DT":"2022-12-06 14:40:34.424"}],"LAST_SEEN_DT":"2022-12-06 14:40:34.424"},"RELATED_ENTITIES":[{"ENTITY_ID":1,"MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED","MATCH_KEY":"+PHONE+ACCT_NUM-DOB-SSN","ERRULE_CODE":"SF1","IS_DISCLOSED":0,"IS_AMBIGUOUS":0},{"ENTITY_ID":2,"MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED","MATCH_KEY":"+ADDRESS+PHONE+ACCT_NUM-DOB-SSN","ERRULE_CODE":"SF1","IS_DISCLOSED":0,"IS_AMBIGUOUS":0}]}]}`
 */
-func (client *Szengine) FindNetworkByRecordId(ctx context.Context, recordList string, maxDegrees int64, buildOutDegree int64, maxEntities int64, flags int64) (string, error) {
+func (client *Szengine) FindNetworkByRecordId(ctx context.Context, recordKeys string, maxDegrees int64, buildOutDegree int64, buildOutMaxEntities int64, flags int64) (string, error) {
 	//  _DLEXPORT int G2_findNetworkByRecordID_V2(const char* recordList, const int maxDegree, const int buildOutDegree, const int maxEntities, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -631,23 +631,23 @@ func (client *Szengine) FindNetworkByRecordId(ctx context.Context, recordList st
 	var resultResponse string
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(39, recordList, maxDegrees, buildOutDegree, maxDegrees, flags)
+		client.traceEntry(39, recordKeys, maxDegrees, buildOutDegree, maxDegrees, flags)
 		defer func() {
-			client.traceExit(40, recordList, maxDegrees, buildOutDegree, maxDegrees, flags, resultResponse, err, time.Since(entryTime))
+			client.traceExit(40, recordKeys, maxDegrees, buildOutDegree, maxDegrees, flags, resultResponse, err, time.Since(entryTime))
 		}()
 	}
-	recordListForC := C.CString(recordList)
+	recordListForC := C.CString(recordKeys)
 	defer C.free(unsafe.Pointer(recordListForC))
-	result := C.G2_findNetworkByRecordID_V2_helper(recordListForC, C.longlong(maxDegrees), C.longlong(buildOutDegree), C.longlong(maxEntities), C.longlong(flags))
+	result := C.G2_findNetworkByRecordID_V2_helper(recordListForC, C.longlong(maxDegrees), C.longlong(buildOutDegree), C.longlong(buildOutMaxEntities), C.longlong(flags))
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4015, recordList, maxDegrees, buildOutDegree, maxEntities, flags, result.returnCode, time.Since(entryTime))
+		err = client.newError(ctx, 4015, recordKeys, maxDegrees, buildOutDegree, buildOutMaxEntities, flags, result.returnCode, time.Since(entryTime))
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
-				"recordList": recordList,
+				"recordList": recordKeys,
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8014, err, details)
 		}()
@@ -958,6 +958,7 @@ func (client *Szengine) GetRedoRecord(ctx context.Context) (string, error) {
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8021, err, details)
 		}()
 	}
+	// TODO:  Perhaps return a "nil" for resultResponse if length of result is 0.
 	return resultResponse, err
 }
 
