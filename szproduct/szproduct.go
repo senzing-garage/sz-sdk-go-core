@@ -313,7 +313,7 @@ func (client *Szproduct) getLogger() logging.LoggingInterface {
 		options := []interface{}{
 			&logging.OptionCallerSkip{Value: 4},
 		}
-		client.logger, err = logging.NewSenzingSdkLogger(ComponentId, szproductapi.IdMessages, options...)
+		client.logger, err = logging.NewSenzingSdkLogger(ComponentId, szproductapi.IDMessages, options...)
 		if err != nil {
 			panic(err)
 		}
@@ -343,7 +343,15 @@ func (client *Szproduct) newError(ctx context.Context, errorNumber int, details 
 	}
 	details = append(details, errors.New(message))
 	errorMessage := client.getLogger().Json(errorNumber, details...)
-	return szerror.SzError(szerror.SzErrorCode(message), (errorMessage))
+
+	// TODO: Remove hack
+
+	code := szerror.Code(message) // hack
+	if code > 30000 {             // hack
+		code = code - 27000 // hack
+	} // hack
+
+	return szerror.New(code, (errorMessage))
 }
 
 // --- Sz exception handling --------------------------------------------------

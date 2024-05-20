@@ -11,9 +11,8 @@ import (
 	"github.com/senzing-garage/go-helpers/engineconfigurationjson"
 	"github.com/senzing-garage/go-helpers/fileutil"
 	"github.com/senzing-garage/go-logging/logging"
-	"github.com/senzing-garage/sz-sdk-go/sz"
+	"github.com/senzing-garage/sz-sdk-go/senzing"
 	"github.com/senzing-garage/sz-sdk-go/szconfig"
-	"github.com/senzing-garage/sz-sdk-go/szerror"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -21,7 +20,7 @@ const (
 	defaultTruncation = 76
 	instanceName      = "SzAbstractFactory Test"
 	printResults      = false
-	verboseLogging    = sz.SZ_NO_LOGGING
+	verboseLogging    = senzing.SzNoLogging
 )
 
 var (
@@ -51,7 +50,7 @@ func TestSzAbstractFactory_CreateSzConfigManager(test *testing.T) {
 	szConfigManager, err := szAbstractFactory.CreateSzConfigManager(ctx)
 	testError(test, ctx, szAbstractFactory, err)
 	defer szConfigManager.Destroy(ctx)
-	configList, err := szConfigManager.GetConfigList(ctx)
+	configList, err := szConfigManager.GetConfigs(ctx)
 	testError(test, ctx, szAbstractFactory, err)
 	printActual(test, configList)
 }
@@ -94,7 +93,8 @@ func TestSzAbstractFactory_CreateSzProduct(test *testing.T) {
 // ----------------------------------------------------------------------------
 
 func createError(errorId int, err error) error {
-	return szerror.Cast(logger.NewError(errorId, err), err)
+	// return errors.Cast(logger.NewError(errorId, err), err)
+	return logger.NewError(errorId, err)
 }
 
 func getDatabaseTemplatePath() string {
@@ -124,7 +124,7 @@ func getSettings() (string, error) {
 	return settings, err
 }
 
-func getSzAbstractFactory(ctx context.Context) sz.SzAbstractFactory {
+func getSzAbstractFactory(ctx context.Context) senzing.SzAbstractFactory {
 	_ = ctx
 	settings, err := getSettings()
 	if err != nil {
@@ -132,7 +132,7 @@ func getSzAbstractFactory(ctx context.Context) sz.SzAbstractFactory {
 		return nil
 	}
 	result := &Szabstractfactory{
-		ConfigId:       sz.SZ_INITIALIZE_WITH_DEFAULT_CONFIGURATION,
+		ConfigId:       senzing.SzInitializeWithDefaultConfiguration,
 		InstanceName:   instanceName,
 		Settings:       settings,
 		VerboseLogging: verboseLogging,
@@ -140,7 +140,7 @@ func getSzAbstractFactory(ctx context.Context) sz.SzAbstractFactory {
 	return result
 }
 
-func getTestObject(ctx context.Context, test *testing.T) sz.SzAbstractFactory {
+func getTestObject(ctx context.Context, test *testing.T) senzing.SzAbstractFactory {
 	_ = test
 	return getSzAbstractFactory(ctx)
 }
@@ -159,7 +159,7 @@ func printResult(test *testing.T, title string, result interface{}) {
 	}
 }
 
-func testError(test *testing.T, ctx context.Context, szAbstractFactory sz.SzAbstractFactory, err error) {
+func testError(test *testing.T, ctx context.Context, szAbstractFactory senzing.SzAbstractFactory, err error) {
 	_ = ctx
 	_ = szAbstractFactory
 	if err != nil {
@@ -192,7 +192,7 @@ func TestMain(m *testing.M) {
 
 func setup() error {
 	var err error = nil
-	logger, err = logging.NewSenzingSdkLogger(ComponentId, szconfig.IdMessages)
+	logger, err = logging.NewSenzingSdkLogger(ComponentId, szconfig.IDMessages)
 	if err != nil {
 		return createError(5901, err)
 	}

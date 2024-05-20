@@ -28,7 +28,7 @@ import (
 	"github.com/senzing-garage/go-observing/notifier"
 	"github.com/senzing-garage/go-observing/observer"
 	"github.com/senzing-garage/go-observing/subject"
-	"github.com/senzing-garage/sz-sdk-go/sz"
+	"github.com/senzing-garage/sz-sdk-go/senzing"
 	szengineapi "github.com/senzing-garage/sz-sdk-go/szengine"
 	"github.com/senzing-garage/sz-sdk-go/szerror"
 )
@@ -66,8 +66,8 @@ func (client *Szengine) AddRecord(ctx context.Context, dataSourceCode string, re
 			client.traceExit(2, dataSourceCode, recordId, recordDefinition, flags, err, time.Since(entryTime))
 		}()
 	}
-	if (flags & sz.SZ_WITH_INFO) != 0 {
-		finalFlags := flags & ^sz.SZ_WITH_INFO
+	if (flags & senzing.SzWithInfo) != 0 {
+		finalFlags := flags & ^senzing.SzWithInfo
 		result, err = client.addRecordWithInfo(ctx, dataSourceCode, recordId, recordDefinition, finalFlags)
 	} else {
 		result, err = client.addRecord(ctx, dataSourceCode, recordId, recordDefinition)
@@ -163,8 +163,8 @@ func (client *Szengine) DeleteRecord(ctx context.Context, dataSourceCode string,
 		client.traceEntry(9, dataSourceCode, recordId, flags)
 		defer func() { client.traceExit(10, dataSourceCode, recordId, flags, err, time.Since(entryTime)) }()
 	}
-	if (flags & sz.SZ_WITH_INFO) != 0 {
-		finalFlags := flags & ^sz.SZ_WITH_INFO
+	if (flags & senzing.SzWithInfo) != 0 {
+		finalFlags := flags & ^senzing.SzWithInfo
 		result, err = client.deleteRecordWithInfo(ctx, dataSourceCode, recordId, finalFlags)
 	} else {
 		result, err = client.deleteRecord(ctx, dataSourceCode, recordId)
@@ -265,8 +265,8 @@ Input
 Output
   - A channel of strings that can be iterated over.
 */
-func (client *Szengine) ExportCsvEntityReportIterator(ctx context.Context, csvColumnList string, flags int64) chan sz.StringFragment {
-	stringFragmentChannel := make(chan sz.StringFragment)
+func (client *Szengine) ExportCsvEntityReportIterator(ctx context.Context, csvColumnList string, flags int64) chan senzing.StringFragment {
+	stringFragmentChannel := make(chan senzing.StringFragment)
 	go func() {
 		runtime.LockOSThread()
 		defer runtime.UnlockOSThread()
@@ -279,7 +279,7 @@ func (client *Szengine) ExportCsvEntityReportIterator(ctx context.Context, csvCo
 		}
 		reportHandle, err := client.ExportCsvEntityReport(ctx, csvColumnList, flags)
 		if err != nil {
-			result := sz.StringFragment{
+			result := senzing.StringFragment{
 				Error: err,
 			}
 			stringFragmentChannel <- result
@@ -292,14 +292,14 @@ func (client *Szengine) ExportCsvEntityReportIterator(ctx context.Context, csvCo
 		for {
 			select {
 			case <-ctx.Done():
-				stringFragmentChannel <- sz.StringFragment{
+				stringFragmentChannel <- senzing.StringFragment{
 					Error: ctx.Err(),
 				}
 				break forLoop
 			default:
 				entityReportFragment, err := client.FetchNext(ctx, reportHandle)
 				if err != nil {
-					stringFragmentChannel <- sz.StringFragment{
+					stringFragmentChannel <- senzing.StringFragment{
 						Error: err,
 					}
 					break forLoop
@@ -307,7 +307,7 @@ func (client *Szengine) ExportCsvEntityReportIterator(ctx context.Context, csvCo
 				if len(entityReportFragment) == 0 {
 					break forLoop
 				}
-				stringFragmentChannel <- sz.StringFragment{
+				stringFragmentChannel <- senzing.StringFragment{
 					Value: entityReportFragment,
 				}
 			}
@@ -372,8 +372,8 @@ Input
 Output
   - A channel of strings that can be iterated over.
 */
-func (client *Szengine) ExportJsonEntityReportIterator(ctx context.Context, flags int64) chan sz.StringFragment {
-	stringFragmentChannel := make(chan sz.StringFragment)
+func (client *Szengine) ExportJsonEntityReportIterator(ctx context.Context, flags int64) chan senzing.StringFragment {
+	stringFragmentChannel := make(chan senzing.StringFragment)
 	go func() {
 		runtime.LockOSThread()
 		defer runtime.UnlockOSThread()
@@ -386,7 +386,7 @@ func (client *Szengine) ExportJsonEntityReportIterator(ctx context.Context, flag
 		}
 		reportHandle, err := client.ExportJsonEntityReport(ctx, flags)
 		if err != nil {
-			result := sz.StringFragment{
+			result := senzing.StringFragment{
 				Error: err,
 			}
 			stringFragmentChannel <- result
@@ -399,14 +399,14 @@ func (client *Szengine) ExportJsonEntityReportIterator(ctx context.Context, flag
 		for {
 			select {
 			case <-ctx.Done():
-				stringFragmentChannel <- sz.StringFragment{
+				stringFragmentChannel <- senzing.StringFragment{
 					Error: ctx.Err(),
 				}
 				break forLoop
 			default:
 				entityReportFragment, err := client.FetchNext(ctx, reportHandle)
 				if err != nil {
-					stringFragmentChannel <- sz.StringFragment{
+					stringFragmentChannel <- senzing.StringFragment{
 						Error: err,
 					}
 					break forLoop
@@ -414,7 +414,7 @@ func (client *Szengine) ExportJsonEntityReportIterator(ctx context.Context, flag
 				if len(entityReportFragment) == 0 {
 					break forLoop
 				}
-				stringFragmentChannel <- sz.StringFragment{
+				stringFragmentChannel <- senzing.StringFragment{
 					Value: entityReportFragment,
 				}
 			}
@@ -574,7 +574,7 @@ Output
   - A JSON document.
     Example: `{"ENTITY_PATHS":[{"START_ENTITY_ID":1,"END_ENTITY_ID":2,"ENTITIES":[1,2]}],"ENTITIES":[{"RESOLVED_ENTITY":{"ENTITY_ID":1,"ENTITY_NAME":"SEAMAN","RECORD_SUMMARY":[{"DATA_SOURCE":"TEST","RECORD_COUNT":2,"FIRST_SEEN_DT":"2022-11-29 22:25:18.997","LAST_SEEN_DT":"2022-11-29 22:25:19.005"}],"LAST_SEEN_DT":"2022-11-29 22:25:19.005"},"RELATED_ENTITIES":[{"ENTITY_ID":2,"MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED","MATCH_KEY":"+PHONE+ACCT_NUM-DOB-SSN","ERRULE_CODE":"SF1","IS_DISCLOSED":0,"IS_AMBIGUOUS":0}]},{"RESOLVED_ENTITY":{"ENTITY_ID":2,"ENTITY_NAME":"Smith","RECORD_SUMMARY":[{"DATA_SOURCE":"TEST","RECORD_COUNT":1,"FIRST_SEEN_DT":"2022-11-29 22:25:19.009","LAST_SEEN_DT":"2022-11-29 22:25:19.009"}],"LAST_SEEN_DT":"2022-11-29 22:25:19.009"},"RELATED_ENTITIES":[{"ENTITY_ID":1,"MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED","MATCH_KEY":"+PHONE+ACCT_NUM-DOB-SSN","ERRULE_CODE":"SF1","IS_DISCLOSED":0,"IS_AMBIGUOUS":0}]}]}`
 */
-func (client *Szengine) FindNetworkByEntityId(ctx context.Context, entityIds string, maxDegrees int64, buildOutDegree int64, buildOutMaxEntities int64, flags int64) (string, error) {
+func (client *Szengine) FindNetworkByEntityId(ctx context.Context, entityIDs string, maxDegrees int64, buildOutDegree int64, buildOutMaxEntities int64, flags int64) (string, error) {
 	//  _DLEXPORT int G2_findNetworkByEntityID_V2(const char* entityList, const int maxDegree, const int buildOutDegree, const int maxEntities, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -582,23 +582,23 @@ func (client *Szengine) FindNetworkByEntityId(ctx context.Context, entityIds str
 	var resultResponse string
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(27, entityIds, maxDegrees, buildOutDegree, maxDegrees, flags)
+		client.traceEntry(27, entityIDs, maxDegrees, buildOutDegree, maxDegrees, flags)
 		defer func() {
-			client.traceExit(28, entityIds, maxDegrees, buildOutDegree, maxDegrees, flags, resultResponse, err, time.Since(entryTime))
+			client.traceExit(28, entityIDs, maxDegrees, buildOutDegree, maxDegrees, flags, resultResponse, err, time.Since(entryTime))
 		}()
 	}
-	entityListForC := C.CString(entityIds)
+	entityListForC := C.CString(entityIDs)
 	defer C.free(unsafe.Pointer(entityListForC))
 	result := C.G2_findNetworkByEntityID_V2_helper(entityListForC, C.longlong(maxDegrees), C.longlong(buildOutDegree), C.longlong(buildOutMaxEntities), C.longlong(flags))
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4013, entityIds, maxDegrees, buildOutDegree, buildOutMaxEntities, flags, result.returnCode, time.Since(entryTime))
+		err = client.newError(ctx, 4013, entityIDs, maxDegrees, buildOutDegree, buildOutMaxEntities, flags, result.returnCode, time.Since(entryTime))
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
-				"entityList": entityIds,
+				"entityList": entityIDs,
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8013, err, details)
 		}()
@@ -1132,7 +1132,7 @@ func (client *Szengine) ProcessRedoRecord(ctx context.Context, redoRecord string
 		client.traceEntry(59, redoRecord, flags)
 		defer func() { client.traceExit(60, redoRecord, flags, result, err, time.Since(entryTime)) }()
 	}
-	if (flags & sz.SZ_WITH_INFO) > 0 {
+	if (flags & senzing.SzWithInfo) > 0 {
 		result, err = client.processRedoRecordWithInfo(ctx, redoRecord)
 	} else {
 		result, err = client.processRedoRecord(ctx, redoRecord)
@@ -1163,8 +1163,8 @@ func (client *Szengine) ReevaluateEntity(ctx context.Context, entityId int64, fl
 		client.traceEntry(61, entityId, flags)
 		defer func() { client.traceExit(62, entityId, flags, result, err, time.Since(entryTime)) }()
 	}
-	if (flags & sz.SZ_WITH_INFO) > 0 {
-		finalFlags := flags & ^sz.SZ_WITH_INFO
+	if (flags & senzing.SzWithInfo) > 0 {
+		finalFlags := flags & ^senzing.SzWithInfo
 		result, err = client.reevaluateEntityWithInfo(ctx, entityId, finalFlags)
 	} else {
 		result, err = client.reevaluateEntity(ctx, entityId, flags)
@@ -1198,8 +1198,8 @@ func (client *Szengine) ReevaluateRecord(ctx context.Context, dataSourceCode str
 		client.traceEntry(63, dataSourceCode, recordId, flags)
 		defer func() { client.traceExit(64, dataSourceCode, recordId, flags, err, time.Since(entryTime)) }()
 	}
-	if (flags & sz.SZ_WITH_INFO) > 0 {
-		finalFlags := flags & ^sz.SZ_WITH_INFO
+	if (flags & senzing.SzWithInfo) > 0 {
+		finalFlags := flags & ^senzing.SzWithInfo
 		result, err = client.reevaluateRecordWithInfo(ctx, dataSourceCode, recordId, finalFlags)
 	} else {
 		result, err = client.reevaluateRecord(ctx, dataSourceCode, recordId, flags)
@@ -2343,7 +2343,7 @@ func (client *Szengine) getLogger() logging.LoggingInterface {
 		options := []interface{}{
 			&logging.OptionCallerSkip{Value: 4},
 		}
-		client.logger, err = logging.NewSenzingSdkLogger(ComponentId, szengineapi.IdMessages, options...)
+		client.logger, err = logging.NewSenzingSdkLogger(ComponentId, szengineapi.IDMessages, options...)
 		if err != nil {
 			panic(err)
 		}
@@ -2381,7 +2381,15 @@ func (client *Szengine) newError(ctx context.Context, errorNumber int, details .
 	}
 	details = append(details, errors.New(message))
 	errorMessage := client.getLogger().Json(errorNumber, details...)
-	return szerror.SzError(szerror.SzErrorCode(message), (errorMessage))
+
+	// TODO: Remove hack
+
+	code := szerror.Code(message) // hack
+	if code > 30000 {             // hack
+		code = code - 27000 // hack
+	} // hack
+
+	return szerror.New(code, (errorMessage))
 }
 
 // --- G2 exception handling --------------------------------------------------

@@ -7,7 +7,7 @@ import (
 	"fmt"
 
 	"github.com/senzing-garage/go-logging/logging"
-	"github.com/senzing-garage/sz-sdk-go/sz"
+	"github.com/senzing-garage/sz-sdk-go/senzing"
 )
 
 // ----------------------------------------------------------------------------
@@ -55,11 +55,11 @@ func ExampleSzconfigmanager_GetConfig() {
 	// Output: {"G2_CONFIG":{"CFG_ATTR":[{"ATTR_ID":1001,"ATTR_CODE":"DATA_SOURCE","ATTR...
 }
 
-func ExampleSzconfigmanager_GetConfigList() {
+func ExampleSzconfigmanager_GetConfigs() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfigmanager/szconfigmanager_examples_test.go
 	ctx := context.TODO()
 	szConfigManager := getSzConfigManager(ctx)
-	configList, err := szConfigManager.GetConfigList(ctx)
+	configList, err := szConfigManager.GetConfigs(ctx)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -171,7 +171,7 @@ func ExampleSzconfigmanager_Initialize() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	verboseLogging := sz.SZ_NO_LOGGING
+	verboseLogging := senzing.SzNoLogging
 	err = szConfigManager.Initialize(ctx, instanceName, settings, verboseLogging)
 	if err != nil {
 		fmt.Println(err)

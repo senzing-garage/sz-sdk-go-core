@@ -7,7 +7,7 @@ import (
 	"fmt"
 
 	"github.com/senzing-garage/go-logging/logging"
-	"github.com/senzing-garage/sz-sdk-go/sz"
+	"github.com/senzing-garage/sz-sdk-go/senzing"
 )
 
 // ----------------------------------------------------------------------------
@@ -111,8 +111,8 @@ func ExampleSzdiagnostic_Initialize() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	verboseLogging := sz.SZ_NO_LOGGING
-	configId := sz.SZ_INITIALIZE_WITH_DEFAULT_CONFIGURATION
+	verboseLogging := senzing.SzNoLogging
+	configId := senzing.SzInitializeWithDefaultConfiguration
 	err = szDiagnostic.Initialize(ctx, instanceName, settings, configId, verboseLogging)
 	if err != nil {
 		fmt.Println(err)

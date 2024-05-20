@@ -2,6 +2,7 @@ package szproduct
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -12,7 +13,7 @@ import (
 	"github.com/senzing-garage/go-helpers/fileutil"
 	"github.com/senzing-garage/go-logging/logging"
 	"github.com/senzing-garage/go-observing/observer"
-	"github.com/senzing-garage/sz-sdk-go/sz"
+	"github.com/senzing-garage/sz-sdk-go/senzing"
 	"github.com/senzing-garage/sz-sdk-go/szerror"
 	"github.com/senzing-garage/sz-sdk-go/szproduct"
 	"github.com/stretchr/testify/assert"
@@ -23,7 +24,7 @@ const (
 	instanceName      = "SzProduct Test"
 	observerOrigin    = "SzProduct observer"
 	printResults      = false
-	verboseLogging    = sz.SZ_NO_LOGGING
+	verboseLogging    = senzing.SzNoLogging
 )
 
 var (
@@ -44,7 +45,7 @@ func TestSzproduct_GetLicense(test *testing.T) {
 	ctx := context.TODO()
 	szProduct := getTestObject(ctx, test)
 	actual, err := szProduct.GetLicense(ctx)
-	testError(test, err)
+	assert.NoError(test, err)
 	printActual(test, actual)
 }
 
@@ -52,7 +53,7 @@ func TestSzproduct_GetVersion(test *testing.T) {
 	ctx := context.TODO()
 	szProduct := getTestObject(ctx, test)
 	actual, err := szProduct.GetVersion(ctx)
-	testError(test, err)
+	assert.NoError(test, err)
 	printActual(test, actual)
 }
 
@@ -80,7 +81,7 @@ func TestSzproduct_UnregisterObserver(test *testing.T) {
 	ctx := context.TODO()
 	szProduct := getTestObject(ctx, test)
 	err := szProduct.UnregisterObserver(ctx, observerSingleton)
-	testError(test, err)
+	assert.NoError(test, err)
 }
 
 // ----------------------------------------------------------------------------
@@ -91,7 +92,7 @@ func TestSzproduct_AsInterface(test *testing.T) {
 	ctx := context.TODO()
 	szProduct := getSzProductAsInterface(ctx)
 	actual, err := szProduct.GetLicense(ctx)
-	testError(test, err)
+	assert.NoError(test, err)
 	printActual(test, actual)
 }
 
@@ -100,10 +101,10 @@ func TestSzproduct_Initialize(test *testing.T) {
 	szProduct := &Szproduct{}
 	instanceName := "Test name"
 	settings, err := getSettings()
-	testError(test, err)
-	verboseLogging := sz.SZ_NO_LOGGING
+	assert.NoError(test, err)
+	verboseLogging := senzing.SzNoLogging
 	err = szProduct.Initialize(ctx, instanceName, settings, verboseLogging)
-	testError(test, err)
+	assert.NoError(test, err)
 }
 
 // TODO: Uncomment after bug introduced in Senzing 4.0.0.24131 is fixed.
@@ -111,7 +112,7 @@ func TestSzproduct_Initialize(test *testing.T) {
 // 	ctx := context.TODO()
 // 	szProduct := getTestObject(ctx, test)
 // 	err := szProduct.Destroy(ctx)
-// 	testError(test, err)
+// 	assert.NoError(test, err)
 // }
 
 // TODO: Uncomment after bug introduced in Senzing 4.0.0.24131 is fixed.
@@ -120,7 +121,7 @@ func TestSzproduct_Initialize(test *testing.T) {
 // 	szProductSingleton = nil
 // 	szProduct := getTestObject(ctx, test)
 // 	err := szProduct.Destroy(ctx)
-// 	testError(test, err)
+// 	assert.NoError(test, err)
 // }
 
 // ----------------------------------------------------------------------------
@@ -128,7 +129,8 @@ func TestSzproduct_Initialize(test *testing.T) {
 // ----------------------------------------------------------------------------
 
 func createError(errorId int, err error) error {
-	return szerror.Cast(logger.NewError(errorId, err), err)
+	// return errors.Cast(logger.NewError(errorId, err), err)
+	return logger.NewError(errorId, err)
 }
 
 func getDatabaseTemplatePath() string {
@@ -181,7 +183,7 @@ func getSzProduct(ctx context.Context) *Szproduct {
 	return szProductSingleton
 }
 
-func getSzProductAsInterface(ctx context.Context) sz.SzProduct {
+func getSzProductAsInterface(ctx context.Context) senzing.SzProduct {
 	return getSzProduct(ctx)
 }
 
@@ -204,13 +206,6 @@ func printResult(test *testing.T, title string, result interface{}) {
 	}
 }
 
-func testError(test *testing.T, err error) {
-	if err != nil {
-		test.Log("Error:", err.Error())
-		assert.FailNow(test, err.Error())
-	}
-}
-
 func truncate(aString string, length int) string {
 	return truncator.Truncate(aString, length, "...", truncator.PositionEnd)
 }
@@ -222,6 +217,15 @@ func truncate(aString string, length int) string {
 func TestMain(m *testing.M) {
 	err := setup()
 	if err != nil {
+		if errors.Is(err, szerror.ErrSzUnrecoverable) {
+			fmt.Printf("\nUnrecoverable error detected. \n\n")
+		}
+		if errors.Is(err, szerror.ErrSzRetryable) {
+			fmt.Printf("\nRetryable error detected. \n\n")
+		}
+		if errors.Is(err, szerror.ErrSzBadInput) {
+			fmt.Printf("\nBad user input error detected. \n\n")
+		}
 		fmt.Print(err)
 		os.Exit(1)
 	}
@@ -235,7 +239,7 @@ func TestMain(m *testing.M) {
 
 func setup() error {
 	var err error = nil
-	logger, err = logging.NewSenzingSdkLogger(ComponentId, szproduct.IdMessages)
+	logger, err = logging.NewSenzingSdkLogger(ComponentId, szproduct.IDMessages)
 	if err != nil {
 		return createError(5901, err)
 	}

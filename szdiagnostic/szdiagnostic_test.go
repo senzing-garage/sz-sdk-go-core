@@ -2,6 +2,7 @@ package szdiagnostic
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -18,7 +19,7 @@ import (
 	"github.com/senzing-garage/sz-sdk-go-core/szconfig"
 	"github.com/senzing-garage/sz-sdk-go-core/szconfigmanager"
 	"github.com/senzing-garage/sz-sdk-go-core/szengine"
-	"github.com/senzing-garage/sz-sdk-go/sz"
+	"github.com/senzing-garage/sz-sdk-go/senzing"
 	"github.com/senzing-garage/sz-sdk-go/szdiagnostic"
 	"github.com/senzing-garage/sz-sdk-go/szerror"
 	"github.com/stretchr/testify/assert"
@@ -29,7 +30,7 @@ const (
 	instanceName      = "SzDiagnostic Test"
 	observerOrigin    = "SzDiagnostic observer"
 	printResults      = false
-	verboseLogging    = sz.SZ_NO_LOGGING
+	verboseLogging    = senzing.SzNoLogging
 )
 
 var (
@@ -53,7 +54,7 @@ func TestSzdiagnostic_CheckDatastorePerformance(test *testing.T) {
 	szDiagnostic := getTestObject(ctx, test)
 	secondsToRun := 1
 	actual, err := szDiagnostic.CheckDatastorePerformance(ctx, secondsToRun)
-	testError(test, err)
+	assert.NoError(test, err)
 	printActual(test, actual)
 }
 
@@ -61,7 +62,7 @@ func TestSzdiagnostic_GetDatastoreInfo(test *testing.T) {
 	ctx := context.TODO()
 	szDiagnostic := getTestObject(ctx, test)
 	actual, err := szDiagnostic.GetDatastoreInfo(ctx)
-	testError(test, err)
+	assert.NoError(test, err)
 	printActual(test, actual)
 }
 
@@ -72,11 +73,11 @@ func TestSzdiagnostic_GetFeature(test *testing.T) {
 	}
 	defer deleteRecords(ctx, records)
 	err := addRecords(ctx, records)
-	testError(test, err)
+	assert.NoError(test, err)
 	szDiagnostic := getTestObject(ctx, test)
 	featureId := int64(1)
 	actual, err := szDiagnostic.GetFeature(ctx, int64(featureId))
-	testError(test, err)
+	assert.NoError(test, err)
 	printActual(test, actual)
 }
 
@@ -85,7 +86,7 @@ func TestSzdiagnostic_GetFeature(test *testing.T) {
 // 	ctx := context.TODO()
 // 	szDiagnostic := getTestObject(ctx, test)
 // 	err := szDiagnostic.PurgeRepository(ctx)
-// 	testError(test, err)
+// 	assert.NoError(test, err)
 // }
 
 // ----------------------------------------------------------------------------
@@ -112,7 +113,7 @@ func TestSzdiagnostic_UnregisterObserver(test *testing.T) {
 	ctx := context.TODO()
 	szDiagnostic := getTestObject(ctx, test)
 	err := szDiagnostic.UnregisterObserver(ctx, observerSingleton)
-	testError(test, err)
+	assert.NoError(test, err)
 }
 
 // ----------------------------------------------------------------------------
@@ -124,7 +125,7 @@ func TestSzdiagnostic_AsInterface(test *testing.T) {
 	szDiagnostic := getSzDiagnosticAsInterface(ctx)
 	secondsToRun := 1
 	actual, err := szDiagnostic.CheckDatastorePerformance(ctx, secondsToRun)
-	testError(test, err)
+	assert.NoError(test, err)
 	printActual(test, actual)
 }
 
@@ -133,11 +134,11 @@ func TestSzdiagnostic_Initialize(test *testing.T) {
 	szDiagnostic := &Szdiagnostic{}
 	instanceName := "Test name"
 	settings, err := getSettings()
-	testError(test, err)
-	verboseLogging := sz.SZ_NO_LOGGING
-	configId := sz.SZ_INITIALIZE_WITH_DEFAULT_CONFIGURATION
+	assert.NoError(test, err)
+	verboseLogging := senzing.SzNoLogging
+	configId := senzing.SzInitializeWithDefaultConfiguration
 	err = szDiagnostic.Initialize(ctx, instanceName, settings, configId, verboseLogging)
-	testError(test, err)
+	assert.NoError(test, err)
 }
 
 func TestSzdiagnostic_Initialize_withConfigId(test *testing.T) {
@@ -145,11 +146,11 @@ func TestSzdiagnostic_Initialize_withConfigId(test *testing.T) {
 	szDiagnostic := &Szdiagnostic{}
 	instanceName := "Test name"
 	settings, err := getSettings()
-	testError(test, err)
-	verboseLogging := sz.SZ_NO_LOGGING
+	assert.NoError(test, err)
+	verboseLogging := senzing.SzNoLogging
 	configId := getDefaultConfigId()
 	err = szDiagnostic.Initialize(ctx, instanceName, settings, configId, verboseLogging)
-	testError(test, err)
+	assert.NoError(test, err)
 }
 
 func TestSzdiagnostic_Reinitialize(test *testing.T) {
@@ -157,14 +158,14 @@ func TestSzdiagnostic_Reinitialize(test *testing.T) {
 	szDiagnostic := getTestObject(ctx, test)
 	configId := getDefaultConfigId()
 	err := szDiagnostic.Reinitialize(ctx, configId)
-	testErrorNoFail(test, err)
+	assert.NoError(test, err)
 }
 
 func TestSzdiagnostic_Destroy(test *testing.T) {
 	ctx := context.TODO()
 	szDiagnostic := getTestObject(ctx, test)
 	err := szDiagnostic.Destroy(ctx)
-	testError(test, err)
+	assert.NoError(test, err)
 }
 
 func TestSzdiagnostic_Destroy_withObserver(test *testing.T) {
@@ -172,7 +173,7 @@ func TestSzdiagnostic_Destroy_withObserver(test *testing.T) {
 	szDiagnosticSingleton = nil
 	szDiagnostic := getTestObject(ctx, test)
 	err := szDiagnostic.Destroy(ctx)
-	testError(test, err)
+	assert.NoError(test, err)
 }
 
 // ----------------------------------------------------------------------------
@@ -182,7 +183,7 @@ func TestSzdiagnostic_Destroy_withObserver(test *testing.T) {
 func addRecords(ctx context.Context, records []record.Record) error {
 	var err error = nil
 	szEngine := getSzEngine(ctx)
-	flags := sz.SZ_WITHOUT_INFO
+	flags := senzing.SzWithoutInfo
 	for _, record := range records {
 		_, err = szEngine.AddRecord(ctx, record.DataSource, record.Id, record.Json, flags)
 		if err != nil {
@@ -193,13 +194,14 @@ func addRecords(ctx context.Context, records []record.Record) error {
 }
 
 func createError(errorId int, err error) error {
-	return szerror.Cast(logger.NewError(errorId, err), err)
+	// return errors.Cast(logger.NewError(errorId, err), err)
+	return logger.NewError(errorId, err)
 }
 
 func deleteRecords(ctx context.Context, records []record.Record) error {
 	var err error = nil
 	szEngine := getSzEngine(ctx)
-	flags := sz.SZ_WITHOUT_INFO
+	flags := senzing.SzWithoutInfo
 	for _, record := range records {
 		_, err = szEngine.DeleteRecord(ctx, record.DataSource, record.Id, flags)
 		if err != nil {
@@ -286,7 +288,7 @@ func getSzEngine(ctx context.Context) *szengine.Szengine {
 	return szEngineSingleton
 }
 
-func getSzDiagnosticAsInterface(ctx context.Context) sz.SzDiagnostic {
+func getSzDiagnosticAsInterface(ctx context.Context) senzing.SzDiagnostic {
 	return getSzDiagnostic(ctx)
 }
 
@@ -309,19 +311,6 @@ func printResult(test *testing.T, title string, result interface{}) {
 	}
 }
 
-func testError(test *testing.T, err error) {
-	if err != nil {
-		test.Log("Error:", err.Error())
-		assert.FailNow(test, err.Error())
-	}
-}
-
-func testErrorNoFail(test *testing.T, err error) {
-	if err != nil {
-		test.Log("Error:", err.Error())
-	}
-}
-
 func truncate(aString string, length int) string {
 	return truncator.Truncate(aString, length, "...", truncator.PositionEnd)
 }
@@ -333,13 +322,13 @@ func truncate(aString string, length int) string {
 func TestMain(m *testing.M) {
 	err := setup()
 	if err != nil {
-		if szerror.Is(err, szerror.SzUnrecoverable) {
+		if errors.Is(err, szerror.ErrSzUnrecoverable) {
 			fmt.Printf("\nUnrecoverable error detected. \n\n")
 		}
-		if szerror.Is(err, szerror.SzRetryable) {
+		if errors.Is(err, szerror.ErrSzRetryable) {
 			fmt.Printf("\nRetryable error detected. \n\n")
 		}
-		if szerror.Is(err, szerror.SzBadInput) {
+		if errors.Is(err, szerror.ErrSzBadInput) {
 			fmt.Printf("\nBad user input error detected. \n\n")
 		}
 		fmt.Print(err)
@@ -355,7 +344,7 @@ func TestMain(m *testing.M) {
 
 func setup() error {
 	var err error = nil
-	logger, err = logging.NewSenzingSdkLogger(ComponentId, szdiagnostic.IdMessages)
+	logger, err = logging.NewSenzingSdkLogger(ComponentId, szdiagnostic.IDMessages)
 	if err != nil {
 		return createError(5901, err)
 	}

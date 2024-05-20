@@ -3,6 +3,7 @@ package szengine
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -21,7 +22,7 @@ import (
 	"github.com/senzing-garage/go-observing/observer"
 	"github.com/senzing-garage/sz-sdk-go-core/szconfig"
 	"github.com/senzing-garage/sz-sdk-go-core/szconfigmanager"
-	"github.com/senzing-garage/sz-sdk-go/sz"
+	"github.com/senzing-garage/sz-sdk-go/senzing"
 	"github.com/senzing-garage/sz-sdk-go/szengine"
 	"github.com/senzing-garage/sz-sdk-go/szerror"
 	"github.com/stretchr/testify/assert"
@@ -32,7 +33,7 @@ const (
 	instanceName      = "SzEngine Test"
 	observerOrigin    = "SzEngine observer"
 	printResults      = false
-	verboseLogging    = sz.SZ_NO_LOGGING
+	verboseLogging    = senzing.SzNoLogging
 )
 
 type GetEntityByRecordIdResponse struct {
@@ -59,14 +60,14 @@ var (
 func TestSzengine_AddRecord(test *testing.T) {
 	ctx := context.TODO()
 	szEngine := getTestObject(ctx, test)
-	flags := sz.SZ_WITHOUT_INFO
+	flags := senzing.SzWithoutInfo
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
 	}
 	for _, record := range records {
 		actual, err := szEngine.AddRecord(ctx, record.DataSource, record.Id, record.Json, flags)
-		testError(test, err)
+		assert.NoError(test, err)
 		printActual(test, actual)
 		defer szEngine.DeleteRecord(ctx, record.DataSource, record.Id, flags)
 	}
@@ -76,43 +77,43 @@ func TestSzengine_AddRecord_szBadInput(test *testing.T) {
 	ctx := context.TODO()
 	szEngine := getTestObject(ctx, test)
 	record1, err := record.NewRecord(`{"DATA_SOURCE": "TEST", "RECORD_ID": "ADD_TEST_ERR_1", "NAME_FULL": "NOBODY NOMATCH"}`)
-	testError(test, err)
+	assert.NoError(test, err)
 	record2, err := record.NewRecord(`{"DATA_SOURCE": "BOB", "RECORD_ID": "ADD_TEST_ERR_2", "NAME_FULL": "ERR BAD SOURCE"}`)
-	testError(test, err)
-	flags := sz.SZ_WITHOUT_INFO
+	assert.NoError(test, err)
+	flags := senzing.SzWithoutInfo
 
 	// This one should succeed.
 
 	actual, err := szEngine.AddRecord(ctx, record1.DataSource, record1.Id, record1.Json, flags)
-	testError(test, err)
-	defer szEngine.DeleteRecord(ctx, record1.DataSource, record1.Id, sz.SZ_WITHOUT_INFO)
+	assert.NoError(test, err)
+	defer szEngine.DeleteRecord(ctx, record1.DataSource, record1.Id, senzing.SzWithoutInfo)
 	printActual(test, actual)
 
 	// This one should fail.
 
 	actual, err = szEngine.AddRecord(ctx, "CUSTOMERS", record2.Id, record2.Json, flags)
-	assert.True(test, szerror.Is(err, szerror.SzBadInput))
+	assert.True(test, errors.Is(err, szerror.ErrSzBadInput))
 	printActual(test, actual)
 
 	// Clean-up the records we inserted.
 
 	actual, err = szEngine.DeleteRecord(ctx, record1.DataSource, record1.Id, flags)
-	testError(test, err)
-	defer szEngine.DeleteRecord(ctx, record2.DataSource, record2.Id, sz.SZ_NO_FLAGS)
+	assert.NoError(test, err)
+	defer szEngine.DeleteRecord(ctx, record2.DataSource, record2.Id, senzing.SzNoFlags)
 	printActual(test, actual)
 }
 
 func TestSzengine_AddRecord_withInfo(test *testing.T) {
 	ctx := context.TODO()
 	szEngine := getTestObject(ctx, test)
-	flags := sz.SZ_WITH_INFO
+	flags := senzing.SzWithInfo
 	records := []record.Record{
 		truthset.CustomerRecords["1003"],
 		truthset.CustomerRecords["1004"],
 	}
 	for _, record := range records {
 		actual, err := szEngine.AddRecord(ctx, record.DataSource, record.Id, record.Json, flags)
-		testError(test, err)
+		assert.NoError(test, err)
 		printActual(test, actual)
 		defer szEngine.DeleteRecord(ctx, record.DataSource, record.Id, flags)
 	}
@@ -129,7 +130,7 @@ func TestSzengine_CountRedoRecords(test *testing.T) {
 	expected := int64(1)
 	szEngine := getTestObject(ctx, test)
 	actual, err := szEngine.CountRedoRecords(ctx)
-	testError(test, err)
+	assert.NoError(test, err)
 	printActual(test, actual)
 	assert.Equal(test, expected, actual)
 }
@@ -141,12 +142,12 @@ func TestSzengine_DeleteRecord(test *testing.T) {
 		truthset.CustomerRecords["1005"],
 	}
 	err := addRecords(ctx, records)
-	testError(test, err)
+	assert.NoError(test, err)
 	record := truthset.CustomerRecords["1005"]
-	flags := sz.SZ_WITHOUT_INFO
-	testError(test, err)
+	flags := senzing.SzWithoutInfo
+	assert.NoError(test, err)
 	actual, err := szEngine.DeleteRecord(ctx, record.DataSource, record.Id, flags)
-	testError(test, err)
+	assert.NoError(test, err)
 	printActual(test, actual)
 }
 
@@ -157,11 +158,11 @@ func TestSzengine_DeleteRecord_withInfo(test *testing.T) {
 		truthset.CustomerRecords["1009"],
 	}
 	err := addRecords(ctx, records)
-	testError(test, err)
+	assert.NoError(test, err)
 	record := truthset.CustomerRecords["1009"]
-	flags := sz.SZ_WITH_INFO
+	flags := senzing.SzWithInfo
 	actual, err := szEngine.DeleteRecord(ctx, record.DataSource, record.Id, flags)
-	testError(test, err)
+	assert.NoError(test, err)
 	printActual(test, actual)
 }
 
@@ -174,7 +175,7 @@ func TestSzengine_ExportCsvEntityReport(test *testing.T) {
 	}
 	defer deleteRecords(ctx, records)
 	err := addRecords(ctx, records)
-	testError(test, err)
+	assert.NoError(test, err)
 	expected := []string{
 		`RESOLVED_ENTITY_ID,RELATED_ENTITY_ID,MATCH_LEVEL_CODE,MATCH_KEY,DATA_SOURCE,RECORD_ID`,
 		`8,0,"","","CUSTOMERS","1001"`,
@@ -183,13 +184,13 @@ func TestSzengine_ExportCsvEntityReport(test *testing.T) {
 	}
 	szEngine := getTestObject(ctx, test)
 	csvColumnList := ""
-	flags := sz.SZ_EXPORT_INCLUDE_ALL_ENTITIES
+	flags := senzing.SzExportIncludeAllEntities
 	aHandle, err := szEngine.ExportCsvEntityReport(ctx, csvColumnList, flags)
 	defer func() {
 		err := szEngine.CloseExport(ctx, aHandle)
-		testError(test, err)
+		assert.NoError(test, err)
 	}()
-	testError(test, err)
+	assert.NoError(test, err)
 	actualCount := 0
 	for actual := range szEngine.ExportCsvEntityReportIterator(ctx, csvColumnList, flags) {
 		assert.Equal(test, expected[actualCount], strings.TrimSpace(actual.Value))
@@ -207,7 +208,7 @@ func TestSzengine_ExportCsvEntityReportIterator(test *testing.T) {
 	}
 	defer deleteRecords(ctx, records)
 	err := addRecords(ctx, records)
-	testError(test, err)
+	assert.NoError(test, err)
 	expected := []string{
 		`RESOLVED_ENTITY_ID,RELATED_ENTITY_ID,MATCH_LEVEL_CODE,MATCH_KEY,DATA_SOURCE,RECORD_ID`,
 		`11,0,"","","CUSTOMERS","1001"`,
@@ -216,10 +217,10 @@ func TestSzengine_ExportCsvEntityReportIterator(test *testing.T) {
 	}
 	szEngine := getTestObject(ctx, test)
 	csvColumnList := ""
-	flags := sz.SZ_EXPORT_INCLUDE_ALL_ENTITIES
+	flags := senzing.SzExportIncludeAllEntities
 	actualCount := 0
 	for actual := range szEngine.ExportCsvEntityReportIterator(ctx, csvColumnList, flags) {
-		testError(test, actual.Error)
+		assert.NoError(test, actual.Error)
 		assert.Equal(test, expected[actualCount], strings.TrimSpace(actual.Value))
 		actualCount += 1
 	}
@@ -235,33 +236,33 @@ func TestSzengine_ExportJsonEntityReport(test *testing.T) {
 	}
 	defer deleteRecords(ctx, records)
 	err := addRecords(ctx, records)
-	testError(test, err)
+	assert.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
 	aRecord := testfixtures.FixtureRecords["65536-periods"]
-	flags := sz.SZ_WITH_INFO
+	flags := senzing.SzWithInfo
 	actual, err := szEngine.AddRecord(ctx, aRecord.DataSource, aRecord.Id, aRecord.Json, flags)
-	testError(test, err)
+	assert.NoError(test, err)
 	printActual(test, actual)
-	defer szEngine.DeleteRecord(ctx, aRecord.DataSource, aRecord.Id, sz.SZ_WITHOUT_INFO)
+	defer szEngine.DeleteRecord(ctx, aRecord.DataSource, aRecord.Id, senzing.SzWithoutInfo)
 	// TODO: Figure out correct flags.
-	// flags := sz.Flags(sz.SZ_EXPORT_DEFAULT_FLAGS, sz.SZ_EXPORT_INCLUDE_ALL_HAVING_RELATIONSHIPS, sz.SZ_EXPORT_INCLUDE_ALL_HAVING_RELATIONSHIPS)
+	// flags := senzing.Flags(senzing.SZ_EXPORT_DEFAULT_FLAGS, senzing.SZ_EXPORT_INCLUDE_ALL_HAVING_RELATIONSHIPS, senzing.SZ_EXPORT_INCLUDE_ALL_HAVING_RELATIONSHIPS)
 	flags = int64(-1)
 	aHandle, err := szEngine.ExportJsonEntityReport(ctx, flags)
 	defer func() {
 		err := szEngine.CloseExport(ctx, aHandle)
-		testError(test, err)
+		assert.NoError(test, err)
 	}()
-	testError(test, err)
+	assert.NoError(test, err)
 	jsonEntityReport := ""
 	for {
 		jsonEntityReportFragment, err := szEngine.FetchNext(ctx, aHandle)
-		testError(test, err)
+		assert.NoError(test, err)
 		if len(jsonEntityReportFragment) == 0 {
 			break
 		}
 		jsonEntityReport += jsonEntityReportFragment
 	}
-	testError(test, err)
+	assert.NoError(test, err)
 	assert.True(test, len(jsonEntityReport) > 65536)
 }
 
@@ -274,13 +275,13 @@ func TestSzengine_ExportJsonEntityReportIterator(test *testing.T) {
 	}
 	defer deleteRecords(ctx, records)
 	err := addRecords(ctx, records)
-	testError(test, err)
+	assert.NoError(test, err)
 	expected := 1
 	szEngine := getTestObject(ctx, test)
-	flags := sz.SZ_EXPORT_INCLUDE_ALL_ENTITIES
+	flags := senzing.SzExportIncludeAllEntities
 	actualCount := 0
 	for actual := range szEngine.ExportJsonEntityReportIterator(ctx, flags) {
-		testError(test, actual.Error)
+		assert.NoError(test, actual.Error)
 		printActual(test, actual.Value)
 		actualCount += 1
 	}
@@ -301,12 +302,12 @@ func TestSzengine_FindInterestingEntitiesByEntityId(test *testing.T) {
 	}
 	defer deleteRecords(ctx, records)
 	err := addRecords(ctx, records)
-	testError(test, err)
+	assert.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
 	entityID := getEntityId(truthset.CustomerRecords["1001"])
 	flags := int64(0)
 	actual, err := szEngine.FindInterestingEntitiesByEntityId(ctx, entityID, flags)
-	testError(test, err)
+	assert.NoError(test, err)
 	printActual(test, actual)
 }
 
@@ -317,12 +318,12 @@ func TestSzengine_FindInterestingEntitiesByRecordId(test *testing.T) {
 	}
 	defer deleteRecords(ctx, records)
 	err := addRecords(ctx, records)
-	testError(test, err)
+	assert.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
 	record := truthset.CustomerRecords["1001"]
 	flags := int64(0)
 	actual, err := szEngine.FindInterestingEntitiesByRecordId(ctx, record.DataSource, record.Id, flags)
-	testError(test, err)
+	assert.NoError(test, err)
 	printActual(test, actual)
 }
 
@@ -334,7 +335,7 @@ func TestSzengine_FindNetworkByEntityId(test *testing.T) {
 	}
 	defer deleteRecords(ctx, records)
 	err := addRecords(ctx, records)
-	testError(test, err)
+	assert.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
 	record1 := truthset.CustomerRecords["1001"]
 	record2 := truthset.CustomerRecords["1002"]
@@ -342,9 +343,9 @@ func TestSzengine_FindNetworkByEntityId(test *testing.T) {
 	maxDegrees := int64(2)
 	buildOutDegree := int64(1)
 	maxEntities := int64(10)
-	flags := sz.SZ_FIND_NETWORK_DEFAULT_FLAGS
+	flags := senzing.SzFindNetworkDefaultFlags
 	actual, err := szEngine.FindNetworkByEntityId(ctx, entityList, maxDegrees, buildOutDegree, maxEntities, flags)
-	testErrorNoFail(test, err)
+	assert.NoError(test, err)
 	printActual(test, actual)
 }
 
@@ -357,7 +358,7 @@ func TestSzengine_FindNetworkByRecordId(test *testing.T) {
 	}
 	defer deleteRecords(ctx, records)
 	err := addRecords(ctx, records)
-	testError(test, err)
+	assert.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
 	record1 := truthset.CustomerRecords["1001"]
 	record2 := truthset.CustomerRecords["1002"]
@@ -366,9 +367,9 @@ func TestSzengine_FindNetworkByRecordId(test *testing.T) {
 	maxDegrees := int64(1)
 	buildOutDegree := int64(2)
 	maxEntities := int64(10)
-	flags := sz.SZ_FIND_NETWORK_DEFAULT_FLAGS
+	flags := senzing.SzFindNetworkDefaultFlags
 	actual, err := szEngine.FindNetworkByRecordId(ctx, recordList, maxDegrees, buildOutDegree, maxEntities, flags)
-	testError(test, err)
+	assert.NoError(test, err)
 	printActual(test, actual)
 }
 
@@ -380,16 +381,16 @@ func TestSzengine_FindPathByEntityId(test *testing.T) {
 	}
 	defer deleteRecords(ctx, records)
 	err := addRecords(ctx, records)
-	testError(test, err)
+	assert.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
 	startEntityId := getEntityId(truthset.CustomerRecords["1001"])
 	endEntityId := getEntityId(truthset.CustomerRecords["1002"])
 	maxDegrees := int64(1)
-	exclusions := sz.SZ_NO_EXCLUSIONS
-	requiredDataSources := sz.SZ_NO_REQUIRED_DATASOURCES
-	flags := sz.SZ_NO_FLAGS
+	exclusions := senzing.SzNoExclusions
+	requiredDataSources := senzing.SzNoRequiredDatasources
+	flags := senzing.SzNoFlags
 	actual, err := szEngine.FindPathByEntityId(ctx, startEntityId, endEntityId, maxDegrees, exclusions, requiredDataSources, flags)
-	testError(test, err)
+	assert.NoError(test, err)
 	printActual(test, actual)
 }
 
@@ -401,17 +402,17 @@ func TestSzengine_FindPathByEntityId_excluding(test *testing.T) {
 	}
 	defer deleteRecords(ctx, records)
 	err := addRecords(ctx, records)
-	testError(test, err)
+	assert.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
 	startRecord := truthset.CustomerRecords["1001"]
 	startEntityId := getEntityId(startRecord)
 	endEntityId := getEntityId(truthset.CustomerRecords["1002"])
 	maxDegrees := int64(1)
 	exclusions := `{"ENTITIES": [{"ENTITY_ID": ` + getEntityIdString(startRecord) + `}]}`
-	requiredDataSources := sz.SZ_NO_REQUIRED_DATASOURCES
-	flags := sz.SZ_NO_FLAGS
+	requiredDataSources := senzing.SzNoRequiredDatasources
+	flags := senzing.SzNoFlags
 	actual, err := szEngine.FindPathByEntityId(ctx, startEntityId, endEntityId, maxDegrees, exclusions, requiredDataSources, flags)
-	testError(test, err)
+	assert.NoError(test, err)
 	printActual(test, actual)
 }
 
@@ -423,7 +424,7 @@ func TestSzengine_FindPathByEntityId_excludingAndIncluding(test *testing.T) {
 	}
 	defer deleteRecords(ctx, records)
 	err := addRecords(ctx, records)
-	testError(test, err)
+	assert.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
 	startRecord := truthset.CustomerRecords["1001"]
 	startEntityId := getEntityId(startRecord)
@@ -431,9 +432,9 @@ func TestSzengine_FindPathByEntityId_excludingAndIncluding(test *testing.T) {
 	maxDegrees := int64(1)
 	exclusions := `{"ENTITIES": [{"ENTITY_ID": ` + getEntityIdString(startRecord) + `}]}`
 	requiredDataSources := `{"DATA_SOURCES": ["` + startRecord.DataSource + `"]}`
-	flags := sz.SZ_NO_FLAGS
+	flags := senzing.SzNoFlags
 	actual, err := szEngine.FindPathByEntityId(ctx, startEntityId, endEntityId, maxDegrees, exclusions, requiredDataSources, flags)
-	testError(test, err)
+	assert.NoError(test, err)
 	printActual(test, actual)
 }
 
@@ -445,17 +446,17 @@ func TestSzengine_FindPathByEntityId_including(test *testing.T) {
 	}
 	defer deleteRecords(ctx, records)
 	err := addRecords(ctx, records)
-	testError(test, err)
+	assert.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
 	startRecord := truthset.CustomerRecords["1001"]
 	startEntityId := getEntityId(startRecord)
 	endEntityId := getEntityId(truthset.CustomerRecords["1002"])
 	maxDegrees := int64(1)
-	exclusions := sz.SZ_NO_EXCLUSIONS
+	exclusions := senzing.SzNoExclusions
 	requiredDataSources := `{"DATA_SOURCES": ["` + startRecord.DataSource + `"]}`
-	flags := sz.SZ_NO_FLAGS
+	flags := senzing.SzNoFlags
 	actual, err := szEngine.FindPathByEntityId(ctx, startEntityId, endEntityId, maxDegrees, exclusions, requiredDataSources, flags)
-	testError(test, err)
+	assert.NoError(test, err)
 	printActual(test, actual)
 }
 
@@ -467,16 +468,16 @@ func TestSzengine_FindPathByRecordId(test *testing.T) {
 	}
 	defer deleteRecords(ctx, records)
 	err := addRecords(ctx, records)
-	testError(test, err)
+	assert.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
 	record1 := truthset.CustomerRecords["1001"]
 	record2 := truthset.CustomerRecords["1002"]
 	maxDegree := int64(1)
-	exclusions := sz.SZ_NO_EXCLUSIONS
-	requiredDataSources := sz.SZ_NO_REQUIRED_DATASOURCES
-	flags := sz.SZ_NO_FLAGS
+	exclusions := senzing.SzNoExclusions
+	requiredDataSources := senzing.SzNoRequiredDatasources
+	flags := senzing.SzNoFlags
 	actual, err := szEngine.FindPathByRecordId(ctx, record1.DataSource, record1.Id, record2.DataSource, record2.Id, maxDegree, exclusions, requiredDataSources, flags)
-	testError(test, err)
+	assert.NoError(test, err)
 	printActual(test, actual)
 }
 
@@ -488,16 +489,16 @@ func TestSzengine_FindPathByRecordId_excluding(test *testing.T) {
 	}
 	defer deleteRecords(ctx, records)
 	err := addRecords(ctx, records)
-	testError(test, err)
+	assert.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
 	record1 := truthset.CustomerRecords["1001"]
 	record2 := truthset.CustomerRecords["1002"]
 	maxDegree := int64(1)
 	exclusions := `{"RECORDS": [{ "DATA_SOURCE": "` + record1.DataSource + `", "RECORD_ID": "` + record1.Id + `"}]}`
-	requiredDataSources := sz.SZ_NO_REQUIRED_DATASOURCES
-	flags := sz.SZ_NO_FLAGS
+	requiredDataSources := senzing.SzNoRequiredDatasources
+	flags := senzing.SzNoFlags
 	actual, err := szEngine.FindPathByRecordId(ctx, record1.DataSource, record1.Id, record2.DataSource, record2.Id, maxDegree, exclusions, requiredDataSources, flags)
-	testError(test, err)
+	assert.NoError(test, err)
 	printActual(test, actual)
 }
 
@@ -509,16 +510,16 @@ func TestSzengine_FindPathByRecordId_excludingAndIncluding(test *testing.T) {
 	}
 	defer deleteRecords(ctx, records)
 	err := addRecords(ctx, records)
-	testError(test, err)
+	assert.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
 	record1 := truthset.CustomerRecords["1001"]
 	record2 := truthset.CustomerRecords["1002"]
 	maxDegree := int64(1)
 	exclusions := `{"RECORDS": [{ "DATA_SOURCE": "` + record1.DataSource + `", "RECORD_ID": "` + record1.Id + `"}]}`
 	requiredDataSources := `{"DATA_SOURCES": ["` + record1.DataSource + `"]}`
-	flags := sz.SZ_NO_FLAGS
+	flags := senzing.SzNoFlags
 	actual, err := szEngine.FindPathByRecordId(ctx, record1.DataSource, record1.Id, record2.DataSource, record2.Id, maxDegree, exclusions, requiredDataSources, flags)
-	testError(test, err)
+	assert.NoError(test, err)
 	printActual(test, actual)
 }
 
@@ -530,16 +531,16 @@ func TestSzengine_FindPathByRecordId_including(test *testing.T) {
 	}
 	defer deleteRecords(ctx, records)
 	err := addRecords(ctx, records)
-	testError(test, err)
+	assert.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
 	record1 := truthset.CustomerRecords["1001"]
 	record2 := truthset.CustomerRecords["1002"]
 	maxDegree := int64(1)
 	exclusions := `{"ENTITIES": [{"ENTITY_ID": ` + getEntityIdString(record1) + `}]}`
 	requiredDataSources := `{"DATA_SOURCES": ["` + record1.DataSource + `"]}`
-	flags := sz.SZ_NO_FLAGS
+	flags := senzing.SzNoFlags
 	actual, err := szEngine.FindPathByRecordId(ctx, record1.DataSource, record1.Id, record2.DataSource, record2.Id, maxDegree, exclusions, requiredDataSources, flags)
-	testError(test, err)
+	assert.NoError(test, err)
 	printActual(test, actual)
 }
 
@@ -547,7 +548,7 @@ func TestSzengine_GetActiveConfigId(test *testing.T) {
 	ctx := context.TODO()
 	szEngine := getTestObject(ctx, test)
 	actual, err := szEngine.GetActiveConfigId(ctx)
-	testError(test, err)
+	assert.NoError(test, err)
 	printActual(test, actual)
 }
 
@@ -558,12 +559,12 @@ func TestSzengine_GetEntityByEntityId(test *testing.T) {
 	}
 	defer deleteRecords(ctx, records)
 	err := addRecords(ctx, records)
-	testError(test, err)
+	assert.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
 	entityId := getEntityId(truthset.CustomerRecords["1001"])
-	flags := sz.SZ_NO_FLAGS
+	flags := senzing.SzNoFlags
 	actual, err := szEngine.GetEntityByEntityId(ctx, entityId, flags)
-	testError(test, err)
+	assert.NoError(test, err)
 	printActual(test, actual)
 }
 
@@ -574,12 +575,12 @@ func TestSzengine_GetEntityByRecordId(test *testing.T) {
 	}
 	defer deleteRecords(ctx, records)
 	err := addRecords(ctx, records)
-	testError(test, err)
+	assert.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
 	record := truthset.CustomerRecords["1001"]
-	flags := sz.SZ_NO_FLAGS
+	flags := senzing.SzNoFlags
 	actual, err := szEngine.GetEntityByRecordId(ctx, record.DataSource, record.Id, flags)
-	testError(test, err)
+	assert.NoError(test, err)
 	printActual(test, actual)
 }
 
@@ -590,12 +591,12 @@ func TestSzengine_GetRecord(test *testing.T) {
 	}
 	defer deleteRecords(ctx, records)
 	err := addRecords(ctx, records)
-	testError(test, err)
+	assert.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
 	record := truthset.CustomerRecords["1001"]
-	flags := sz.SZ_NO_FLAGS
+	flags := senzing.SzNoFlags
 	actual, err := szEngine.GetRecord(ctx, record.DataSource, record.Id, flags)
-	testError(test, err)
+	assert.NoError(test, err)
 	printActual(test, actual)
 }
 
@@ -603,7 +604,7 @@ func TestSzengine_GetRedoRecord(test *testing.T) {
 	ctx := context.TODO()
 	szEngine := getTestObject(ctx, test)
 	actual, err := szEngine.GetRedoRecord(ctx)
-	testError(test, err)
+	assert.NoError(test, err)
 	printActual(test, actual)
 }
 
@@ -611,7 +612,7 @@ func TestSzengine_GetStats(test *testing.T) {
 	ctx := context.TODO()
 	szEngine := getTestObject(ctx, test)
 	actual, err := szEngine.GetStats(ctx)
-	testError(test, err)
+	assert.NoError(test, err)
 	printActual(test, actual)
 }
 
@@ -623,14 +624,14 @@ func TestSzengine_GetVirtualEntityByRecordId(test *testing.T) {
 	}
 	defer deleteRecords(ctx, records)
 	err := addRecords(ctx, records)
-	testError(test, err)
+	assert.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
 	record1 := truthset.CustomerRecords["1001"]
 	record2 := truthset.CustomerRecords["1002"]
 	recordList := `{"RECORDS": [{"DATA_SOURCE": "` + record1.DataSource + `", "RECORD_ID": "` + record1.Id + `"}, {"DATA_SOURCE": "` + record2.DataSource + `", "RECORD_ID": "` + record2.Id + `"}]}`
-	flags := sz.SZ_NO_FLAGS
+	flags := senzing.SzNoFlags
 	actual, err := szEngine.GetVirtualEntityByRecordId(ctx, recordList, flags)
-	testError(test, err)
+	assert.NoError(test, err)
 	printActual(test, actual)
 }
 
@@ -641,12 +642,12 @@ func TestSzengine_HowEntityByEntityId(test *testing.T) {
 	}
 	defer deleteRecords(ctx, records)
 	err := addRecords(ctx, records)
-	testError(test, err)
+	assert.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
 	entityId := getEntityId(truthset.CustomerRecords["1001"])
-	flags := sz.SZ_NO_FLAGS
+	flags := senzing.SzNoFlags
 	actual, err := szEngine.HowEntityByEntityId(ctx, entityId, flags)
-	testError(test, err)
+	assert.NoError(test, err)
 	printActual(test, actual)
 }
 
@@ -654,7 +655,7 @@ func TestSzengine_PrimeEngine(test *testing.T) {
 	ctx := context.TODO()
 	szEngine := getTestObject(ctx, test)
 	err := szEngine.PrimeEngine(ctx)
-	testError(test, err)
+	assert.NoError(test, err)
 }
 
 func TestSzengine_ProcessRedoRecord(test *testing.T) {
@@ -662,11 +663,11 @@ func TestSzengine_ProcessRedoRecord(test *testing.T) {
 	ctx := context.TODO()
 	szEngine := getTestObject(ctx, test)
 	redoRecord, err := szEngine.GetRedoRecord(ctx)
-	testError(test, err)
+	assert.NoError(test, err)
 	if len(redoRecord) > 0 {
-		flags := sz.SZ_WITHOUT_INFO
+		flags := senzing.SzWithoutInfo
 		actual, err := szEngine.ProcessRedoRecord(ctx, redoRecord, flags)
-		testError(test, err)
+		assert.NoError(test, err)
 		printActual(test, actual)
 	}
 }
@@ -676,11 +677,11 @@ func TestSzengine_ProcessRedoRecord_withInfo(test *testing.T) {
 	ctx := context.TODO()
 	szEngine := getTestObject(ctx, test)
 	redoRecord, err := szEngine.GetRedoRecord(ctx)
-	testError(test, err)
+	assert.NoError(test, err)
 	if len(redoRecord) > 0 {
-		flags := sz.SZ_WITH_INFO
+		flags := senzing.SzWithInfo
 		actual, err := szEngine.ProcessRedoRecord(ctx, redoRecord, flags)
-		testError(test, err)
+		assert.NoError(test, err)
 		printActual(test, actual)
 	}
 }
@@ -692,12 +693,12 @@ func TestSzengine_ReevaluateEntity(test *testing.T) {
 	}
 	defer deleteRecords(ctx, records)
 	err := addRecords(ctx, records)
-	testError(test, err)
+	assert.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
 	entityId := getEntityId(truthset.CustomerRecords["1001"])
-	flags := sz.SZ_WITHOUT_INFO
+	flags := senzing.SzWithoutInfo
 	actual, err := szEngine.ReevaluateEntity(ctx, entityId, flags)
-	testError(test, err)
+	assert.NoError(test, err)
 	printActual(test, actual)
 }
 
@@ -708,12 +709,12 @@ func TestSzengine_ReevaluateEntity_withInfo(test *testing.T) {
 	}
 	defer deleteRecords(ctx, records)
 	err := addRecords(ctx, records)
-	testError(test, err)
+	assert.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
 	entityId := getEntityId(truthset.CustomerRecords["1001"])
-	flags := sz.SZ_WITH_INFO
+	flags := senzing.SzWithInfo
 	actual, err := szEngine.ReevaluateEntity(ctx, entityId, flags)
-	testError(test, err)
+	assert.NoError(test, err)
 	printActual(test, actual)
 }
 
@@ -724,12 +725,12 @@ func TestSzengine_ReevaluateRecord(test *testing.T) {
 	}
 	defer deleteRecords(ctx, records)
 	err := addRecords(ctx, records)
-	testError(test, err)
+	assert.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
 	record := truthset.CustomerRecords["1001"]
-	flags := sz.SZ_WITHOUT_INFO
+	flags := senzing.SzWithoutInfo
 	actual, err := szEngine.ReevaluateRecord(ctx, record.DataSource, record.Id, flags)
-	testError(test, err)
+	assert.NoError(test, err)
 	printActual(test, actual)
 }
 
@@ -740,12 +741,12 @@ func TestSzengine_ReevaluateRecord_withInfo(test *testing.T) {
 	}
 	defer deleteRecords(ctx, records)
 	err := addRecords(ctx, records)
-	testError(test, err)
+	assert.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
 	record := truthset.CustomerRecords["1001"]
-	flags := sz.SZ_WITH_INFO
+	flags := senzing.SzWithInfo
 	actual, err := szEngine.ReevaluateRecord(ctx, record.DataSource, record.Id, flags)
-	testError(test, err)
+	assert.NoError(test, err)
 	printActual(test, actual)
 }
 
@@ -758,13 +759,13 @@ func TestSzengine_SearchByAttributes(test *testing.T) {
 	}
 	defer deleteRecords(ctx, records)
 	err := addRecords(ctx, records)
-	testError(test, err)
+	assert.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
 	attributes := `{"NAMES": [{"NAME_TYPE": "PRIMARY", "NAME_LAST": "JOHNSON"}], "SSN_NUMBER": "053-39-3251"}`
-	searchProfile := sz.SZ_NO_SEARCH_PROFILE
-	flags := sz.SZ_NO_FLAGS
+	searchProfile := senzing.SzNoSearchProfile
+	flags := senzing.SzNoFlags
 	actual, err := szEngine.SearchByAttributes(ctx, attributes, searchProfile, flags)
-	testError(test, err)
+	assert.NoError(test, err)
 	printActual(test, actual)
 }
 
@@ -777,13 +778,13 @@ func TestSzengine_SearchByAttributes_withSearchProfile(test *testing.T) {
 	}
 	defer deleteRecords(ctx, records)
 	err := addRecords(ctx, records)
-	testError(test, err)
+	assert.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
 	attributes := `{"NAMES": [{"NAME_TYPE": "PRIMARY", "NAME_LAST": "JOHNSON"}], "SSN_NUMBER": "053-39-3251"}`
 	searchProfile := "SEARCH"
-	flags := sz.SZ_NO_FLAGS
+	flags := senzing.SzNoFlags
 	actual, err := szEngine.SearchByAttributes(ctx, attributes, searchProfile, flags)
-	testError(test, err)
+	assert.NoError(test, err)
 	printActual(test, actual)
 }
 
@@ -799,10 +800,10 @@ func TestSzengine_SearchByAttributes_searchProfile(test *testing.T) {
 	ctx := context.TODO()
 	szEngine := getTestObject(ctx, test)
 	attributes := `{"NAMES": [{"NAME_TYPE": "PRIMARY", "NAME_LAST": "JOHNSON"}], "SSN_NUMBER": "053-39-3251"}`
-	searchProfile := sz.SZ_NO_SEARCH_PROFILE // TODO: Figure out the search profile
-	flags := sz.SZ_NO_FLAGS
+	searchProfile := senzing.SzNoSearchProfile // TODO: Figure out the search profile
+	flags := senzing.SzNoFlags
 	actual, err := szEngine.SearchByAttributes(ctx, attributes, searchProfile, flags)
-	testError(test, err)
+	assert.NoError(test, err)
 	printActual(test, actual)
 }
 
@@ -814,13 +815,13 @@ func TestSzengine_WhyEntities(test *testing.T) {
 	}
 	defer deleteRecords(ctx, records)
 	err := addRecords(ctx, records)
-	testError(test, err)
+	assert.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
 	entityId1 := getEntityId(truthset.CustomerRecords["1001"])
 	entityId2 := getEntityId(truthset.CustomerRecords["1002"])
-	flags := sz.SZ_NO_FLAGS
+	flags := senzing.SzNoFlags
 	actual, err := szEngine.WhyEntities(ctx, entityId1, entityId2, flags)
-	testError(test, err)
+	assert.NoError(test, err)
 	printActual(test, actual)
 }
 
@@ -831,12 +832,12 @@ func TestSzengine_WhyRecordInEntity(test *testing.T) {
 	}
 	defer deleteRecords(ctx, records)
 	err := addRecords(ctx, records)
-	testError(test, err)
+	assert.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
 	record := truthset.CustomerRecords["1001"]
-	flags := sz.SZ_NO_FLAGS
+	flags := senzing.SzNoFlags
 	actual, err := szEngine.WhyRecordInEntity(ctx, record.DataSource, record.Id, flags)
-	testError(test, err)
+	assert.NoError(test, err)
 	printActual(test, actual)
 }
 
@@ -848,13 +849,13 @@ func TestSzengine_WhyRecords(test *testing.T) {
 	}
 	defer deleteRecords(ctx, records)
 	err := addRecords(ctx, records)
-	testError(test, err)
+	assert.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
 	record1 := truthset.CustomerRecords["1001"]
 	record2 := truthset.CustomerRecords["1002"]
-	flags := sz.SZ_NO_FLAGS
+	flags := senzing.SzNoFlags
 	actual, err := szEngine.WhyRecords(ctx, record1.DataSource, record1.Id, record2.DataSource, record2.Id, flags)
-	testError(test, err)
+	assert.NoError(test, err)
 	printActual(test, actual)
 }
 
@@ -883,7 +884,7 @@ func TestSzengine_UnregisterObserver(test *testing.T) {
 	ctx := context.TODO()
 	szEngine := getTestObject(ctx, test)
 	err := szEngine.UnregisterObserver(ctx, observerSingleton)
-	testError(test, err)
+	assert.NoError(test, err)
 }
 
 // ----------------------------------------------------------------------------
@@ -895,7 +896,7 @@ func TestSzengine_AsInterface(test *testing.T) {
 	ctx := context.TODO()
 	szEngine := getSzEngineAsInterface(ctx)
 	actual, err := szEngine.CountRedoRecords(ctx)
-	testError(test, err)
+	assert.NoError(test, err)
 	printActual(test, actual)
 	assert.Equal(test, expected, actual)
 }
@@ -904,29 +905,29 @@ func TestSzengine_Initialize(test *testing.T) {
 	ctx := context.TODO()
 	szEngine := getTestObject(ctx, test)
 	settings, err := getSettings()
-	testError(test, err)
-	configId := sz.SZ_INITIALIZE_WITH_DEFAULT_CONFIGURATION
+	assert.NoError(test, err)
+	configId := senzing.SzInitializeWithDefaultConfiguration
 	err = szEngine.Initialize(ctx, instanceName, settings, configId, verboseLogging)
-	testError(test, err)
+	assert.NoError(test, err)
 }
 
 func TestSzengine_Initialize_withConfigId(test *testing.T) {
 	ctx := context.TODO()
 	szEngine := getTestObject(ctx, test)
 	settings, err := getSettings()
-	testError(test, err)
+	assert.NoError(test, err)
 	configId := getDefaultConfigId()
 	err = szEngine.Initialize(ctx, instanceName, settings, configId, verboseLogging)
-	testError(test, err)
+	assert.NoError(test, err)
 }
 
 func TestSzengine_Reinitialize(test *testing.T) {
 	ctx := context.TODO()
 	szEngine := getTestObject(ctx, test)
 	configId, err := szEngine.GetActiveConfigId(ctx)
-	testError(test, err)
+	assert.NoError(test, err)
 	err = szEngine.Reinitialize(ctx, configId)
-	testError(test, err)
+	assert.NoError(test, err)
 	printActual(test, configId)
 }
 
@@ -934,7 +935,7 @@ func TestSzengine_Destroy(test *testing.T) {
 	ctx := context.TODO()
 	szEngine := getTestObject(ctx, test)
 	err := szEngine.Destroy(ctx)
-	testError(test, err)
+	assert.NoError(test, err)
 }
 
 func TestSzengine_Destroy_withObserver(test *testing.T) {
@@ -942,7 +943,7 @@ func TestSzengine_Destroy_withObserver(test *testing.T) {
 	szEngineSingleton = nil
 	szEngine := getTestObject(ctx, test)
 	err := szEngine.Destroy(ctx)
-	testError(test, err)
+	assert.NoError(test, err)
 }
 
 // ----------------------------------------------------------------------------
@@ -952,7 +953,7 @@ func TestSzengine_Destroy_withObserver(test *testing.T) {
 func addRecords(ctx context.Context, records []record.Record) error {
 	var err error = nil
 	szEngine := getSzEngine(ctx)
-	flags := sz.SZ_WITHOUT_INFO
+	flags := senzing.SzWithoutInfo
 	for _, record := range records {
 		_, err = szEngine.AddRecord(ctx, record.DataSource, record.Id, record.Json, flags)
 		if err != nil {
@@ -963,13 +964,14 @@ func addRecords(ctx context.Context, records []record.Record) error {
 }
 
 func createError(errorId int, err error) error {
-	return szerror.Cast(logger.NewError(errorId, err), err)
+	// return errors.Cast(logger.NewError(errorId, err), err)
+	return logger.NewError(errorId, err)
 }
 
 func deleteRecords(ctx context.Context, records []record.Record) error {
 	var err error = nil
 	szEngine := getSzEngine(ctx)
-	flags := sz.SZ_WITHOUT_INFO
+	flags := senzing.SzWithoutInfo
 	for _, record := range records {
 		_, err = szEngine.DeleteRecord(ctx, record.DataSource, record.Id, flags)
 		if err != nil {
@@ -995,7 +997,7 @@ func getEntityIdForRecord(datasource string, id string) int64 {
 	ctx := context.TODO()
 	var result int64 = 0
 	szEngine := getSzEngine(ctx)
-	response, err := szEngine.GetEntityByRecordId(ctx, datasource, id, sz.SZ_WITHOUT_INFO)
+	response, err := szEngine.GetEntityByRecordId(ctx, datasource, id, senzing.SzWithoutInfo)
 	if err != nil {
 		return result
 	}
@@ -1063,7 +1065,7 @@ func getSzEngine(ctx context.Context) *Szengine {
 	return szEngineSingleton
 }
 
-func getSzEngineAsInterface(ctx context.Context) sz.SzEngine {
+func getSzEngineAsInterface(ctx context.Context) senzing.SzEngine {
 	return getSzEngine(ctx)
 }
 
@@ -1086,19 +1088,6 @@ func printResult(test *testing.T, title string, result interface{}) {
 	}
 }
 
-func testError(test *testing.T, err error) {
-	if err != nil {
-		test.Log("Error:", err.Error())
-		assert.FailNow(test, err.Error())
-	}
-}
-
-func testErrorNoFail(test *testing.T, err error) {
-	if err != nil {
-		test.Log("Error:", err.Error())
-	}
-}
-
 func truncate(aString string, length int) string {
 	return truncator.Truncate(aString, length, "...", truncator.PositionEnd)
 }
@@ -1110,13 +1099,13 @@ func truncate(aString string, length int) string {
 func TestMain(m *testing.M) {
 	err := setup()
 	if err != nil {
-		if szerror.Is(err, szerror.SzUnrecoverable) {
+		if errors.Is(err, szerror.ErrSzUnrecoverable) {
 			fmt.Printf("\nUnrecoverable error detected. \n\n")
 		}
-		if szerror.Is(err, szerror.SzRetryable) {
+		if errors.Is(err, szerror.ErrSzRetryable) {
 			fmt.Printf("\nRetryable error detected. \n\n")
 		}
-		if szerror.Is(err, szerror.SzBadInput) {
+		if errors.Is(err, szerror.ErrSzBadInput) {
 			fmt.Printf("\nBad user input error detected. \n\n")
 		}
 		fmt.Print(err)
@@ -1132,7 +1121,7 @@ func TestMain(m *testing.M) {
 
 func setup() error {
 	var err error = nil
-	logger, err = logging.NewSenzingSdkLogger(ComponentId, szengine.IdMessages)
+	logger, err = logging.NewSenzingSdkLogger(ComponentId, szengine.IDMessages)
 	if err != nil {
 		return createError(5901, err)
 	}

@@ -166,7 +166,7 @@ Output
   - A JSON document containing Senzing configurations.
     See the example output.
 */
-func (client *Szconfigmanager) GetConfigList(ctx context.Context) (string, error) {
+func (client *Szconfigmanager) GetConfigs(ctx context.Context) (string, error) {
 	// _DLEXPORT int G2ConfigMgr_getConfigList(char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -469,7 +469,7 @@ func (client *Szconfigmanager) getLogger() logging.LoggingInterface {
 		options := []interface{}{
 			&logging.OptionCallerSkip{Value: 4},
 		}
-		client.logger, err = logging.NewSenzingSdkLogger(ComponentId, szconfigmanager.IdMessages, options...)
+		client.logger, err = logging.NewSenzingSdkLogger(ComponentId, szconfigmanager.IDMessages, options...)
 		if err != nil {
 			panic(err)
 		}
@@ -499,7 +499,15 @@ func (client *Szconfigmanager) newError(ctx context.Context, errorNumber int, de
 	}
 	details = append(details, errors.New(message))
 	errorMessage := client.getLogger().Json(errorNumber, details...)
-	return szerror.SzError(szerror.SzErrorCode(message), (errorMessage))
+
+	// TODO: Remove hack
+
+	code := szerror.Code(message) // hack
+	if code > 30000 {             // hack
+		code = code - 27000 // hack
+	} // hack
+
+	return szerror.New(code, (errorMessage))
 }
 
 // --- Sz exception handling --------------------------------------------------

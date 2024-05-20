@@ -15,7 +15,7 @@ import (
 	"github.com/senzing-garage/go-helpers/truthset"
 	"github.com/senzing-garage/go-logging/logging"
 	"github.com/senzing-garage/sz-sdk-go-core/szabstractfactory"
-	"github.com/senzing-garage/sz-sdk-go/sz"
+	"github.com/senzing-garage/sz-sdk-go/senzing"
 )
 
 // ----------------------------------------------------------------------------
@@ -101,7 +101,7 @@ func setupDatabase() (string, error) {
 // Demonstrations
 // ----------------------------------------------------------------------------
 
-func demonstrateAddRecord(ctx context.Context, szEngine sz.SzEngine) (string, error) {
+func demonstrateAddRecord(ctx context.Context, szEngine senzing.SzEngine) (string, error) {
 	dataSourceCode := "TEST"
 	randomNumber, err := rand.Int(rand.Reader, big.NewInt(1000000000))
 	if err != nil {
@@ -113,14 +113,14 @@ func demonstrateAddRecord(ctx context.Context, szEngine sz.SzEngine) (string, er
 		`{"SOCIAL_HANDLE": "flavorh", "DATE_OF_BIRTH": "4/8/1983", "ADDR_STATE": "LA", "ADDR_POSTAL_CODE": "71232", "SSN_NUMBER": "053-39-3251", "ENTITY_TYPE": "TEST", "GENDER": "F", "srccode": "MDMPER", "CC_ACCOUNT_NUMBER": "5534202208773608", "RECORD_ID": "`,
 		recordId,
 		`", "DSRC_ACTION": "A", "ADDR_CITY": "Delhi", "DRIVERS_LICENSE_STATE": "DE", "PHONE_NUMBER": "225-671-0796", "NAME_LAST": "SEAMAN", "entityid": "284430058", "ADDR_LINE1": "772 Armstrong RD"}`)
-	var flags int64 = sz.SZ_WITH_INFO
+	var flags int64 = senzing.SzWithInfo
 
 	// Using SzEngine: Add record and return "withInfo".
 
 	return szEngine.AddRecord(ctx, dataSourceCode, recordId, jsonData, flags)
 }
 
-func demonstrateConfigFunctions(ctx context.Context, szAbstractFactory sz.SzAbstractFactory) error {
+func demonstrateConfigFunctions(ctx context.Context, szAbstractFactory senzing.SzAbstractFactory) error {
 	now := time.Now()
 
 	// Create Senzing objects.
@@ -178,7 +178,7 @@ func demonstrateConfigFunctions(ctx context.Context, szAbstractFactory sz.SzAbst
 	return err
 }
 
-func demonstrateSenzingFunctions(ctx context.Context, szAbstractFactory sz.SzAbstractFactory) error {
+func demonstrateSenzingFunctions(ctx context.Context, szAbstractFactory senzing.SzAbstractFactory) error {
 
 	// Create Senzing objects.
 
@@ -274,10 +274,10 @@ func main() {
 		failOnError(5005, err)
 	}
 	szAbstractFactory := &szabstractfactory.Szabstractfactory{
-		ConfigId:       sz.SZ_INITIALIZE_WITH_DEFAULT_CONFIGURATION,
+		ConfigId:       senzing.SzInitializeWithDefaultConfiguration,
 		InstanceName:   "Example instance",
 		Settings:       settings,
-		VerboseLogging: sz.SZ_NO_LOGGING,
+		VerboseLogging: senzing.SzNoLogging,
 	}
 
 	// Demonstrate persisting a Senzing configuration to the Senzing repository.
