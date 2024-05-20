@@ -451,15 +451,7 @@ func (client *Szdiagnostic) newError(ctx context.Context, errorNumber int, detai
 	}
 	details = append(details, errors.New(message))
 	errorMessage := client.getLogger().Json(errorNumber, details...)
-
-	// TODO: Remove hack
-
-	code := szerror.Code(message) // hack
-	if code > 30000 {             // hack
-		code = code - 27000 // hack
-	} // hack
-
-	return szerror.New(code, (errorMessage))
+	return szerror.New(szerror.Code(message), (errorMessage))
 }
 
 // --- Sz exception handling --------------------------------------------------

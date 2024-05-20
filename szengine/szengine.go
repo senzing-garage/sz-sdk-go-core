@@ -2381,15 +2381,7 @@ func (client *Szengine) newError(ctx context.Context, errorNumber int, details .
 	}
 	details = append(details, errors.New(message))
 	errorMessage := client.getLogger().Json(errorNumber, details...)
-
-	// TODO: Remove hack
-
-	code := szerror.Code(message) // hack
-	if code > 30000 {             // hack
-		code = code - 27000 // hack
-	} // hack
-
-	return szerror.New(code, (errorMessage))
+	return szerror.New(szerror.Code(message), (errorMessage))
 }
 
 // --- G2 exception handling --------------------------------------------------
