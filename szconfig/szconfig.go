@@ -86,7 +86,7 @@ func (client *Szconfig) AddDataSource(ctx context.Context, configHandle uintptr,
 				"dataSourceCode": dataSourceCode,
 				"return":         resultResponse,
 			}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8001, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8001, err, details)
 		}()
 	}
 	return resultResponse, err
@@ -117,7 +117,7 @@ func (client *Szconfig) CloseConfig(ctx context.Context, configHandle uintptr) e
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8002, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8002, err, details)
 		}()
 	}
 	return err
@@ -155,7 +155,7 @@ func (client *Szconfig) CreateConfig(ctx context.Context) (uintptr, error) {
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8003, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8003, err, details)
 		}()
 	}
 	return resultResponse, err
@@ -192,7 +192,7 @@ func (client *Szconfig) DeleteDataSource(ctx context.Context, configHandle uintp
 			details := map[string]string{
 				"dataSourceCode": dataSourceCode,
 			}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8004, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8004, err, details)
 		}()
 	}
 	return err
@@ -222,7 +222,7 @@ func (client *Szconfig) Destroy(ctx context.Context) error {
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8005, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8005, err, details)
 		}()
 	}
 	return err
@@ -260,7 +260,7 @@ func (client *Szconfig) ExportConfig(ctx context.Context, configHandle uintptr) 
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8006, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8006, err, details)
 		}()
 	}
 	return resultResponse, err
@@ -298,7 +298,7 @@ func (client *Szconfig) GetDataSources(ctx context.Context, configHandle uintptr
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8007, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8007, err, details)
 		}()
 	}
 	return resultResponse, err
@@ -335,7 +335,7 @@ func (client *Szconfig) ImportConfig(ctx context.Context, configDefinition strin
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8008, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8008, err, details)
 		}()
 	}
 	return resultResponse, err
@@ -355,6 +355,7 @@ Output
   - The value sent in the Observer's "origin" key/value pair.
 */
 func (client *Szconfig) GetObserverOrigin(ctx context.Context) string {
+	_ = ctx
 	return client.observerOrigin
 }
 
@@ -393,7 +394,7 @@ func (client *Szconfig) Initialize(ctx context.Context, instanceName string, set
 				"settings":       settings,
 				"verboseLogging": strconv.FormatInt(verboseLogging, 10),
 			}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8009, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8009, err, details)
 		}()
 	}
 	return err
@@ -422,7 +423,7 @@ func (client *Szconfig) RegisterObserver(ctx context.Context, observer observer.
 			details := map[string]string{
 				"observerId": observer.GetObserverId(ctx),
 			}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8702, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8702, err, details)
 		}()
 	}
 	return err
@@ -454,7 +455,7 @@ func (client *Szconfig) SetLogLevel(ctx context.Context, logLevelName string) er
 			details := map[string]string{
 				"logLevel": logLevelName,
 			}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8703, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8703, err, details)
 		}()
 	}
 	return err
@@ -468,6 +469,7 @@ Input
   - origin: The value sent in the Observer's "origin" key/value pair.
 */
 func (client *Szconfig) SetObserverOrigin(ctx context.Context, origin string) {
+	_ = ctx
 	client.observerOrigin = origin
 }
 
@@ -493,7 +495,7 @@ func (client *Szconfig) UnregisterObserver(ctx context.Context, observer observe
 		details := map[string]string{
 			"observerId": observer.GetObserverId(ctx),
 		}
-		notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8704, err, details)
+		notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8704, err, details)
 		err = client.observers.UnregisterObserver(ctx, observer)
 		if !client.observers.HasObservers(ctx) {
 			client.observers = nil
@@ -515,7 +517,7 @@ func (client *Szconfig) getLogger() logging.LoggingInterface {
 		options := []interface{}{
 			&logging.OptionCallerSkip{Value: 4},
 		}
-		client.logger, err = logging.NewSenzingSdkLogger(ComponentId, szconfig.IDMessages, options...)
+		client.logger, err = logging.NewSenzingSdkLogger(ComponentID, szconfig.IDMessages, options...)
 		if err != nil {
 			panic(err)
 		}

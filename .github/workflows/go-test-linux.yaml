@@ -43,7 +43,7 @@ jobs:
 
       - name: copy test database files
         run: mkdir /tmp/sqlite && cp testdata/sqlite/G2C.db /tmp/sqlite/G2C.db
-        
+
       - name: run go test
         run: go test -v -p 1 ./... -coverprofile=./cover.out -covermode=atomic -coverpkg=./...
 

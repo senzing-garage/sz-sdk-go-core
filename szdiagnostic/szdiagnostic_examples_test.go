@@ -43,8 +43,8 @@ func ExampleSzdiagnostic_GetFeature() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
 	ctx := context.TODO()
 	szDiagnostic := getSzDiagnostic(ctx)
-	featureId := int64(1)
-	result, err := szDiagnostic.GetFeature(ctx, featureId)
+	featureID := int64(1)
+	result, err := szDiagnostic.GetFeature(ctx, featureID)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -112,8 +112,8 @@ func ExampleSzdiagnostic_Initialize() {
 		fmt.Println(err)
 	}
 	verboseLogging := senzing.SzNoLogging
-	configId := senzing.SzInitializeWithDefaultConfiguration
-	err = szDiagnostic.Initialize(ctx, instanceName, settings, configId, verboseLogging)
+	configID := senzing.SzInitializeWithDefaultConfiguration
+	err = szDiagnostic.Initialize(ctx, instanceName, settings, configID, verboseLogging)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -124,8 +124,8 @@ func ExampleSzdiagnostic_Reinitialize() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
 	ctx := context.TODO()
 	szDiagnostic := getSzDiagnostic(ctx)
-	configId := getDefaultConfigId()
-	err := szDiagnostic.Reinitialize(ctx, configId)
+	configID := getDefaultConfigID()
+	err := szDiagnostic.Reinitialize(ctx, configID)
 	if err != nil {
 		fmt.Println(err)
 	}

@@ -63,7 +63,7 @@ func (client *Szdiagnostic) CheckDatastorePerformance(ctx context.Context, secon
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
-	var resultResponse string = ""
+	var resultResponse string
 	entryTime := time.Now()
 	if client.isTrace {
 		client.traceEntry(1, secondsToRun)
@@ -263,6 +263,7 @@ Output
   - The value sent in the Observer's "origin" key/value pair.
 */
 func (client *Szdiagnostic) GetObserverOrigin(ctx context.Context) string {
+	_ = ctx
 	return client.observerOrigin
 }
 
@@ -374,6 +375,7 @@ Input
   - origin: The value sent in the Observer's "origin" key/value pair.
 */
 func (client *Szdiagnostic) SetObserverOrigin(ctx context.Context, origin string) {
+	_ = ctx
 	client.observerOrigin = origin
 }
 

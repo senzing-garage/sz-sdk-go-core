@@ -309,6 +309,7 @@ Output
   - The value sent in the Observer's "origin" key/value pair.
 */
 func (client *Szconfigmanager) GetObserverOrigin(ctx context.Context) string {
+	_ = ctx
 	return client.observerOrigin
 }
 
@@ -422,6 +423,7 @@ Input
   - origin: The value sent in the Observer's "origin" key/value pair.
 */
 func (client *Szconfigmanager) SetObserverOrigin(ctx context.Context, origin string) {
+	_ = ctx
 	client.observerOrigin = origin
 }
 

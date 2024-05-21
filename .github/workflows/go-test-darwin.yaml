@@ -2,7 +2,6 @@ name: go test darwin
 
 on: [pull_request, workflow_dispatch]
 
-
 env:
   DYLD_LIBRARY_PATH: /opt/senzing/g2/lib:/opt/senzing/g2/lib/macos
   LD_LIBRARY_PATH: /opt/senzing/g2/lib:/opt/senzing/g2/lib/macos

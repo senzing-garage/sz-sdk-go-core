@@ -17,6 +17,7 @@ import (
 	"github.com/senzing-garage/sz-sdk-go/szerror"
 	"github.com/senzing-garage/sz-sdk-go/szproduct"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 const (
@@ -45,7 +46,7 @@ func TestSzproduct_GetLicense(test *testing.T) {
 	ctx := context.TODO()
 	szProduct := getTestObject(ctx, test)
 	actual, err := szProduct.GetLicense(ctx)
-	assert.NoError(test, err)
+	require.NoError(test, err)
 	printActual(test, actual)
 }
 
@@ -53,7 +54,7 @@ func TestSzproduct_GetVersion(test *testing.T) {
 	ctx := context.TODO()
 	szProduct := getTestObject(ctx, test)
 	actual, err := szProduct.GetVersion(ctx)
-	assert.NoError(test, err)
+	require.NoError(test, err)
 	printActual(test, actual)
 }
 
@@ -81,7 +82,7 @@ func TestSzproduct_UnregisterObserver(test *testing.T) {
 	ctx := context.TODO()
 	szProduct := getTestObject(ctx, test)
 	err := szProduct.UnregisterObserver(ctx, observerSingleton)
-	assert.NoError(test, err)
+	require.NoError(test, err)
 }
 
 // ----------------------------------------------------------------------------
@@ -92,7 +93,7 @@ func TestSzproduct_AsInterface(test *testing.T) {
 	ctx := context.TODO()
 	szProduct := getSzProductAsInterface(ctx)
 	actual, err := szProduct.GetLicense(ctx)
-	assert.NoError(test, err)
+	require.NoError(test, err)
 	printActual(test, actual)
 }
 
@@ -101,10 +102,10 @@ func TestSzproduct_Initialize(test *testing.T) {
 	szProduct := &Szproduct{}
 	instanceName := "Test name"
 	settings, err := getSettings()
-	assert.NoError(test, err)
+	require.NoError(test, err)
 	verboseLogging := senzing.SzNoLogging
 	err = szProduct.Initialize(ctx, instanceName, settings, verboseLogging)
-	assert.NoError(test, err)
+	require.NoError(test, err)
 }
 
 // TODO: Uncomment after bug introduced in Senzing 4.0.0.24131 is fixed.
@@ -112,7 +113,7 @@ func TestSzproduct_Initialize(test *testing.T) {
 // 	ctx := context.TODO()
 // 	szProduct := getTestObject(ctx, test)
 // 	err := szProduct.Destroy(ctx)
-// 	assert.NoError(test, err)
+// 	require.NoError(test, err)
 // }
 
 // TODO: Uncomment after bug introduced in Senzing 4.0.0.24131 is fixed.
@@ -121,7 +122,7 @@ func TestSzproduct_Initialize(test *testing.T) {
 // 	szProductSingleton = nil
 // 	szProduct := getTestObject(ctx, test)
 // 	err := szProduct.Destroy(ctx)
-// 	assert.NoError(test, err)
+// 	require.NoError(test, err)
 // }
 
 // ----------------------------------------------------------------------------

@@ -7,7 +7,7 @@ require (
 	github.com/senzing-garage/go-helpers v0.5.1
 	github.com/senzing-garage/go-logging v1.4.1
 	github.com/senzing-garage/go-observing v0.3.1
-	github.com/senzing-garage/sz-sdk-go v0.13.1
+	github.com/senzing-garage/sz-sdk-go v0.13.2
 	github.com/stretchr/testify v1.9.0
 )
 
@@ -24,5 +24,3 @@ require (
 	google.golang.org/protobuf v1.34.1 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
-
-replace github.com/senzing-garage/sz-sdk-go v0.13.1 => /home/senzing/senzing-garage.git/sz-sdk-go
