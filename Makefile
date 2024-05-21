@@ -27,6 +27,7 @@ PATH := $(MAKEFILE_DIRECTORY)/bin:$(PATH)
 GO_OSARCH = $(subst /, ,$@)
 GO_OS = $(word 1, $(GO_OSARCH))
 GO_ARCH = $(word 2, $(GO_OSARCH))
+GOBIN ?= $$(go env GOPATH)/bin
 
 # Conditional assignment. ('?=')
 # Can be overridden with "export"
@@ -110,8 +111,7 @@ check-coverage: install-go-test-coverage
 .PHONY: run-golangci-lint
 run-golangci-lint:
 	golangci-lint run --config=.github/linters/.golangci.yml
-	
-	
+
 # -----------------------------------------------------------------------------
 # Run
 # -----------------------------------------------------------------------------
