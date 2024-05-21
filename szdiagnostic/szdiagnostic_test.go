@@ -354,7 +354,7 @@ func TestMain(m *testing.M) {
 
 func setup() error {
 	var err error
-	logger, err = logging.NewSenzingSdkLogger(ComponentId, szdiagnostic.IDMessages)
+	logger, err = logging.NewSenzingSdkLogger(ComponentID, szdiagnostic.IDMessages)
 	if err != nil {
 		return createError(5901, err)
 	}
@@ -482,7 +482,7 @@ func setupSenzingConfiguration() error {
 		return createError(5908, err)
 	}
 
-	err = szConfigManager.SetDefaultConfigId(ctx, configId)
+	err = szConfigManager.SetDefaultConfigID(ctx, configId)
 	if err != nil {
 		return createError(5909, err)
 	}

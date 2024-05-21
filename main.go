@@ -176,7 +176,7 @@ func demonstrateConfigFunctions(ctx context.Context, szAbstractFactory senzing.S
 
 	// Using SzConfigManager: Set new configuration as the default.
 
-	err = szConfigManager.SetDefaultConfigId(ctx, configID)
+	err = szConfigManager.SetDefaultConfigID(ctx, configID)
 	if err != nil {
 		return logger.NewError(5107, err)
 	}
