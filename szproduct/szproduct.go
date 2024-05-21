@@ -56,7 +56,7 @@ func (client *Szproduct) Destroy(ctx context.Context) error {
 	// _DLEXPORT int G2Config_destroy();
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	entryTime := time.Now()
 	if client.isTrace {
 		client.traceEntry(3)
@@ -89,7 +89,7 @@ func (client *Szproduct) GetLicense(ctx context.Context) (string, error) {
 	// _DLEXPORT char* G2Product_license();
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	var resultResponse string
 	if client.isTrace {
 		entryTime := time.Now()
@@ -121,7 +121,7 @@ func (client *Szproduct) GetVersion(ctx context.Context) (string, error) {
 	// _DLEXPORT char* G2Product_license();
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	var resultResponse string
 	if client.isTrace {
 		entryTime := time.Now()
@@ -170,7 +170,7 @@ func (client *Szproduct) Initialize(ctx context.Context, instanceName string, se
 	// _DLEXPORT int G2Config_init(const char *moduleName, const char *iniParams, const int verboseLogging);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	entryTime := time.Now()
 	if client.isTrace {
 		client.traceEntry(13, instanceName, settings, verboseLogging)
@@ -205,7 +205,7 @@ Input
   - observer: The observer to be added.
 */
 func (client *Szproduct) RegisterObserver(ctx context.Context, observer observer.Observer) error {
-	var err error = nil
+	var err error
 	if client.isTrace {
 		entryTime := time.Now()
 		client.traceEntry(703, observer.GetObserverId(ctx))
@@ -236,7 +236,7 @@ Input
 func (client *Szproduct) SetLogLevel(ctx context.Context, logLevelName string) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	if client.isTrace {
 		entryTime := time.Now()
 		client.traceEntry(705, logLevelName)
@@ -277,7 +277,7 @@ Input
   - observer: The observer to be added.
 */
 func (client *Szproduct) UnregisterObserver(ctx context.Context, observer observer.Observer) error {
-	var err error = nil
+	var err error
 	if client.isTrace {
 		entryTime := time.Now()
 		client.traceEntry(707, observer.GetObserverId(ctx))
@@ -308,7 +308,7 @@ func (client *Szproduct) UnregisterObserver(ctx context.Context, observer observ
 
 // Get the Logger singleton.
 func (client *Szproduct) getLogger() logging.LoggingInterface {
-	var err error = nil
+	var err error
 	if client.logger == nil {
 		options := []interface{}{
 			&logging.OptionCallerSkip{Value: 4},
@@ -336,7 +336,7 @@ func (client *Szproduct) traceExit(errorNumber int, details ...interface{}) {
 // Create a new error.
 func (client *Szproduct) newError(ctx context.Context, errorNumber int, details ...interface{}) error {
 	lastException, err := client.getLastException(ctx)
-	defer client.clearLastException(ctx)
+	defer func() { client.panicOnError(client.clearLastException(ctx)) }()
 	message := lastException
 	if err != nil {
 		message = err.Error()
@@ -344,6 +344,18 @@ func (client *Szproduct) newError(ctx context.Context, errorNumber int, details 
 	details = append(details, errors.New(message))
 	errorMessage := client.getLogger().Json(errorNumber, details...)
 	return szerror.New(szerror.Code(message), (errorMessage))
+}
+
+/*
+The panicOnError method calls panic() when an error is not nil.
+
+Input:
+  - err: nil or an actual error
+*/
+func (client *Szproduct) panicOnError(err error) {
+	if err != nil {
+		panic(err)
+	}
 }
 
 // --- Sz exception handling --------------------------------------------------
@@ -357,7 +369,7 @@ Input
 func (client *Szproduct) clearLastException(ctx context.Context) error {
 	_ = ctx
 	// _DLEXPORT void G2Config_clearLastException();
-	var err error = nil
+	var err error
 	if client.isTrace {
 		entryTime := time.Now()
 		client.traceEntry(1)
@@ -379,7 +391,7 @@ Output
 func (client *Szproduct) getLastException(ctx context.Context) (string, error) {
 	// _DLEXPORT int G2Config_getLastException(char *buffer, const size_t bufSize);
 	_ = ctx
-	var err error = nil
+	var err error
 	var result string
 	if client.isTrace {
 		entryTime := time.Now()
@@ -407,7 +419,7 @@ Output:
 func (client *Szproduct) getLastExceptionCode(ctx context.Context) (int, error) {
 	//  _DLEXPORT int G2Config_getLastExceptionCode();
 	_ = ctx
-	var err error = nil
+	var err error
 	var result int
 	if client.isTrace {
 		entryTime := time.Now()

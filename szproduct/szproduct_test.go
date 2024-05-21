@@ -148,11 +148,11 @@ func getSettings() (string, error) {
 			dbTargetPath, err)
 		return "", err
 	}
-	databaseUrl := fmt.Sprintf("sqlite3://na:na@nowhere/%s", dbTargetPath)
+	databaseURL := fmt.Sprintf("sqlite3://na:na@nowhere/%s", dbTargetPath)
 
 	// Create Senzing engine configuration JSON.
 
-	configAttrMap := map[string]string{"databaseUrl": databaseUrl}
+	configAttrMap := map[string]string{"databaseUrl": databaseURL}
 	settings, err := engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingMap(configAttrMap)
 	if err != nil {
 		err = createError(5900, err)
@@ -169,11 +169,23 @@ func getSzProduct(ctx context.Context) *Szproduct {
 			return nil
 		}
 		szProductSingleton = &Szproduct{}
-		szProductSingleton.SetLogLevel(ctx, logLevel)
+		err = szProductSingleton.SetLogLevel(ctx, logLevel)
+		if err != nil {
+			fmt.Printf("SetLogLevel() Error: %v\n", err)
+			return nil
+		}
 		if logLevel == "TRACE" {
 			szProductSingleton.SetObserverOrigin(ctx, observerOrigin)
-			szProductSingleton.RegisterObserver(ctx, observerSingleton)
-			szProductSingleton.SetLogLevel(ctx, logLevel) // Duplicated for coverage testing
+			err = szProductSingleton.RegisterObserver(ctx, observerSingleton)
+			if err != nil {
+				fmt.Printf("RegisterObserver() Error: %v\n", err)
+				return nil
+			}
+			err = szProductSingleton.SetLogLevel(ctx, logLevel) // Duplicated for coverage testing
+			if err != nil {
+				fmt.Printf("SetLogLevel()-2 Error: %v\n", err)
+				return nil
+			}
 		}
 		err = szProductSingleton.Initialize(ctx, instanceName, settings, verboseLogging)
 		if err != nil {
@@ -194,6 +206,12 @@ func getTestDirectoryPath() string {
 func getTestObject(ctx context.Context, test *testing.T) *Szproduct {
 	_ = test
 	return getSzProduct(ctx)
+}
+
+func handleError(err error) {
+	if err != nil {
+		panic(err)
+	}
 }
 
 func printActual(test *testing.T, actual interface{}) {
@@ -238,7 +256,7 @@ func TestMain(m *testing.M) {
 }
 
 func setup() error {
-	var err error = nil
+	var err error
 	logger, err = logging.NewSenzingSdkLogger(ComponentId, szproduct.IDMessages)
 	if err != nil {
 		return createError(5901, err)
@@ -249,17 +267,17 @@ func setup() error {
 	}
 	err = setupDirectories()
 	if err != nil {
-		return fmt.Errorf("Failed to set up directories. Error: %v", err)
+		return fmt.Errorf("Failed to set up directories. Error: %w", err)
 	}
 	err = setupDatabase()
 	if err != nil {
-		return fmt.Errorf("Failed to set up database. Error: %v", err)
+		return fmt.Errorf("Failed to set up database. Error: %w", err)
 	}
 	return err
 }
 
 func setupDatabase() error {
-	var err error = nil
+	var err error
 
 	// Locate source and target paths.
 
@@ -286,7 +304,7 @@ func setupDatabase() error {
 }
 
 func setupDirectories() error {
-	var err error = nil
+	var err error
 	testDirectoryPath := getTestDirectoryPath()
 	err = os.RemoveAll(filepath.Clean(testDirectoryPath)) // cleanup any previous test run
 	if err != nil {
@@ -306,7 +324,7 @@ func teardown() error {
 }
 
 func teardownSzProduct(ctx context.Context) error {
-	szProductSingleton.UnregisterObserver(ctx, observerSingleton)
+	handleError(szProductSingleton.UnregisterObserver(ctx, observerSingleton))
 	// TODO: Uncomment after bug introduced in Senzing 4.0.0.24131 is fixed.
 	// err := szProductSingleton.Destroy(ctx)
 	// if err != nil {

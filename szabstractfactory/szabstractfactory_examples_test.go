@@ -19,7 +19,7 @@ func ExampleSzAbstractFactory_CreateSzConfig() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	defer szConfig.Destroy(ctx)
+	defer func() { handleError(szConfig.Destroy(ctx)) }()
 	// Output:
 }
 
@@ -31,7 +31,7 @@ func ExampleSzAbstractFactory_CreateSzConfigManager() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	defer szConfigManager.Destroy(ctx)
+	defer func() { handleError(szConfigManager.Destroy(ctx)) }()
 	// Output:
 }
 
@@ -43,7 +43,7 @@ func ExampleSzAbstractFactory_CreateSzDiagnostic() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	defer szDiagnostic.Destroy(ctx)
+	defer func() { handleError(szDiagnostic.Destroy(ctx)) }()
 	// Output:
 }
 
@@ -55,7 +55,7 @@ func ExampleSzAbstractFactory_CreateSzEngine() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	defer szEngine.Destroy(ctx)
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 	// Output:
 }
 
@@ -67,6 +67,6 @@ func ExampleSzAbstractFactory_CreateSzProduct() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	defer szProduct.Destroy(ctx)
+	defer func() { handleError(szProduct.Destroy(ctx)) }()
 	// Output:
 }

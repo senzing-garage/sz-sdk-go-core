@@ -380,7 +380,11 @@ func getSzConfig(ctx context.Context) *Szconfig {
 			return nil
 		}
 		szConfigSingleton = &Szconfig{}
-		szConfigSingleton.SetLogLevel(ctx, logLevel)
+		err = szConfigSingleton.SetLogLevel(ctx, logLevel)
+		if err != nil {
+			fmt.Printf("SetLogLevel() Error: %v\n", err)
+			return nil
+		}
 		if logLevel == "TRACE" {
 			szConfigSingleton.SetObserverOrigin(ctx, observerOrigin)
 			szConfigSingleton.RegisterObserver(ctx, observerSingleton)
@@ -405,6 +409,12 @@ func getTestDirectoryPath() string {
 func getTestObject(ctx context.Context, test *testing.T) *Szconfig {
 	_ = test
 	return getSzConfig(ctx)
+}
+
+func handleError(err error) {
+	if err != nil {
+		panic(err)
+	}
 }
 
 func printActual(test *testing.T, actual interface{}) {
@@ -449,7 +459,7 @@ func TestMain(m *testing.M) {
 }
 
 func setup() error {
-	var err error = nil
+	var err error
 	logger, err = logging.NewSenzingSdkLogger(ComponentId, szconfig.IDMessages)
 	if err != nil {
 		return createError(5901, err)
@@ -470,7 +480,7 @@ func setup() error {
 }
 
 func setupDatabase() error {
-	var err error = nil
+	var err error
 
 	// Locate source and target paths.
 
@@ -497,7 +507,7 @@ func setupDatabase() error {
 }
 
 func setupDirectories() error {
-	var err error = nil
+	var err error
 	testDirectoryPath := getTestDirectoryPath()
 	err = os.RemoveAll(filepath.Clean(testDirectoryPath)) // cleanup any previous test run
 	if err != nil {

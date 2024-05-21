@@ -60,7 +60,7 @@ func (client *Szconfigmanager) AddConfig(ctx context.Context, configDefinition s
 	// _DLEXPORT int G2ConfigMgr_addConfig(const char* configStr, const char* configComments, long long* configID);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	var resultConfigId int64
 	entryTime := time.Now()
 	if client.isTrace {
@@ -100,7 +100,7 @@ func (client *Szconfigmanager) Destroy(ctx context.Context) error {
 	// _DLEXPORT int G2Config_destroy();
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	entryTime := time.Now()
 	if client.isTrace {
 		client.traceEntry(5)
@@ -134,7 +134,7 @@ func (client *Szconfigmanager) GetConfig(ctx context.Context, configId int64) (s
 	// _DLEXPORT int G2ConfigMgr_getConfig(const long long configID, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	var resultResponse string
 	entryTime := time.Now()
 	if client.isTrace {
@@ -170,7 +170,7 @@ func (client *Szconfigmanager) GetConfigs(ctx context.Context) (string, error) {
 	// _DLEXPORT int G2ConfigMgr_getConfigList(char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	var resultResponse string
 	entryTime := time.Now()
 	if client.isTrace {
@@ -205,7 +205,7 @@ func (client *Szconfigmanager) GetDefaultConfigId(ctx context.Context) (int64, e
 	//  _DLEXPORT int G2ConfigMgr_getDefaultConfigID(long long* configID);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	var resultConfigId int64
 	entryTime := time.Now()
 	if client.isTrace {
@@ -241,7 +241,7 @@ func (client *Szconfigmanager) ReplaceDefaultConfigId(ctx context.Context, curre
 	// _DLEXPORT int G2ConfigMgr_replaceDefaultConfigID(const long long oldConfigID, const long long newConfigID);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	entryTime := time.Now()
 	if client.isTrace {
 		client.traceEntry(19, currentDefaultConfigId, newDefaultConfigId)
@@ -274,7 +274,7 @@ func (client *Szconfigmanager) SetDefaultConfigId(ctx context.Context, configId 
 	// _DLEXPORT int G2ConfigMgr_setDefaultConfigID(const long long configID);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	entryTime := time.Now()
 	if client.isTrace {
 		client.traceEntry(21, configId)
@@ -326,7 +326,7 @@ func (client *Szconfigmanager) Initialize(ctx context.Context, instanceName stri
 	// _DLEXPORT int G2Config_init(const char *moduleName, const char *iniParams, const int verboseLogging);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	entryTime := time.Now()
 	if client.isTrace {
 		client.traceEntry(17, instanceName, settings, verboseLogging)
@@ -361,7 +361,7 @@ Input
   - observer: The observer to be added.
 */
 func (client *Szconfigmanager) RegisterObserver(ctx context.Context, observer observer.Observer) error {
-	var err error = nil
+	var err error
 	if client.isTrace {
 		entryTime := time.Now()
 		client.traceEntry(703, observer.GetObserverId(ctx))
@@ -392,7 +392,7 @@ Input
 func (client *Szconfigmanager) SetLogLevel(ctx context.Context, logLevelName string) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	if client.isTrace {
 		entryTime := time.Now()
 		client.traceEntry(705, logLevelName)
@@ -433,7 +433,7 @@ Input
   - observer: The observer to be added.
 */
 func (client *Szconfigmanager) UnregisterObserver(ctx context.Context, observer observer.Observer) error {
-	var err error = nil
+	var err error
 	if client.isTrace {
 		entryTime := time.Now()
 		client.traceEntry(707, observer.GetObserverId(ctx))
@@ -464,7 +464,7 @@ func (client *Szconfigmanager) UnregisterObserver(ctx context.Context, observer 
 
 // Get the Logger singleton.
 func (client *Szconfigmanager) getLogger() logging.LoggingInterface {
-	var err error = nil
+	var err error
 	if client.logger == nil {
 		options := []interface{}{
 			&logging.OptionCallerSkip{Value: 4},
@@ -492,7 +492,7 @@ func (client *Szconfigmanager) traceExit(errorNumber int, details ...interface{}
 // Create a new error.
 func (client *Szconfigmanager) newError(ctx context.Context, errorNumber int, details ...interface{}) error {
 	lastException, err := client.getLastException(ctx)
-	defer client.clearLastException(ctx)
+	defer func() { client.panicOnError(client.clearLastException(ctx)) }()
 	message := lastException
 	if err != nil {
 		message = err.Error()
@@ -500,6 +500,18 @@ func (client *Szconfigmanager) newError(ctx context.Context, errorNumber int, de
 	details = append(details, errors.New(message))
 	errorMessage := client.getLogger().Json(errorNumber, details...)
 	return szerror.New(szerror.Code(message), (errorMessage))
+}
+
+/*
+The panicOnError method calls panic() when an error is not nil.
+
+Input:
+  - err: nil or an actual error
+*/
+func (client *Szconfigmanager) panicOnError(err error) {
+	if err != nil {
+		panic(err)
+	}
 }
 
 // --- Sz exception handling --------------------------------------------------
@@ -513,7 +525,7 @@ Input
 func (client *Szconfigmanager) clearLastException(ctx context.Context) error {
 	// _DLEXPORT void G2Config_clearLastException()
 	_ = ctx
-	var err error = nil
+	var err error
 	if client.isTrace {
 		entryTime := time.Now()
 		client.traceEntry(3)
@@ -535,7 +547,7 @@ Output
 func (client *Szconfigmanager) getLastException(ctx context.Context) (string, error) {
 	// _DLEXPORT int G2Config_getLastException(char *buffer, const size_t bufSize);
 	_ = ctx
-	var err error = nil
+	var err error
 	var result string
 	if client.isTrace {
 		entryTime := time.Now()
@@ -563,7 +575,7 @@ Output:
 func (client *Szconfigmanager) getLastExceptionCode(ctx context.Context) (int, error) {
 	//  _DLEXPORT int G2Config_getLastExceptionCode();
 	_ = ctx
-	var err error = nil
+	var err error
 	var result int
 	if client.isTrace {
 		entryTime := time.Now()

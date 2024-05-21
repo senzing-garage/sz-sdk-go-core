@@ -13,7 +13,7 @@ import (
 
 // Szabstractfactory is an implementation of the senzing.SzAbstractFactory interface.
 type Szabstractfactory struct {
-	ConfigId       int64
+	ConfigID       int64
 	InstanceName   string
 	Settings       string
 	VerboseLogging int64
@@ -70,7 +70,7 @@ Output
 */
 func (factory *Szabstractfactory) CreateSzDiagnostic(ctx context.Context) (senzing.SzDiagnostic, error) {
 	result := &szdiagnostic.Szdiagnostic{}
-	err := result.Initialize(ctx, factory.InstanceName, factory.Settings, factory.ConfigId, factory.VerboseLogging)
+	err := result.Initialize(ctx, factory.InstanceName, factory.Settings, factory.ConfigID, factory.VerboseLogging)
 	return result, err
 }
 
@@ -87,7 +87,7 @@ Output
 */
 func (factory *Szabstractfactory) CreateSzEngine(ctx context.Context) (senzing.SzEngine, error) {
 	result := &szengine.Szengine{}
-	err := result.Initialize(ctx, factory.InstanceName, factory.Settings, factory.ConfigId, factory.VerboseLogging)
+	err := result.Initialize(ctx, factory.InstanceName, factory.Settings, factory.ConfigID, factory.VerboseLogging)
 	return result, err
 }
 

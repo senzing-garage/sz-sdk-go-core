@@ -58,7 +58,7 @@ Input
 */
 func (client *Szengine) AddRecord(ctx context.Context, dataSourceCode string, recordId string, recordDefinition string, flags int64) (string, error) {
 	var result string = ""
-	var err error = nil
+	var err error
 	entryTime := time.Now()
 	if client.isTrace {
 		client.traceEntry(1, dataSourceCode, recordId, recordDefinition, flags)
@@ -97,7 +97,7 @@ func (client *Szengine) CloseExport(ctx context.Context, exportHandle uintptr) e
 	//  _DLEXPORT int G2_closeExport(ExportHandle responseHandle);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	entryTime := time.Now()
 	if client.isTrace {
 		client.traceEntry(5, exportHandle)
@@ -129,7 +129,7 @@ func (client *Szengine) CountRedoRecords(ctx context.Context) (int64, error) {
 	//  _DLEXPORT long long G2_countRedoRecords();
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	var result int64 = 0
 	if client.isTrace {
 		entryTime := time.Now()
@@ -157,7 +157,7 @@ Input
 */
 func (client *Szengine) DeleteRecord(ctx context.Context, dataSourceCode string, recordId string, flags int64) (string, error) {
 	var result string = ""
-	var err error = nil
+	var err error
 	entryTime := time.Now()
 	if client.isTrace {
 		client.traceEntry(9, dataSourceCode, recordId, flags)
@@ -192,7 +192,7 @@ func (client *Szengine) Destroy(ctx context.Context) error {
 	//  _DLEXPORT int G2_destroy();
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	entryTime := time.Now()
 	if client.isTrace {
 		client.traceEntry(11)
@@ -228,7 +228,7 @@ func (client *Szengine) ExportCsvEntityReport(ctx context.Context, csvColumnList
 	//  _DLEXPORT int G2_exportCSVEntityReport(const char* csvColumnList, const long long flags, ExportHandle* responseHandle);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	var resultExportHandle uintptr
 	entryTime := time.Now()
 	if client.isTrace {
@@ -271,7 +271,7 @@ func (client *Szengine) ExportCsvEntityReportIterator(ctx context.Context, csvCo
 		runtime.LockOSThread()
 		defer runtime.UnlockOSThread()
 		defer close(stringFragmentChannel)
-		var err error = nil
+		var err error
 		if client.isTrace {
 			entryTime := time.Now()
 			client.traceEntry(15, csvColumnList, flags)
@@ -338,7 +338,7 @@ func (client *Szengine) ExportJsonEntityReport(ctx context.Context, flags int64)
 	//  _DLEXPORT int G2_exportJSONEntityReport(const long long flags, ExportHandle* responseHandle);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	var resultExportHandle uintptr
 	entryTime := time.Now()
 	if client.isTrace {
@@ -378,7 +378,7 @@ func (client *Szengine) ExportJsonEntityReportIterator(ctx context.Context, flag
 		runtime.LockOSThread()
 		defer runtime.UnlockOSThread()
 		defer close(stringFragmentChannel)
-		var err error = nil
+		var err error
 		if client.isTrace {
 			entryTime := time.Now()
 			client.traceEntry(19, flags)
@@ -445,7 +445,7 @@ func (client *Szengine) FetchNext(ctx context.Context, exportHandle uintptr) (st
 	//  _DLEXPORT int G2_fetchNext(ExportHandle responseHandle, char *responseBuf, const size_t bufSize);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	var resultResponse string
 	entryTime := time.Now()
 	if client.isTrace {
@@ -484,7 +484,7 @@ func (client *Szengine) FindInterestingEntitiesByEntityId(ctx context.Context, e
 	//  _DLEXPORT int G2_findInterestingEntitiesByEntityID(const long long entityID, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	var resultResponse string
 	entryTime := time.Now()
 	if client.isTrace {
@@ -526,7 +526,7 @@ func (client *Szengine) FindInterestingEntitiesByRecordId(ctx context.Context, d
 	//  _DLEXPORT int G2_findInterestingEntitiesByRecordID(const char* dataSourceCode, const char* recordID, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	var resultResponse string
 	entryTime := time.Now()
 	if client.isTrace {
@@ -578,7 +578,7 @@ func (client *Szengine) FindNetworkByEntityId(ctx context.Context, entityIDs str
 	//  _DLEXPORT int G2_findNetworkByEntityID_V2(const char* entityList, const int maxDegree, const int buildOutDegree, const int maxEntities, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	var resultResponse string
 	entryTime := time.Now()
 	if client.isTrace {
@@ -627,7 +627,7 @@ func (client *Szengine) FindNetworkByRecordId(ctx context.Context, recordKeys st
 	//  _DLEXPORT int G2_findNetworkByRecordID_V2(const char* recordList, const int maxDegree, const int buildOutDegree, const int maxEntities, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	var resultResponse string
 	entryTime := time.Now()
 	if client.isTrace {
@@ -674,7 +674,7 @@ Output
 */
 func (client *Szengine) FindPathByEntityId(ctx context.Context, startEntityId int64, endEntityId int64, maxDegrees int64, exclusions string, requiredDataSources string, flags int64) (string, error) {
 	var result string = ""
-	var err error = nil
+	var err error
 	entryTime := time.Now()
 	if client.isTrace {
 		client.traceEntry(31, startEntityId, endEntityId, maxDegrees, exclusions, requiredDataSources, flags)
@@ -724,7 +724,7 @@ Output
 */
 func (client *Szengine) FindPathByRecordId(ctx context.Context, startDataSourceCode string, startRecordId string, endDataSourceCode string, endRecordId string, maxDegrees int64, exclusions string, requiredDataSources string, flags int64) (string, error) {
 	var result string = ""
-	var err error = nil
+	var err error
 	entryTime := time.Now()
 	if client.isTrace {
 		client.traceEntry(33, startDataSourceCode, startRecordId, endDataSourceCode, endRecordId, maxDegrees, exclusions, requiredDataSources, flags)
@@ -766,7 +766,7 @@ func (client *Szengine) GetActiveConfigId(ctx context.Context) (int64, error) {
 	//  _DLEXPORT int G2_getActiveConfigID(long long* configID);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	var resultConfigId int64
 	entryTime := time.Now()
 	if client.isTrace {
@@ -804,7 +804,7 @@ func (client *Szengine) GetEntityByEntityId(ctx context.Context, entityId int64,
 	//  _DLEXPORT int G2_getEntityByEntityID_V2(const long long entityID, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	var resultResponse string
 	entryTime := time.Now()
 	if client.isTrace {
@@ -845,7 +845,7 @@ func (client *Szengine) GetEntityByRecordId(ctx context.Context, dataSourceCode 
 	//  _DLEXPORT int G2_getEntityByRecordID_V2(const char* dataSourceCode, const char* recordID, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	var resultResponse string
 	entryTime := time.Now()
 	if client.isTrace {
@@ -893,7 +893,7 @@ func (client *Szengine) GetRecord(ctx context.Context, dataSourceCode string, re
 	//  _DLEXPORT int G2_getRecord_V2(const char* dataSourceCode, const char* recordID, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	var resultResponse string
 	entryTime := time.Now()
 	if client.isTrace {
@@ -939,7 +939,7 @@ func (client *Szengine) GetRedoRecord(ctx context.Context) (string, error) {
 	//  _DLEXPORT int G2_getRedoRecord(char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize) );
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	var resultResponse string
 	entryTime := time.Now()
 	if client.isTrace {
@@ -977,7 +977,7 @@ func (client *Szengine) GetStats(ctx context.Context) (string, error) {
 	//  _DLEXPORT int G2_stats(char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize) );
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	var resultResponse string
 	entryTime := time.Now()
 	if client.isTrace {
@@ -1017,7 +1017,7 @@ func (client *Szengine) GetVirtualEntityByRecordId(ctx context.Context, recordLi
 	//  _DLEXPORT int G2_getVirtualEntityByRecordID_V2(const char* recordList, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	var resultResponse string
 	entryTime := time.Now()
 	if client.isTrace {
@@ -1059,7 +1059,7 @@ func (client *Szengine) HowEntityByEntityId(ctx context.Context, entityId int64,
 	//  _DLEXPORT int G2_howEntityByEntityID_V2(const long long entityID, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	var resultResponse string
 	entryTime := time.Now()
 	if client.isTrace {
@@ -1095,7 +1095,7 @@ func (client *Szengine) PrimeEngine(ctx context.Context) error {
 	//  _DLEXPORT int G2_primeEngine();
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	entryTime := time.Now()
 	if client.isTrace {
 		client.traceEntry(57)
@@ -1126,7 +1126,7 @@ Output
 */
 func (client *Szengine) ProcessRedoRecord(ctx context.Context, redoRecord string, flags int64) (string, error) {
 	var result string = ""
-	var err error = nil
+	var err error
 	entryTime := time.Now()
 	if client.isTrace {
 		client.traceEntry(59, redoRecord, flags)
@@ -1157,7 +1157,7 @@ Input
 */
 func (client *Szengine) ReevaluateEntity(ctx context.Context, entityId int64, flags int64) (string, error) {
 	var result string = ""
-	var err error = nil
+	var err error
 	entryTime := time.Now()
 	if client.isTrace {
 		client.traceEntry(61, entityId, flags)
@@ -1192,7 +1192,7 @@ Input
 */
 func (client *Szengine) ReevaluateRecord(ctx context.Context, dataSourceCode string, recordId string, flags int64) (string, error) {
 	var result string = ""
-	var err error = nil
+	var err error
 	entryTime := time.Now()
 	if client.isTrace {
 		client.traceEntry(63, dataSourceCode, recordId, flags)
@@ -1227,7 +1227,7 @@ func (client *Szengine) Reinitialize(ctx context.Context, configId int64) error 
 	//  _DLEXPORT int G2_reinit(const long long initConfigID);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	entryTime := time.Now()
 	if client.isTrace {
 		client.traceEntry(65, configId)
@@ -1264,7 +1264,7 @@ Output
 */
 func (client *Szengine) SearchByAttributes(ctx context.Context, attributes string, searchProfile string, flags int64) (string, error) {
 	var result string = ""
-	var err error = nil
+	var err error
 	entryTime := time.Now()
 	if client.isTrace {
 		client.traceEntry(69, attributes, searchProfile, flags)
@@ -1302,7 +1302,7 @@ Output
 */
 func (client *Szengine) WhyEntities(ctx context.Context, entityId1 int64, entityId2 int64, flags int64) (string, error) {
 	var result string = ""
-	var err error = nil
+	var err error
 	entryTime := time.Now()
 	if client.isTrace {
 		client.traceEntry(71, entityId1, entityId2, flags)
@@ -1337,7 +1337,7 @@ Output
 */
 func (client *Szengine) WhyRecordInEntity(ctx context.Context, dataSourceCode string, recordId string, flags int64) (string, error) {
 	var result string = ""
-	var err error = nil
+	var err error
 	entryTime := time.Now()
 	if client.isTrace {
 		client.traceEntry(73, dataSourceCode, recordId, flags)
@@ -1373,7 +1373,7 @@ Output
 */
 func (client *Szengine) WhyRecords(ctx context.Context, dataSourceCode1 string, recordId1 string, dataSourceCode2 string, recordId2 string, flags int64) (string, error) {
 	var result string = ""
-	var err error = nil
+	var err error
 	entryTime := time.Now()
 	if client.isTrace {
 		client.traceEntry(75, dataSourceCode1, recordId1, dataSourceCode2, recordId2, flags)
@@ -1425,7 +1425,7 @@ Input
   - verboseLogging: A flag to enable deeper logging of the G2 processing. 0 for no Senzing logging; 1 for logging.
 */
 func (client *Szengine) Initialize(ctx context.Context, instanceName string, settings string, configId int64, verboseLogging int64) error {
-	var err error = nil
+	var err error
 	entryTime := time.Now()
 	if client.isTrace {
 		client.traceEntry(55, instanceName, settings, configId, verboseLogging)
@@ -1459,7 +1459,7 @@ Input
   - observer: The observer to be added.
 */
 func (client *Szengine) RegisterObserver(ctx context.Context, observer observer.Observer) error {
-	var err error = nil
+	var err error
 	if client.isTrace {
 		entryTime := time.Now()
 		client.traceEntry(703, observer.GetObserverId(ctx))
@@ -1490,7 +1490,7 @@ Input
 func (client *Szengine) SetLogLevel(ctx context.Context, logLevelName string) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	if client.isTrace {
 		entryTime := time.Now()
 		client.traceEntry(705, logLevelName)
@@ -1531,7 +1531,7 @@ Input
   - observer: The observer to be added.
 */
 func (client *Szengine) UnregisterObserver(ctx context.Context, observer observer.Observer) error {
-	var err error = nil
+	var err error
 	if client.isTrace {
 		entryTime := time.Now()
 		client.traceEntry(159, observer.GetObserverId(ctx))
@@ -1571,7 +1571,7 @@ func (client *Szengine) addRecord(ctx context.Context, dataSourceCode string, re
 	//  _DLEXPORT int G2_addRecord(const char* dataSourceCode, const char* recordID, const char* jsonData, const char *loadID);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	entryTime := time.Now()
 	dataSourceCodeForC := C.CString(dataSourceCode)
 	defer C.free(unsafe.Pointer(dataSourceCodeForC))
@@ -1604,7 +1604,7 @@ func (client *Szengine) addRecordWithInfo(ctx context.Context, dataSourceCode st
 	//  _DLEXPORT int G2_addRecordWithInfo(const char* dataSourceCode, const char* recordID, const char* jsonData, const char *loadID, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	var resultResponse string
 	entryTime := time.Now()
 	dataSourceCodeForC := C.CString(dataSourceCode)
@@ -1634,7 +1634,7 @@ func (client *Szengine) deleteRecord(ctx context.Context, dataSourceCode string,
 	//  _DLEXPORT int G2_deleteRecord(const char* dataSourceCode, const char* recordID, const char* loadID);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	entryTime := time.Now()
 	dataSourceCodeForC := C.CString(dataSourceCode)
 	defer C.free(unsafe.Pointer(dataSourceCodeForC))
@@ -1664,7 +1664,7 @@ func (client *Szengine) deleteRecordWithInfo(ctx context.Context, dataSourceCode
 	//  _DLEXPORT int G2_deleteRecordWithInfo(const char* dataSourceCode, const char* recordID, const char* loadID, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	var resultResponse string
 	entryTime := time.Now()
 	dataSourceCodeForC := C.CString(dataSourceCode)
@@ -1699,7 +1699,7 @@ func (client *Szengine) findPathByEntityId_V2(ctx context.Context, startEntityId
 	//  _DLEXPORT int G2_findPathByEntityID_V2(const long long entityID1, const long long entityID2, const int maxDegree, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	var resultResponse string
 	entryTime := time.Now()
 	result := C.G2_findPathByEntityID_V2_helper(C.longlong(startEntityId), C.longlong(endEntityId), C.longlong(maxDegrees), C.longlong(flags))
@@ -1734,7 +1734,7 @@ func (client *Szengine) findPathByRecordId_V2(ctx context.Context, startDataSour
 	//  _DLEXPORT int G2_findPathByRecordID_V2(const char* dataSourceCode1, const char* recordID1, const char* dataSourceCode2, const char* recordID2, const int maxDegree, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	var resultResponse string
 	entryTime := time.Now()
 	startDataSourceCodeForC := C.CString(startDataSourceCode)
@@ -1781,7 +1781,7 @@ func (client *Szengine) findPathExcludingByEntityId_V2(ctx context.Context, star
 	//  _DLEXPORT int G2_findPathExcludingByEntityID_V2(const long long entityID1, const long long entityID2, const int maxDegree, const char* excludedEntities, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	var resultResponse string
 	entryTime := time.Now()
 	exclusionsForC := C.CString(exclusions)
@@ -1824,7 +1824,7 @@ func (client *Szengine) findPathExcludingByRecordId_V2(ctx context.Context, star
 	//  _DLEXPORT int G2_findPathExcludingByRecordID_V2(const char* dataSourceCode1, const char* recordID1, const char* dataSourceCode2, const char* recordID2, const int maxDegree, const char* excludedRecords, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	var resultResponse string
 	entryTime := time.Now()
 	startDataSourceCodeForC := C.CString(startDataSourceCode)
@@ -1870,7 +1870,7 @@ func (client *Szengine) findPathIncludingSourceByEntityId_V2(ctx context.Context
 	//  _DLEXPORT int G2_findPathIncludingSourceByEntityID_V2(const long long entityID1, const long long entityID2, const int maxDegree, const char* excludedEntities, const char* requiredDsrcs, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	var resultResponse string
 	entryTime := time.Now()
 	exclusionsForC := C.CString(exclusions)
@@ -1912,7 +1912,7 @@ func (client *Szengine) findPathIncludingSourceByRecordId_V2(ctx context.Context
 	//  _DLEXPORT int G2_findPathIncludingSourceByRecordID_V2(const char* dataSourceCode1, const char* recordID1, const char* dataSourceCode2, const char* recordID2, const int maxDegree, const char* excludedRecords, const char* requiredDsrcs, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	var resultResponse string
 	entryTime := time.Now()
 	startDataSourceCodeForC := C.CString(startDataSourceCode)
@@ -1950,7 +1950,7 @@ func (client *Szengine) initialize(ctx context.Context, instanceName string, set
 	// _DLEXPORT int G2_init(const char *moduleName, const char *iniParams, const int verboseLogging);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	entryTime := time.Now()
 	instanceNameForC := C.CString(instanceName)
 	defer C.free(unsafe.Pointer(instanceNameForC))
@@ -1978,7 +1978,7 @@ func (client *Szengine) initializeWithConfigId(ctx context.Context, instanceName
 	//  _DLEXPORT int G2_initWithConfigID(const char *moduleName, const char *iniParams, const long long initConfigID, const int verboseLogging);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	entryTime := time.Now()
 	instanceNameForC := C.CString(instanceName)
 	defer C.free(unsafe.Pointer(instanceNameForC))
@@ -2006,7 +2006,7 @@ func (client *Szengine) processRedoRecord(ctx context.Context, redoRecord string
 	// _DLEXPORT long long G2_processRedoRecord(const char *redoRecord);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	entryTime := time.Now()
 	redoRecordForC := C.CString(redoRecord)
 	defer C.free(unsafe.Pointer(redoRecordForC))
@@ -2032,7 +2032,7 @@ func (client *Szengine) processRedoRecordWithInfo(ctx context.Context, redoRecor
 	// _DLEXPORT struct G2_processRedoRecordWithInfo_result G2_processRedoRecordWithInfo_helper(const char *jsonData);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	var resultResponse string
 	entryTime := time.Now()
 	redoRecordForC := C.CString(redoRecord)
@@ -2059,7 +2059,7 @@ func (client *Szengine) reevaluateEntity(ctx context.Context, entityId int64, fl
 	//  _DLEXPORT int G2_reevaluateEntity(const long long entityID, const long long flags);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	entryTime := time.Now()
 	result := C.G2_reevaluateEntity(C.longlong(entityId), C.longlong(flags))
 	if result != 0 {
@@ -2086,7 +2086,7 @@ func (client *Szengine) reevaluateEntityWithInfo(ctx context.Context, entityId i
 	//  _DLEXPORT int G2_reevaluateEntityWithInfo(const long long entityID, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	var resultResponse string
 	entryTime := time.Now()
 	result := C.G2_reevaluateEntityWithInfo_helper(C.longlong(entityId), C.longlong(flags))
@@ -2112,7 +2112,7 @@ func (client *Szengine) reevaluateRecord(ctx context.Context, dataSourceCode str
 	//  _DLEXPORT int G2_reevaluateRecord(const char* dataSourceCode, const char* recordID, const long long flags);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	entryTime := time.Now()
 	dataSourceCodeForC := C.CString(dataSourceCode)
 	defer C.free(unsafe.Pointer(dataSourceCodeForC))
@@ -2144,7 +2144,7 @@ func (client *Szengine) reevaluateRecordWithInfo(ctx context.Context, dataSource
 	//  _DLEXPORT int G2_reevaluateRecordWithInfo(const char* dataSourceCode, const char* recordID, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	var resultResponse string
 	entryTime := time.Now()
 	dataSourceCodeForC := C.CString(dataSourceCode)
@@ -2177,7 +2177,7 @@ func (client *Szengine) searchByAttributes_V2(ctx context.Context, attributes st
 	//  _DLEXPORT int G2_searchByAttributes_V2(const char* jsonData, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	var resultResponse string
 	entryTime := time.Now()
 	attributesForC := C.CString(attributes)
@@ -2208,7 +2208,7 @@ func (client *Szengine) searchByAttributes_V3(ctx context.Context, attributes st
 	// _DLEXPORT struct G2_searchByAttributes_V3_result G2_searchByAttributes_V3_helper(const char *jsonData, const char* profile, const long long flags);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	var resultResponse string
 	entryTime := time.Now()
 	attributesForC := C.CString(attributes)
@@ -2245,7 +2245,7 @@ func (client *Szengine) whyEntities_V2(ctx context.Context, entityId1 int64, ent
 	//  _DLEXPORT int G2_whyEntities_V2(const long long entityID1, const long long entityID2, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	var resultResponse string
 	entryTime := time.Now()
 	result := C.G2_whyEntities_V2_helper(C.longlong(entityId1), C.longlong(entityId2), C.longlong(flags))
@@ -2274,7 +2274,7 @@ Output
 func (client *Szengine) whyRecordInEntity_V2(ctx context.Context, dataSourceCode string, recordId string, flags int64) (string, error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	var resultResponse string
 	entryTime := time.Now()
 	dataSourceCodeForC := C.CString(dataSourceCode)
@@ -2310,7 +2310,7 @@ func (client *Szengine) whyRecords_V2(ctx context.Context, dataSourceCode1 strin
 	//  _DLEXPORT int G2_whyRecords_V2(const char* dataSourceCode1, const char* recordID1, const char* dataSourceCode2, const char* recordID2, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	var resultResponse string
 	entryTime := time.Now()
 	dataSource1CodeForC := C.CString(dataSourceCode1)
@@ -2338,7 +2338,7 @@ func (client *Szengine) whyRecords_V2(ctx context.Context, dataSourceCode1 strin
 
 // Get the Logger singleton.
 func (client *Szengine) getLogger() logging.LoggingInterface {
-	var err error = nil
+	var err error
 	if client.logger == nil {
 		options := []interface{}{
 			&logging.OptionCallerSkip{Value: 4},
@@ -2374,7 +2374,7 @@ func formatEntityId(entityId int64) string {
 // Create a new error.
 func (client *Szengine) newError(ctx context.Context, errorNumber int, details ...interface{}) error {
 	lastException, err := client.getLastException(ctx)
-	defer client.clearLastException(ctx)
+	defer func() { client.panicOnError(client.clearLastException(ctx)) }()
 	message := lastException
 	if err != nil {
 		message = err.Error()
@@ -2382,6 +2382,18 @@ func (client *Szengine) newError(ctx context.Context, errorNumber int, details .
 	details = append(details, errors.New(message))
 	errorMessage := client.getLogger().Json(errorNumber, details...)
 	return szerror.New(szerror.Code(message), (errorMessage))
+}
+
+/*
+The panicOnError method calls panic() when an error is not nil.
+
+Input:
+  - err: nil or an actual error
+*/
+func (client *Szengine) panicOnError(err error) {
+	if err != nil {
+		panic(err)
+	}
 }
 
 // --- G2 exception handling --------------------------------------------------
@@ -2395,7 +2407,7 @@ Input
 func (client *Szengine) clearLastException(ctx context.Context) error {
 	// _DLEXPORT void G2_clearLastException();
 	_ = ctx
-	var err error = nil
+	var err error
 	if client.isTrace {
 		entryTime := time.Now()
 		client.traceEntry(3)
@@ -2417,7 +2429,7 @@ Output
 func (client *Szengine) getLastException(ctx context.Context) (string, error) {
 	// _DLEXPORT int G2_getLastException(char *buffer, const size_t bufSize);
 	_ = ctx
-	var err error = nil
+	var err error
 	var result string
 	if client.isTrace {
 		entryTime := time.Now()
@@ -2445,7 +2457,7 @@ Output:
 func (client *Szengine) getLastExceptionCode(ctx context.Context) (int, error) {
 	//  _DLEXPORT int G2_getLastExceptionCode();
 	_ = ctx
-	var err error = nil
+	var err error
 	var result int
 	if client.isTrace {
 		entryTime := time.Now()

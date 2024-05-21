@@ -85,10 +85,33 @@ build: build-osarch-specific
 .PHONY: test
 test: test-osarch-specific
 
+# -----------------------------------------------------------------------------
+# Coverage
+# -----------------------------------------------------------------------------
+
+.PHONY: install-go-test-coverage
+install-go-test-coverage:
+	go install github.com/vladopajic/go-test-coverage/v2@latest
+
 
 .PHONY: coverage
 coverage: coverage-osarch-specific
 
+
+.PHONY: check-coverage
+check-coverage: install-go-test-coverage
+	go test ./... -coverprofile=./cover.out -covermode=atomic -coverpkg=./...
+	${GOBIN}/go-test-coverage --config=./.testcoverage.yml
+
+# -----------------------------------------------------------------------------
+# Lint
+# -----------------------------------------------------------------------------
+
+.PHONY: run-golangci-lint
+run-golangci-lint:
+	golangci-lint run --config=.github/linters/.golangci.yml
+	
+	
 # -----------------------------------------------------------------------------
 # Run
 # -----------------------------------------------------------------------------

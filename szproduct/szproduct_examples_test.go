@@ -87,7 +87,10 @@ func ExampleSzproduct_Initialize() {
 		fmt.Println(err)
 	}
 	verboseLogging := senzing.SzNoLogging
-	szProduct.Initialize(ctx, instanceName, settings, verboseLogging)
+	err = szProduct.Initialize(ctx, instanceName, settings, verboseLogging)
+	if err != nil {
+		fmt.Println(err)
+	}
 	// Output:
 }
 

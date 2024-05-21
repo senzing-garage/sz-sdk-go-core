@@ -62,7 +62,7 @@ func (client *Szdiagnostic) CheckDatastorePerformance(ctx context.Context, secon
 	// _DLEXPORT int G2Diagnostic_checkDBPerf(int secondsToRun, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize) );
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	var resultResponse string = ""
 	entryTime := time.Now()
 	if client.isTrace {
@@ -95,7 +95,7 @@ func (client *Szdiagnostic) Destroy(ctx context.Context) error {
 	//  _DLEXPORT int G2Diagnostic_destroy();
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	entryTime := time.Now()
 	if client.isTrace {
 		client.traceEntry(5)
@@ -128,7 +128,7 @@ func (client *Szdiagnostic) GetDatastoreInfo(ctx context.Context) (string, error
 	// _DLEXPORT struct G2Diagnostic_getDatastoreInfo_result G2Diagnostic_getDatastoreInfo_helper();
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	var resultResponse string
 	entryTime := time.Now()
 	if client.isTrace {
@@ -162,7 +162,7 @@ func (client *Szdiagnostic) GetFeature(ctx context.Context, featureId int64) (st
 	//  _DLEXPORT int G2Diagnostic_getFeature(const long long libFeatID);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	var resultResponse string
 	entryTime := time.Now()
 	if client.isTrace {
@@ -198,7 +198,7 @@ func (client *Szdiagnostic) PurgeRepository(ctx context.Context) error {
 	//  _DLEXPORT int G2Diagnostic_purgeRepository();
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	entryTime := time.Now()
 	if client.isTrace {
 		client.traceEntry(17)
@@ -228,7 +228,7 @@ func (client *Szdiagnostic) Reinitialize(ctx context.Context, configId int64) er
 	//  _DLEXPORT int G2Diagnostic_reinit(const long long initConfigID);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	entryTime := time.Now()
 	if client.isTrace {
 		client.traceEntry(19, configId)
@@ -278,7 +278,7 @@ Input
   - verboseLogging: A flag to enable deeper logging of the G2 processing. 0 for no Senzing logging; 1 for logging.
 */
 func (client *Szdiagnostic) Initialize(ctx context.Context, instanceName string, settings string, configId int64, verboseLogging int64) error {
-	var err error = nil
+	var err error
 	entryTime := time.Now()
 	if client.isTrace {
 		client.traceEntry(15, instanceName, settings, configId, verboseLogging)
@@ -313,7 +313,7 @@ Input
   - observer: The observer to be added.
 */
 func (client *Szdiagnostic) RegisterObserver(ctx context.Context, observer observer.Observer) error {
-	var err error = nil
+	var err error
 	if client.isTrace {
 		entryTime := time.Now()
 		client.traceEntry(703, observer.GetObserverId(ctx))
@@ -344,7 +344,7 @@ Input
 func (client *Szdiagnostic) SetLogLevel(ctx context.Context, logLevelName string) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	if client.isTrace {
 		entryTime := time.Now()
 		client.traceEntry(705, logLevelName)
@@ -385,7 +385,7 @@ Input
   - observer: The observer to be added.
 */
 func (client *Szdiagnostic) UnregisterObserver(ctx context.Context, observer observer.Observer) error {
-	var err error = nil
+	var err error
 	if client.isTrace {
 		entryTime := time.Now()
 		client.traceEntry(707, observer.GetObserverId(ctx))
@@ -416,7 +416,7 @@ func (client *Szdiagnostic) UnregisterObserver(ctx context.Context, observer obs
 
 // Get the Logger singleton.
 func (client *Szdiagnostic) getLogger() logging.LoggingInterface {
-	var err error = nil
+	var err error
 	if client.logger == nil {
 		options := []interface{}{
 			&logging.OptionCallerSkip{Value: 4},
@@ -444,7 +444,7 @@ func (client *Szdiagnostic) traceExit(errorNumber int, details ...interface{}) {
 // Create a new error.
 func (client *Szdiagnostic) newError(ctx context.Context, errorNumber int, details ...interface{}) error {
 	lastException, err := client.getLastException(ctx)
-	defer client.clearLastException(ctx)
+	defer func() { client.panicOnError(client.clearLastException(ctx)) }()
 	message := lastException
 	if err != nil {
 		message = err.Error()
@@ -452,6 +452,18 @@ func (client *Szdiagnostic) newError(ctx context.Context, errorNumber int, detai
 	details = append(details, errors.New(message))
 	errorMessage := client.getLogger().Json(errorNumber, details...)
 	return szerror.New(szerror.Code(message), (errorMessage))
+}
+
+/*
+The panicOnError method calls panic() when an error is not nil.
+
+Input:
+  - err: nil or an actual error
+*/
+func (client *Szdiagnostic) panicOnError(err error) {
+	if err != nil {
+		panic(err)
+	}
 }
 
 // --- Sz exception handling --------------------------------------------------
@@ -465,7 +477,7 @@ Input
 func (client *Szdiagnostic) clearLastException(ctx context.Context) error {
 	// _DLEXPORT void G2Diagnostic_clearLastException();
 	_ = ctx
-	var err error = nil
+	var err error
 	if client.isTrace {
 		entryTime := time.Now()
 		client.traceEntry(3)
@@ -487,7 +499,7 @@ Output
 func (client *Szdiagnostic) getLastException(ctx context.Context) (string, error) {
 	// _DLEXPORT int G2Config_getLastException(char *buffer, const size_t bufSize);
 	_ = ctx
-	var err error = nil
+	var err error
 	var result string
 	if client.isTrace {
 		entryTime := time.Now()
@@ -515,7 +527,7 @@ Output:
 func (client *Szdiagnostic) getLastExceptionCode(ctx context.Context) (int, error) {
 	//  _DLEXPORT int G2Diagnostic_getLastExceptionCode();
 	_ = ctx
-	var err error = nil
+	var err error
 	var result int
 	if client.isTrace {
 		entryTime := time.Now()
@@ -557,7 +569,7 @@ func (client *Szdiagnostic) initialize(ctx context.Context, instanceName string,
 	// _DLEXPORT int G2Diagnostic_init(const char *moduleName, const char *iniParams, const int verboseLogging);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	entryTime := time.Now()
 	instanceNameForC := C.CString(instanceName)
 	defer C.free(unsafe.Pointer(instanceNameForC))
@@ -585,7 +597,7 @@ func (client *Szdiagnostic) initializeWithConfigId(ctx context.Context, instance
 	//  _DLEXPORT int G2Diagnostic_initWithConfigID(const char *moduleName, const char *iniParams, const long long initConfigID, const int verboseLogging);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error = nil
+	var err error
 	entryTime := time.Now()
 	instanceNameForC := C.CString(instanceName)
 	defer C.free(unsafe.Pointer(instanceNameForC))

@@ -198,7 +198,7 @@ func TestSzconfigmanager_SetDefaultConfigId_badConfigId(test *testing.T) {
 // Logging and observing
 // ----------------------------------------------------------------------------
 
-func TestSzconfig_SetLogLevel_badLogLevelName(test *testing.T) {
+func TestSzconfigmanager_SetLogLevel_badLogLevelName(test *testing.T) {
 	ctx := context.TODO()
 	szConfigManager := getTestObject(ctx, test)
 	badLogLevelName := "BadLogLevelName"
@@ -366,6 +366,12 @@ func getTestObject(ctx context.Context, test *testing.T) *Szconfigmanager {
 	return getSzConfigManager(ctx)
 }
 
+func handleError(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
+
 func printActual(test *testing.T, actual interface{}) {
 	printResult(test, "Actual", actual)
 }
@@ -408,7 +414,7 @@ func TestMain(m *testing.M) {
 }
 
 func setup() error {
-	var err error = nil
+	var err error
 	logger, err = logging.NewSenzingSdkLogger(ComponentId, szconfigmanager.IDMessages)
 	if err != nil {
 		return createError(5901, err)
@@ -433,7 +439,7 @@ func setup() error {
 }
 
 func setupDatabase() error {
-	var err error = nil
+	var err error
 
 	// Locate source and target paths.
 
@@ -460,7 +466,7 @@ func setupDatabase() error {
 }
 
 func setupDirectories() error {
-	var err error = nil
+	var err error
 	testDirectoryPath := getTestDirectoryPath()
 	err = os.RemoveAll(filepath.Clean(testDirectoryPath)) // cleanup any previous test run
 	if err != nil {
@@ -489,7 +495,7 @@ func setupSenzingConfiguration() error {
 	if err != nil {
 		return createError(5902, err)
 	}
-	defer szConfig.Destroy(ctx)
+	defer func() { handleError(szConfig.Destroy(ctx)) }()
 
 	// Create an in memory Senzing configuration.
 
@@ -529,7 +535,7 @@ func setupSenzingConfiguration() error {
 	if err != nil {
 		return createError(5907, err)
 	}
-	defer szConfigManager.Destroy(ctx)
+	defer func() { handleError(szConfigManager.Destroy(ctx)) }()
 
 	configComment := fmt.Sprintf("Created by szconfigmanager_test at %s", now.UTC())
 	configId, err := szConfigManager.AddConfig(ctx, configDefinition, configComment)

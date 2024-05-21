@@ -37,8 +37,8 @@ var logger logging.LoggingInterface
 // Internal methods
 // ----------------------------------------------------------------------------
 
-func failOnError(msgId int, err error) {
-	logger.Log(msgId, err)
+func failOnError(msgID int, err error) {
+	logger.Log(msgID, err)
 	panic(err.Error())
 }
 
@@ -51,8 +51,8 @@ func getLogger(ctx context.Context) (logging.LoggingInterface, error) {
 	return logging.NewSenzingLogger("my-unique-%04d", Messages)
 }
 
-func getSettings(databaseUrl string) (string, error) {
-	configAttrMap := map[string]string{"databaseUrl": databaseUrl}
+func getSettings(databaseURL string) (string, error) {
+	configAttrMap := map[string]string{"databaseUrl": databaseURL}
 	settings, err := engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingMap(configAttrMap)
 	if err != nil {
 		return "", err
@@ -64,9 +64,15 @@ func getTestDirectoryPath() string {
 	return filepath.FromSlash("target/test/main")
 }
 
+func handleError(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
+
 func setupDatabase() (string, error) {
-	var err error = nil
-	databaseUrl, ok := os.LookupEnv("SENZING_TOOLS_DATABASE_URL")
+	var err error
+	databaseURL, ok := os.LookupEnv("SENZING_TOOLS_DATABASE_URL")
 	if !ok {
 
 		// Construct SQLite database URL.
@@ -78,7 +84,7 @@ func setupDatabase() (string, error) {
 				dbTargetPath, err)
 			return "", err
 		}
-		databaseUrl = fmt.Sprintf("sqlite3://na:na@nowhere/%s", dbTargetPath)
+		databaseURL = fmt.Sprintf("sqlite3://na:na@nowhere/%s", dbTargetPath)
 
 		// Copy template file to test directory.
 
@@ -90,11 +96,11 @@ func setupDatabase() (string, error) {
 		}
 		_, _, err = fileutil.CopyFile(databaseTemplatePath, testDirectoryPath, true) // Copy the SQLite database file.
 		if err != nil {
-			return databaseUrl, fmt.Errorf("setup failed to copy template database (%v) to target path (%v): %w",
+			return databaseURL, fmt.Errorf("setup failed to copy template database (%v) to target path (%v): %w",
 				databaseTemplatePath, testDirectoryPath, err)
 		}
 	}
-	return databaseUrl, err
+	return databaseURL, err
 }
 
 // ----------------------------------------------------------------------------
@@ -107,17 +113,17 @@ func demonstrateAddRecord(ctx context.Context, szEngine senzing.SzEngine) (strin
 	if err != nil {
 		panic(err)
 	}
-	recordId := randomNumber.String()
+	recordID := randomNumber.String()
 	jsonData := fmt.Sprintf(
 		"%s%s%s",
 		`{"SOCIAL_HANDLE": "flavorh", "DATE_OF_BIRTH": "4/8/1983", "ADDR_STATE": "LA", "ADDR_POSTAL_CODE": "71232", "SSN_NUMBER": "053-39-3251", "ENTITY_TYPE": "TEST", "GENDER": "F", "srccode": "MDMPER", "CC_ACCOUNT_NUMBER": "5534202208773608", "RECORD_ID": "`,
-		recordId,
+		recordID,
 		`", "DSRC_ACTION": "A", "ADDR_CITY": "Delhi", "DRIVERS_LICENSE_STATE": "DE", "PHONE_NUMBER": "225-671-0796", "NAME_LAST": "SEAMAN", "entityid": "284430058", "ADDR_LINE1": "772 Armstrong RD"}`)
 	var flags int64 = senzing.SzWithInfo
 
 	// Using SzEngine: Add record and return "withInfo".
 
-	return szEngine.AddRecord(ctx, dataSourceCode, recordId, jsonData, flags)
+	return szEngine.AddRecord(ctx, dataSourceCode, recordID, jsonData, flags)
 }
 
 func demonstrateConfigFunctions(ctx context.Context, szAbstractFactory senzing.SzAbstractFactory) error {
@@ -129,13 +135,13 @@ func demonstrateConfigFunctions(ctx context.Context, szAbstractFactory senzing.S
 	if err != nil {
 		return logger.NewError(5101, err)
 	}
-	defer szConfig.Destroy(ctx)
+	defer func() { handleError(szConfig.Destroy(ctx)) }()
 
 	szConfigManager, err := szAbstractFactory.CreateSzConfigManager(ctx)
 	if err != nil {
 		return logger.NewError(5102, err)
 	}
-	defer szConfigManager.Destroy(ctx)
+	defer func() { handleError(szConfigManager.Destroy(ctx)) }()
 
 	// Using SzConfig: Create a default configuration in memory.
 
@@ -163,18 +169,17 @@ func demonstrateConfigFunctions(ctx context.Context, szAbstractFactory senzing.S
 	// Using SzConfigManager: Persist configuration string to database.
 
 	configComment := fmt.Sprintf("Created by main.go at %s", now.UTC())
-	configId, err := szConfigManager.AddConfig(ctx, configStr, configComment)
+	configID, err := szConfigManager.AddConfig(ctx, configStr, configComment)
 	if err != nil {
 		return logger.NewError(5106, err)
 	}
 
 	// Using SzConfigManager: Set new configuration as the default.
 
-	err = szConfigManager.SetDefaultConfigId(ctx, configId)
+	err = szConfigManager.SetDefaultConfigId(ctx, configID)
 	if err != nil {
 		return logger.NewError(5107, err)
 	}
-
 	return err
 }
 
@@ -186,19 +191,19 @@ func demonstrateSenzingFunctions(ctx context.Context, szAbstractFactory senzing.
 	if err != nil {
 		return logger.NewError(9999, err)
 	}
-	defer szDiagnostic.Destroy(ctx)
+	defer func() { handleError(szDiagnostic.Destroy(ctx)) }()
 
 	szEngine, err := szAbstractFactory.CreateSzEngine(ctx)
 	if err != nil {
 		return logger.NewError(9999, err)
 	}
-	defer szEngine.Destroy(ctx)
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	szProduct, err := szAbstractFactory.CreateSzProduct(ctx)
 	if err != nil {
 		return logger.NewError(9999, err)
 	}
-	defer szProduct.Destroy(ctx)
+	defer func() { handleError(szProduct.Destroy(ctx)) }()
 
 	// Clean the repository.
 
@@ -238,7 +243,7 @@ func demonstrateSenzingFunctions(ctx context.Context, szAbstractFactory senzing.
 // ----------------------------------------------------------------------------
 
 func main() {
-	var err error = nil
+	var err error
 	ctx := context.TODO()
 
 	// Create a directory for temporary files.
@@ -256,7 +261,7 @@ func main() {
 
 	// Setup dependencies.
 
-	databaseUrl, err := setupDatabase()
+	databaseURL, err := setupDatabase()
 	if err != nil {
 		failOnError(5003, err)
 	}
@@ -269,12 +274,12 @@ func main() {
 
 	// Create a SzAbstractFactory.
 
-	settings, err := getSettings(databaseUrl)
+	settings, err := getSettings(databaseURL)
 	if err != nil {
 		failOnError(5005, err)
 	}
 	szAbstractFactory := &szabstractfactory.Szabstractfactory{
-		ConfigId:       senzing.SzInitializeWithDefaultConfiguration,
+		ConfigID:       senzing.SzInitializeWithDefaultConfiguration,
 		InstanceName:   "Example instance",
 		Settings:       settings,
 		VerboseLogging: senzing.SzNoLogging,

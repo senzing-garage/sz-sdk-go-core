@@ -36,7 +36,7 @@ func TestSzAbstractFactory_CreateSzConfig(test *testing.T) {
 	szAbstractFactory := getTestObject(ctx, test)
 	szConfig, err := szAbstractFactory.CreateSzConfig(ctx)
 	testError(test, ctx, szAbstractFactory, err)
-	defer szConfig.Destroy(ctx)
+	defer func() { handleError(szConfig.Destroy(ctx)) }()
 	configHandle, err := szConfig.CreateConfig(ctx)
 	testError(test, ctx, szAbstractFactory, err)
 	dataSources, err := szConfig.GetDataSources(ctx, configHandle)
@@ -49,7 +49,7 @@ func TestSzAbstractFactory_CreateSzConfigManager(test *testing.T) {
 	szAbstractFactory := getTestObject(ctx, test)
 	szConfigManager, err := szAbstractFactory.CreateSzConfigManager(ctx)
 	testError(test, ctx, szAbstractFactory, err)
-	defer szConfigManager.Destroy(ctx)
+	defer func() { handleError(szConfigManager.Destroy(ctx)) }()
 	configList, err := szConfigManager.GetConfigs(ctx)
 	testError(test, ctx, szAbstractFactory, err)
 	printActual(test, configList)
@@ -60,7 +60,7 @@ func TestSzAbstractFactory_CreateSzDiagnostic(test *testing.T) {
 	szAbstractFactory := getTestObject(ctx, test)
 	szDiagnostic, err := szAbstractFactory.CreateSzDiagnostic(ctx)
 	testError(test, ctx, szAbstractFactory, err)
-	defer szDiagnostic.Destroy(ctx)
+	defer func() { handleError(szDiagnostic.Destroy(ctx)) }()
 	result, err := szDiagnostic.CheckDatastorePerformance(ctx, 1)
 	testError(test, ctx, szAbstractFactory, err)
 	printActual(test, result)
@@ -71,7 +71,7 @@ func TestSzAbstractFactory_CreateSzEngine(test *testing.T) {
 	szAbstractFactory := getTestObject(ctx, test)
 	szEngine, err := szAbstractFactory.CreateSzEngine(ctx)
 	testError(test, ctx, szAbstractFactory, err)
-	defer szEngine.Destroy(ctx)
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 	stats, err := szEngine.GetStats(ctx)
 	testError(test, ctx, szAbstractFactory, err)
 	printActual(test, stats)
@@ -82,7 +82,7 @@ func TestSzAbstractFactory_CreateSzProduct(test *testing.T) {
 	szAbstractFactory := getTestObject(ctx, test)
 	szProduct, err := szAbstractFactory.CreateSzProduct(ctx)
 	testError(test, ctx, szAbstractFactory, err)
-	defer szProduct.Destroy(ctx)
+	defer func() { handleError(szProduct.Destroy(ctx)) }()
 	version, err := szProduct.GetVersion(ctx)
 	testError(test, ctx, szAbstractFactory, err)
 	printActual(test, version)
@@ -132,7 +132,7 @@ func getSzAbstractFactory(ctx context.Context) senzing.SzAbstractFactory {
 		return nil
 	}
 	result := &Szabstractfactory{
-		ConfigId:       senzing.SzInitializeWithDefaultConfiguration,
+		ConfigID:       senzing.SzInitializeWithDefaultConfiguration,
 		InstanceName:   instanceName,
 		Settings:       settings,
 		VerboseLogging: verboseLogging,
@@ -147,6 +147,12 @@ func getTestObject(ctx context.Context, test *testing.T) senzing.SzAbstractFacto
 
 func getTestDirectoryPath() string {
 	return filepath.FromSlash("../target/test/szconfig")
+}
+
+func handleError(err error) {
+	if err != nil {
+		panic(err)
+	}
 }
 
 func printActual(test *testing.T, actual interface{}) {
@@ -191,7 +197,7 @@ func TestMain(m *testing.M) {
 }
 
 func setup() error {
-	var err error = nil
+	var err error
 	logger, err = logging.NewSenzingSdkLogger(ComponentId, szconfig.IDMessages)
 	if err != nil {
 		return createError(5901, err)
@@ -208,7 +214,7 @@ func setup() error {
 }
 
 func setupDatabase() error {
-	var err error = nil
+	var err error
 
 	// Locate source and target paths.
 
@@ -235,7 +241,7 @@ func setupDatabase() error {
 }
 
 func setupDirectories() error {
-	var err error = nil
+	var err error
 	testDirectoryPath := getTestDirectoryPath()
 	err = os.RemoveAll(filepath.Clean(testDirectoryPath)) // cleanup any previous test run
 	if err != nil {

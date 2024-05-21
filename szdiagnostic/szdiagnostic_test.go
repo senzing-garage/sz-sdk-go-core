@@ -71,7 +71,7 @@ func TestSzdiagnostic_GetFeature(test *testing.T) {
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
-	defer deleteRecords(ctx, records)
+	defer func() { handleError(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	assert.NoError(test, err)
 	szDiagnostic := getTestObject(ctx, test)
@@ -181,7 +181,7 @@ func TestSzdiagnostic_Destroy_withObserver(test *testing.T) {
 // ----------------------------------------------------------------------------
 
 func addRecords(ctx context.Context, records []record.Record) error {
-	var err error = nil
+	var err error
 	szEngine := getSzEngine(ctx)
 	flags := senzing.SzWithoutInfo
 	for _, record := range records {
@@ -199,7 +199,7 @@ func createError(errorId int, err error) error {
 }
 
 func deleteRecords(ctx context.Context, records []record.Record) error {
-	var err error = nil
+	var err error
 	szEngine := getSzEngine(ctx)
 	flags := senzing.SzWithoutInfo
 	for _, record := range records {
@@ -301,6 +301,12 @@ func getTestObject(ctx context.Context, test *testing.T) *Szdiagnostic {
 	return getSzDiagnostic(ctx)
 }
 
+func handleError(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
+
 func printActual(test *testing.T, actual interface{}) {
 	printResult(test, "Actual", actual)
 }
@@ -343,7 +349,7 @@ func TestMain(m *testing.M) {
 }
 
 func setup() error {
-	var err error = nil
+	var err error
 	logger, err = logging.NewSenzingSdkLogger(ComponentId, szdiagnostic.IDMessages)
 	if err != nil {
 		return createError(5901, err)
@@ -368,7 +374,7 @@ func setup() error {
 }
 
 func setupDatabase() error {
-	var err error = nil
+	var err error
 
 	// Locate source and target paths.
 
@@ -395,7 +401,7 @@ func setupDatabase() error {
 }
 
 func setupDirectories() error {
-	var err error = nil
+	var err error
 	testDirectoryPath := getTestDirectoryPath()
 	err = os.RemoveAll(filepath.Clean(testDirectoryPath)) // cleanup any previous test run
 	if err != nil {
@@ -424,7 +430,7 @@ func setupSenzingConfiguration() error {
 	if err != nil {
 		return createError(5902, err)
 	}
-	defer szConfig.Destroy(ctx)
+	defer func() { handleError(szConfig.Destroy(ctx)) }()
 
 	// Create an in memory Senzing configuration.
 
@@ -464,7 +470,7 @@ func setupSenzingConfiguration() error {
 	if err != nil {
 		return createError(5907, err)
 	}
-	defer szConfigManager.Destroy(ctx)
+	defer func() { handleError(szConfigManager.Destroy(ctx)) }()
 
 	configComment := fmt.Sprintf("Created by szdiagnostic_test at %s", now.UTC())
 	configId, err := szConfigManager.AddConfig(ctx, configDefinition, configComment)
