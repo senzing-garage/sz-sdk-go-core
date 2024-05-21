@@ -128,9 +128,9 @@ func TestSzproduct_Initialize(test *testing.T) {
 // Internal functions
 // ----------------------------------------------------------------------------
 
-func createError(errorId int, err error) error {
+func createError(errorID int, err error) error {
 	// return errors.Cast(logger.NewError(errorId, err), err)
-	return logger.NewError(errorId, err)
+	return logger.NewError(errorID, err)
 }
 
 func getDatabaseTemplatePath() string {
@@ -257,7 +257,7 @@ func TestMain(m *testing.M) {
 
 func setup() error {
 	var err error
-	logger, err = logging.NewSenzingSdkLogger(ComponentId, szproduct.IDMessages)
+	logger, err = logging.NewSenzingSdkLogger(ComponentID, szproduct.IDMessages)
 	if err != nil {
 		return createError(5901, err)
 	}

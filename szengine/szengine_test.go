@@ -132,6 +132,7 @@ func TestSzengine_AddRecord_withInfo(test *testing.T) {
 }
 
 func TestSzengine_CloseExport(test *testing.T) {
+	_ = test
 	// Tested in:
 	//  - TestSzengine_ExportCsvEntityReport
 	//  - TestSzengine_ExportJsonEntityReport
@@ -804,10 +805,12 @@ func TestSzengine_SearchByAttributes_withSearchProfile(test *testing.T) {
 }
 
 func TestSzengine_StreamExportCsvEntityReport(test *testing.T) {
+	_ = test
 	// TODO: Write TestSzengine_StreamExportCsvEntityReport
 }
 
 func TestSzengine_StreamExportJsonEntityReport(test *testing.T) {
+	_ = test
 	// TODO: Write TestSzengine_StreamExportJsonEntityReport
 }
 
@@ -1078,7 +1081,11 @@ func getSzEngine(ctx context.Context) *Szengine {
 				fmt.Printf("RegisterObserver() Error: %v\n", err)
 				return nil
 			}
-			szEngineSingleton.SetLogLevel(ctx, logLevel) // Duplicated for coverage testing
+			err = szEngineSingleton.SetLogLevel(ctx, logLevel) // Duplicated for coverage testing
+			if err != nil {
+				fmt.Printf("SetLogLevel() - 2 Error: %v\n", err)
+				return nil
+			}
 		}
 		err = szEngineSingleton.Initialize(ctx, instanceName, settings, getDefaultConfigId(), verboseLogging)
 		if err != nil {

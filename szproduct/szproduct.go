@@ -69,7 +69,7 @@ func (client *Szproduct) Destroy(ctx context.Context) error {
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8001, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8001, err, details)
 		}()
 	}
 	return err
@@ -101,7 +101,7 @@ func (client *Szproduct) GetLicense(ctx context.Context) (string, error) {
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8002, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8002, err, details)
 		}()
 	}
 	return resultResponse, err
@@ -133,7 +133,7 @@ func (client *Szproduct) GetVersion(ctx context.Context) (string, error) {
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8003, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8003, err, details)
 		}()
 	}
 	return resultResponse, err
@@ -153,6 +153,7 @@ Output
   - The value sent in the Observer's "origin" key/value pair.
 */
 func (client *Szproduct) GetObserverOrigin(ctx context.Context) string {
+	_ = ctx
 	return client.observerOrigin
 }
 
@@ -191,7 +192,7 @@ func (client *Szproduct) Initialize(ctx context.Context, instanceName string, se
 				"settings":       settings,
 				"verboseLogging": strconv.FormatInt(verboseLogging, 10),
 			}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8004, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8004, err, details)
 		}()
 	}
 	return err
@@ -220,7 +221,7 @@ func (client *Szproduct) RegisterObserver(ctx context.Context, observer observer
 			details := map[string]string{
 				"observerId": observer.GetObserverId(ctx),
 			}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8702, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8702, err, details)
 		}()
 	}
 	return err
@@ -252,7 +253,7 @@ func (client *Szproduct) SetLogLevel(ctx context.Context, logLevelName string) e
 			details := map[string]string{
 				"logLevelName": logLevelName,
 			}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8703, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8703, err, details)
 		}()
 	}
 	return err
@@ -266,6 +267,7 @@ Input
   - origin: The value sent in the Observer's "origin" key/value pair.
 */
 func (client *Szproduct) SetObserverOrigin(ctx context.Context, origin string) {
+	_ = ctx
 	client.observerOrigin = origin
 }
 
@@ -291,7 +293,7 @@ func (client *Szproduct) UnregisterObserver(ctx context.Context, observer observ
 		details := map[string]string{
 			"observerId": observer.GetObserverId(ctx),
 		}
-		notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentId, 8704, err, details)
+		notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8704, err, details)
 		err = client.observers.UnregisterObserver(ctx, observer)
 		if !client.observers.HasObservers(ctx) {
 			client.observers = nil
@@ -313,7 +315,7 @@ func (client *Szproduct) getLogger() logging.LoggingInterface {
 		options := []interface{}{
 			&logging.OptionCallerSkip{Value: 4},
 		}
-		client.logger, err = logging.NewSenzingSdkLogger(ComponentId, szproductapi.IDMessages, options...)
+		client.logger, err = logging.NewSenzingSdkLogger(ComponentID, szproductapi.IDMessages, options...)
 		if err != nil {
 			panic(err)
 		}

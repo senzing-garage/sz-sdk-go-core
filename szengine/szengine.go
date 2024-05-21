@@ -286,7 +286,10 @@ func (client *Szengine) ExportCsvEntityReportIterator(ctx context.Context, csvCo
 			return
 		}
 		defer func() {
-			client.CloseExport(ctx, reportHandle)
+			err = client.CloseExport(ctx, reportHandle)
+			if err != nil {
+				panic(err) // TODO:  Something better than panic(err)?
+			}
 		}()
 	forLoop:
 		for {
@@ -393,7 +396,10 @@ func (client *Szengine) ExportJsonEntityReportIterator(ctx context.Context, flag
 			return
 		}
 		defer func() {
-			client.CloseExport(ctx, reportHandle)
+			err = client.CloseExport(ctx, reportHandle)
+			if err != nil {
+				panic(err) // TODO:  Something better than panic(err)?
+			}
 		}()
 	forLoop:
 		for {
@@ -682,11 +688,12 @@ func (client *Szengine) FindPathByEntityId(ctx context.Context, startEntityId in
 			client.traceExit(32, startEntityId, endEntityId, maxDegrees, exclusions, requiredDataSources, flags, result, err, time.Since(entryTime))
 		}()
 	}
-	if len(requiredDataSources) > 0 {
+	switch {
+	case len(requiredDataSources) > 0:
 		result, err = client.findPathIncludingSourceByEntityId_V2(ctx, startEntityId, endEntityId, maxDegrees, exclusions, requiredDataSources, flags)
-	} else if len(exclusions) > 0 {
+	case len(exclusions) > 0:
 		result, err = client.findPathExcludingByEntityId_V2(ctx, startEntityId, endEntityId, maxDegrees, exclusions, flags)
-	} else {
+	default:
 		result, err = client.findPathByEntityId_V2(ctx, startEntityId, endEntityId, maxDegrees, flags)
 	}
 	if client.observers != nil {
@@ -732,11 +739,12 @@ func (client *Szengine) FindPathByRecordId(ctx context.Context, startDataSourceC
 			client.traceExit(34, startDataSourceCode, startRecordId, endDataSourceCode, endRecordId, maxDegrees, exclusions, requiredDataSources, flags, result, err, time.Since(entryTime))
 		}()
 	}
-	if len(requiredDataSources) > 0 {
+	switch {
+	case len(requiredDataSources) > 0:
 		result, err = client.findPathIncludingSourceByRecordId_V2(ctx, startDataSourceCode, startRecordId, endDataSourceCode, endRecordId, maxDegrees, exclusions, requiredDataSources, flags)
-	} else if len(exclusions) > 0 {
+	case len(exclusions) > 0:
 		result, err = client.findPathExcludingByRecordId_V2(ctx, startDataSourceCode, startRecordId, endDataSourceCode, endRecordId, maxDegrees, exclusions, flags)
-	} else {
+	default:
 		result, err = client.findPathByRecordId_V2(ctx, startDataSourceCode, startRecordId, endDataSourceCode, endRecordId, maxDegrees, flags)
 	}
 	if client.observers != nil {
