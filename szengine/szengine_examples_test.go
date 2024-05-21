@@ -427,9 +427,9 @@ func ExampleSzengine_GetEntityByRecordId() {
 	ctx := context.TODO()
 	szEngine := getSzEngine(ctx)
 	dataSourceCode := "CUSTOMERS"
-	recordId := "1001"
+	recordID := "1001"
 	flags := senzing.SzNoFlags
-	result, err := szEngine.GetEntityByRecordId(ctx, dataSourceCode, recordId, flags)
+	result, err := szEngine.GetEntityByRecordId(ctx, dataSourceCode, recordID, flags)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -442,9 +442,9 @@ func ExampleSzengine_GetRecord() {
 	ctx := context.TODO()
 	szEngine := getSzEngine(ctx)
 	dataSourceCode := "CUSTOMERS"
-	recordId := "1001"
+	recordID := "1001"
 	flags := senzing.SzNoFlags
-	result, err := szEngine.GetRecord(ctx, dataSourceCode, recordId, flags)
+	result, err := szEngine.GetRecord(ctx, dataSourceCode, recordID, flags)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -569,9 +569,9 @@ func ExampleSzengine_ReevaluateEntity_withInfo() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
 	szEngine := getSzEngine(ctx)
-	entityId := getEntityIdForRecord("CUSTOMERS", "1001")
+	entityID := getEntityIdForRecord("CUSTOMERS", "1001")
 	flags := senzing.SzWithInfo
-	result, err := szEngine.ReevaluateEntity(ctx, entityId, flags)
+	result, err := szEngine.ReevaluateEntity(ctx, entityID, flags)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -584,9 +584,9 @@ func ExampleSzengine_ReevaluateRecord() {
 	ctx := context.TODO()
 	szEngine := getSzEngine(ctx)
 	dataSourceCode := "CUSTOMERS"
-	recordId := "1001"
+	recordID := "1001"
 	flags := senzing.SzWithoutInfo
-	result, err := szEngine.ReevaluateRecord(ctx, dataSourceCode, recordId, flags)
+	result, err := szEngine.ReevaluateRecord(ctx, dataSourceCode, recordID, flags)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -599,9 +599,9 @@ func ExampleSzengine_ReevaluateRecord_withInfo() {
 	ctx := context.TODO()
 	szEngine := getSzEngine(ctx)
 	dataSourceCode := "CUSTOMERS"
-	recordId := "1001"
+	recordID := "1001"
 	flags := senzing.SzWithInfo
-	result, err := szEngine.ReevaluateRecord(ctx, dataSourceCode, recordId, flags)
+	result, err := szEngine.ReevaluateRecord(ctx, dataSourceCode, recordID, flags)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -632,10 +632,10 @@ func ExampleSzengine_WhyEntities() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
 	szEngine := getSzEngine(ctx)
-	entityId1 := getEntityId(truthset.CustomerRecords["1001"])
-	entityId2 := getEntityId(truthset.CustomerRecords["1002"])
+	entityID1 := getEntityId(truthset.CustomerRecords["1001"])
+	entityID2 := getEntityId(truthset.CustomerRecords["1002"])
 	flags := senzing.SzNoFlags
-	result, err := szEngine.WhyEntities(ctx, entityId1, entityId2, flags)
+	result, err := szEngine.WhyEntities(ctx, entityID1, entityID2, flags)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -648,9 +648,9 @@ func ExampleSzengine_WhyRecordInEntity() {
 	ctx := context.TODO()
 	szEngine := getSzEngine(ctx)
 	dataSourceCode := "CUSTOMERS"
-	recordId := "1001"
+	recordID := "1001"
 	flags := senzing.SzNoFlags
-	result, err := szEngine.WhyRecordInEntity(ctx, dataSourceCode, recordId, flags)
+	result, err := szEngine.WhyRecordInEntity(ctx, dataSourceCode, recordID, flags)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -663,11 +663,11 @@ func ExampleSzengine_WhyRecords() {
 	ctx := context.TODO()
 	szEngine := getSzEngine(ctx)
 	dataSourceCode1 := "CUSTOMERS"
-	recordId1 := "1001"
+	recordID1 := "1001"
 	dataSourceCode2 := "CUSTOMERS"
-	recordId2 := "1002"
+	recordID2 := "1002"
 	flags := senzing.SzNoFlags
-	result, err := szEngine.WhyRecords(ctx, dataSourceCode1, recordId1, dataSourceCode2, recordId2, flags)
+	result, err := szEngine.WhyRecords(ctx, dataSourceCode1, recordID1, dataSourceCode2, recordID2, flags)
 	if err != nil {
 		fmt.Println(err)
 	}

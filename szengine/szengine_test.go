@@ -207,7 +207,7 @@ func TestSzengine_ExportCsvEntityReport(test *testing.T) {
 	actualCount := 0
 	for actual := range szEngine.ExportCsvEntityReportIterator(ctx, csvColumnList, flags) {
 		assert.Equal(test, expected[actualCount], strings.TrimSpace(actual.Value))
-		actualCount += 1
+		actualCount++
 	}
 	assert.Equal(test, len(expected), actualCount)
 }
@@ -235,7 +235,7 @@ func TestSzengine_ExportCsvEntityReportIterator(test *testing.T) {
 	for actual := range szEngine.ExportCsvEntityReportIterator(ctx, csvColumnList, flags) {
 		assert.NoError(test, actual.Error)
 		assert.Equal(test, expected[actualCount], strings.TrimSpace(actual.Value))
-		actualCount += 1
+		actualCount++
 	}
 	assert.Equal(test, len(expected), actualCount)
 }
@@ -299,7 +299,7 @@ func TestSzengine_ExportJsonEntityReportIterator(test *testing.T) {
 	for actual := range szEngine.ExportJsonEntityReportIterator(ctx, flags) {
 		assert.NoError(test, actual.Error)
 		printActual(test, actual.Value)
-		actualCount += 1
+		actualCount++
 	}
 	assert.Equal(test, expected, actualCount)
 }
@@ -1013,7 +1013,7 @@ func getEntityId(record record.Record) int64 {
 
 func getEntityIdForRecord(datasource string, id string) int64 {
 	ctx := context.TODO()
-	var result int64 = 0
+	var result int64
 	szEngine := getSzEngine(ctx)
 	response, err := szEngine.GetEntityByRecordId(ctx, datasource, id, senzing.SzWithoutInfo)
 	if err != nil {

@@ -278,7 +278,11 @@ func getSzEngine(ctx context.Context) *szengine.Szengine {
 		if logLevel == "TRACE" {
 			szEngineSingleton.SetObserverOrigin(ctx, observerOrigin)
 			szEngineSingleton.RegisterObserver(ctx, observerSingleton)
-			szEngineSingleton.SetLogLevel(ctx, logLevel) // Duplicated for coverage testing
+			err = szEngineSingleton.SetLogLevel(ctx, logLevel) // Duplicated for coverage testing
+			if err != nil {
+				fmt.Println(err)
+				return nil
+			}
 		}
 		err = szEngineSingleton.Initialize(ctx, instanceName, settings, getDefaultConfigId(), verboseLogging)
 		if err != nil {
@@ -500,7 +504,10 @@ func teardownSzDiagnostic(ctx context.Context) error {
 		return err
 	}
 	szDiagnosticSingleton = nil
-	szEngineSingleton.UnregisterObserver(ctx, observerSingleton)
+	err = szEngineSingleton.UnregisterObserver(ctx, observerSingleton)
+	if err != nil {
+		return err
+	}
 	err = szEngineSingleton.Destroy(ctx)
 	if err != nil {
 		return err
