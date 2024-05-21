@@ -8,19 +8,19 @@ import (
 	"github.com/senzing-garage/sz-sdk-go-core/szdiagnostic"
 	"github.com/senzing-garage/sz-sdk-go-core/szengine"
 	"github.com/senzing-garage/sz-sdk-go-core/szproduct"
-	"github.com/senzing-garage/sz-sdk-go/sz"
+	"github.com/senzing-garage/sz-sdk-go/senzing"
 )
 
-// Szabstractfactory is an implementation of the sz.SzAbstractFactory interface.
+// Szabstractfactory is an implementation of the senzing.SzAbstractFactory interface.
 type Szabstractfactory struct {
-	ConfigId       int64
+	ConfigID       int64
 	InstanceName   string
 	Settings       string
 	VerboseLogging int64
 }
 
 // ----------------------------------------------------------------------------
-// sz.SzAbstractFactory interface methods
+// senzing.SzAbstractFactory interface methods
 // ----------------------------------------------------------------------------
 
 /*
@@ -31,10 +31,10 @@ Input
   - ctx: A context to control lifecycle.
 
 Output
-  - An sz.SzConfig object.
+  - An senzing.SzConfig object.
     See the example output.
 */
-func (factory *Szabstractfactory) CreateSzConfig(ctx context.Context) (sz.SzConfig, error) {
+func (factory *Szabstractfactory) CreateSzConfig(ctx context.Context) (senzing.SzConfig, error) {
 	result := &szconfig.Szconfig{}
 	err := result.Initialize(ctx, factory.InstanceName, factory.Settings, factory.VerboseLogging)
 	return result, err
@@ -48,10 +48,10 @@ Input
   - ctx: A context to control lifecycle.
 
 Output
-  - An sz.CreateConfigManager object.
+  - An senzing.CreateConfigManager object.
     See the example output.
 */
-func (factory *Szabstractfactory) CreateSzConfigManager(ctx context.Context) (sz.SzConfigManager, error) {
+func (factory *Szabstractfactory) CreateSzConfigManager(ctx context.Context) (senzing.SzConfigManager, error) {
 	result := &szconfigmanager.Szconfigmanager{}
 	err := result.Initialize(ctx, factory.InstanceName, factory.Settings, factory.VerboseLogging)
 	return result, err
@@ -65,12 +65,12 @@ Input
   - ctx: A context to control lifecycle.
 
 Output
-  - An sz.SzDiagnostic object.
+  - An senzing.SzDiagnostic object.
     See the example output.
 */
-func (factory *Szabstractfactory) CreateSzDiagnostic(ctx context.Context) (sz.SzDiagnostic, error) {
+func (factory *Szabstractfactory) CreateSzDiagnostic(ctx context.Context) (senzing.SzDiagnostic, error) {
 	result := &szdiagnostic.Szdiagnostic{}
-	err := result.Initialize(ctx, factory.InstanceName, factory.Settings, factory.ConfigId, factory.VerboseLogging)
+	err := result.Initialize(ctx, factory.InstanceName, factory.Settings, factory.ConfigID, factory.VerboseLogging)
 	return result, err
 }
 
@@ -82,12 +82,12 @@ Input
   - ctx: A context to control lifecycle.
 
 Output
-  - An sz.SzEngine object.
+  - An senzing.SzEngine object.
     See the example output.
 */
-func (factory *Szabstractfactory) CreateSzEngine(ctx context.Context) (sz.SzEngine, error) {
+func (factory *Szabstractfactory) CreateSzEngine(ctx context.Context) (senzing.SzEngine, error) {
 	result := &szengine.Szengine{}
-	err := result.Initialize(ctx, factory.InstanceName, factory.Settings, factory.ConfigId, factory.VerboseLogging)
+	err := result.Initialize(ctx, factory.InstanceName, factory.Settings, factory.ConfigID, factory.VerboseLogging)
 	return result, err
 }
 
@@ -99,10 +99,10 @@ Input
   - ctx: A context to control lifecycle.
 
 Output
-  - An sz.SzProduct object.
+  - An senzing.SzProduct object.
     See the example output.
 */
-func (factory *Szabstractfactory) CreateSzProduct(ctx context.Context) (sz.SzProduct, error) {
+func (factory *Szabstractfactory) CreateSzProduct(ctx context.Context) (senzing.SzProduct, error) {
 	result := &szproduct.Szproduct{}
 	err := result.Initialize(ctx, factory.InstanceName, factory.Settings, factory.VerboseLogging)
 	return result, err

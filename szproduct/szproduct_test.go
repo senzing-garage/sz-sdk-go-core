@@ -2,6 +2,7 @@ package szproduct
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -11,22 +12,30 @@ import (
 	"github.com/senzing-garage/go-helpers/engineconfigurationjson"
 	"github.com/senzing-garage/go-helpers/fileutil"
 	"github.com/senzing-garage/go-logging/logging"
-	"github.com/senzing-garage/sz-sdk-go/sz"
-	"github.com/senzing-garage/sz-sdk-go/szengine"
+	"github.com/senzing-garage/go-observing/observer"
+	"github.com/senzing-garage/sz-sdk-go/senzing"
 	"github.com/senzing-garage/sz-sdk-go/szerror"
+	"github.com/senzing-garage/sz-sdk-go/szproduct"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 const (
 	defaultTruncation = 76
-	instanceName      = "Product Test"
+	instanceName      = "SzProduct Test"
+	observerOrigin    = "SzProduct observer"
 	printResults      = false
-	verboseLogging    = sz.SZ_NO_LOGGING
+	verboseLogging    = senzing.SzNoLogging
 )
 
 var (
+	logger            logging.LoggingInterface
+	logLevel          = "INFO"
+	observerSingleton = &observer.ObserverNull{
+		Id:       "Observer 1",
+		IsSilent: true,
+	}
 	szProductSingleton *Szproduct
-	logger             logging.LoggingInterface
 )
 
 // ----------------------------------------------------------------------------
@@ -37,7 +46,7 @@ func TestSzproduct_GetLicense(test *testing.T) {
 	ctx := context.TODO()
 	szProduct := getTestObject(ctx, test)
 	actual, err := szProduct.GetLicense(ctx)
-	testError(test, err)
+	require.NoError(test, err)
 	printActual(test, actual)
 }
 
@@ -45,7 +54,7 @@ func TestSzproduct_GetVersion(test *testing.T) {
 	ctx := context.TODO()
 	szProduct := getTestObject(ctx, test)
 	actual, err := szProduct.GetVersion(ctx)
-	testError(test, err)
+	require.NoError(test, err)
 	printActual(test, actual)
 }
 
@@ -69,6 +78,13 @@ func TestSzproduct_GetObserverOrigin(test *testing.T) {
 	assert.Equal(test, origin, actual)
 }
 
+func TestSzproduct_UnregisterObserver(test *testing.T) {
+	ctx := context.TODO()
+	szProduct := getTestObject(ctx, test)
+	err := szProduct.UnregisterObserver(ctx, observerSingleton)
+	require.NoError(test, err)
+}
+
 // ----------------------------------------------------------------------------
 // Object creation / destruction
 // ----------------------------------------------------------------------------
@@ -77,7 +93,7 @@ func TestSzproduct_AsInterface(test *testing.T) {
 	ctx := context.TODO()
 	szProduct := getSzProductAsInterface(ctx)
 	actual, err := szProduct.GetLicense(ctx)
-	testError(test, err)
+	require.NoError(test, err)
 	printActual(test, actual)
 }
 
@@ -86,10 +102,10 @@ func TestSzproduct_Initialize(test *testing.T) {
 	szProduct := &Szproduct{}
 	instanceName := "Test name"
 	settings, err := getSettings()
-	testError(test, err)
-	verboseLogging := sz.SZ_NO_LOGGING
+	require.NoError(test, err)
+	verboseLogging := senzing.SzNoLogging
 	err = szProduct.Initialize(ctx, instanceName, settings, verboseLogging)
-	testError(test, err)
+	require.NoError(test, err)
 }
 
 // TODO: Uncomment after bug introduced in Senzing 4.0.0.24131 is fixed.
@@ -97,15 +113,25 @@ func TestSzproduct_Initialize(test *testing.T) {
 // 	ctx := context.TODO()
 // 	szProduct := getTestObject(ctx, test)
 // 	err := szProduct.Destroy(ctx)
-// 	testError(test, err)
+// 	require.NoError(test, err)
+// }
+
+// TODO: Uncomment after bug introduced in Senzing 4.0.0.24131 is fixed.
+// func TestSzconfig_Destroy_withObserver(test *testing.T) {
+// 	ctx := context.TODO()
+// 	szProductSingleton = nil
+// 	szProduct := getTestObject(ctx, test)
+// 	err := szProduct.Destroy(ctx)
+// 	require.NoError(test, err)
 // }
 
 // ----------------------------------------------------------------------------
 // Internal functions
 // ----------------------------------------------------------------------------
 
-func createError(errorId int, err error) error {
-	return szerror.Cast(logger.NewError(errorId, err), err)
+func createError(errorID int, err error) error {
+	// return errors.Cast(logger.NewError(errorId, err), err)
+	return logger.NewError(errorID, err)
 }
 
 func getDatabaseTemplatePath() string {
@@ -123,11 +149,11 @@ func getSettings() (string, error) {
 			dbTargetPath, err)
 		return "", err
 	}
-	databaseUrl := fmt.Sprintf("sqlite3://na:na@nowhere/%s", dbTargetPath)
+	databaseURL := fmt.Sprintf("sqlite3://na:na@nowhere/%s", dbTargetPath)
 
 	// Create Senzing engine configuration JSON.
 
-	configAttrMap := map[string]string{"databaseUrl": databaseUrl}
+	configAttrMap := map[string]string{"databaseUrl": databaseURL}
 	settings, err := engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingMap(configAttrMap)
 	if err != nil {
 		err = createError(5900, err)
@@ -144,6 +170,24 @@ func getSzProduct(ctx context.Context) *Szproduct {
 			return nil
 		}
 		szProductSingleton = &Szproduct{}
+		err = szProductSingleton.SetLogLevel(ctx, logLevel)
+		if err != nil {
+			fmt.Printf("SetLogLevel() Error: %v\n", err)
+			return nil
+		}
+		if logLevel == "TRACE" {
+			szProductSingleton.SetObserverOrigin(ctx, observerOrigin)
+			err = szProductSingleton.RegisterObserver(ctx, observerSingleton)
+			if err != nil {
+				fmt.Printf("RegisterObserver() Error: %v\n", err)
+				return nil
+			}
+			err = szProductSingleton.SetLogLevel(ctx, logLevel) // Duplicated for coverage testing
+			if err != nil {
+				fmt.Printf("SetLogLevel()-2 Error: %v\n", err)
+				return nil
+			}
+		}
 		err = szProductSingleton.Initialize(ctx, instanceName, settings, verboseLogging)
 		if err != nil {
 			fmt.Println(err)
@@ -152,7 +196,7 @@ func getSzProduct(ctx context.Context) *Szproduct {
 	return szProductSingleton
 }
 
-func getSzProductAsInterface(ctx context.Context) sz.SzProduct {
+func getSzProductAsInterface(ctx context.Context) senzing.SzProduct {
 	return getSzProduct(ctx)
 }
 
@@ -165,6 +209,12 @@ func getTestObject(ctx context.Context, test *testing.T) *Szproduct {
 	return getSzProduct(ctx)
 }
 
+func handleError(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
+
 func printActual(test *testing.T, actual interface{}) {
 	printResult(test, "Actual", actual)
 }
@@ -172,13 +222,6 @@ func printActual(test *testing.T, actual interface{}) {
 func printResult(test *testing.T, title string, result interface{}) {
 	if printResults {
 		test.Logf("%s: %v", title, truncate(fmt.Sprintf("%v", result), defaultTruncation))
-	}
-}
-
-func testError(test *testing.T, err error) {
-	if err != nil {
-		test.Log("Error:", err.Error())
-		assert.FailNow(test, err.Error())
 	}
 }
 
@@ -193,6 +236,15 @@ func truncate(aString string, length int) string {
 func TestMain(m *testing.M) {
 	err := setup()
 	if err != nil {
+		if errors.Is(err, szerror.ErrSzUnrecoverable) {
+			fmt.Printf("\nUnrecoverable error detected. \n\n")
+		}
+		if errors.Is(err, szerror.ErrSzRetryable) {
+			fmt.Printf("\nRetryable error detected. \n\n")
+		}
+		if errors.Is(err, szerror.ErrSzBadInput) {
+			fmt.Printf("\nBad user input error detected. \n\n")
+		}
 		fmt.Print(err)
 		os.Exit(1)
 	}
@@ -205,24 +257,28 @@ func TestMain(m *testing.M) {
 }
 
 func setup() error {
-	var err error = nil
-	logger, err = logging.NewSenzingSdkLogger(ComponentId, szengine.IdMessages)
+	var err error
+	logger, err = logging.NewSenzingSdkLogger(ComponentID, szproduct.IDMessages)
 	if err != nil {
 		return createError(5901, err)
 	}
+	osenvLogLevel := os.Getenv("SENZING_LOG_LEVEL")
+	if len(osenvLogLevel) > 0 {
+		logLevel = osenvLogLevel
+	}
 	err = setupDirectories()
 	if err != nil {
-		return fmt.Errorf("Failed to set up directories. Error: %v", err)
+		return fmt.Errorf("Failed to set up directories. Error: %w", err)
 	}
 	err = setupDatabase()
 	if err != nil {
-		return fmt.Errorf("Failed to set up database. Error: %v", err)
+		return fmt.Errorf("Failed to set up database. Error: %w", err)
 	}
 	return err
 }
 
 func setupDatabase() error {
-	var err error = nil
+	var err error
 
 	// Locate source and target paths.
 
@@ -249,7 +305,7 @@ func setupDatabase() error {
 }
 
 func setupDirectories() error {
-	var err error = nil
+	var err error
 	testDirectoryPath := getTestDirectoryPath()
 	err = os.RemoveAll(filepath.Clean(testDirectoryPath)) // cleanup any previous test run
 	if err != nil {
@@ -269,6 +325,7 @@ func teardown() error {
 }
 
 func teardownSzProduct(ctx context.Context) error {
+	handleError(szProductSingleton.UnregisterObserver(ctx, observerSingleton))
 	// TODO: Uncomment after bug introduced in Senzing 4.0.0.24131 is fixed.
 	// err := szProductSingleton.Destroy(ctx)
 	// if err != nil {

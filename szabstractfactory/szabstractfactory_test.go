@@ -11,9 +11,8 @@ import (
 	"github.com/senzing-garage/go-helpers/engineconfigurationjson"
 	"github.com/senzing-garage/go-helpers/fileutil"
 	"github.com/senzing-garage/go-logging/logging"
-	"github.com/senzing-garage/sz-sdk-go/sz"
+	"github.com/senzing-garage/sz-sdk-go/senzing"
 	"github.com/senzing-garage/sz-sdk-go/szconfig"
-	"github.com/senzing-garage/sz-sdk-go/szerror"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -21,7 +20,7 @@ const (
 	defaultTruncation = 76
 	instanceName      = "SzAbstractFactory Test"
 	printResults      = false
-	verboseLogging    = sz.SZ_NO_LOGGING
+	verboseLogging    = senzing.SzNoLogging
 )
 
 var (
@@ -36,12 +35,12 @@ func TestSzAbstractFactory_CreateSzConfig(test *testing.T) {
 	ctx := context.TODO()
 	szAbstractFactory := getTestObject(ctx, test)
 	szConfig, err := szAbstractFactory.CreateSzConfig(ctx)
-	testError(test, ctx, szAbstractFactory, err)
-	defer szConfig.Destroy(ctx)
+	testError(test, err)
+	defer func() { handleError(szConfig.Destroy(ctx)) }()
 	configHandle, err := szConfig.CreateConfig(ctx)
-	testError(test, ctx, szAbstractFactory, err)
+	testError(test, err)
 	dataSources, err := szConfig.GetDataSources(ctx, configHandle)
-	testError(test, ctx, szAbstractFactory, err)
+	testError(test, err)
 	printActual(test, dataSources)
 }
 
@@ -49,10 +48,10 @@ func TestSzAbstractFactory_CreateSzConfigManager(test *testing.T) {
 	ctx := context.TODO()
 	szAbstractFactory := getTestObject(ctx, test)
 	szConfigManager, err := szAbstractFactory.CreateSzConfigManager(ctx)
-	testError(test, ctx, szAbstractFactory, err)
-	defer szConfigManager.Destroy(ctx)
-	configList, err := szConfigManager.GetConfigList(ctx)
-	testError(test, ctx, szAbstractFactory, err)
+	testError(test, err)
+	defer func() { handleError(szConfigManager.Destroy(ctx)) }()
+	configList, err := szConfigManager.GetConfigs(ctx)
+	testError(test, err)
 	printActual(test, configList)
 }
 
@@ -60,10 +59,10 @@ func TestSzAbstractFactory_CreateSzDiagnostic(test *testing.T) {
 	ctx := context.TODO()
 	szAbstractFactory := getTestObject(ctx, test)
 	szDiagnostic, err := szAbstractFactory.CreateSzDiagnostic(ctx)
-	testError(test, ctx, szAbstractFactory, err)
-	defer szDiagnostic.Destroy(ctx)
+	testError(test, err)
+	defer func() { handleError(szDiagnostic.Destroy(ctx)) }()
 	result, err := szDiagnostic.CheckDatastorePerformance(ctx, 1)
-	testError(test, ctx, szAbstractFactory, err)
+	testError(test, err)
 	printActual(test, result)
 }
 
@@ -71,10 +70,10 @@ func TestSzAbstractFactory_CreateSzEngine(test *testing.T) {
 	ctx := context.TODO()
 	szAbstractFactory := getTestObject(ctx, test)
 	szEngine, err := szAbstractFactory.CreateSzEngine(ctx)
-	testError(test, ctx, szAbstractFactory, err)
-	defer szEngine.Destroy(ctx)
+	testError(test, err)
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 	stats, err := szEngine.GetStats(ctx)
-	testError(test, ctx, szAbstractFactory, err)
+	testError(test, err)
 	printActual(test, stats)
 }
 
@@ -82,10 +81,10 @@ func TestSzAbstractFactory_CreateSzProduct(test *testing.T) {
 	ctx := context.TODO()
 	szAbstractFactory := getTestObject(ctx, test)
 	szProduct, err := szAbstractFactory.CreateSzProduct(ctx)
-	testError(test, ctx, szAbstractFactory, err)
-	defer szProduct.Destroy(ctx)
+	testError(test, err)
+	defer func() { handleError(szProduct.Destroy(ctx)) }()
 	version, err := szProduct.GetVersion(ctx)
-	testError(test, ctx, szAbstractFactory, err)
+	testError(test, err)
 	printActual(test, version)
 }
 
@@ -93,8 +92,9 @@ func TestSzAbstractFactory_CreateSzProduct(test *testing.T) {
 // Internal functions
 // ----------------------------------------------------------------------------
 
-func createError(errorId int, err error) error {
-	return szerror.Cast(logger.NewError(errorId, err), err)
+func createError(errorID int, err error) error {
+	// return errors.Cast(logger.NewError(errorId, err), err)
+	return logger.NewError(errorID, err)
 }
 
 func getDatabaseTemplatePath() string {
@@ -112,11 +112,11 @@ func getSettings() (string, error) {
 			dbTargetPath, err)
 		return "", err
 	}
-	databaseUrl := fmt.Sprintf("sqlite3://na:na@nowhere/%s", dbTargetPath)
+	databaseURL := fmt.Sprintf("sqlite3://na:na@nowhere/%s", dbTargetPath)
 
 	// Create Senzing engine configuration JSON.
 
-	configAttrMap := map[string]string{"databaseUrl": databaseUrl}
+	configAttrMap := map[string]string{"databaseUrl": databaseURL}
 	settings, err := engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingMap(configAttrMap)
 	if err != nil {
 		err = createError(5902, err)
@@ -124,7 +124,7 @@ func getSettings() (string, error) {
 	return settings, err
 }
 
-func getSzAbstractFactory(ctx context.Context) sz.SzAbstractFactory {
+func getSzAbstractFactory(ctx context.Context) senzing.SzAbstractFactory {
 	_ = ctx
 	settings, err := getSettings()
 	if err != nil {
@@ -132,7 +132,7 @@ func getSzAbstractFactory(ctx context.Context) sz.SzAbstractFactory {
 		return nil
 	}
 	result := &Szabstractfactory{
-		ConfigId:       sz.SZ_INITIALIZE_WITH_DEFAULT_CONFIGURATION,
+		ConfigID:       senzing.SzInitializeWithDefaultConfiguration,
 		InstanceName:   instanceName,
 		Settings:       settings,
 		VerboseLogging: verboseLogging,
@@ -140,13 +140,19 @@ func getSzAbstractFactory(ctx context.Context) sz.SzAbstractFactory {
 	return result
 }
 
-func getTestObject(ctx context.Context, test *testing.T) sz.SzAbstractFactory {
+func getTestObject(ctx context.Context, test *testing.T) senzing.SzAbstractFactory {
 	_ = test
 	return getSzAbstractFactory(ctx)
 }
 
 func getTestDirectoryPath() string {
 	return filepath.FromSlash("../target/test/szconfig")
+}
+
+func handleError(err error) {
+	if err != nil {
+		panic(err)
+	}
 }
 
 func printActual(test *testing.T, actual interface{}) {
@@ -159,9 +165,7 @@ func printResult(test *testing.T, title string, result interface{}) {
 	}
 }
 
-func testError(test *testing.T, ctx context.Context, szAbstractFactory sz.SzAbstractFactory, err error) {
-	_ = ctx
-	_ = szAbstractFactory
+func testError(test *testing.T, err error) {
 	if err != nil {
 		test.Log("Error:", err.Error())
 		assert.FailNow(test, err.Error())
@@ -191,24 +195,24 @@ func TestMain(m *testing.M) {
 }
 
 func setup() error {
-	var err error = nil
-	logger, err = logging.NewSenzingSdkLogger(ComponentId, szconfig.IdMessages)
+	var err error
+	logger, err = logging.NewSenzingSdkLogger(ComponentID, szconfig.IDMessages)
 	if err != nil {
 		return createError(5901, err)
 	}
 	err = setupDirectories()
 	if err != nil {
-		return fmt.Errorf("Failed to set up directories. Error: %v", err)
+		return fmt.Errorf("Failed to set up directories. Error: %w", err)
 	}
 	err = setupDatabase()
 	if err != nil {
-		return fmt.Errorf("Failed to set up database. Error: %v", err)
+		return fmt.Errorf("Failed to set up database. Error: %w", err)
 	}
 	return err
 }
 
 func setupDatabase() error {
-	var err error = nil
+	var err error
 
 	// Locate source and target paths.
 
@@ -235,7 +239,7 @@ func setupDatabase() error {
 }
 
 func setupDirectories() error {
-	var err error = nil
+	var err error
 	testDirectoryPath := getTestDirectoryPath()
 	err = os.RemoveAll(filepath.Clean(testDirectoryPath)) // cleanup any previous test run
 	if err != nil {

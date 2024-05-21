@@ -7,7 +7,7 @@ import (
 	"fmt"
 
 	"github.com/senzing-garage/go-logging/logging"
-	"github.com/senzing-garage/sz-sdk-go/sz"
+	"github.com/senzing-garage/sz-sdk-go/senzing"
 )
 
 // ----------------------------------------------------------------------------
@@ -23,7 +23,7 @@ func ExampleSzproduct_GetLicense() {
 		fmt.Println(err)
 	}
 	fmt.Println(result)
-	// Output: {"customer":"Senzing Public Test License","contract":"Senzing Public Test - 50K records test","issueDate":"2023-11-02","licenseType":"EVAL (Solely for non-productive use)","licenseLevel":"STANDARD","billing":"YEARLY","expireDate":"2024-11-02","recordLimit":50000}
+	// Output: {"customer":"Senzing Public Test License","contract":"Senzing Public Test License","issueDate":"2024-05-02","licenseType":"EVAL (Solely for non-productive use)","licenseLevel":"STANDARD","billing":"YEARLY","expireDate":"2025-05-02","recordLimit":50000}
 }
 
 func ExampleSzproduct_GetVersion() {
@@ -86,8 +86,11 @@ func ExampleSzproduct_Initialize() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	verboseLogging := sz.SZ_NO_LOGGING
-	szProduct.Initialize(ctx, instanceName, settings, verboseLogging)
+	verboseLogging := senzing.SzNoLogging
+	err = szProduct.Initialize(ctx, instanceName, settings, verboseLogging)
+	if err != nil {
+		fmt.Println(err)
+	}
 	// Output:
 }
 
