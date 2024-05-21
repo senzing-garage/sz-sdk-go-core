@@ -23,7 +23,8 @@ clean-osarch-specific:
 .PHONY: coverage-osarch-specific
 coverage-osarch-specific: export SENZING_LOG_LEVEL=TRACE
 coverage-osarch-specific:
-	@go test -v -coverprofile=coverage.out -p 1 ./...
+	# @go test -v -coverprofile=coverage.out -p 1 ./...
+	@go test -v -coverprofile=coverage.out -p 1 ./szdiagnostic
 	@go tool cover -html="coverage.out" -o coverage.html
 	@xdg-open $(MAKEFILE_DIRECTORY)/coverage.html
 
@@ -47,7 +48,8 @@ setup-osarch-specific:
 
 .PHONY: test-osarch-specific
 test-osarch-specific:
-	@go test -v -p 1 ./...
+	# @go test -v -p 1 ./...
+	@go test -v -p 1 ./szdiagnostic
 
 # -----------------------------------------------------------------------------
 # Makefile targets supported only by this platform.

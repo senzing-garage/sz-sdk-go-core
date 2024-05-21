@@ -59,6 +59,15 @@ func TestSzdiagnostic_CheckDatastorePerformance(test *testing.T) {
 	printActual(test, actual)
 }
 
+func TestSzdiagnostic_CheckDatastorePerformance_badSecondsToRun(test *testing.T) {
+	ctx := context.TODO()
+	szDiagnostic := getTestObject(ctx, test)
+	badSecondsToRun := -1
+	actual, err := szDiagnostic.CheckDatastorePerformance(ctx, badSecondsToRun)
+	require.NoError(test, err)
+	printActual(test, actual)
+}
+
 func TestSzdiagnostic_GetDatastoreInfo(test *testing.T) {
 	ctx := context.TODO()
 	szDiagnostic := getTestObject(ctx, test)
@@ -82,6 +91,21 @@ func TestSzdiagnostic_GetFeature(test *testing.T) {
 	printActual(test, actual)
 }
 
+func TestSzdiagnostic_GetFeature_badFeatureID(test *testing.T) {
+	ctx := context.TODO()
+	records := []record.Record{
+		truthset.CustomerRecords["1001"],
+	}
+	defer func() { handleError(deleteRecords(ctx, records)) }()
+	err := addRecords(ctx, records)
+	require.NoError(test, err)
+	szDiagnostic := getTestObject(ctx, test)
+	featureID := int64(-1)
+	actual, err := szDiagnostic.GetFeature(ctx, int64(featureID))
+	require.ErrorIs(test, err, szerror.ErrSzBase)
+	printActual(test, actual)
+}
+
 // TODO:  Determine if PurgeRepository can be tested without disturbing other testcases
 // func TestSzdiagnostic_PurgeRepository(test *testing.T) {
 // 	ctx := context.TODO()
@@ -93,6 +117,13 @@ func TestSzdiagnostic_GetFeature(test *testing.T) {
 // ----------------------------------------------------------------------------
 // Logging and observing
 // ----------------------------------------------------------------------------
+
+func TestSzconfig_SetLogLevel_badLogLevelName(test *testing.T) {
+	ctx := context.TODO()
+	szConfig := getTestObject(ctx, test)
+	badLogLevelName := "BadLogLevelName"
+	_ = szConfig.SetLogLevel(ctx, badLogLevelName)
+}
 
 func TestSzdiagnostic_SetObserverOrigin(test *testing.T) {
 	ctx := context.TODO()
@@ -161,6 +192,56 @@ func TestSzdiagnostic_Reinitialize(test *testing.T) {
 	err := szDiagnostic.Reinitialize(ctx, configID)
 	require.NoError(test, err)
 }
+
+// func TestSzdiagnostic_Reinitialize_badConfigID_scenario(test *testing.T) {
+// 	ctx := context.TODO()
+// 	szDiagnostic := getTestObject(ctx, test)
+// 	// goodConfigID := getDefaultConfigID()
+// 	badConfigID := int64(-1)
+// 	err := szDiagnostic.Reinitialize(ctx, badConfigID)
+// 	if err != nil {
+// 		test.Logf("\n>>>> Reinitialize(ctx, badConfigID) error %v", err)
+// 	}
+// 	// require.ErrorIs(test, err, szerror.ErrSzConfiguration)
+
+// 	// err = szDiagnostic.Reinitialize(ctx, goodConfigID)
+// 	// if err != nil {
+// 	// 	test.Logf("\n>>>> Reinitialize(ctx, goodConfigID) error %v", err)
+// 	// }
+// 	// require.NoError(test, err)
+
+// 	szDiagnosticSingleton = nil
+// 	szDiagnostic = getTestObject(ctx, test)
+
+// 	secondsToRun := 1
+// 	actual, err := szDiagnostic.CheckDatastorePerformance(ctx, secondsToRun)
+// 	require.NoError(test, err)
+// 	printActual(test, actual)
+// }
+
+// func TestSzdiagnostic_Reinitialize_badConfigID(test *testing.T) {
+// 	ctx := context.TODO()
+// 	szDiagnostic := getTestObject(ctx, test)
+// 	badConfigID := int64(-1)
+// 	err := szDiagnostic.Reinitialize(ctx, badConfigID)
+// 	require.ErrorIs(test, err, szerror.ErrSzConfiguration)
+// }
+
+// func TestSzdiagnostic_Reinitialize_again(test *testing.T) {
+// 	ctx := context.TODO()
+// 	// szDiagnosticSingleton = nil
+// 	szDiagnostic := getTestObject(ctx, test)
+// 	configID := getDefaultConfigID()
+// 	test.Logf("\n>>>>>> configID-2: %d", configID)
+
+// 	err := szDiagnostic.Reinitialize(ctx, configID)
+// 	require.NoError(test, err)
+
+// 	secondsToRun := 1
+// 	actual, err := szDiagnostic.CheckDatastorePerformance(ctx, secondsToRun)
+// 	require.NoError(test, err)
+// 	printActual(test, actual)
+// }
 
 func TestSzdiagnostic_Destroy(test *testing.T) {
 	ctx := context.TODO()

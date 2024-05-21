@@ -74,15 +74,17 @@ func TestSzconfigmanager_AddConfig(test *testing.T) {
 }
 
 // TODO: Implement TestSzconfigmanager_AddConfig_badConfigDefinition
-// func TestSzconfigmanager_AddConfig_badConfigDefinition(test *testing.T) {
-// 	ctx := context.TODO()
-// 	szConfigManager := getTestObject(ctx, test)
-// 	now := time.Now()
-// 	badConfigDefinition := `{"bob": "not bob"}`
-// 	configComment := fmt.Sprintf("szconfigmanager_test at %s", now.UTC())
-// 	_, err := szConfigManager.AddConfig(ctx, badConfigDefinition, configComment)
-// 	expectError(test, szerror.ErrSzBase, err)
-// }
+func TestSzconfigmanager_AddConfig_badConfigDefinition(test *testing.T) {
+	ctx := context.TODO()
+	szConfigManager := getTestObject(ctx, test)
+	now := time.Now()
+	badConfigDefinition := "{]"
+	badConfigDefinition = "\n\t"
+	configComment := fmt.Sprintf("szconfigmanager_test at %s", now.UTC())
+	_, err := szConfigManager.AddConfig(ctx, badConfigDefinition, configComment)
+	assert.Error(test, err)
+	require.ErrorIs(test, err, szerror.ErrSzBase)
+}
 
 func TestSzconfigmanager_GetConfig(test *testing.T) {
 	ctx := context.TODO()
