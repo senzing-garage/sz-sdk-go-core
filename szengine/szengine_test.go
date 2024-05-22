@@ -213,6 +213,26 @@ func TestSzengine_ExportCsvEntityReport(test *testing.T) {
 	assert.Equal(test, len(expected), actualCount)
 }
 
+func TestSzengine_ExportCsvEntityReport_badCsvColumnList(test *testing.T) {
+	ctx := context.TODO()
+	records := []record.Record{
+		truthset.CustomerRecords["1001"],
+	}
+	defer func() { handleError(deleteRecords(ctx, records)) }()
+	err := addRecords(ctx, records)
+	require.NoError(test, err)
+	szEngine := getTestObject(ctx, test)
+	csvColumnList := "BAD, LIST"
+	flags := senzing.SzExportIncludeAllEntities
+	exportHandle, err := szEngine.ExportCsvEntityReport(ctx, csvColumnList, flags)
+	defer func() {
+		err := szEngine.CloseExport(ctx, exportHandle)
+		require.ErrorIs(test, err, szerror.ErrSzBase)
+	}()
+	require.ErrorIs(test, err, szerror.ErrSzBadInput)
+
+}
+
 func TestSzengine_ExportCsvEntityReportIterator(test *testing.T) {
 	ctx := context.TODO()
 	records := []record.Record{
@@ -225,9 +245,9 @@ func TestSzengine_ExportCsvEntityReportIterator(test *testing.T) {
 	require.NoError(test, err)
 	expected := []string{
 		`RESOLVED_ENTITY_ID,RELATED_ENTITY_ID,MATCH_LEVEL_CODE,MATCH_KEY,DATA_SOURCE,RECORD_ID`,
-		`11,0,"","","CUSTOMERS","1001"`,
-		`11,0,"RESOLVED","+NAME+DOB+PHONE","CUSTOMERS","1002"`,
-		`11,0,"RESOLVED","+NAME+DOB+EMAIL","CUSTOMERS","1003"`,
+		`12,0,"","","CUSTOMERS","1001"`,
+		`12,0,"RESOLVED","+NAME+DOB+PHONE","CUSTOMERS","1002"`,
+		`12,0,"RESOLVED","+NAME+DOB+EMAIL","CUSTOMERS","1003"`,
 	}
 	szEngine := getTestObject(ctx, test)
 	csvColumnList := ""
@@ -263,15 +283,15 @@ func TestSzengine_ExportJSONEntityReport(test *testing.T) {
 	// TODO: Figure out correct flags.
 	// flags := senzing.Flags(senzing.SZ_EXPORT_DEFAULT_FLAGS, senzing.SZ_EXPORT_INCLUDE_ALL_HAVING_RELATIONSHIPS, senzing.SZ_EXPORT_INCLUDE_ALL_HAVING_RELATIONSHIPS)
 	flags = int64(-1)
-	aHandle, err := szEngine.ExportJSONEntityReport(ctx, flags)
+	exportHandle, err := szEngine.ExportJSONEntityReport(ctx, flags)
 	defer func() {
-		err := szEngine.CloseExport(ctx, aHandle)
+		err := szEngine.CloseExport(ctx, exportHandle)
 		require.NoError(test, err)
 	}()
 	require.NoError(test, err)
 	jsonEntityReport := ""
 	for {
-		jsonEntityReportFragment, err := szEngine.FetchNext(ctx, aHandle)
+		jsonEntityReportFragment, err := szEngine.FetchNext(ctx, exportHandle)
 		require.NoError(test, err)
 		if len(jsonEntityReportFragment) == 0 {
 			break
@@ -311,6 +331,21 @@ func TestSzengine_FetchNext(test *testing.T) {
 	//  - TestSzengine_ExportJSONEntityReport
 }
 
+func TestSzengine_FetchNext_badExportHandle(test *testing.T) {
+	ctx := context.TODO()
+	records := []record.Record{
+		truthset.CustomerRecords["1001"],
+	}
+	defer func() { handleError(deleteRecords(ctx, records)) }()
+	err := addRecords(ctx, records)
+	require.NoError(test, err)
+	szEngine := getTestObject(ctx, test)
+	badExportHandle := uintptr(0)
+	actual, err := szEngine.FetchNext(ctx, badExportHandle)
+	require.ErrorIs(test, err, szerror.ErrSzBase)
+	printActual(test, actual)
+}
+
 func TestSzengine_FindInterestingEntitiesByEntityID(test *testing.T) {
 	ctx := context.TODO()
 	records := []record.Record{
@@ -323,9 +358,27 @@ func TestSzengine_FindInterestingEntitiesByEntityID(test *testing.T) {
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
 	entityID := getEntityID(truthset.CustomerRecords["1001"])
-	flags := int64(0)
+	flags := senzing.SzNoFlags
 	actual, err := szEngine.FindInterestingEntitiesByEntityID(ctx, entityID, flags)
 	require.NoError(test, err)
+	printActual(test, actual)
+}
+
+func TestSzengine_FindInterestingEntitiesByEntityID_badEntityID(test *testing.T) {
+	ctx := context.TODO()
+	records := []record.Record{
+		truthset.CustomerRecords["1001"],
+		truthset.CustomerRecords["1002"],
+		truthset.CustomerRecords["1003"],
+	}
+	defer func() { handleError(deleteRecords(ctx, records)) }()
+	err := addRecords(ctx, records)
+	require.NoError(test, err)
+	szEngine := getTestObject(ctx, test)
+	badEntityID := int64(0)
+	flags := senzing.SzNoFlags
+	actual, err := szEngine.FindInterestingEntitiesByEntityID(ctx, badEntityID, flags)
+	require.ErrorIs(test, err, szerror.ErrSzNotFound)
 	printActual(test, actual)
 }
 
@@ -339,7 +392,7 @@ func TestSzengine_FindInterestingEntitiesByRecordID(test *testing.T) {
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
 	record := truthset.CustomerRecords["1001"]
-	flags := int64(0)
+	flags := senzing.SzNoFlags
 	actual, err := szEngine.FindInterestingEntitiesByRecordID(ctx, record.DataSource, record.Id, flags)
 	require.NoError(test, err)
 	printActual(test, actual)
