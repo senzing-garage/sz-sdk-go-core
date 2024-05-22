@@ -1430,7 +1430,7 @@ Input
   - ctx: A context to control lifecycle.
   - instanceName: A name for the auditing node, to help identify it within system logs.
   - settings: A JSON string containing configuration parameters.
-  - configID: The configuration ID used for the initialization.
+  - configID: The configuration ID used for the initialization.  0 for current default configuration.
   - verboseLogging: A flag to enable deeper logging of the G2 processing. 0 for no Senzing logging; 1 for logging.
 */
 func (client *Szengine) Initialize(ctx context.Context, instanceName string, settings string, configID int64, verboseLogging int64) error {
@@ -1450,6 +1450,7 @@ func (client *Szengine) Initialize(ctx context.Context, instanceName string, set
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
+				"initConfigID":   strconv.FormatInt(configID, 10),
 				"instanceName":   instanceName,
 				"settings":       settings,
 				"verboseLogging": strconv.FormatInt(verboseLogging, 10),
@@ -1952,8 +1953,8 @@ It must be called prior to any other calls.
 
 Input
   - ctx: A context to control lifecycle.
-  - moduleName: A name for the auditing node, to help identify it within system logs.
-  - iniParams: A JSON string containing configuration parameters.
+  - instanceName: A name for the auditing node, to help identify it within system logs.
+  - settings: A JSON string containing configuration parameters.
   - verboseLogging: A flag to enable deeper logging of the G2 processing. 0 for no Senzing logging; 1 for logging.
 */
 func (client *Szengine) initialize(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
@@ -2383,15 +2384,15 @@ func formatEntityID(entityID int64) string {
 
 // Create a new error.
 func (client *Szengine) newError(ctx context.Context, errorNumber int, details ...interface{}) error {
-	lastException, err := client.getLastException(ctx)
 	defer func() { client.panicOnError(client.clearLastException(ctx)) }()
-	message := lastException
+	lastExceptionCode, _ := client.getLastExceptionCode(ctx)
+	lastException, err := client.getLastException(ctx)
 	if err != nil {
-		message = err.Error()
+		lastException = err.Error()
 	}
-	details = append(details, errors.New(message))
+	details = append(details, errors.New(lastException))
 	errorMessage := client.getLogger().Json(errorNumber, details...)
-	return szerror.New(szerror.Code(message), (errorMessage))
+	return szerror.New(lastExceptionCode, errorMessage)
 }
 
 /*
@@ -2406,7 +2407,7 @@ func (client *Szengine) panicOnError(err error) {
 	}
 }
 
-// --- G2 exception handling --------------------------------------------------
+// --- Sz exception handling --------------------------------------------------
 
 /*
 The clearLastException method erases the last exception message held by the Senzing G2 object.
@@ -2434,7 +2435,7 @@ Input
   - ctx: A context to control lifecycle.
 
 Output
-  - A string containing the error received from Senzing's G2Product.
+  - A string containing the error received from Senzing's G2.
 */
 func (client *Szengine) getLastException(ctx context.Context) (string, error) {
 	// _DLEXPORT int G2_getLastException(char *buffer, const size_t bufSize);
@@ -2462,7 +2463,7 @@ Input:
   - ctx: A context to control lifecycle.
 
 Output:
-  - An int containing the error received from Senzing's G2Product.
+  - An int containing the error received from Senzing's G2.
 */
 func (client *Szengine) getLastExceptionCode(ctx context.Context) (int, error) {
 	//  _DLEXPORT int G2_getLastExceptionCode();

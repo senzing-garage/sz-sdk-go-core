@@ -232,7 +232,7 @@ The SetLogLevel method sets the level of logging.
 
 Input
   - ctx: A context to control lifecycle.
-  - logLevel: The desired log level. TRACE, DEBUG, INFO, WARN, ERROR, FATAL or PANIC.
+  - logLevelName: The desired log level. TRACE, DEBUG, INFO, WARN, ERROR, FATAL or PANIC.
 */
 func (client *Szproduct) SetLogLevel(ctx context.Context, logLevelName string) error {
 	runtime.LockOSThread()
@@ -291,7 +291,7 @@ func (client *Szproduct) UnregisterObserver(ctx context.Context, observer observ
 		// In client.notify, each observer will get notified in a goroutine.
 		// Then client.observers may be set to nil, but observer goroutines will be OK.
 		details := map[string]string{
-			"observerId": observer.GetObserverId(ctx),
+			"observerID": observer.GetObserverId(ctx),
 		}
 		notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8704, err, details)
 		err = client.observers.UnregisterObserver(ctx, observer)
@@ -337,15 +337,15 @@ func (client *Szproduct) traceExit(errorNumber int, details ...interface{}) {
 
 // Create a new error.
 func (client *Szproduct) newError(ctx context.Context, errorNumber int, details ...interface{}) error {
-	lastException, err := client.getLastException(ctx)
 	defer func() { client.panicOnError(client.clearLastException(ctx)) }()
-	message := lastException
+	lastExceptionCode, _ := client.getLastExceptionCode(ctx)
+	lastException, err := client.getLastException(ctx)
 	if err != nil {
-		message = err.Error()
+		lastException = err.Error()
 	}
-	details = append(details, errors.New(message))
+	details = append(details, errors.New(lastException))
 	errorMessage := client.getLogger().Json(errorNumber, details...)
-	return szerror.New(szerror.Code(message), (errorMessage))
+	return szerror.New(lastExceptionCode, errorMessage)
 }
 
 /*
@@ -369,8 +369,8 @@ Input
   - ctx: A context to control lifecycle.
 */
 func (client *Szproduct) clearLastException(ctx context.Context) error {
-	_ = ctx
 	// _DLEXPORT void G2Config_clearLastException();
+	_ = ctx
 	var err error
 	if client.isTrace {
 		entryTime := time.Now()
@@ -382,7 +382,7 @@ func (client *Szproduct) clearLastException(ctx context.Context) error {
 }
 
 /*
-The getLastException method retrieves the last exception thrown in Senzing's client.
+The getLastException method retrieves the last exception thrown in Senzing's G2Product.
 
 Input
   - ctx: A context to control lifecycle.
@@ -410,7 +410,7 @@ func (client *Szproduct) getLastException(ctx context.Context) (string, error) {
 }
 
 /*
-The GetLastExceptionCode method retrieves the code of the last exception thrown in Senzing's G2Product.
+The getLastExceptionCode method retrieves the code of the last exception thrown in Senzing's G2Product.
 
 Input:
   - ctx: A context to control lifecycle.

@@ -493,15 +493,15 @@ func (client *Szconfigmanager) traceExit(errorNumber int, details ...interface{}
 
 // Create a new error.
 func (client *Szconfigmanager) newError(ctx context.Context, errorNumber int, details ...interface{}) error {
-	lastException, err := client.getLastException(ctx)
 	defer func() { client.panicOnError(client.clearLastException(ctx)) }()
-	message := lastException
+	lastExceptionCode, _ := client.getLastExceptionCode(ctx)
+	lastException, err := client.getLastException(ctx)
 	if err != nil {
-		message = err.Error()
+		lastException = err.Error()
 	}
-	details = append(details, errors.New(message))
+	details = append(details, errors.New(lastException))
 	errorMessage := client.getLogger().Json(errorNumber, details...)
-	return szerror.New(szerror.Code(message), (errorMessage))
+	return szerror.New(lastExceptionCode, errorMessage)
 }
 
 /*

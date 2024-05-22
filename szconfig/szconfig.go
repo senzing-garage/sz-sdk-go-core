@@ -390,7 +390,7 @@ func (client *Szconfig) Initialize(ctx context.Context, instanceName string, set
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
-				"instancename":   instanceName,
+				"instanceName":   instanceName,
 				"settings":       settings,
 				"verboseLogging": strconv.FormatInt(verboseLogging, 10),
 			}
@@ -421,7 +421,7 @@ func (client *Szconfig) RegisterObserver(ctx context.Context, observer observer.
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
-				"observerId": observer.GetObserverId(ctx),
+				"observerID": observer.GetObserverId(ctx),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8702, err, details)
 		}()
@@ -453,7 +453,7 @@ func (client *Szconfig) SetLogLevel(ctx context.Context, logLevelName string) er
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
-				"logLevel": logLevelName,
+				"logLevelName": logLevelName,
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8703, err, details)
 		}()
@@ -493,7 +493,7 @@ func (client *Szconfig) UnregisterObserver(ctx context.Context, observer observe
 		// In client.notify, each observer will get notified in a goroutine.
 		// Then client.observers may be set to nil, but observer goroutines will be OK.
 		details := map[string]string{
-			"observerId": observer.GetObserverId(ctx),
+			"observerID": observer.GetObserverId(ctx),
 		}
 		notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8704, err, details)
 		err = client.observers.UnregisterObserver(ctx, observer)
@@ -539,15 +539,15 @@ func (client *Szconfig) traceExit(errorNumber int, details ...interface{}) {
 
 // Create a new error.
 func (client *Szconfig) newError(ctx context.Context, errorNumber int, details ...interface{}) error {
-	lastException, err := client.getLastException(ctx)
 	defer func() { client.panicOnError(client.clearLastException(ctx)) }()
-	message := lastException
+	lastExceptionCode, _ := client.getLastExceptionCode(ctx)
+	lastException, err := client.getLastException(ctx)
 	if err != nil {
-		message = err.Error()
+		lastException = err.Error()
 	}
-	details = append(details, errors.New(message))
+	details = append(details, errors.New(lastException))
 	errorMessage := client.getLogger().Json(errorNumber, details...)
-	return szerror.New(szerror.Code(message), (errorMessage))
+	return szerror.New(lastExceptionCode, errorMessage)
 }
 
 /*

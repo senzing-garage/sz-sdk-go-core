@@ -136,7 +136,6 @@ func (client *Szdiagnostic) GetDatastoreInfo(ctx context.Context) (string, error
 		defer func() { client.traceExit(8, resultResponse, err, time.Since(entryTime)) }()
 	}
 	result := C.G2Diagnostic_getDatastoreInfo_helper()
-
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4003, result.returnCode, time.Since(entryTime))
 	}
@@ -268,7 +267,7 @@ func (client *Szdiagnostic) GetObserverOrigin(ctx context.Context) string {
 }
 
 /*
-The Initialize method initializes the Senzing G2Diagnostic object.
+The Initialize method initializes the SzDiagnostic object.
 It must be called prior to any other calls.
 
 Input
@@ -295,9 +294,9 @@ func (client *Szdiagnostic) Initialize(ctx context.Context, instanceName string,
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
-				"iniParams":      settings,
 				"initConfigID":   strconv.FormatInt(configID, 10),
-				"moduleName":     instanceName,
+				"instanceName":   instanceName,
+				"settings":       settings,
 				"verboseLogging": strconv.FormatInt(verboseLogging, 10),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8005, err, details)
@@ -359,7 +358,7 @@ func (client *Szdiagnostic) SetLogLevel(ctx context.Context, logLevelName string
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
-				"logLevel": logLevelName,
+				"logLevelName": logLevelName,
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8703, err, details)
 		}()
@@ -411,6 +410,65 @@ func (client *Szdiagnostic) UnregisterObserver(ctx context.Context, observer obs
 }
 
 // ----------------------------------------------------------------------------
+// Private, delegated methods for interface methods
+// ----------------------------------------------------------------------------
+
+/*
+The initialize method initializes the Senzing SzDiagnostic object.
+It must be called prior to any other calls.
+
+Input
+  - ctx: A context to control lifecycle.
+  - instanceName: A name for the auditing node, to help identify it within system logs.
+  - settings: A JSON string containing configuration parameters.
+  - verboseLogging: A flag to enable deeper logging of the G2 processing. 0 for no Senzing logging; 1 for logging.
+*/
+func (client *Szdiagnostic) initialize(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
+	// _DLEXPORT int G2Diagnostic_init(const char *moduleName, const char *iniParams, const int verboseLogging);
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	var err error
+	entryTime := time.Now()
+	instanceNameForC := C.CString(instanceName)
+	defer C.free(unsafe.Pointer(instanceNameForC))
+	settingsForC := C.CString(settings)
+	defer C.free(unsafe.Pointer(settingsForC))
+	result := C.G2Diagnostic_init(instanceNameForC, settingsForC, C.longlong(verboseLogging))
+	if result != 0 {
+		err = client.newError(ctx, 4006, instanceName, settings, verboseLogging, result, time.Since(entryTime))
+	}
+	return err
+}
+
+/*
+The initializeWithConfigID method initializes the Senzing SzDiagnostic object with a non-default configuration ID.
+It must be called prior to any other calls.
+
+Input
+  - ctx: A context to control lifecycle.
+  - instanceName: A name for the auditing node, to help identify it within system logs.
+  - settings: A JSON string containing configuration parameters.
+  - configID: The configuration ID used for the initialization.
+  - verboseLogging: A flag to enable deeper logging of the G2 processing. 0 for no Senzing logging; 1 for logging.
+*/
+func (client *Szdiagnostic) initializeWithConfigID(ctx context.Context, instanceName string, settings string, configID int64, verboseLogging int64) error {
+	//  _DLEXPORT int G2Diagnostic_initWithConfigID(const char *moduleName, const char *iniParams, const long long initConfigID, const int verboseLogging);
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	var err error
+	entryTime := time.Now()
+	instanceNameForC := C.CString(instanceName)
+	defer C.free(unsafe.Pointer(instanceNameForC))
+	settingsForC := C.CString(settings)
+	defer C.free(unsafe.Pointer(settingsForC))
+	result := C.G2Diagnostic_initWithConfigID(instanceNameForC, settingsForC, C.longlong(configID), C.longlong(verboseLogging))
+	if result != 0 {
+		err = client.newError(ctx, 4007, instanceName, settings, configID, verboseLogging, result, time.Since(entryTime))
+	}
+	return err
+}
+
+// ----------------------------------------------------------------------------
 // Internal methods
 // ----------------------------------------------------------------------------
 
@@ -445,15 +503,15 @@ func (client *Szdiagnostic) traceExit(errorNumber int, details ...interface{}) {
 
 // Create a new error.
 func (client *Szdiagnostic) newError(ctx context.Context, errorNumber int, details ...interface{}) error {
-	lastException, err := client.getLastException(ctx)
 	defer func() { client.panicOnError(client.clearLastException(ctx)) }()
-	message := lastException
+	lastExceptionCode, _ := client.getLastExceptionCode(ctx)
+	lastException, err := client.getLastException(ctx)
 	if err != nil {
-		message = err.Error()
+		lastException = err.Error()
 	}
-	details = append(details, errors.New(message))
+	details = append(details, errors.New(lastException))
 	errorMessage := client.getLogger().Json(errorNumber, details...)
-	return szerror.New(szerror.Code(message), (errorMessage))
+	return szerror.New(lastExceptionCode, errorMessage)
 }
 
 /*
@@ -471,7 +529,7 @@ func (client *Szdiagnostic) panicOnError(err error) {
 // --- Sz exception handling --------------------------------------------------
 
 /*
-The clearLastException method erases the last exception message held by the Senzing G2Config object.
+The clearLastException method erases the last exception message held by the Senzing G2Diagnostic object.
 
 Input
   - ctx: A context to control lifecycle.
@@ -551,63 +609,4 @@ func (client *Szdiagnostic) getByteArrayC(size int) *C.char {
 // Make a byte array.
 func (client *Szdiagnostic) getByteArray(size int) []byte {
 	return make([]byte, size)
-}
-
-// ----------------------------------------------------------------------------
-// Internal methods
-// ----------------------------------------------------------------------------
-
-/*
-The initialize method initializes the Senzing SzDiagnostic object.
-It must be called prior to any other calls.
-
-Input
-  - ctx: A context to control lifecycle.
-  - instanceName: A name for the auditing node, to help identify it within system logs.
-  - settings: A JSON string containing configuration parameters.
-  - verboseLogging: A flag to enable deeper logging of the G2 processing. 0 for no Senzing logging; 1 for logging.
-*/
-func (client *Szdiagnostic) initialize(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
-	// _DLEXPORT int G2Diagnostic_init(const char *moduleName, const char *iniParams, const int verboseLogging);
-	runtime.LockOSThread()
-	defer runtime.UnlockOSThread()
-	var err error
-	entryTime := time.Now()
-	instanceNameForC := C.CString(instanceName)
-	defer C.free(unsafe.Pointer(instanceNameForC))
-	settingsForC := C.CString(settings)
-	defer C.free(unsafe.Pointer(settingsForC))
-	result := C.G2Diagnostic_init(instanceNameForC, settingsForC, C.longlong(verboseLogging))
-	if result != 0 {
-		err = client.newError(ctx, 4006, instanceName, settings, verboseLogging, result, time.Since(entryTime))
-	}
-	return err
-}
-
-/*
-The initializeWithConfigID method initializes the Senzing SzDiagnostic object with a non-default configuration ID.
-It must be called prior to any other calls.
-
-Input
-  - ctx: A context to control lifecycle.
-  - instanceName: A name for the auditing node, to help identify it within system logs.
-  - settings: A JSON string containing configuration parameters.
-  - configID: The configuration ID used for the initialization.
-  - verboseLogging: A flag to enable deeper logging of the G2 processing. 0 for no Senzing logging; 1 for logging.
-*/
-func (client *Szdiagnostic) initializeWithConfigID(ctx context.Context, instanceName string, settings string, configID int64, verboseLogging int64) error {
-	//  _DLEXPORT int G2Diagnostic_initWithConfigID(const char *moduleName, const char *iniParams, const long long initConfigID, const int verboseLogging);
-	runtime.LockOSThread()
-	defer runtime.UnlockOSThread()
-	var err error
-	entryTime := time.Now()
-	instanceNameForC := C.CString(instanceName)
-	defer C.free(unsafe.Pointer(instanceNameForC))
-	settingsForC := C.CString(settings)
-	defer C.free(unsafe.Pointer(settingsForC))
-	result := C.G2Diagnostic_initWithConfigID(instanceNameForC, settingsForC, C.longlong(configID), C.longlong(verboseLogging))
-	if result != 0 {
-		err = client.newError(ctx, 4007, instanceName, settings, configID, verboseLogging, result, time.Since(entryTime))
-	}
-	return err
 }

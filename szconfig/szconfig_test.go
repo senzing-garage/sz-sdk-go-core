@@ -308,17 +308,17 @@ func TestSzconfig_Initialize(test *testing.T) {
 }
 
 // TODO: Implement TestSzconfig_Initialize_badSettings
-func TestSzconfig_Initialize_badSettings(test *testing.T) {
-	// ctx := context.TODO()
-	// szConfig := getTestObject(ctx, test)
-	// instanceName := "Test name"
-	// verboseLogging := senzing.SzNoLogging
-	// // badSettings := "\n\t"
-	// badSettings := "{]"
-	// err := szConfig.Initialize(ctx, instanceName, badSettings, verboseLogging)
-	// assert.Error(test, err)
-	// require.ErrorIs(test, err, szerror.ErrSzBase)
-}
+// func TestSzconfig_Initialize_badSettings(test *testing.T) {
+// ctx := context.TODO()
+// szConfig := getTestObject(ctx, test)
+// instanceName := "Test name"
+// verboseLogging := senzing.SzNoLogging
+// // badSettings := "\n\t"
+// badSettings := "{]"
+// err := szConfig.Initialize(ctx, instanceName, badSettings, verboseLogging)
+// assert.Error(test, err)
+// require.ErrorIs(test, err, szerror.ErrSzBase)
+// }
 
 func TestSzconfig_Initialize_again(test *testing.T) {
 	ctx := context.TODO()
