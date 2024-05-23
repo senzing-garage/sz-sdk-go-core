@@ -32,6 +32,7 @@ const (
 	observerOrigin    = "SzDiagnostic observer"
 	printResults      = false
 	verboseLogging    = senzing.SzNoLogging
+	badLogLevelName   = "BadLogLevelName"
 )
 
 var (
@@ -121,7 +122,6 @@ func TestSzdiagnostic_GetFeature_badFeatureID(test *testing.T) {
 func TestSzconfig_SetLogLevel_badLogLevelName(test *testing.T) {
 	ctx := context.TODO()
 	szConfig := getTestObject(ctx, test)
-	badLogLevelName := "BadLogLevelName"
 	_ = szConfig.SetLogLevel(ctx, badLogLevelName)
 }
 
