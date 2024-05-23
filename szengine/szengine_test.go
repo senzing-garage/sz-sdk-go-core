@@ -1136,7 +1136,7 @@ func TestSzengine_GetVirtualEntityByRecordID_badRecordID(test *testing.T) {
 	recordList := `{"RECORDS": [{"DATA_SOURCE": "` + record1.DataSource + `", "RECORD_ID": "` + badRecordID + `"}, {"DATA_SOURCE": "` + record2.DataSource + `", "RECORD_ID": "` + record2.Id + `"}]}`
 	flags := senzing.SzNoFlags
 	actual, err := szEngine.GetVirtualEntityByRecordID(ctx, recordList, flags)
-	require.NoError(test, err)
+	require.ErrorIs(test, err, szerror.ErrSzNotFound)
 	printActual(test, actual)
 }
 
@@ -1167,7 +1167,7 @@ func TestSzengine_HowEntityByEntityID_badEntityID(test *testing.T) {
 	szEngine := getTestObject(ctx, test)
 	flags := senzing.SzNoFlags
 	actual, err := szEngine.HowEntityByEntityID(ctx, badEntityID, flags)
-	require.NoError(test, err)
+	require.ErrorIs(test, err, szerror.ErrSzNotFound)
 	printActual(test, actual)
 }
 
@@ -1198,7 +1198,7 @@ func TestSzengine_ProcessRedoRecord_badRedoRecord(test *testing.T) {
 	szEngine := getTestObject(ctx, test)
 	flags := senzing.SzWithoutInfo
 	actual, err := szEngine.ProcessRedoRecord(ctx, badRedoRecord, flags)
-	require.NoError(test, err)
+	require.ErrorIs(test, err, szerror.ErrSzBadInput)
 	printActual(test, actual)
 }
 
@@ -1291,7 +1291,7 @@ func TestSzengine_ReevaluateRecord_badDataSource(test *testing.T) {
 	record := truthset.CustomerRecords["1001"]
 	flags := senzing.SzWithoutInfo
 	actual, err := szEngine.ReevaluateRecord(ctx, badDataSource, record.Id, flags)
-	require.NoError(test, err)
+	require.ErrorIs(test, err, szerror.ErrSzConfiguration)
 	printActual(test, actual)
 }
 
@@ -1452,7 +1452,7 @@ func TestSzengine_WhyEntities_badEnitity1(test *testing.T) {
 	entityID2 := getEntityID(truthset.CustomerRecords["1002"])
 	flags := senzing.SzNoFlags
 	actual, err := szEngine.WhyEntities(ctx, badEntityID, entityID2, flags)
-	require.NoError(test, err)
+	require.ErrorIs(test, err, szerror.ErrSzNotFound)
 	printActual(test, actual)
 }
 
@@ -1469,7 +1469,7 @@ func TestSzengine_WhyEntities_badEnitity2(test *testing.T) {
 	entityID1 := getEntityID(truthset.CustomerRecords["1001"])
 	flags := senzing.SzNoFlags
 	actual, err := szEngine.WhyEntities(ctx, entityID1, badEntityID, flags)
-	require.NoError(test, err)
+	require.ErrorIs(test, err, szerror.ErrSzNotFound)
 	printActual(test, actual)
 }
 
@@ -1501,7 +1501,7 @@ func TestSzengine_WhyRecordInEntity_badDataSource(test *testing.T) {
 	record := truthset.CustomerRecords["1001"]
 	flags := senzing.SzNoFlags
 	actual, err := szEngine.WhyRecordInEntity(ctx, badDataSource, record.Id, flags)
-	require.NoError(test, err)
+	require.ErrorIs(test, err, szerror.ErrSzConfiguration)
 	printActual(test, actual)
 }
 
@@ -1517,7 +1517,7 @@ func TestSzengine_WhyRecordInEntity_badRecordID(test *testing.T) {
 	record := truthset.CustomerRecords["1001"]
 	flags := senzing.SzNoFlags
 	actual, err := szEngine.WhyRecordInEntity(ctx, record.DataSource, badRecordID, flags)
-	require.NoError(test, err)
+	require.ErrorIs(test, err, szerror.ErrSzNotFound)
 	printActual(test, actual)
 }
 
@@ -1553,7 +1553,7 @@ func TestSzengine_WhyRecords_badDataSource(test *testing.T) {
 	record2 := truthset.CustomerRecords["1002"]
 	flags := senzing.SzNoFlags
 	actual, err := szEngine.WhyRecords(ctx, badDataSource, record1.Id, record2.DataSource, record2.Id, flags)
-	require.NoError(test, err)
+	require.ErrorIs(test, err, szerror.ErrSzConfiguration)
 	printActual(test, actual)
 }
 
@@ -1571,7 +1571,7 @@ func TestSzengine_WhyRecords_badRecordID(test *testing.T) {
 	record2 := truthset.CustomerRecords["1002"]
 	flags := senzing.SzNoFlags
 	actual, err := szEngine.WhyRecords(ctx, record1.DataSource, record1.Id, record2.DataSource, badRecordID, flags)
-	require.NoError(test, err)
+	require.ErrorIs(test, err, szerror.ErrSzNotFound)
 	printActual(test, actual)
 }
 
