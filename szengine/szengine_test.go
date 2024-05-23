@@ -235,6 +235,7 @@ func TestSzengine_DeleteRecord_withInfo_badDataSourceCode(test *testing.T) {
 }
 
 func TestSzengine_DeleteRecord_withInfo_badDataSourceCode_fix(test *testing.T) {
+	_ = test
 	ctx := context.TODO()
 	records := []record.Record{
 		truthset.CustomerRecords["1009"],
@@ -385,6 +386,11 @@ func TestSzengine_ExportJSONEntityReport(test *testing.T) {
 	}
 	require.NoError(test, err)
 	assert.Greater(test, len(jsonEntityReport), 65536)
+}
+
+// TODO: Implement TestSzengine_ExportJSONEntityReport_error
+func TestSzengine_ExportJSONEntityReport_error(test *testing.T) {
+	_ = test
 }
 
 func TestSzengine_ExportJSONEntityReportIterator(test *testing.T) {
@@ -896,6 +902,28 @@ func TestSzengine_FindPathByEntityID_including(test *testing.T) {
 	printActual(test, actual)
 }
 
+func TestSzengine_FindPathByEntityID_including_badStartEntityID(test *testing.T) {
+	ctx := context.TODO()
+	records := []record.Record{
+		truthset.CustomerRecords["1001"],
+		truthset.CustomerRecords["1002"],
+	}
+	defer func() { handleError(deleteRecords(ctx, records)) }()
+	err := addRecords(ctx, records)
+	require.NoError(test, err)
+	szEngine := getTestObject(ctx, test)
+	startRecord := truthset.CustomerRecords["1001"]
+	badStartEntityID := badEntityID
+	endEntityID := getEntityID(truthset.CustomerRecords["1002"])
+	maxDegrees := int64(1)
+	exclusions := senzing.SzNoExclusions
+	requiredDataSources := `{"DATA_SOURCES": ["` + startRecord.DataSource + `"]}`
+	flags := senzing.SzNoFlags
+	actual, err := szEngine.FindPathByEntityID(ctx, badStartEntityID, endEntityID, maxDegrees, exclusions, requiredDataSources, flags)
+	require.ErrorIs(test, err, szerror.ErrSzNotFound)
+	printActual(test, actual)
+}
+
 func TestSzengine_FindPathByRecordID(test *testing.T) {
 	ctx := context.TODO()
 	records := []record.Record{
@@ -1072,6 +1100,11 @@ func TestSzengine_GetActiveConfigID(test *testing.T) {
 	printActual(test, actual)
 }
 
+// TODO: Implement TestSzengine_GetActiveConfigID_error
+func TestSzengine_GetActiveConfigID_error(test *testing.T) {
+	_ = test
+}
+
 func TestSzengine_GetEntityByEntityID(test *testing.T) {
 	ctx := context.TODO()
 	records := []record.Record{
@@ -1198,6 +1231,7 @@ func TestSzengine_GetRecord_badRecordID(test *testing.T) {
 	require.ErrorIs(test, err, szerror.ErrSzNotFound)
 	printActual(test, actual)
 }
+
 func TestSzengine_GetRedoRecord(test *testing.T) {
 	ctx := context.TODO()
 	szEngine := getTestObject(ctx, test)
@@ -1206,12 +1240,22 @@ func TestSzengine_GetRedoRecord(test *testing.T) {
 	printActual(test, actual)
 }
 
+// TODO: Implement TestSzengine_GetRedoRecord_error
+func TestSzengine_GetRedoRecord_error(test *testing.T) {
+	_ = test
+}
+
 func TestSzengine_GetStats(test *testing.T) {
 	ctx := context.TODO()
 	szEngine := getTestObject(ctx, test)
 	actual, err := szEngine.GetStats(ctx)
 	require.NoError(test, err)
 	printActual(test, actual)
+}
+
+// TODO: Implement TestSzengine_GetStats_error
+func TestSzengine_GetStats_error(test *testing.T) {
+	_ = test
 }
 
 func TestSzengine_GetVirtualEntityByRecordID(test *testing.T) {
@@ -1309,8 +1353,12 @@ func TestSzengine_PrimeEngine(test *testing.T) {
 	require.NoError(test, err)
 }
 
+// TODO: Implement TestSzengine_PrimeEngine_error
+func TestSzengine_PrimeEngine_error(test *testing.T) {
+	_ = test
+}
+
 func TestSzengine_ProcessRedoRecord(test *testing.T) {
-	// TODO: Implement TestSzengine_ProcessRedoRecord
 	ctx := context.TODO()
 	szEngine := getTestObject(ctx, test)
 	redoRecord, err := szEngine.GetRedoRecord(ctx)
@@ -1324,7 +1372,6 @@ func TestSzengine_ProcessRedoRecord(test *testing.T) {
 }
 
 func TestSzengine_ProcessRedoRecord_badRedoRecord(test *testing.T) {
-	// TODO: Implement TestSzengine_ProcessRedoRecord
 	ctx := context.TODO()
 	szEngine := getTestObject(ctx, test)
 	flags := senzing.SzWithoutInfo
@@ -1334,7 +1381,6 @@ func TestSzengine_ProcessRedoRecord_badRedoRecord(test *testing.T) {
 }
 
 func TestSzengine_ProcessRedoRecord_withInfo(test *testing.T) {
-	// TODO: Implement TestSzengine_ProcessRedoRecord_withInfo
 	ctx := context.TODO()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
@@ -1358,6 +1404,15 @@ func TestSzengine_ProcessRedoRecord_withInfo(test *testing.T) {
 	}
 }
 
+func TestSzengine_ProcessRedoRecord_withInfo_badRedoRecord(test *testing.T) {
+	ctx := context.TODO()
+	szEngine := getTestObject(ctx, test)
+	flags := senzing.SzWithInfo
+	actual, err := szEngine.ProcessRedoRecord(ctx, badRedoRecord, flags)
+	require.ErrorIs(test, err, szerror.ErrSzBadInput)
+	printActual(test, actual)
+}
+
 func TestSzengine_ReevaluateEntity(test *testing.T) {
 	ctx := context.TODO()
 	records := []record.Record{
@@ -1374,6 +1429,7 @@ func TestSzengine_ReevaluateEntity(test *testing.T) {
 	printActual(test, actual)
 }
 
+// TODO: TestSzengine_ReevaluateEntity_badEntityID doesn't fail
 func TestSzengine_ReevaluateEntity_badEntityID(test *testing.T) {
 	ctx := context.TODO()
 	records := []record.Record{
@@ -1405,6 +1461,7 @@ func TestSzengine_ReevaluateEntity_withInfo(test *testing.T) {
 	printActual(test, actual)
 }
 
+// TODO: TestSzengine_ReevaluateEntity_withInfo_badEntityID doesn't fail
 func TestSzengine_ReevaluateEntity_withInfo_badEntityID(test *testing.T) {
 	ctx := context.TODO()
 	records := []record.Record{
@@ -1518,6 +1575,7 @@ func TestSzengine_SearchByAttributes(test *testing.T) {
 	printActual(test, actual)
 }
 
+// TODO: TestSzengine_SearchByAttributes_badAttributes doesn't fail.
 func TestSzengine_SearchByAttributes_badAttributes(test *testing.T) {
 	ctx := context.TODO()
 	records := []record.Record{
@@ -1536,6 +1594,7 @@ func TestSzengine_SearchByAttributes_badAttributes(test *testing.T) {
 	printActual(test, actual)
 }
 
+// TODO: TestSzengine_SearchByAttributes_badSearchProfile doesn't fail.
 func TestSzengine_SearchByAttributes_badSearchProfile(test *testing.T) {
 	ctx := context.TODO()
 	records := []record.Record{
@@ -1573,14 +1632,14 @@ func TestSzengine_SearchByAttributes_withSearchProfile(test *testing.T) {
 	printActual(test, actual)
 }
 
+// TODO: Implement TestSzengine_StreamExportCsvEntityReport
 func TestSzengine_StreamExportCsvEntityReport(test *testing.T) {
 	_ = test
-	// TODO: Write TestSzengine_StreamExportCsvEntityReport
 }
 
+// TODO: Implement TestSzengine_StreamExportJSONEntityReport
 func TestSzengine_StreamExportJSONEntityReport(test *testing.T) {
 	_ = test
-	// TODO: Write TestSzengine_StreamExportJSONEntityReport
 }
 
 func TestSzengine_SearchByAttributes_searchProfile(test *testing.T) {
@@ -1806,6 +1865,11 @@ func TestSzengine_Initialize(test *testing.T) {
 	require.NoError(test, err)
 }
 
+// TODO: Implement TestSzengine_Initialize_error
+func TestSzengine_Initialize_error(test *testing.T) {
+	_ = test
+}
+
 func TestSzengine_Initialize_withConfigID(test *testing.T) {
 	ctx := context.TODO()
 	szEngine := getTestObject(ctx, test)
@@ -1814,6 +1878,11 @@ func TestSzengine_Initialize_withConfigID(test *testing.T) {
 	configID := getDefaultConfigID()
 	err = szEngine.Initialize(ctx, instanceName, settings, configID, verboseLogging)
 	require.NoError(test, err)
+}
+
+// TODO: Implement TestSzengine_Initialize_withConfigID_error
+func TestSzengine_Initialize_withConfigID_error(test *testing.T) {
+	_ = test
 }
 
 func TestSzengine_Reinitialize(test *testing.T) {
@@ -1826,11 +1895,21 @@ func TestSzengine_Reinitialize(test *testing.T) {
 	printActual(test, configID)
 }
 
+// TODO: Implement TestSzengine_Reinitialize_badConfigID
+func TestSzengine_Reinitialize_badConfigID(test *testing.T) {
+	_ = test
+}
+
 func TestSzengine_Destroy(test *testing.T) {
 	ctx := context.TODO()
 	szEngine := getTestObject(ctx, test)
 	err := szEngine.Destroy(ctx)
 	require.NoError(test, err)
+}
+
+// TODO: Implement TestSzengine_Destroy_error
+func TestSzengine_Destroy_error(test *testing.T) {
+	_ = test
 }
 
 func TestSzengine_Destroy_withObserver(test *testing.T) {
