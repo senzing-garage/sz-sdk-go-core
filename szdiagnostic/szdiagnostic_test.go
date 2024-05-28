@@ -123,19 +123,19 @@ func TestSzdiagnostic_GetFeature_badFeatureID(test *testing.T) {
 // Private methods
 // ----------------------------------------------------------------------------
 
-func TestSzproduct_getByteArray(test *testing.T) {
+func TestSzdiagnostic_getByteArray(test *testing.T) {
 	ctx := context.TODO()
 	szProduct := getTestObject(ctx, test)
 	szProduct.getByteArray(10)
 }
 
-func TestSzproduct_getByteArrayC(test *testing.T) {
+func TestSzdiagnostic_getByteArrayC(test *testing.T) {
 	ctx := context.TODO()
 	szProduct := getTestObject(ctx, test)
 	szProduct.getByteArrayC(10)
 }
 
-func TestSzproduct_newError(test *testing.T) {
+func TestSzdiagnostic_newError(test *testing.T) {
 	ctx := context.TODO()
 	szProduct := getTestObject(ctx, test)
 	err := szProduct.newError(ctx, 1)

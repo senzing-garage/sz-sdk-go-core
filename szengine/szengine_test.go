@@ -30,20 +30,20 @@ import (
 )
 
 const (
-	badAttributes          = `{"NAMES": [{"NAME_TYPE": "PRIMARY", "NAME_LAST": "JOHNSON"}], "SSN_NUMBER": "053-39-3251"}`
+	badAttributes          = "}{"
 	badBuildOutDegree      = int64(-1)
 	badBuildOutMaxEntities = int64(-1)
 	badCsvColumnList       = "BAD, CSV, COLUMN, LIST"
 	badDataSourceCode      = "BadDataSourceCode"
 	badEntityID            = int64(0)
-	badExclusions          = ""
+	badExclusions          = "}{"
 	badExportHandle        = uintptr(0)
 	badLogLevelName        = "BadLogLevelName"
 	badMaxDegrees          = int64(-1)
 	badRecordID            = "BadRecordID"
-	badRedoRecord          = "{x}"
-	badRequiredDataSources = ""
-	badSearchProfile       = senzing.SzNoSearchProfile
+	badRedoRecord          = "{}"
+	badRequiredDataSources = "}{"
+	badSearchProfile       = "}{"
 	defaultTruncation      = 76
 	instanceName           = "SzEngine Test"
 	observerOrigin         = "SzEngine observer"
@@ -554,7 +554,7 @@ func TestSzengine_FindNetworkByEntityID_badEntityIDs(test *testing.T) {
 	printActual(test, actual)
 }
 
-func TestSzengine_FindNetworkByEntityID_badMaxDegres(test *testing.T) {
+func TestSzengine_FindNetworkByEntityID_badMaxDegrees(test *testing.T) {
 	ctx := context.TODO()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
@@ -788,7 +788,7 @@ func TestSzengine_FindPathByEntityID_badExclusions(test *testing.T) {
 	requiredDataSources := senzing.SzNoRequiredDatasources
 	flags := senzing.SzNoFlags
 	actual, err := szEngine.FindPathByEntityID(ctx, startEntityID, endEntityID, maxDegrees, badExclusions, requiredDataSources, flags)
-	require.NoError(test, err)
+	require.ErrorIs(test, err, szerror.ErrSzBadInput)
 	printActual(test, actual)
 }
 
@@ -808,7 +808,7 @@ func TestSzengine_FindPathByEntityID_badRequiredDataSource(test *testing.T) {
 	exclusions := senzing.SzNoExclusions
 	flags := senzing.SzNoFlags
 	actual, err := szEngine.FindPathByEntityID(ctx, startEntityID, endEntityID, maxDegrees, exclusions, badRequiredDataSources, flags)
-	require.NoError(test, err)
+	require.ErrorIs(test, err, szerror.ErrSzBadInput)
 	printActual(test, actual)
 }
 
@@ -1366,7 +1366,7 @@ func TestSzengine_ProcessRedoRecord_badRedoRecord(test *testing.T) {
 	szEngine := getTestObject(ctx, test)
 	flags := senzing.SzWithoutInfo
 	actual, err := szEngine.ProcessRedoRecord(ctx, badRedoRecord, flags)
-	require.ErrorIs(test, err, szerror.ErrSzBadInput)
+	require.ErrorIs(test, err, szerror.ErrSzConfiguration)
 	printActual(test, actual)
 }
 
@@ -1399,7 +1399,7 @@ func TestSzengine_ProcessRedoRecord_withInfo_badRedoRecord(test *testing.T) {
 	szEngine := getTestObject(ctx, test)
 	flags := senzing.SzWithInfo
 	actual, err := szEngine.ProcessRedoRecord(ctx, badRedoRecord, flags)
-	require.ErrorIs(test, err, szerror.ErrSzBadInput)
+	require.ErrorIs(test, err, szerror.ErrSzConfiguration)
 	printActual(test, actual)
 }
 
@@ -1588,7 +1588,6 @@ func TestSzengine_SearchByAttributes_badAttributes(test *testing.T) {
 	printActual(test, actual)
 }
 
-// TODO: TestSzengine_SearchByAttributes_badSearchProfile doesn't fail.
 func TestSzengine_SearchByAttributes_badSearchProfile(test *testing.T) {
 	ctx := context.TODO()
 	records := []record.Record{
@@ -1603,7 +1602,7 @@ func TestSzengine_SearchByAttributes_badSearchProfile(test *testing.T) {
 	attributes := `{"NAMES": [{"NAME_TYPE": "PRIMARY", "NAME_LAST": "JOHNSON"}], "SSN_NUMBER": "053-39-3251"}`
 	flags := senzing.SzNoFlags
 	actual, err := szEngine.SearchByAttributes(ctx, attributes, badSearchProfile, flags)
-	require.NoError(test, err)
+	require.ErrorIs(test, err, szerror.ErrSzBadInput)
 	printActual(test, actual)
 }
 
@@ -1804,13 +1803,13 @@ func TestSzengine_WhyRecords_badRecordID(test *testing.T) {
 // Private methods
 // ----------------------------------------------------------------------------
 
-func TestSzproduct_getByteArray(test *testing.T) {
+func TestSzengine_getByteArray(test *testing.T) {
 	ctx := context.TODO()
 	szProduct := getTestObject(ctx, test)
 	szProduct.getByteArray(10)
 }
 
-func TestSzproduct_newError(test *testing.T) {
+func TestSzengine_newError(test *testing.T) {
 	ctx := context.TODO()
 	szProduct := getTestObject(ctx, test)
 	err := szProduct.newError(ctx, 1)

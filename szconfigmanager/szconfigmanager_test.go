@@ -192,19 +192,19 @@ func TestSzconfigmanager_SetDefaultConfigID_badConfigID(test *testing.T) {
 // Private methods
 // ----------------------------------------------------------------------------
 
-func TestSzproduct_getByteArray(test *testing.T) {
+func TestSzconfigmanager_getByteArray(test *testing.T) {
 	ctx := context.TODO()
 	szProduct := getTestObject(ctx, test)
 	szProduct.getByteArray(10)
 }
 
-func TestSzproduct_getByteArrayC(test *testing.T) {
+func TestSzconfigmanager_getByteArrayC(test *testing.T) {
 	ctx := context.TODO()
 	szProduct := getTestObject(ctx, test)
 	szProduct.getByteArrayC(10)
 }
 
-func TestSzproduct_newError(test *testing.T) {
+func TestSzconfigmanager_newError(test *testing.T) {
 	ctx := context.TODO()
 	szProduct := getTestObject(ctx, test)
 	err := szProduct.newError(ctx, 1)
