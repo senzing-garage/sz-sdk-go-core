@@ -1,7 +1,5 @@
 package szproduct
 
-// TODO: Figure out how to trigger a call to newError().
-
 import (
 	"context"
 	"errors"

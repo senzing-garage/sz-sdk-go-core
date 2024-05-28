@@ -571,7 +571,7 @@ func TestSzengine_FindNetworkByEntityID_badMaxDegrees(test *testing.T) {
 	buildOutMaxEntities := int64(10)
 	flags := senzing.SzFindNetworkDefaultFlags
 	actual, err := szEngine.FindNetworkByEntityID(ctx, entityIDs, badMaxDegrees, buildOutDegree, buildOutMaxEntities, flags)
-	require.NoError(test, err)
+	require.NoError(test, err) // TODO: TestSzengine_FindNetworkByEntityID_badMaxDegrees should fail.
 	printActual(test, actual)
 }
 
@@ -592,7 +592,7 @@ func TestSzengine_FindNetworkByEntityID_badBuildOutDegree(test *testing.T) {
 	buildOutMaxEntities := int64(10)
 	flags := senzing.SzFindNetworkDefaultFlags
 	actual, err := szEngine.FindNetworkByEntityID(ctx, entityIDs, maxDegrees, badBuildOutDegree, buildOutMaxEntities, flags)
-	require.NoError(test, err)
+	require.NoError(test, err) // TODO: TestSzengine_FindNetworkByEntityID_badBuildOutDegree should fail.
 	printActual(test, actual)
 }
 
@@ -613,7 +613,7 @@ func TestSzengine_FindNetworkByEntityID_badBuildOutMaxEntities(test *testing.T) 
 	buildOutDegree := int64(1)
 	flags := senzing.SzFindNetworkDefaultFlags
 	actual, err := szEngine.FindNetworkByEntityID(ctx, entityIDs, maxDegrees, buildOutDegree, badBuildOutMaxEntities, flags)
-	require.NoError(test, err)
+	require.NoError(test, err) // TODO: TestSzengine_FindNetworkByEntityID_badBuildOutMaxEntities should fail.
 	printActual(test, actual)
 }
 
@@ -768,7 +768,7 @@ func TestSzengine_FindPathByEntityID_badMaxDegrees(test *testing.T) {
 	requiredDataSources := senzing.SzNoRequiredDatasources
 	flags := senzing.SzNoFlags
 	actual, err := szEngine.FindPathByEntityID(ctx, startEntityID, endEntityID, badMaxDegrees, exclusions, requiredDataSources, flags)
-	require.NoError(test, err)
+	require.NoError(test, err) // TODO: TestSzengine_FindPathByEntityID_badMaxDegrees should fail.
 	printActual(test, actual)
 }
 
@@ -1569,7 +1569,6 @@ func TestSzengine_SearchByAttributes(test *testing.T) {
 	printActual(test, actual)
 }
 
-// TODO: TestSzengine_SearchByAttributes_badAttributes doesn't fail.
 func TestSzengine_SearchByAttributes_badAttributes(test *testing.T) {
 	ctx := context.TODO()
 	records := []record.Record{
@@ -1584,7 +1583,7 @@ func TestSzengine_SearchByAttributes_badAttributes(test *testing.T) {
 	searchProfile := senzing.SzNoSearchProfile
 	flags := senzing.SzNoFlags
 	actual, err := szEngine.SearchByAttributes(ctx, badAttributes, searchProfile, flags)
-	require.NoError(test, err)
+	require.NoError(test, err) // TODO: TestSzengine_SearchByAttributes_badAttributes should fail.
 	printActual(test, actual)
 }
 

@@ -66,7 +66,7 @@ func TestSzdiagnostic_CheckDatastorePerformance_badSecondsToRun(test *testing.T)
 	ctx := context.TODO()
 	szDiagnostic := getTestObject(ctx, test)
 	actual, err := szDiagnostic.CheckDatastorePerformance(ctx, badSecondsToRun)
-	require.NoError(test, err)
+	require.NoError(test, err) // TODO: TestSzdiagnostic_CheckDatastorePerformance_badSecondsToRun should fail.
 	printActual(test, actual)
 }
 
@@ -226,56 +226,6 @@ func TestSzdiagnostic_Reinitialize(test *testing.T) {
 	require.NoError(test, err)
 }
 
-// func TestSzdiagnostic_Reinitialize_badConfigID_scenario(test *testing.T) {
-// 	ctx := context.TODO()
-// 	szDiagnostic := getTestObject(ctx, test)
-// 	// goodConfigID := getDefaultConfigID()
-// 	badConfigID := int64(-1)
-// 	err := szDiagnostic.Reinitialize(ctx, badConfigID)
-// 	if err != nil {
-// 		test.Logf("\n>>>> Reinitialize(ctx, badConfigID) error %v", err)
-// 	}
-// 	// require.ErrorIs(test, err, szerror.ErrSzConfiguration)
-
-// 	// err = szDiagnostic.Reinitialize(ctx, goodConfigID)
-// 	// if err != nil {
-// 	// 	test.Logf("\n>>>> Reinitialize(ctx, goodConfigID) error %v", err)
-// 	// }
-// 	// require.NoError(test, err)
-
-// 	szDiagnosticSingleton = nil
-// 	szDiagnostic = getTestObject(ctx, test)
-
-// 	secondsToRun := 1
-// 	actual, err := szDiagnostic.CheckDatastorePerformance(ctx, secondsToRun)
-// 	require.NoError(test, err)
-// 	printActual(test, actual)
-// }
-
-// func TestSzdiagnostic_Reinitialize_badConfigID(test *testing.T) {
-// 	ctx := context.TODO()
-// 	szDiagnostic := getTestObject(ctx, test)
-// 	badConfigID := int64(-1)
-// 	err := szDiagnostic.Reinitialize(ctx, badConfigID)
-// 	require.ErrorIs(test, err, szerror.ErrSzConfiguration)
-// }
-
-// func TestSzdiagnostic_Reinitialize_again(test *testing.T) {
-// 	ctx := context.TODO()
-// 	// szDiagnosticSingleton = nil
-// 	szDiagnostic := getTestObject(ctx, test)
-// 	configID := getDefaultConfigID()
-// 	test.Logf("\n>>>>>> configID-2: %d", configID)
-
-// 	err := szDiagnostic.Reinitialize(ctx, configID)
-// 	require.NoError(test, err)
-
-// 	secondsToRun := 1
-// 	actual, err := szDiagnostic.CheckDatastorePerformance(ctx, secondsToRun)
-// 	require.NoError(test, err)
-// 	printActual(test, actual)
-// }
-
 // TODO: Implement TestSzdiagnostic_Reinitialize_error
 // func TestSzdiagnostic_Reinitialize_error(test *testing.T) {}
 
@@ -315,7 +265,6 @@ func addRecords(ctx context.Context, records []record.Record) error {
 }
 
 func createError(errorID int, err error) error {
-	// return errors.Cast(logger.NewError(errorId, err), err)
 	return logger.NewError(errorID, err)
 }
 
