@@ -11,3 +11,8 @@ func TestMain(testing *testing.T) {
 	_ = testing
 	main()
 }
+
+func TestCopyDatabase(testing *testing.T) {
+	_ = testing
+	copyDatabase()
+}
