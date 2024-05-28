@@ -2372,14 +2372,6 @@ func (client *Szengine) traceExit(errorNumber int, details ...interface{}) {
 	client.getLogger().Log(errorNumber, details...)
 }
 
-// func formatFlags(flags int64) string {
-// 	return strconv.FormatInt(flags, 10)
-// }
-
-// func formatEntityID(entityID int64) string {
-// 	return strconv.FormatInt(entityID, 10)
-// }
-
 // --- Errors -----------------------------------------------------------------
 
 // Create a new error.
@@ -2480,12 +2472,6 @@ func (client *Szengine) getLastExceptionCode(ctx context.Context) (int, error) {
 }
 
 // --- Misc -------------------------------------------------------------------
-
-// Get space for an array of bytes of a given size.
-// func (client *Szengine) getByteArrayC(size int) *C.char {
-// 	bytes := C.malloc(C.size_t(size))
-// 	return (*C.char)(bytes)
-// }
 
 // Make a byte array.
 func (client *Szengine) getByteArray(size int) []byte {
