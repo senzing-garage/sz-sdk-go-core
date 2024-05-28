@@ -28,7 +28,7 @@ var (
 )
 
 // ----------------------------------------------------------------------------
-// Interface functions - test
+// Interface methods - test
 // ----------------------------------------------------------------------------
 
 func TestSzAbstractFactory_CreateSzConfig(test *testing.T) {

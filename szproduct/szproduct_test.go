@@ -21,6 +21,7 @@ import (
 )
 
 const (
+	badLogLevelName   = "BadLogLevelName"
 	defaultTruncation = 76
 	instanceName      = "SzProduct Test"
 	observerOrigin    = "SzProduct observer"
@@ -39,7 +40,7 @@ var (
 )
 
 // ----------------------------------------------------------------------------
-// Interface functions - test
+// Interface methods - test
 // ----------------------------------------------------------------------------
 
 func TestSzproduct_GetLicense(test *testing.T) {
@@ -59,8 +60,37 @@ func TestSzproduct_GetVersion(test *testing.T) {
 }
 
 // ----------------------------------------------------------------------------
+// Private methods
+// ----------------------------------------------------------------------------
+
+func TestSzproduct_getByteArray(test *testing.T) {
+	ctx := context.TODO()
+	szProduct := getTestObject(ctx, test)
+	szProduct.getByteArray(10)
+}
+
+func TestSzproduct_getByteArrayC(test *testing.T) {
+	ctx := context.TODO()
+	szProduct := getTestObject(ctx, test)
+	szProduct.getByteArrayC(10)
+}
+
+func TestSzproduct_newError(test *testing.T) {
+	ctx := context.TODO()
+	szProduct := getTestObject(ctx, test)
+	err := szProduct.newError(ctx, 1)
+	require.Error(test, err)
+}
+
+// ----------------------------------------------------------------------------
 // Logging and observing
 // ----------------------------------------------------------------------------
+
+func TestSzproduct_SetLogLevel_badLogLevelName(test *testing.T) {
+	ctx := context.TODO()
+	szConfig := getTestObject(ctx, test)
+	_ = szConfig.SetLogLevel(ctx, badLogLevelName)
+}
 
 func TestSzproduct_SetObserverOrigin(test *testing.T) {
 	ctx := context.TODO()
@@ -108,22 +138,26 @@ func TestSzproduct_Initialize(test *testing.T) {
 	require.NoError(test, err)
 }
 
-// TODO: Uncomment after bug introduced in Senzing 4.0.0.24131 is fixed.
-// func TestSzproduct_Destroy(test *testing.T) {
-// 	ctx := context.TODO()
-// 	szProduct := getTestObject(ctx, test)
-// 	err := szProduct.Destroy(ctx)
-// 	require.NoError(test, err)
-// }
+// TODO: Implement TestSzengine_Initialize_error
+// func TestSzproduct_Initialize_error(test *testing.T) {}
 
-// TODO: Uncomment after bug introduced in Senzing 4.0.0.24131 is fixed.
-// func TestSzconfig_Destroy_withObserver(test *testing.T) {
-// 	ctx := context.TODO()
-// 	szProductSingleton = nil
-// 	szProduct := getTestObject(ctx, test)
-// 	err := szProduct.Destroy(ctx)
-// 	require.NoError(test, err)
-// }
+func TestSzproduct_Destroy(test *testing.T) {
+	ctx := context.TODO()
+	szProduct := getTestObject(ctx, test)
+	err := szProduct.Destroy(ctx)
+	require.NoError(test, err)
+}
+
+// TODO: Implement TestSzengine_Destroy_error
+// func TestSzproduct_Destroy_error(test *testing.T) {}
+
+func TestSzproduct_Destroy_withObserver(test *testing.T) {
+	ctx := context.TODO()
+	szProductSingleton = nil
+	szProduct := getTestObject(ctx, test)
+	err := szProduct.Destroy(ctx)
+	require.NoError(test, err)
+}
 
 // ----------------------------------------------------------------------------
 // Internal functions
@@ -326,11 +360,10 @@ func teardown() error {
 
 func teardownSzProduct(ctx context.Context) error {
 	handleError(szProductSingleton.UnregisterObserver(ctx, observerSingleton))
-	// TODO: Uncomment after bug introduced in Senzing 4.0.0.24131 is fixed.
-	// err := szProductSingleton.Destroy(ctx)
-	// if err != nil {
-	// 	return err
-	// }
+	err := szProductSingleton.Destroy(ctx)
+	if err != nil {
+		return err
+	}
 	szProductSingleton = nil
 	return nil
 }

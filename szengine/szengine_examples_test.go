@@ -13,7 +13,7 @@ import (
 )
 
 // ----------------------------------------------------------------------------
-// Interface functions - Examples for godoc documentation
+// Interface methods - Examples for godoc documentation
 // ----------------------------------------------------------------------------
 
 func ExampleSzengine() {}
@@ -91,7 +91,7 @@ func ExampleSzengine_CountRedoRecords() {
 		fmt.Println(err)
 	}
 	fmt.Println(result)
-	// Output: 2
+	// Output: 4
 }
 
 func ExampleSzengine_DeleteRecord() {

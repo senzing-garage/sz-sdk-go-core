@@ -21,13 +21,14 @@ BUILD_ITERATION := $(shell git log $(BUILD_TAG)..HEAD --oneline | wc -l | sed 's
 GIT_REMOTE_URL := $(shell git config --get remote.origin.url)
 GO_PACKAGE_NAME := $(shell echo $(GIT_REMOTE_URL) | sed -e 's|^git@github.com:|github.com/|' -e 's|\.git$$||' -e 's|Senzing|senzing|')
 PATH := $(MAKEFILE_DIRECTORY)/bin:$(PATH)
+SENZING_TOOLS_DATABASE_URL ?= sqlite3://na:na@nowhere/tmp/sqlite/G2C.db
 
 # Recursive assignment ('=')
 
 GO_OSARCH = $(subst /, ,$@)
 GO_OS = $(word 1, $(GO_OSARCH))
 GO_ARCH = $(word 2, $(GO_OSARCH))
-GOBIN ?= $$(go env GOPATH)/bin
+GOBIN ?= $(shell go env GOPATH)/bin
 
 # Conditional assignment. ('?=')
 # Can be overridden with "export"
@@ -100,6 +101,7 @@ coverage: coverage-osarch-specific
 
 
 .PHONY: check-coverage
+check-coverage: export SENZING_LOG_LEVEL=TRACE
 check-coverage: install-go-test-coverage
 	go test ./... -coverprofile=./cover.out -covermode=atomic -coverpkg=./...
 	${GOBIN}/go-test-coverage --config=./.testcoverage.yml
