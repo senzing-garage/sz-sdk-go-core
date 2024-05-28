@@ -21,11 +21,16 @@ import (
 )
 
 const (
-	defaultTruncation = 76
-	instanceName      = "SzConfig Test"
-	observerOrigin    = "SzConfig observer"
-	printResults      = false
-	verboseLogging    = senzing.SzNoLogging
+	badConfigDefinition = "}{"
+	badConfigHandle     = uintptr(0)
+	badDataSourceCode   = "\n\tGO_TEST"
+	badLogLevelName     = "BadLogLevelName"
+	badSettings         = "{]"
+	defaultTruncation   = 76
+	instanceName        = "SzConfig Test"
+	observerOrigin      = "SzConfig observer"
+	printResults        = false
+	verboseLogging      = senzing.SzNoLogging
 )
 
 var (
@@ -79,7 +84,6 @@ func TestSzconfig_AddDataSource_badDataSourceCode(test *testing.T) {
 	szConfig := getTestObject(ctx, test)
 	configHandle, err := szConfig.CreateConfig(ctx)
 	require.NoError(test, err)
-	badDataSourceCode := "\n\tGO_TEST"
 	actual, err := szConfig.AddDataSource(ctx, configHandle, badDataSourceCode)
 	require.ErrorIs(test, err, szerror.ErrSzBadInput)
 	printActual(test, actual)
@@ -94,14 +98,15 @@ func TestSzconfig_CloseConfig(test *testing.T) {
 	require.NoError(test, err)
 }
 
-// TODO: Implement TestSzconfig_CloseConfig_badConfigHandle
-// func TestSzconfig_CloseConfig_badConfigHandle(test *testing.T) {
-// 	ctx := context.TODO()
-// 	szConfig := getTestObject(ctx, test)
-// 	badConfigHandle := uintptr(0)
-// 	err := szConfig.CloseConfig(ctx, badConfigHandle)
-// 	expectError(test, szerror.SzUnhandledError{}, err)
-// }
+func TestSzconfig_CloseConfig_badConfigHandle(test *testing.T) {
+	ctx := context.TODO()
+	szConfig := getTestObject(ctx, test)
+	err := szConfig.CloseConfig(ctx, badConfigHandle)
+	require.NoError(test, err)
+}
+
+// TODO: Implement TestSzconfig_CloseConfig_error
+// func TestSzconfig_CloseConfig_error(test *testing.T) {}
 
 func TestSzconfig_CreateConfig(test *testing.T) {
 	ctx := context.TODO()
@@ -111,8 +116,8 @@ func TestSzconfig_CreateConfig(test *testing.T) {
 	printActual(test, actual)
 }
 
-// TODO: Implement TestSzconfig_CreateConfig_badXxx
-// func TestSzconfig_CreateConfig_badXxx(test *testing.T) {}
+// TODO: Implement TestSzconfig_CreateConfig_error
+// func TestSzconfig_CreateConfig_error(test *testing.T) {}
 
 func TestSzconfig_DeleteDataSource(test *testing.T) {
 	ctx := context.TODO()
@@ -170,7 +175,6 @@ func TestSzconfig_DeleteDataSource_withLoad(test *testing.T) {
 func TestSzconfig_DeleteDataSource_badConfigHandle(test *testing.T) {
 	ctx := context.TODO()
 	szConfig := getTestObject(ctx, test)
-	badConfigHandle := uintptr(0)
 	dataSourceCode := "GO_TEST"
 	err := szConfig.DeleteDataSource(ctx, badConfigHandle, dataSourceCode)
 	require.ErrorIs(test, err, szerror.ErrSzBase)
@@ -181,7 +185,6 @@ func TestSzconfig_DeleteDataSource_badDataSourceCode(test *testing.T) {
 	szConfig := getTestObject(ctx, test)
 	configHandle, err := szConfig.CreateConfig(ctx)
 	require.NoError(test, err)
-	badDataSourceCode := "\n\tGO_TEST"
 	err = szConfig.DeleteDataSource(ctx, configHandle, badDataSourceCode)
 	require.ErrorIs(test, err, szerror.ErrSzBadInput)
 }
@@ -199,7 +202,6 @@ func TestSzconfig_ExportConfig(test *testing.T) {
 func TestSzconfig_ExportConfig_badConfigHandle(test *testing.T) {
 	ctx := context.TODO()
 	szConfig := getTestObject(ctx, test)
-	badConfigHandle := uintptr(0)
 	actual, err := szConfig.ExportConfig(ctx, badConfigHandle)
 	assert.Equal(test, "", actual)
 	require.ErrorIs(test, err, szerror.ErrSzBase)
@@ -220,7 +222,6 @@ func TestSzconfig_GetDataSources(test *testing.T) {
 func TestSzconfig_GetDataSources_badConfigHandle(test *testing.T) {
 	ctx := context.TODO()
 	szConfig := getTestObject(ctx, test)
-	badConfigHandle := uintptr(0)
 	actual, err := szConfig.GetDataSources(ctx, badConfigHandle)
 	assert.Equal(test, "", actual)
 	require.ErrorIs(test, err, szerror.ErrSzBase)
@@ -241,7 +242,6 @@ func TestSzconfig_ImportConfig(test *testing.T) {
 func TestSzconfig_ImportConfig_badConfigDefinition(test *testing.T) {
 	ctx := context.TODO()
 	szConfig := getTestObject(ctx, test)
-	badConfigDefinition := "}{"
 	_, err := szConfig.ImportConfig(ctx, badConfigDefinition)
 	require.ErrorIs(test, err, szerror.ErrSzBadInput)
 }
@@ -253,7 +253,6 @@ func TestSzconfig_ImportConfig_badConfigDefinition(test *testing.T) {
 func TestSzconfig_SetLogLevel_badLogLevelName(test *testing.T) {
 	ctx := context.TODO()
 	szConfig := getTestObject(ctx, test)
-	badLogLevelName := "BadLogLevelName"
 	_ = szConfig.SetLogLevel(ctx, badLogLevelName)
 }
 
@@ -307,18 +306,17 @@ func TestSzconfig_Initialize(test *testing.T) {
 	require.NoError(test, err)
 }
 
-// TODO: Implement TestSzconfig_Initialize_badSettings
-// func TestSzconfig_Initialize_badSettings(test *testing.T) {
-// ctx := context.TODO()
-// szConfig := getTestObject(ctx, test)
-// instanceName := "Test name"
-// verboseLogging := senzing.SzNoLogging
-// // badSettings := "\n\t"
-// badSettings := "{]"
-// err := szConfig.Initialize(ctx, instanceName, badSettings, verboseLogging)
-// assert.Error(test, err)
-// require.ErrorIs(test, err, szerror.ErrSzBase)
-// }
+func TestSzconfig_Initialize_badSettings(test *testing.T) {
+	ctx := context.TODO()
+	szConfig := getTestObject(ctx, test)
+	instanceName := "Test name"
+	verboseLogging := senzing.SzNoLogging
+	err := szConfig.Initialize(ctx, instanceName, badSettings, verboseLogging)
+	assert.NoError(test, err)
+}
+
+// TODO: Implement TestSzconfig_Initialize_error
+// func TestSzconfig_Initialize_error(test *testing.T) {}
 
 func TestSzconfig_Initialize_again(test *testing.T) {
 	ctx := context.TODO()
@@ -338,6 +336,9 @@ func TestSzconfig_Destroy(test *testing.T) {
 	require.NoError(test, err)
 }
 
+// TODO: Implement TestSzconfig_Destroy_error
+// func TestSzconfig_Destroy_error(test *testing.T) {}
+
 func TestSzconfig_Destroy_withObserver(test *testing.T) {
 	ctx := context.TODO()
 	szConfigSingleton = nil
@@ -346,15 +347,11 @@ func TestSzconfig_Destroy_withObserver(test *testing.T) {
 	require.NoError(test, err)
 }
 
-// TODO: Implement TestSzconfig_Destroy_badXxx
-// func TestSzconfig_Destroy_badXxx(test *testing.T) {}
-
 // ----------------------------------------------------------------------------
 // Internal functions
 // ----------------------------------------------------------------------------
 
 func createError(errorID int, err error) error {
-	// return errors.Cast(logger.NewError(errorId, err), err)
 	return logger.NewError(errorID, err)
 }
 

@@ -27,12 +27,14 @@ import (
 )
 
 const (
+	badFeatureID      = int64(-1)
+	badLogLevelName   = "BadLogLevelName"
+	badSecondsToRun   = -1
 	defaultTruncation = 76
 	instanceName      = "SzDiagnostic Test"
 	observerOrigin    = "SzDiagnostic observer"
 	printResults      = false
 	verboseLogging    = senzing.SzNoLogging
-	badLogLevelName   = "BadLogLevelName"
 )
 
 var (
@@ -63,11 +65,13 @@ func TestSzdiagnostic_CheckDatastorePerformance(test *testing.T) {
 func TestSzdiagnostic_CheckDatastorePerformance_badSecondsToRun(test *testing.T) {
 	ctx := context.TODO()
 	szDiagnostic := getTestObject(ctx, test)
-	badSecondsToRun := -1
 	actual, err := szDiagnostic.CheckDatastorePerformance(ctx, badSecondsToRun)
 	require.NoError(test, err)
 	printActual(test, actual)
 }
+
+// TODO: Implement TestSzdiagnostic_CheckDatastorePerformance_error
+// func TestSzdiagnostic_CheckDatastorePerformance_error(test *testing.T) {}
 
 func TestSzdiagnostic_GetDatastoreInfo(test *testing.T) {
 	ctx := context.TODO()
@@ -76,6 +80,9 @@ func TestSzdiagnostic_GetDatastoreInfo(test *testing.T) {
 	require.NoError(test, err)
 	printActual(test, actual)
 }
+
+// TODO: Implement TestSzdiagnostic_GetDatastoreInfo_error
+// func TestSzdiagnostic_GetDatastoreInfo_error(test *testing.T) {}
 
 func TestSzdiagnostic_GetFeature(test *testing.T) {
 	ctx := context.TODO()
@@ -101,25 +108,22 @@ func TestSzdiagnostic_GetFeature_badFeatureID(test *testing.T) {
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szDiagnostic := getTestObject(ctx, test)
-	featureID := int64(-1)
-	actual, err := szDiagnostic.GetFeature(ctx, int64(featureID))
+	actual, err := szDiagnostic.GetFeature(ctx, badFeatureID)
 	require.ErrorIs(test, err, szerror.ErrSzBase)
 	printActual(test, actual)
 }
 
-// TODO:  Determine if PurgeRepository can be tested without disturbing other testcases
-// func TestSzdiagnostic_PurgeRepository(test *testing.T) {
-// 	ctx := context.TODO()
-// 	szDiagnostic := getTestObject(ctx, test)
-// 	err := szDiagnostic.PurgeRepository(ctx)
-// 	require.NoError(test, err)
-// }
+// PurgeRepository is tested in szdiagnostic_examples_test.go
+// func TestSzdiagnostic_PurgeRepository(test *testing.T) {}
+
+// TODO: Implement TestSzdiagnostic_PurgeRepository_error
+// func TestSzdiagnostic_PurgeRepository_error(test *testing.T) {}
 
 // ----------------------------------------------------------------------------
 // Logging and observing
 // ----------------------------------------------------------------------------
 
-func TestSzconfig_SetLogLevel_badLogLevelName(test *testing.T) {
+func TestSzdiagnostic_SetLogLevel_badLogLevelName(test *testing.T) {
 	ctx := context.TODO()
 	szConfig := getTestObject(ctx, test)
 	_ = szConfig.SetLogLevel(ctx, badLogLevelName)
@@ -173,6 +177,9 @@ func TestSzdiagnostic_Initialize(test *testing.T) {
 	require.NoError(test, err)
 }
 
+// TODO: Implement TestSzdiagnostic_Initialize_error
+// func TestSzdiagnostic_Initialize_error(test *testing.T) {}
+
 func TestSzdiagnostic_Initialize_withConfigId(test *testing.T) {
 	ctx := context.TODO()
 	szDiagnostic := &Szdiagnostic{}
@@ -184,6 +191,9 @@ func TestSzdiagnostic_Initialize_withConfigId(test *testing.T) {
 	err = szDiagnostic.Initialize(ctx, instanceName, settings, configID, verboseLogging)
 	require.NoError(test, err)
 }
+
+// TODO: Implement TestSzdiagnostic_Initialize_withConfigId_badConfigID
+// func TestSzdiagnostic_Initialize_withConfigId_badConfigID(test *testing.T) {}
 
 func TestSzdiagnostic_Reinitialize(test *testing.T) {
 	ctx := context.TODO()
@@ -243,6 +253,9 @@ func TestSzdiagnostic_Reinitialize(test *testing.T) {
 // 	printActual(test, actual)
 // }
 
+// TODO: Implement TestSzdiagnostic_Reinitialize_error
+// func TestSzdiagnostic_Reinitialize_error(test *testing.T) {}
+
 func TestSzdiagnostic_Destroy(test *testing.T) {
 	ctx := context.TODO()
 	szDiagnostic := getTestObject(ctx, test)
@@ -257,6 +270,9 @@ func TestSzdiagnostic_Destroy_withObserver(test *testing.T) {
 	err := szDiagnostic.Destroy(ctx)
 	require.NoError(test, err)
 }
+
+// TODO: Implement TestSzdiagnostic_Destroy_error
+// func TestSzdiagnostic_Destroy_error(test *testing.T) {}
 
 // ----------------------------------------------------------------------------
 // Internal functions

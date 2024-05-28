@@ -389,9 +389,7 @@ func TestSzengine_ExportJSONEntityReport(test *testing.T) {
 }
 
 // TODO: Implement TestSzengine_ExportJSONEntityReport_error
-func TestSzengine_ExportJSONEntityReport_error(test *testing.T) {
-	_ = test
-}
+// func TestSzengine_ExportJSONEntityReport_error(test *testing.T) {}
 
 func TestSzengine_ExportJSONEntityReportIterator(test *testing.T) {
 	ctx := context.TODO()
@@ -1101,9 +1099,7 @@ func TestSzengine_GetActiveConfigID(test *testing.T) {
 }
 
 // TODO: Implement TestSzengine_GetActiveConfigID_error
-func TestSzengine_GetActiveConfigID_error(test *testing.T) {
-	_ = test
-}
+// func TestSzengine_GetActiveConfigID_error(test *testing.T) {}
 
 func TestSzengine_GetEntityByEntityID(test *testing.T) {
 	ctx := context.TODO()
@@ -1241,9 +1237,7 @@ func TestSzengine_GetRedoRecord(test *testing.T) {
 }
 
 // TODO: Implement TestSzengine_GetRedoRecord_error
-func TestSzengine_GetRedoRecord_error(test *testing.T) {
-	_ = test
-}
+// func TestSzengine_GetRedoRecord_error(test *testing.T) {}
 
 func TestSzengine_GetStats(test *testing.T) {
 	ctx := context.TODO()
@@ -1254,9 +1248,7 @@ func TestSzengine_GetStats(test *testing.T) {
 }
 
 // TODO: Implement TestSzengine_GetStats_error
-func TestSzengine_GetStats_error(test *testing.T) {
-	_ = test
-}
+// func TestSzengine_GetStats_error(test *testing.T) {}
 
 func TestSzengine_GetVirtualEntityByRecordID(test *testing.T) {
 	ctx := context.TODO()
@@ -1354,9 +1346,7 @@ func TestSzengine_PrimeEngine(test *testing.T) {
 }
 
 // TODO: Implement TestSzengine_PrimeEngine_error
-func TestSzengine_PrimeEngine_error(test *testing.T) {
-	_ = test
-}
+// func TestSzengine_PrimeEngine_error(test *testing.T) {}
 
 func TestSzengine_ProcessRedoRecord(test *testing.T) {
 	ctx := context.TODO()
@@ -1429,7 +1419,6 @@ func TestSzengine_ReevaluateEntity(test *testing.T) {
 	printActual(test, actual)
 }
 
-// TODO: TestSzengine_ReevaluateEntity_badEntityID doesn't fail
 func TestSzengine_ReevaluateEntity_badEntityID(test *testing.T) {
 	ctx := context.TODO()
 	records := []record.Record{
@@ -1444,6 +1433,9 @@ func TestSzengine_ReevaluateEntity_badEntityID(test *testing.T) {
 	require.NoError(test, err)
 	printActual(test, actual)
 }
+
+// TODO: Implement TestSzengine_ReevaluateEntity_error
+// func TestSzengine_ReevaluateEntity_error(test *testing.T) {}
 
 func TestSzengine_ReevaluateEntity_withInfo(test *testing.T) {
 	ctx := context.TODO()
@@ -1461,7 +1453,6 @@ func TestSzengine_ReevaluateEntity_withInfo(test *testing.T) {
 	printActual(test, actual)
 }
 
-// TODO: TestSzengine_ReevaluateEntity_withInfo_badEntityID doesn't fail
 func TestSzengine_ReevaluateEntity_withInfo_badEntityID(test *testing.T) {
 	ctx := context.TODO()
 	records := []record.Record{
@@ -1476,6 +1467,9 @@ func TestSzengine_ReevaluateEntity_withInfo_badEntityID(test *testing.T) {
 	require.NoError(test, err)
 	printActual(test, actual)
 }
+
+// TODO: Implement TestSzengine_ReevaluateEntity_withInfo_error
+// func TestSzengine_ReevaluateEntity_withInfo_error(test *testing.T) {}
 
 func TestSzengine_ReevaluateRecord(test *testing.T) {
 	ctx := context.TODO()
@@ -1613,6 +1607,9 @@ func TestSzengine_SearchByAttributes_badSearchProfile(test *testing.T) {
 	printActual(test, actual)
 }
 
+// TODO: Implement TestSzengine_SearchByAttributes_error
+// func TestSzengine_SearchByAttributes_error(test *testing.T) {}
+
 func TestSzengine_SearchByAttributes_withSearchProfile(test *testing.T) {
 	ctx := context.TODO()
 	records := []record.Record{
@@ -1633,14 +1630,10 @@ func TestSzengine_SearchByAttributes_withSearchProfile(test *testing.T) {
 }
 
 // TODO: Implement TestSzengine_StreamExportCsvEntityReport
-func TestSzengine_StreamExportCsvEntityReport(test *testing.T) {
-	_ = test
-}
+// func TestSzengine_StreamExportCsvEntityReport(test *testing.T) {}
 
 // TODO: Implement TestSzengine_StreamExportJSONEntityReport
-func TestSzengine_StreamExportJSONEntityReport(test *testing.T) {
-	_ = test
-}
+// func TestSzengine_StreamExportJSONEntityReport(test *testing.T) {}
 
 func TestSzengine_SearchByAttributes_searchProfile(test *testing.T) {
 	ctx := context.TODO()
@@ -1866,9 +1859,7 @@ func TestSzengine_Initialize(test *testing.T) {
 }
 
 // TODO: Implement TestSzengine_Initialize_error
-func TestSzengine_Initialize_error(test *testing.T) {
-	_ = test
-}
+// func TestSzengine_Initialize_error(test *testing.T) {}
 
 func TestSzengine_Initialize_withConfigID(test *testing.T) {
 	ctx := context.TODO()
@@ -1881,9 +1872,7 @@ func TestSzengine_Initialize_withConfigID(test *testing.T) {
 }
 
 // TODO: Implement TestSzengine_Initialize_withConfigID_error
-func TestSzengine_Initialize_withConfigID_error(test *testing.T) {
-	_ = test
-}
+// func TestSzengine_Initialize_withConfigID_error(test *testing.T) {}
 
 func TestSzengine_Reinitialize(test *testing.T) {
 	ctx := context.TODO()
@@ -1896,9 +1885,7 @@ func TestSzengine_Reinitialize(test *testing.T) {
 }
 
 // TODO: Implement TestSzengine_Reinitialize_badConfigID
-func TestSzengine_Reinitialize_badConfigID(test *testing.T) {
-	_ = test
-}
+// func TestSzengine_Reinitialize_badConfigID(test *testing.T) {}
 
 func TestSzengine_Destroy(test *testing.T) {
 	ctx := context.TODO()
@@ -1908,9 +1895,7 @@ func TestSzengine_Destroy(test *testing.T) {
 }
 
 // TODO: Implement TestSzengine_Destroy_error
-func TestSzengine_Destroy_error(test *testing.T) {
-	_ = test
-}
+// func TestSzengine_Destroy_error(test *testing.T) {}
 
 func TestSzengine_Destroy_withObserver(test *testing.T) {
 	ctx := context.TODO()

@@ -69,11 +69,11 @@ func (client *Szconfigmanager) AddConfig(ctx context.Context, configDefinition s
 			client.traceExit(2, configDefinition, configComment, resultConfigID, err, time.Since(entryTime))
 		}()
 	}
-	configStrForC := C.CString(configDefinition)
-	defer C.free(unsafe.Pointer(configStrForC))
+	configDefinitionForC := C.CString(configDefinition)
+	defer C.free(unsafe.Pointer(configDefinitionForC))
 	configCommentForC := C.CString(configComment)
 	defer C.free(unsafe.Pointer(configCommentForC))
-	result := C.G2ConfigMgr_addConfig_helper(configStrForC, configCommentForC)
+	result := C.G2ConfigMgr_addConfig_helper(configDefinitionForC, configCommentForC)
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4001, configDefinition, configComment, result.returnCode, result, time.Since(entryTime))
 	}
