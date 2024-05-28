@@ -44,7 +44,7 @@ var (
 )
 
 // ----------------------------------------------------------------------------
-// Interface functions - test
+// Interface methods - test
 // ----------------------------------------------------------------------------
 
 func TestSzconfig_AddDataSource(test *testing.T) {
@@ -244,6 +244,29 @@ func TestSzconfig_ImportConfig_badConfigDefinition(test *testing.T) {
 	szConfig := getTestObject(ctx, test)
 	_, err := szConfig.ImportConfig(ctx, badConfigDefinition)
 	require.ErrorIs(test, err, szerror.ErrSzBadInput)
+}
+
+// ----------------------------------------------------------------------------
+// Private methods
+// ----------------------------------------------------------------------------
+
+func TestSzproduct_getByteArray(test *testing.T) {
+	ctx := context.TODO()
+	szProduct := getTestObject(ctx, test)
+	szProduct.getByteArray(10)
+}
+
+func TestSzproduct_getByteArrayC(test *testing.T) {
+	ctx := context.TODO()
+	szProduct := getTestObject(ctx, test)
+	szProduct.getByteArrayC(10)
+}
+
+func TestSzproduct_newError(test *testing.T) {
+	ctx := context.TODO()
+	szProduct := getTestObject(ctx, test)
+	err := szProduct.newError(ctx, 1)
+	require.Error(test, err)
 }
 
 // ----------------------------------------------------------------------------

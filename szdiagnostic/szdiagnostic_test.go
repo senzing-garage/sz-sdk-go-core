@@ -50,7 +50,7 @@ var (
 )
 
 // ----------------------------------------------------------------------------
-// Interface functions - test
+// Interface methods - test
 // ----------------------------------------------------------------------------
 
 func TestSzdiagnostic_CheckDatastorePerformance(test *testing.T) {
@@ -118,6 +118,29 @@ func TestSzdiagnostic_GetFeature_badFeatureID(test *testing.T) {
 
 // TODO: Implement TestSzdiagnostic_PurgeRepository_error
 // func TestSzdiagnostic_PurgeRepository_error(test *testing.T) {}
+
+// ----------------------------------------------------------------------------
+// Private methods
+// ----------------------------------------------------------------------------
+
+func TestSzproduct_getByteArray(test *testing.T) {
+	ctx := context.TODO()
+	szProduct := getTestObject(ctx, test)
+	szProduct.getByteArray(10)
+}
+
+func TestSzproduct_getByteArrayC(test *testing.T) {
+	ctx := context.TODO()
+	szProduct := getTestObject(ctx, test)
+	szProduct.getByteArrayC(10)
+}
+
+func TestSzproduct_newError(test *testing.T) {
+	ctx := context.TODO()
+	szProduct := getTestObject(ctx, test)
+	err := szProduct.newError(ctx, 1)
+	require.Error(test, err)
+}
 
 // ----------------------------------------------------------------------------
 // Logging and observing

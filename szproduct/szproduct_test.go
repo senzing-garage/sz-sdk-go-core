@@ -42,7 +42,7 @@ var (
 )
 
 // ----------------------------------------------------------------------------
-// Interface functions - test
+// Interface methods - test
 // ----------------------------------------------------------------------------
 
 func TestSzproduct_GetLicense(test *testing.T) {
@@ -59,6 +59,29 @@ func TestSzproduct_GetVersion(test *testing.T) {
 	actual, err := szProduct.GetVersion(ctx)
 	require.NoError(test, err)
 	printActual(test, actual)
+}
+
+// ----------------------------------------------------------------------------
+// Private methods
+// ----------------------------------------------------------------------------
+
+func TestSzproduct_getByteArray(test *testing.T) {
+	ctx := context.TODO()
+	szProduct := getTestObject(ctx, test)
+	szProduct.getByteArray(10)
+}
+
+func TestSzproduct_getByteArrayC(test *testing.T) {
+	ctx := context.TODO()
+	szProduct := getTestObject(ctx, test)
+	szProduct.getByteArrayC(10)
+}
+
+func TestSzproduct_newError(test *testing.T) {
+	ctx := context.TODO()
+	szProduct := getTestObject(ctx, test)
+	err := szProduct.newError(ctx, 1)
+	require.Error(test, err)
 }
 
 // ----------------------------------------------------------------------------

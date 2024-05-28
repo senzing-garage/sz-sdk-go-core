@@ -47,7 +47,7 @@ var (
 )
 
 // ----------------------------------------------------------------------------
-// Interface functions - test
+// Interface methods - test
 // ----------------------------------------------------------------------------
 
 func TestSzconfigmanager_AddConfig(test *testing.T) {
@@ -186,6 +186,29 @@ func TestSzconfigmanager_SetDefaultConfigID_badConfigID(test *testing.T) {
 	szConfigManager := getTestObject(ctx, test)
 	err := szConfigManager.SetDefaultConfigID(ctx, badConfigID)
 	require.ErrorIs(test, err, szerror.ErrSzConfiguration)
+}
+
+// ----------------------------------------------------------------------------
+// Private methods
+// ----------------------------------------------------------------------------
+
+func TestSzproduct_getByteArray(test *testing.T) {
+	ctx := context.TODO()
+	szProduct := getTestObject(ctx, test)
+	szProduct.getByteArray(10)
+}
+
+func TestSzproduct_getByteArrayC(test *testing.T) {
+	ctx := context.TODO()
+	szProduct := getTestObject(ctx, test)
+	szProduct.getByteArrayC(10)
+}
+
+func TestSzproduct_newError(test *testing.T) {
+	ctx := context.TODO()
+	szProduct := getTestObject(ctx, test)
+	err := szProduct.newError(ctx, 1)
+	require.Error(test, err)
 }
 
 // ----------------------------------------------------------------------------

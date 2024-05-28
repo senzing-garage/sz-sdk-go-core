@@ -69,7 +69,7 @@ var (
 )
 
 // ----------------------------------------------------------------------------
-// Interface functions - test
+// Interface methods - test
 // ----------------------------------------------------------------------------
 
 func TestSzengine_AddRecord(test *testing.T) {
@@ -1798,6 +1798,23 @@ func TestSzengine_WhyRecords_badRecordID(test *testing.T) {
 	actual, err := szEngine.WhyRecords(ctx, record1.DataSource, record1.Id, record2.DataSource, badRecordID, flags)
 	require.ErrorIs(test, err, szerror.ErrSzNotFound)
 	printActual(test, actual)
+}
+
+// ----------------------------------------------------------------------------
+// Private methods
+// ----------------------------------------------------------------------------
+
+func TestSzproduct_getByteArray(test *testing.T) {
+	ctx := context.TODO()
+	szProduct := getTestObject(ctx, test)
+	szProduct.getByteArray(10)
+}
+
+func TestSzproduct_newError(test *testing.T) {
+	ctx := context.TODO()
+	szProduct := getTestObject(ctx, test)
+	err := szProduct.newError(ctx, 1)
+	require.Error(test, err)
 }
 
 // ----------------------------------------------------------------------------
