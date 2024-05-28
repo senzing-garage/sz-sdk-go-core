@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [main]
 
+env:
+  SENZING_LOG_LEVEL: TRACE
+
 permissions:
   # Required: allow read access to the content for analysis.
   contents: read
