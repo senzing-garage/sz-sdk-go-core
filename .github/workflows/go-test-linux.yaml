@@ -3,6 +3,8 @@ name: go test linux
 on: [push]
 
 env:
+  CGO_ENABLED: 1
+  GO111MODULE: on
   LD_LIBRARY_PATH: /opt/senzing/g2/lib
   SENZING_LOG_LEVEL: TRACE
   SENZING_TOOLS_DATABASE_URL: sqlite3://na:na@nowhere/tmp/sqlite/G2C.db
@@ -12,9 +14,6 @@ permissions:
 
 jobs:
   go-test-linux:
-    env:
-      GO111MODULE: on
-      CGO_ENABLED: 1
     name: "go test with Senzing: ${{ matrix.senzingapi-version }}; OS: ${{ matrix.os }}; Go: ${{ matrix.go }}"
     runs-on: ${{ matrix.os }}
     strategy:
@@ -46,7 +45,7 @@ jobs:
         run: mkdir /tmp/sqlite && cp testdata/sqlite/G2C.db /tmp/sqlite/G2C.db
 
       - name: run go test
-        run: go test -v -p 1 ./... -coverprofile=./cover.out -covermode=atomic -coverpkg=./...
+        run: go test -v -p 1 -coverprofile=./cover.out -covermode=atomic -coverpkg=./... ./...
 
       - name: Store coverage file
         uses: actions/upload-artifact@v4
@@ -57,4 +56,4 @@ jobs:
   coverage:
     name: coverage
     needs: go-test-linux
-    uses: senzing-factory/build-resources/.github/workflows/go-coverage.yaml@main
+    uses: senzing-factory/build-resources/.github/workflows/go-coverage.yaml@v2
