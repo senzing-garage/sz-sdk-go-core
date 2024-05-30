@@ -28,7 +28,8 @@ jobs:
         with:
           senzingapi-runtime-version: staging-v4
 
-      - run: |
+      - name: Copy Senzing headers
+        run: |
           mkdir ./szconfig/gohelpers
           cp /opt/senzing/g2/sdk/c/*.h ./szconfig/
           cp /opt/senzing/g2/sdk/c/gohelpers/*.h ./szconfig/gohelpers

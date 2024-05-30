@@ -1,4 +1,4 @@
-run: 
+run:
   modules-download-mode: readonly
   show-stats: true
 
