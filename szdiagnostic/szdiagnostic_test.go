@@ -39,10 +39,10 @@ const (
 
 var (
 	defaultConfigID   int64
-	logger            logging.LoggingInterface
+	logger            logging.Logging
 	logLevel          = "INFO"
-	observerSingleton = &observer.ObserverNull{
-		Id:       "Observer 1",
+	observerSingleton = &observer.NullObserver{
+		ID:       "Observer 1",
 		IsSilent: true,
 	}
 	szDiagnosticSingleton *Szdiagnostic

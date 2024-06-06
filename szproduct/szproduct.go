@@ -34,7 +34,7 @@ import (
 
 type Szproduct struct {
 	isTrace        bool
-	logger         logging.LoggingInterface
+	logger         logging.Logging
 	observerOrigin string
 	observers      subject.Subject
 }
@@ -209,17 +209,17 @@ func (client *Szproduct) RegisterObserver(ctx context.Context, observer observer
 	var err error
 	if client.isTrace {
 		entryTime := time.Now()
-		client.traceEntry(703, observer.GetObserverId(ctx))
-		defer func() { client.traceExit(704, observer.GetObserverId(ctx), err, time.Since(entryTime)) }()
+		client.traceEntry(703, observer.GetObserverID(ctx))
+		defer func() { client.traceExit(704, observer.GetObserverID(ctx), err, time.Since(entryTime)) }()
 	}
 	if client.observers == nil {
-		client.observers = &subject.SubjectImpl{}
+		client.observers = &subject.SimpleSubject{}
 	}
 	err = client.observers.RegisterObserver(ctx, observer)
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
-				"observerId": observer.GetObserverId(ctx),
+				"observerId": observer.GetObserverID(ctx),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8702, err, details)
 		}()
@@ -282,8 +282,8 @@ func (client *Szproduct) UnregisterObserver(ctx context.Context, observer observ
 	var err error
 	if client.isTrace {
 		entryTime := time.Now()
-		client.traceEntry(707, observer.GetObserverId(ctx))
-		defer func() { client.traceExit(708, observer.GetObserverId(ctx), err, time.Since(entryTime)) }()
+		client.traceEntry(707, observer.GetObserverID(ctx))
+		defer func() { client.traceExit(708, observer.GetObserverID(ctx), err, time.Since(entryTime)) }()
 	}
 	if client.observers != nil {
 		// Tricky code:
@@ -291,7 +291,7 @@ func (client *Szproduct) UnregisterObserver(ctx context.Context, observer observ
 		// In client.notify, each observer will get notified in a goroutine.
 		// Then client.observers may be set to nil, but observer goroutines will be OK.
 		details := map[string]string{
-			"observerID": observer.GetObserverId(ctx),
+			"observerID": observer.GetObserverID(ctx),
 		}
 		notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8704, err, details)
 		err = client.observers.UnregisterObserver(ctx, observer)
@@ -309,7 +309,7 @@ func (client *Szproduct) UnregisterObserver(ctx context.Context, observer observ
 // --- Logging ----------------------------------------------------------------
 
 // Get the Logger singleton.
-func (client *Szproduct) getLogger() logging.LoggingInterface {
+func (client *Szproduct) getLogger() logging.Logging {
 	var err error
 	if client.logger == nil {
 		options := []interface{}{
@@ -344,7 +344,7 @@ func (client *Szproduct) newError(ctx context.Context, errorNumber int, details 
 		lastException = err.Error()
 	}
 	details = append(details, errors.New(lastException))
-	errorMessage := client.getLogger().Json(errorNumber, details...)
+	errorMessage := client.getLogger().JSON(errorNumber, details...)
 	return szerror.New(lastExceptionCode, errorMessage)
 }
 

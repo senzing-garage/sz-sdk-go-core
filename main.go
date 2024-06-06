@@ -31,7 +31,7 @@ var Messages = map[int]string{
 	2004: "License",
 	2999: "Cannot retrieve last error message.",
 }
-var logger logging.LoggingInterface
+var logger logging.Logging
 
 // ----------------------------------------------------------------------------
 // Main
@@ -234,7 +234,7 @@ func getDatabaseTemplatePath() string {
 	return filepath.FromSlash("testdata/sqlite/G2C.db")
 }
 
-func getLogger(ctx context.Context) (logging.LoggingInterface, error) {
+func getLogger(ctx context.Context) (logging.Logging, error) {
 	_ = ctx
 	return logging.NewSenzingLogger("my-unique-%04d", Messages)
 }

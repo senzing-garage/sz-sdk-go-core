@@ -34,10 +34,10 @@ const (
 )
 
 var (
-	logger            logging.LoggingInterface
+	logger            logging.Logging
 	logLevel          = "INFO"
-	observerSingleton = &observer.ObserverNull{
-		Id:       "Observer 1",
+	observerSingleton = &observer.NullObserver{
+		ID:       "Observer 1",
 		IsSilent: true,
 	}
 	szConfigSingleton *Szconfig
@@ -85,6 +85,7 @@ func TestSzconfig_AddDataSource_badDataSourceCode(test *testing.T) {
 	configHandle, err := szConfig.CreateConfig(ctx)
 	require.NoError(test, err)
 	actual, err := szConfig.AddDataSource(ctx, configHandle, badDataSourceCode)
+	test.Log(err.Error())
 	require.ErrorIs(test, err, szerror.ErrSzBadInput)
 	printActual(test, actual)
 }

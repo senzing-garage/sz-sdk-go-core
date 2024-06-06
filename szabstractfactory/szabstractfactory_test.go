@@ -24,7 +24,7 @@ const (
 )
 
 var (
-	logger logging.LoggingInterface
+	logger logging.Logging
 )
 
 // ----------------------------------------------------------------------------
