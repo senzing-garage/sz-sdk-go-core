@@ -9,10 +9,11 @@ import (
 	"testing"
 
 	truncator "github.com/aquilax/truncate"
-	"github.com/senzing-garage/go-helpers/engineconfigurationjson"
 	"github.com/senzing-garage/go-helpers/fileutil"
+	"github.com/senzing-garage/go-helpers/settings"
 	"github.com/senzing-garage/go-logging/logging"
 	"github.com/senzing-garage/go-observing/observer"
+	"github.com/senzing-garage/sz-sdk-go-core/helpers"
 	"github.com/senzing-garage/sz-sdk-go/senzing"
 	"github.com/senzing-garage/sz-sdk-go/szerror"
 	"github.com/senzing-garage/sz-sdk-go/szproduct"
@@ -188,7 +189,7 @@ func getSettings() (string, error) {
 	// Create Senzing engine configuration JSON.
 
 	configAttrMap := map[string]string{"databaseUrl": databaseURL}
-	settings, err := engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingMap(configAttrMap)
+	settings, err := settings.BuildSimpleSettingsUsingMap(configAttrMap)
 	if err != nil {
 		err = createError(5900, err)
 	}
@@ -292,10 +293,7 @@ func TestMain(m *testing.M) {
 
 func setup() error {
 	var err error
-	logger, err = logging.NewSenzingSdkLogger(ComponentID, szproduct.IDMessages)
-	if err != nil {
-		return createError(5901, err)
-	}
+	logger = helpers.GetLogger(ComponentID, szproduct.IDMessages, baseCallerSkip)
 	osenvLogLevel := os.Getenv("SENZING_LOG_LEVEL")
 	if len(osenvLogLevel) > 0 {
 		logLevel = osenvLogLevel

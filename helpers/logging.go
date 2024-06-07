@@ -1,14 +1,22 @@
 package helpers
 
 import (
+	"fmt"
+
 	"github.com/senzing-garage/go-logging/logging"
 )
 
-func getLogger(componentID int, idMessages map[int]string, callerSkip int) logging.Logging {
-	options := []interface{}{
+func GetLogger(componentID int, idMessages map[int]string, callerSkip int, options ...interface{}) logging.Logging {
+	optionMessageID := fmt.Sprintf("SZSDK%04d", componentID) + "%04d"
+	loggerOptions := []interface{}{
 		&logging.OptionCallerSkip{Value: callerSkip},
+		&logging.OptionComponentID{Value: componentID},
+		&logging.OptionIDMessages{Value: idMessages},
+		&logging.OptionMessageFields{Value: []string{"id", "reason"}},
+		&logging.OptionMessageIDTemplate{Value: optionMessageID},
 	}
-	result, err := logging.NewSenzingSdkLogger(componentID, idMessages, options...)
+	loggerOptions = append(loggerOptions, options...)
+	result, err := logging.New(loggerOptions...)
 	if err != nil {
 		panic(err)
 	}

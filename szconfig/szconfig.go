@@ -29,6 +29,7 @@ import (
 	"github.com/senzing-garage/go-observing/notifier"
 	"github.com/senzing-garage/go-observing/observer"
 	"github.com/senzing-garage/go-observing/subject"
+	"github.com/senzing-garage/sz-sdk-go-core/helpers"
 	"github.com/senzing-garage/sz-sdk-go/szconfig"
 	"github.com/senzing-garage/sz-sdk-go/szerror"
 )
@@ -41,7 +42,10 @@ type Szconfig struct {
 	observers      subject.Subject
 }
 
-const initialByteArraySize = 65535
+const (
+	baseCallerSkip       = 4
+	initialByteArraySize = 65535
+)
 
 // ----------------------------------------------------------------------------
 // sz-sdk-go.SzConfig interface methods
@@ -515,25 +519,15 @@ func (client *Szconfig) UnregisterObserver(ctx context.Context, observer observe
 // Get the Logger singleton.
 func (client *Szconfig) getLogger() logging.Logging {
 	if client.logger == nil {
-		client.logger = helpers.getLogger(ComponentID, szconfig.IDMessages, 4)
+		client.logger = helpers.GetLogger(ComponentID, szconfig.IDMessages, baseCallerSkip)
 	}
 	return client.logger
 }
 
-// Get the Logger singleton.
+// Get the Messenger singleton.
 func (client *Szconfig) getMessenger() messenger.Messenger {
-	var err error
 	if client.messenger == nil {
-		options := []interface{}{
-			&messenger.OptionCallerSkip{Value: 4},
-			&messenger.OptionComponentID{Value: ComponentID},
-			&messenger.OptionIDMessages{Value: szconfig.IDMessages},
-			&messenger.OptionIDMessages{Value: szconfig.IDMessages},
-		}
-		client.messenger, err = messenger.New(options...)
-		if err != nil {
-			panic(err)
-		}
+		client.messenger = helpers.GetMessenger(ComponentID, szconfig.IDMessages, baseCallerSkip)
 	}
 	return client.messenger
 }
@@ -558,17 +552,10 @@ func (client *Szconfig) newError(ctx context.Context, errorNumber int, details .
 	if err != nil {
 		lastException = err.Error()
 	}
-
-	fmt.Printf("\n>>>>>>>>>>>>> Code: %d; Exception: %s", lastExceptionCode, lastException)
-
-	details = append(details, logging.MessageCode{Value: fmt.Sprintf("SENZ%04d", lastExceptionCode)})
-	details = append(details, logging.MessageReason{Value: lastException})
+	details = append(details, messenger.MessageCode{Value: fmt.Sprintf("SENZ%04d", lastExceptionCode)})
+	details = append(details, messenger.MessageReason{Value: lastException})
 	details = append(details, errors.New(lastException))
-	errorMessage := client.getLogger().JSON(errorNumber, details...)
-	client.getLogger().Log(errorNumber, details...)
-
-	fmt.Printf("\n>>>>>>>>>>>>> errorMessage: %s\n", errorMessage)
-
+	errorMessage := client.getMessenger().NewJSON(errorNumber, details...)
 	return szerror.New(lastExceptionCode, errorMessage)
 }
 

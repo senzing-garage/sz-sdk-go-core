@@ -25,9 +25,11 @@ import (
 	"unsafe"
 
 	"github.com/senzing-garage/go-logging/logging"
+	"github.com/senzing-garage/go-messaging/messenger"
 	"github.com/senzing-garage/go-observing/notifier"
 	"github.com/senzing-garage/go-observing/observer"
 	"github.com/senzing-garage/go-observing/subject"
+	"github.com/senzing-garage/sz-sdk-go-core/helpers"
 	"github.com/senzing-garage/sz-sdk-go/senzing"
 	szengineapi "github.com/senzing-garage/sz-sdk-go/szengine"
 	"github.com/senzing-garage/sz-sdk-go/szerror"
@@ -36,11 +38,15 @@ import (
 type Szengine struct {
 	isTrace        bool
 	logger         logging.Logging
+	messenger      messenger.Messenger
 	observerOrigin string
 	observers      subject.Subject
 }
 
-const initialByteArraySize = 65535
+const (
+	baseCallerSkip       = 4
+	initialByteArraySize = 65535
+)
 
 // ----------------------------------------------------------------------------
 // sz-sdk-go.SzEngine interface methods
@@ -2349,17 +2355,18 @@ func (client *Szengine) whyRecordsV2(ctx context.Context, dataSourceCode1 string
 
 // Get the Logger singleton.
 func (client *Szengine) getLogger() logging.Logging {
-	var err error
 	if client.logger == nil {
-		options := []interface{}{
-			&logging.OptionCallerSkip{Value: 4},
-		}
-		client.logger, err = logging.NewSenzingSdkLogger(ComponentID, szengineapi.IDMessages, options...)
-		if err != nil {
-			panic(err)
-		}
+		client.logger = helpers.GetLogger(ComponentID, szengineapi.IDMessages, baseCallerSkip)
 	}
 	return client.logger
+}
+
+// Get the Messenger singleton.
+func (client *Szengine) getMessenger() messenger.Messenger {
+	if client.messenger == nil {
+		client.messenger = helpers.GetMessenger(ComponentID, szengineapi.IDMessages, baseCallerSkip)
+	}
+	return client.messenger
 }
 
 // Trace method entry.

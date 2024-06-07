@@ -25,9 +25,11 @@ import (
 	"unsafe"
 
 	"github.com/senzing-garage/go-logging/logging"
+	"github.com/senzing-garage/go-messaging/messenger"
 	"github.com/senzing-garage/go-observing/notifier"
 	"github.com/senzing-garage/go-observing/observer"
 	"github.com/senzing-garage/go-observing/subject"
+	"github.com/senzing-garage/sz-sdk-go-core/helpers"
 	"github.com/senzing-garage/sz-sdk-go/szconfigmanager"
 	"github.com/senzing-garage/sz-sdk-go/szerror"
 )
@@ -35,11 +37,15 @@ import (
 type Szconfigmanager struct {
 	isTrace        bool
 	logger         logging.Logging
+	messenger      messenger.Messenger
 	observerOrigin string
 	observers      subject.Subject
 }
 
-const initialByteArraySize = 65535
+const (
+	baseCallerSkip       = 4
+	initialByteArraySize = 65535
+)
 
 // ----------------------------------------------------------------------------
 // sz-sdk-go.SzConfigManager interface methods
@@ -466,17 +472,18 @@ func (client *Szconfigmanager) UnregisterObserver(ctx context.Context, observer 
 
 // Get the Logger singleton.
 func (client *Szconfigmanager) getLogger() logging.Logging {
-	var err error
 	if client.logger == nil {
-		options := []interface{}{
-			&logging.OptionCallerSkip{Value: 4},
-		}
-		client.logger, err = logging.NewSenzingSdkLogger(ComponentID, szconfigmanager.IDMessages, options...)
-		if err != nil {
-			panic(err)
-		}
+		client.logger = helpers.GetLogger(ComponentID, szconfigmanager.IDMessages, baseCallerSkip)
 	}
 	return client.logger
+}
+
+// Get the Messenger singleton.
+func (client *Szconfigmanager) getMessenger() messenger.Messenger {
+	if client.messenger == nil {
+		client.messenger = helpers.GetMessenger(ComponentID, szconfigmanager.IDMessages, baseCallerSkip)
+	}
+	return client.messenger
 }
 
 // Trace method entry.

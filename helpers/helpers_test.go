@@ -15,7 +15,7 @@ import (
 // ----------------------------------------------------------------------------
 
 func TestHelpers_getLogger(test *testing.T) {
-	x := getLogger(1, map[int]string{}, 4)
+	x := GetLogger(1, map[int]string{}, 4)
 	assert.NotEmpty(test, x)
 }
 
