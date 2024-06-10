@@ -552,7 +552,7 @@ func (client *Szconfig) newError(ctx context.Context, errorNumber int, details .
 	if err != nil {
 		lastException = err.Error()
 	}
-	details = append(details, messenger.MessageCode{Value: fmt.Sprintf("SENZ%04d", lastExceptionCode)})
+	details = append(details, messenger.MessageCode{Value: fmt.Sprintf(ExceptionCodeTemplate, lastExceptionCode)})
 	details = append(details, messenger.MessageReason{Value: lastException})
 	details = append(details, errors.New(lastException))
 	errorMessage := client.getMessenger().NewJSON(errorNumber, details...)
@@ -613,9 +613,6 @@ func (client *Szconfig) getLastException(ctx context.Context) (string, error) {
 	}
 	stringBuffer := client.getByteArray(initialByteArraySize)
 	C.G2Config_getLastException((*C.char)(unsafe.Pointer(&stringBuffer[0])), C.size_t(len(stringBuffer)))
-	// if result == 0 { // "result" is length of exception message.
-	// 	err = client.getLogger().Error(4005, result, time.Since(entryTime))
-	// }
 	result = string(bytes.Trim(stringBuffer, "\x00"))
 	return result, err
 }

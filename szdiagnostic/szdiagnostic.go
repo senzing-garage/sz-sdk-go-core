@@ -516,8 +516,10 @@ func (client *Szdiagnostic) newError(ctx context.Context, errorNumber int, detai
 	if err != nil {
 		lastException = err.Error()
 	}
+	details = append(details, messenger.MessageCode{Value: fmt.Sprintf(ExceptionCodeTemplate, lastExceptionCode)})
+	details = append(details, messenger.MessageReason{Value: lastException})
 	details = append(details, errors.New(lastException))
-	errorMessage := client.getLogger().JSON(errorNumber, details...)
+	errorMessage := client.getMessenger().NewJSON(errorNumber, details...)
 	return szerror.New(lastExceptionCode, errorMessage)
 }
 
@@ -575,9 +577,6 @@ func (client *Szdiagnostic) getLastException(ctx context.Context) (string, error
 	}
 	stringBuffer := client.getByteArray(initialByteArraySize)
 	C.G2Diagnostic_getLastException((*C.char)(unsafe.Pointer(&stringBuffer[0])), C.size_t(len(stringBuffer)))
-	// if result == 0 { // "result" is length of exception message.
-	// 	err = client.getLogger().Error(4014, result, time.Since(entryTime))
-	// }
 	result = string(bytes.Trim(stringBuffer, "\x00"))
 	return result, err
 }
