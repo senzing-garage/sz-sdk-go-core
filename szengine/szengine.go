@@ -676,7 +676,7 @@ Input
   - startEntityID: The entity ID for the starting entity of the search path.
   - endEntityID: The entity ID for the ending entity of the search path.
   - maxDegrees: The maximum number of degrees in paths between search entities.
-  - exclusions: A JSON document listing entities that should be avoided on the path.
+  - avoidEntityIDs: A JSON document listing entities that should be avoided on the path.
   - requiredDataSources: A JSON document listing data sources that should be included on the path.
   - flags: Flags used to control information returned.
 
@@ -684,21 +684,21 @@ Output
   - A JSON document.
     Example: `{"ENTITY_PATHS":[{"START_ENTITY_ID":1,"END_ENTITY_ID":2,"ENTITIES":[1,2]}],"ENTITIES":[{"RESOLVED_ENTITY":{"ENTITY_ID":1,"ENTITY_NAME":"JOHNSON","RECORD_SUMMARY":[{"DATA_SOURCE":"TEST","RECORD_COUNT":2,"FIRST_SEEN_DT":"2022-12-06 14:43:49.024","LAST_SEEN_DT":"2022-12-06 14:43:49.164"}],"LAST_SEEN_DT":"2022-12-06 14:43:49.164"},"RELATED_ENTITIES":[{"ENTITY_ID":2,"MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED","MATCH_KEY":"+PHONE+ACCT_NUM-SSN","ERRULE_CODE":"SF1","IS_DISCLOSED":0,"IS_AMBIGUOUS":0},{"ENTITY_ID":3,"MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED","MATCH_KEY":"+PHONE+ACCT_NUM-DOB-SSN","ERRULE_CODE":"SF1","IS_DISCLOSED":0,"IS_AMBIGUOUS":0}]},{"RESOLVED_ENTITY":{"ENTITY_ID":2,"ENTITY_NAME":"OCEANGUY","RECORD_SUMMARY":[{"DATA_SOURCE":"TEST","RECORD_COUNT":1,"FIRST_SEEN_DT":"2022-12-06 14:43:49.104","LAST_SEEN_DT":"2022-12-06 14:43:49.104"}],"LAST_SEEN_DT":"2022-12-06 14:43:49.104"},"RELATED_ENTITIES":[{"ENTITY_ID":1,"MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED","MATCH_KEY":"+PHONE+ACCT_NUM-SSN","ERRULE_CODE":"SF1","IS_DISCLOSED":0,"IS_AMBIGUOUS":0},{"ENTITY_ID":3,"MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED","MATCH_KEY":"+ADDRESS+PHONE+ACCT_NUM-DOB-SSN","ERRULE_CODE":"SF1","IS_DISCLOSED":0,"IS_AMBIGUOUS":0}]}]}`
 */
-func (client *Szengine) FindPathByEntityID(ctx context.Context, startEntityID int64, endEntityID int64, maxDegrees int64, exclusions string, requiredDataSources string, flags int64) (string, error) {
+func (client *Szengine) FindPathByEntityID(ctx context.Context, startEntityID int64, endEntityID int64, maxDegrees int64, avoidEntityIDs string, requiredDataSources string, flags int64) (string, error) {
 	var result string
 	var err error
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(31, startEntityID, endEntityID, maxDegrees, exclusions, requiredDataSources, flags)
+		client.traceEntry(31, startEntityID, endEntityID, maxDegrees, avoidEntityIDs, requiredDataSources, flags)
 		defer func() {
-			client.traceExit(32, startEntityID, endEntityID, maxDegrees, exclusions, requiredDataSources, flags, result, err, time.Since(entryTime))
+			client.traceExit(32, startEntityID, endEntityID, maxDegrees, avoidEntityIDs, requiredDataSources, flags, result, err, time.Since(entryTime))
 		}()
 	}
 	switch {
 	case len(requiredDataSources) > 0:
-		result, err = client.findPathIncludingSourceByEntityIDV2(ctx, startEntityID, endEntityID, maxDegrees, exclusions, requiredDataSources, flags)
-	case len(exclusions) > 0:
-		result, err = client.findPathExcludingByEntityIDV2(ctx, startEntityID, endEntityID, maxDegrees, exclusions, flags)
+		result, err = client.findPathIncludingSourceByEntityIDV2(ctx, startEntityID, endEntityID, maxDegrees, avoidEntityIDs, requiredDataSources, flags)
+	case len(avoidEntityIDs) > 0:
+		result, err = client.findPathExcludingByEntityIDV2(ctx, startEntityID, endEntityID, maxDegrees, avoidEntityIDs, flags)
 	default:
 		result, err = client.findPathByEntityIDV2(ctx, startEntityID, endEntityID, maxDegrees, flags)
 	}
@@ -726,7 +726,7 @@ Input
   - endDataSourceCode: Identifies the provenance of the record for the ending entity of the search path.
   - endRecordID: The unique identifier within the records of the same data source for the ending entity of the search path.
   - maxDegrees: The maximum number of degrees in paths between search entities.
-  - exclusions: A JSON document listing entities that should be avoided on the path.
+  - avoidRecordKeys: A JSON document listing entities that should be avoided on the path.
   - requiredDataSources: A JSON document listing data sources that should be included on the path.
   - flags: Flags used to control information returned.
 
@@ -735,21 +735,21 @@ Output
   - A JSON document.
     Example: `{"ENTITY_PATHS":[{"START_ENTITY_ID":1,"END_ENTITY_ID":2,"ENTITIES":[1,2]}],"ENTITIES":[{"RESOLVED_ENTITY":{"ENTITY_ID":1,"ENTITY_NAME":"JOHNSON","RECORD_SUMMARY":[{"DATA_SOURCE":"TEST","RECORD_COUNT":2,"FIRST_SEEN_DT":"2022-12-06 14:48:19.522","LAST_SEEN_DT":"2022-12-06 14:48:19.667"}],"LAST_SEEN_DT":"2022-12-06 14:48:19.667"},"RELATED_ENTITIES":[{"ENTITY_ID":2,"MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED","MATCH_KEY":"+PHONE+ACCT_NUM-SSN","ERRULE_CODE":"SF1","IS_DISCLOSED":0,"IS_AMBIGUOUS":0},{"ENTITY_ID":3,"MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED","MATCH_KEY":"+PHONE+ACCT_NUM-DOB-SSN","ERRULE_CODE":"SF1","IS_DISCLOSED":0,"IS_AMBIGUOUS":0}]},{"RESOLVED_ENTITY":{"ENTITY_ID":2,"ENTITY_NAME":"OCEANGUY","RECORD_SUMMARY":[{"DATA_SOURCE":"TEST","RECORD_COUNT":1,"FIRST_SEEN_DT":"2022-12-06 14:48:19.593","LAST_SEEN_DT":"2022-12-06 14:48:19.593"}],"LAST_SEEN_DT":"2022-12-06 14:48:19.593"},"RELATED_ENTITIES":[{"ENTITY_ID":1,"MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED","MATCH_KEY":"+PHONE+ACCT_NUM-SSN","ERRULE_CODE":"SF1","IS_DISCLOSED":0,"IS_AMBIGUOUS":0},{"ENTITY_ID":3,"MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED","MATCH_KEY":"+ADDRESS+PHONE+ACCT_NUM-DOB-SSN","ERRULE_CODE":"SF1","IS_DISCLOSED":0,"IS_AMBIGUOUS":0}]}]}`
 */
-func (client *Szengine) FindPathByRecordID(ctx context.Context, startDataSourceCode string, startRecordID string, endDataSourceCode string, endRecordID string, maxDegrees int64, exclusions string, requiredDataSources string, flags int64) (string, error) {
+func (client *Szengine) FindPathByRecordID(ctx context.Context, startDataSourceCode string, startRecordID string, endDataSourceCode string, endRecordID string, maxDegrees int64, avoidRecordKeys string, requiredDataSources string, flags int64) (string, error) {
 	var result string
 	var err error
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(33, startDataSourceCode, startRecordID, endDataSourceCode, endRecordID, maxDegrees, exclusions, requiredDataSources, flags)
+		client.traceEntry(33, startDataSourceCode, startRecordID, endDataSourceCode, endRecordID, maxDegrees, avoidRecordKeys, requiredDataSources, flags)
 		defer func() {
-			client.traceExit(34, startDataSourceCode, startRecordID, endDataSourceCode, endRecordID, maxDegrees, exclusions, requiredDataSources, flags, result, err, time.Since(entryTime))
+			client.traceExit(34, startDataSourceCode, startRecordID, endDataSourceCode, endRecordID, maxDegrees, avoidRecordKeys, requiredDataSources, flags, result, err, time.Since(entryTime))
 		}()
 	}
 	switch {
 	case len(requiredDataSources) > 0:
-		result, err = client.findPathIncludingSourceByRecordIDV2(ctx, startDataSourceCode, startRecordID, endDataSourceCode, endRecordID, maxDegrees, exclusions, requiredDataSources, flags)
-	case len(exclusions) > 0:
-		result, err = client.findPathExcludingByRecordIDV2(ctx, startDataSourceCode, startRecordID, endDataSourceCode, endRecordID, maxDegrees, exclusions, flags)
+		result, err = client.findPathIncludingSourceByRecordIDV2(ctx, startDataSourceCode, startRecordID, endDataSourceCode, endRecordID, maxDegrees, avoidRecordKeys, requiredDataSources, flags)
+	case len(avoidRecordKeys) > 0:
+		result, err = client.findPathExcludingByRecordIDV2(ctx, startDataSourceCode, startRecordID, endDataSourceCode, endRecordID, maxDegrees, avoidRecordKeys, flags)
 	default:
 		result, err = client.findPathByRecordIDV2(ctx, startDataSourceCode, startRecordID, endDataSourceCode, endRecordID, maxDegrees, flags)
 	}
