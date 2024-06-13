@@ -9,10 +9,11 @@ import (
 	"testing"
 
 	truncator "github.com/aquilax/truncate"
-	"github.com/senzing-garage/go-helpers/engineconfigurationjson"
 	"github.com/senzing-garage/go-helpers/fileutil"
+	"github.com/senzing-garage/go-helpers/settings"
 	"github.com/senzing-garage/go-logging/logging"
 	"github.com/senzing-garage/go-observing/observer"
+	"github.com/senzing-garage/sz-sdk-go-core/helpers"
 	"github.com/senzing-garage/sz-sdk-go/senzing"
 	"github.com/senzing-garage/sz-sdk-go/szconfig"
 	"github.com/senzing-garage/sz-sdk-go/szerror"
@@ -30,17 +31,17 @@ const (
 	instanceName        = "SzConfig Test"
 	observerOrigin      = "SzConfig observer"
 	printResults        = false
-	verboseLogging      = senzing.SzNoLogging
 )
 
 var (
-	logger            logging.LoggingInterface
+	logger            logging.Logging
 	logLevel          = "INFO"
-	observerSingleton = &observer.ObserverNull{
-		Id:       "Observer 1",
+	observerSingleton = &observer.NullObserver{
+		ID:       "Observer 1",
 		IsSilent: true,
 	}
 	szConfigSingleton *Szconfig
+	verboseLogging    = int64(senzing.SzVerboseLogging)
 )
 
 // ----------------------------------------------------------------------------
@@ -85,6 +86,7 @@ func TestSzconfig_AddDataSource_badDataSourceCode(test *testing.T) {
 	configHandle, err := szConfig.CreateConfig(ctx)
 	require.NoError(test, err)
 	actual, err := szConfig.AddDataSource(ctx, configHandle, badDataSourceCode)
+	test.Log(err.Error())
 	require.ErrorIs(test, err, szerror.ErrSzBadInput)
 	printActual(test, actual)
 }
@@ -398,7 +400,7 @@ func getSettings() (string, error) {
 	// Create Senzing engine configuration JSON.
 
 	configAttrMap := map[string]string{"databaseUrl": databaseURL}
-	settings, err := engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingMap(configAttrMap)
+	settings, err := settings.BuildSimpleSettingsUsingMap(configAttrMap)
 	if err != nil {
 		err = createError(5900, err)
 	}
@@ -496,10 +498,7 @@ func TestMain(m *testing.M) {
 
 func setup() error {
 	var err error
-	logger, err = logging.NewSenzingSdkLogger(ComponentID, szconfig.IDMessages)
-	if err != nil {
-		return createError(5901, err)
-	}
+	logger = helpers.GetLogger(ComponentID, szconfig.IDMessages, baseCallerSkip)
 	osenvLogLevel := os.Getenv("SENZING_LOG_LEVEL")
 	if len(osenvLogLevel) > 0 {
 		logLevel = osenvLogLevel

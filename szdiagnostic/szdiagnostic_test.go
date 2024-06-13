@@ -10,12 +10,13 @@ import (
 	"time"
 
 	truncator "github.com/aquilax/truncate"
-	"github.com/senzing-garage/go-helpers/engineconfigurationjson"
 	"github.com/senzing-garage/go-helpers/fileutil"
 	"github.com/senzing-garage/go-helpers/record"
+	"github.com/senzing-garage/go-helpers/settings"
 	"github.com/senzing-garage/go-helpers/truthset"
 	"github.com/senzing-garage/go-logging/logging"
 	"github.com/senzing-garage/go-observing/observer"
+	"github.com/senzing-garage/sz-sdk-go-core/helpers"
 	"github.com/senzing-garage/sz-sdk-go-core/szconfig"
 	"github.com/senzing-garage/sz-sdk-go-core/szconfigmanager"
 	"github.com/senzing-garage/sz-sdk-go-core/szengine"
@@ -39,10 +40,10 @@ const (
 
 var (
 	defaultConfigID   int64
-	logger            logging.LoggingInterface
+	logger            logging.Logging
 	logLevel          = "INFO"
-	observerSingleton = &observer.ObserverNull{
-		Id:       "Observer 1",
+	observerSingleton = &observer.NullObserver{
+		ID:       "Observer 1",
 		IsSilent: true,
 	}
 	szDiagnosticSingleton *Szdiagnostic
@@ -256,7 +257,7 @@ func addRecords(ctx context.Context, records []record.Record) error {
 	szEngine := getSzEngine(ctx)
 	flags := senzing.SzWithoutInfo
 	for _, record := range records {
-		_, err = szEngine.AddRecord(ctx, record.DataSource, record.Id, record.Json, flags)
+		_, err = szEngine.AddRecord(ctx, record.DataSource, record.ID, record.JSON, flags)
 		if err != nil {
 			return err
 		}
@@ -273,7 +274,7 @@ func deleteRecords(ctx context.Context, records []record.Record) error {
 	szEngine := getSzEngine(ctx)
 	flags := senzing.SzWithoutInfo
 	for _, record := range records {
-		_, err = szEngine.DeleteRecord(ctx, record.DataSource, record.Id, flags)
+		_, err = szEngine.DeleteRecord(ctx, record.DataSource, record.ID, flags)
 		if err != nil {
 			return err
 		}
@@ -305,7 +306,7 @@ func getSettings() (string, error) {
 	// Create Senzing engine configuration JSON.
 
 	configAttrMap := map[string]string{"databaseUrl": databaseURL}
-	settings, err := engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingMap(configAttrMap)
+	settings, err := settings.BuildSimpleSettingsUsingMap(configAttrMap)
 	if err != nil {
 		err = createError(5900, err)
 	}
@@ -444,10 +445,7 @@ func TestMain(m *testing.M) {
 
 func setup() error {
 	var err error
-	logger, err = logging.NewSenzingSdkLogger(ComponentID, szdiagnostic.IDMessages)
-	if err != nil {
-		return createError(5901, err)
-	}
+	logger = helpers.GetLogger(ComponentID, szdiagnostic.IDMessages, baseCallerSkip)
 	osenvLogLevel := os.Getenv("SENZING_LOG_LEVEL")
 	if len(osenvLogLevel) > 0 {
 		logLevel = osenvLogLevel

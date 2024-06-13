@@ -25,21 +25,27 @@ import (
 	"unsafe"
 
 	"github.com/senzing-garage/go-logging/logging"
+	"github.com/senzing-garage/go-messaging/messenger"
 	"github.com/senzing-garage/go-observing/notifier"
 	"github.com/senzing-garage/go-observing/observer"
 	"github.com/senzing-garage/go-observing/subject"
+	"github.com/senzing-garage/sz-sdk-go-core/helpers"
 	"github.com/senzing-garage/sz-sdk-go/szerror"
 	szproductapi "github.com/senzing-garage/sz-sdk-go/szproduct"
 )
 
 type Szproduct struct {
 	isTrace        bool
-	logger         logging.LoggingInterface
+	logger         logging.Logging
+	messenger      messenger.Messenger
 	observerOrigin string
 	observers      subject.Subject
 }
 
-const initialByteArraySize = 65535
+const (
+	baseCallerSkip       = 4
+	initialByteArraySize = 65535
+)
 
 // ----------------------------------------------------------------------------
 // sz-sdk-go.SzProduct interface methods
@@ -209,17 +215,17 @@ func (client *Szproduct) RegisterObserver(ctx context.Context, observer observer
 	var err error
 	if client.isTrace {
 		entryTime := time.Now()
-		client.traceEntry(703, observer.GetObserverId(ctx))
-		defer func() { client.traceExit(704, observer.GetObserverId(ctx), err, time.Since(entryTime)) }()
+		client.traceEntry(703, observer.GetObserverID(ctx))
+		defer func() { client.traceExit(704, observer.GetObserverID(ctx), err, time.Since(entryTime)) }()
 	}
 	if client.observers == nil {
-		client.observers = &subject.SubjectImpl{}
+		client.observers = &subject.SimpleSubject{}
 	}
 	err = client.observers.RegisterObserver(ctx, observer)
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
-				"observerId": observer.GetObserverId(ctx),
+				"observerId": observer.GetObserverID(ctx),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8702, err, details)
 		}()
@@ -282,8 +288,8 @@ func (client *Szproduct) UnregisterObserver(ctx context.Context, observer observ
 	var err error
 	if client.isTrace {
 		entryTime := time.Now()
-		client.traceEntry(707, observer.GetObserverId(ctx))
-		defer func() { client.traceExit(708, observer.GetObserverId(ctx), err, time.Since(entryTime)) }()
+		client.traceEntry(707, observer.GetObserverID(ctx))
+		defer func() { client.traceExit(708, observer.GetObserverID(ctx), err, time.Since(entryTime)) }()
 	}
 	if client.observers != nil {
 		// Tricky code:
@@ -291,7 +297,7 @@ func (client *Szproduct) UnregisterObserver(ctx context.Context, observer observ
 		// In client.notify, each observer will get notified in a goroutine.
 		// Then client.observers may be set to nil, but observer goroutines will be OK.
 		details := map[string]string{
-			"observerID": observer.GetObserverId(ctx),
+			"observerID": observer.GetObserverID(ctx),
 		}
 		notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8704, err, details)
 		err = client.observers.UnregisterObserver(ctx, observer)
@@ -309,18 +315,19 @@ func (client *Szproduct) UnregisterObserver(ctx context.Context, observer observ
 // --- Logging ----------------------------------------------------------------
 
 // Get the Logger singleton.
-func (client *Szproduct) getLogger() logging.LoggingInterface {
-	var err error
+func (client *Szproduct) getLogger() logging.Logging {
 	if client.logger == nil {
-		options := []interface{}{
-			&logging.OptionCallerSkip{Value: 4},
-		}
-		client.logger, err = logging.NewSenzingSdkLogger(ComponentID, szproductapi.IDMessages, options...)
-		if err != nil {
-			panic(err)
-		}
+		client.logger = helpers.GetLogger(ComponentID, szproductapi.IDMessages, baseCallerSkip)
 	}
 	return client.logger
+}
+
+// Get the Messenger singleton.
+func (client *Szproduct) getMessenger() messenger.Messenger {
+	if client.messenger == nil {
+		client.messenger = helpers.GetMessenger(ComponentID, szproductapi.IDMessages, baseCallerSkip)
+	}
+	return client.messenger
 }
 
 // Trace method entry.
@@ -343,8 +350,10 @@ func (client *Szproduct) newError(ctx context.Context, errorNumber int, details 
 	if err != nil {
 		lastException = err.Error()
 	}
+	details = append(details, messenger.MessageCode{Value: fmt.Sprintf(ExceptionCodeTemplate, lastExceptionCode)})
+	details = append(details, messenger.MessageReason{Value: lastException})
 	details = append(details, errors.New(lastException))
-	errorMessage := client.getLogger().Json(errorNumber, details...)
+	errorMessage := client.getMessenger().NewJSON(errorNumber, details...)
 	return szerror.New(lastExceptionCode, errorMessage)
 }
 
@@ -402,9 +411,6 @@ func (client *Szproduct) getLastException(ctx context.Context) (string, error) {
 	}
 	stringBuffer := client.getByteArray(initialByteArraySize)
 	C.G2Product_getLastException((*C.char)(unsafe.Pointer(&stringBuffer[0])), C.size_t(len(stringBuffer)))
-	// if result == 0 { // "result" is length of exception message.
-	// 	err = client.getLogger().Error(4002, result, time.Since(entryTime))
-	// }
 	result = string(bytes.Trim(stringBuffer, "\x00"))
 	return result, err
 }

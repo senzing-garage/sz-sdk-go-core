@@ -10,8 +10,8 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/senzing-garage/go-helpers/engineconfigurationjson"
 	"github.com/senzing-garage/go-helpers/fileutil"
+	"github.com/senzing-garage/go-helpers/settings"
 	"github.com/senzing-garage/go-helpers/truthset"
 	"github.com/senzing-garage/go-logging/logging"
 	"github.com/senzing-garage/sz-sdk-go-core/szabstractfactory"
@@ -31,7 +31,7 @@ var Messages = map[int]string{
 	2004: "License",
 	2999: "Cannot retrieve last error message.",
 }
-var logger logging.LoggingInterface
+var logger logging.Logging
 
 // ----------------------------------------------------------------------------
 // Main
@@ -234,14 +234,14 @@ func getDatabaseTemplatePath() string {
 	return filepath.FromSlash("testdata/sqlite/G2C.db")
 }
 
-func getLogger(ctx context.Context) (logging.LoggingInterface, error) {
+func getLogger(ctx context.Context) (logging.Logging, error) {
 	_ = ctx
-	return logging.NewSenzingLogger("my-unique-%04d", Messages)
+	return logging.NewSenzingLogger(9999, Messages)
 }
 
 func getSettings(databaseURL string) (string, error) {
 	configAttrMap := map[string]string{"databaseUrl": databaseURL}
-	settings, err := engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingMap(configAttrMap)
+	settings, err := settings.BuildSimpleSettingsUsingMap(configAttrMap)
 	if err != nil {
 		return "", err
 	}

@@ -25,9 +25,11 @@ import (
 	"unsafe"
 
 	"github.com/senzing-garage/go-logging/logging"
+	"github.com/senzing-garage/go-messaging/messenger"
 	"github.com/senzing-garage/go-observing/notifier"
 	"github.com/senzing-garage/go-observing/observer"
 	"github.com/senzing-garage/go-observing/subject"
+	"github.com/senzing-garage/sz-sdk-go-core/helpers"
 	"github.com/senzing-garage/sz-sdk-go/senzing"
 	szengineapi "github.com/senzing-garage/sz-sdk-go/szengine"
 	"github.com/senzing-garage/sz-sdk-go/szerror"
@@ -35,12 +37,16 @@ import (
 
 type Szengine struct {
 	isTrace        bool
-	logger         logging.LoggingInterface
+	logger         logging.Logging
+	messenger      messenger.Messenger
 	observerOrigin string
 	observers      subject.Subject
 }
 
-const initialByteArraySize = 65535
+const (
+	baseCallerSkip       = 4
+	initialByteArraySize = 65535
+)
 
 // ----------------------------------------------------------------------------
 // sz-sdk-go.SzEngine interface methods
@@ -670,7 +676,7 @@ Input
   - startEntityID: The entity ID for the starting entity of the search path.
   - endEntityID: The entity ID for the ending entity of the search path.
   - maxDegrees: The maximum number of degrees in paths between search entities.
-  - exclusions: A JSON document listing entities that should be avoided on the path.
+  - avoidEntityIDs: A JSON document listing entities that should be avoided on the path.
   - requiredDataSources: A JSON document listing data sources that should be included on the path.
   - flags: Flags used to control information returned.
 
@@ -678,21 +684,21 @@ Output
   - A JSON document.
     Example: `{"ENTITY_PATHS":[{"START_ENTITY_ID":1,"END_ENTITY_ID":2,"ENTITIES":[1,2]}],"ENTITIES":[{"RESOLVED_ENTITY":{"ENTITY_ID":1,"ENTITY_NAME":"JOHNSON","RECORD_SUMMARY":[{"DATA_SOURCE":"TEST","RECORD_COUNT":2,"FIRST_SEEN_DT":"2022-12-06 14:43:49.024","LAST_SEEN_DT":"2022-12-06 14:43:49.164"}],"LAST_SEEN_DT":"2022-12-06 14:43:49.164"},"RELATED_ENTITIES":[{"ENTITY_ID":2,"MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED","MATCH_KEY":"+PHONE+ACCT_NUM-SSN","ERRULE_CODE":"SF1","IS_DISCLOSED":0,"IS_AMBIGUOUS":0},{"ENTITY_ID":3,"MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED","MATCH_KEY":"+PHONE+ACCT_NUM-DOB-SSN","ERRULE_CODE":"SF1","IS_DISCLOSED":0,"IS_AMBIGUOUS":0}]},{"RESOLVED_ENTITY":{"ENTITY_ID":2,"ENTITY_NAME":"OCEANGUY","RECORD_SUMMARY":[{"DATA_SOURCE":"TEST","RECORD_COUNT":1,"FIRST_SEEN_DT":"2022-12-06 14:43:49.104","LAST_SEEN_DT":"2022-12-06 14:43:49.104"}],"LAST_SEEN_DT":"2022-12-06 14:43:49.104"},"RELATED_ENTITIES":[{"ENTITY_ID":1,"MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED","MATCH_KEY":"+PHONE+ACCT_NUM-SSN","ERRULE_CODE":"SF1","IS_DISCLOSED":0,"IS_AMBIGUOUS":0},{"ENTITY_ID":3,"MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED","MATCH_KEY":"+ADDRESS+PHONE+ACCT_NUM-DOB-SSN","ERRULE_CODE":"SF1","IS_DISCLOSED":0,"IS_AMBIGUOUS":0}]}]}`
 */
-func (client *Szengine) FindPathByEntityID(ctx context.Context, startEntityID int64, endEntityID int64, maxDegrees int64, exclusions string, requiredDataSources string, flags int64) (string, error) {
+func (client *Szengine) FindPathByEntityID(ctx context.Context, startEntityID int64, endEntityID int64, maxDegrees int64, avoidEntityIDs string, requiredDataSources string, flags int64) (string, error) {
 	var result string
 	var err error
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(31, startEntityID, endEntityID, maxDegrees, exclusions, requiredDataSources, flags)
+		client.traceEntry(31, startEntityID, endEntityID, maxDegrees, avoidEntityIDs, requiredDataSources, flags)
 		defer func() {
-			client.traceExit(32, startEntityID, endEntityID, maxDegrees, exclusions, requiredDataSources, flags, result, err, time.Since(entryTime))
+			client.traceExit(32, startEntityID, endEntityID, maxDegrees, avoidEntityIDs, requiredDataSources, flags, result, err, time.Since(entryTime))
 		}()
 	}
 	switch {
 	case len(requiredDataSources) > 0:
-		result, err = client.findPathIncludingSourceByEntityIDV2(ctx, startEntityID, endEntityID, maxDegrees, exclusions, requiredDataSources, flags)
-	case len(exclusions) > 0:
-		result, err = client.findPathExcludingByEntityIDV2(ctx, startEntityID, endEntityID, maxDegrees, exclusions, flags)
+		result, err = client.findPathIncludingSourceByEntityIDV2(ctx, startEntityID, endEntityID, maxDegrees, avoidEntityIDs, requiredDataSources, flags)
+	case len(avoidEntityIDs) > 0:
+		result, err = client.findPathExcludingByEntityIDV2(ctx, startEntityID, endEntityID, maxDegrees, avoidEntityIDs, flags)
 	default:
 		result, err = client.findPathByEntityIDV2(ctx, startEntityID, endEntityID, maxDegrees, flags)
 	}
@@ -720,7 +726,7 @@ Input
   - endDataSourceCode: Identifies the provenance of the record for the ending entity of the search path.
   - endRecordID: The unique identifier within the records of the same data source for the ending entity of the search path.
   - maxDegrees: The maximum number of degrees in paths between search entities.
-  - exclusions: A JSON document listing entities that should be avoided on the path.
+  - avoidRecordKeys: A JSON document listing entities that should be avoided on the path.
   - requiredDataSources: A JSON document listing data sources that should be included on the path.
   - flags: Flags used to control information returned.
 
@@ -729,21 +735,21 @@ Output
   - A JSON document.
     Example: `{"ENTITY_PATHS":[{"START_ENTITY_ID":1,"END_ENTITY_ID":2,"ENTITIES":[1,2]}],"ENTITIES":[{"RESOLVED_ENTITY":{"ENTITY_ID":1,"ENTITY_NAME":"JOHNSON","RECORD_SUMMARY":[{"DATA_SOURCE":"TEST","RECORD_COUNT":2,"FIRST_SEEN_DT":"2022-12-06 14:48:19.522","LAST_SEEN_DT":"2022-12-06 14:48:19.667"}],"LAST_SEEN_DT":"2022-12-06 14:48:19.667"},"RELATED_ENTITIES":[{"ENTITY_ID":2,"MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED","MATCH_KEY":"+PHONE+ACCT_NUM-SSN","ERRULE_CODE":"SF1","IS_DISCLOSED":0,"IS_AMBIGUOUS":0},{"ENTITY_ID":3,"MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED","MATCH_KEY":"+PHONE+ACCT_NUM-DOB-SSN","ERRULE_CODE":"SF1","IS_DISCLOSED":0,"IS_AMBIGUOUS":0}]},{"RESOLVED_ENTITY":{"ENTITY_ID":2,"ENTITY_NAME":"OCEANGUY","RECORD_SUMMARY":[{"DATA_SOURCE":"TEST","RECORD_COUNT":1,"FIRST_SEEN_DT":"2022-12-06 14:48:19.593","LAST_SEEN_DT":"2022-12-06 14:48:19.593"}],"LAST_SEEN_DT":"2022-12-06 14:48:19.593"},"RELATED_ENTITIES":[{"ENTITY_ID":1,"MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED","MATCH_KEY":"+PHONE+ACCT_NUM-SSN","ERRULE_CODE":"SF1","IS_DISCLOSED":0,"IS_AMBIGUOUS":0},{"ENTITY_ID":3,"MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED","MATCH_KEY":"+ADDRESS+PHONE+ACCT_NUM-DOB-SSN","ERRULE_CODE":"SF1","IS_DISCLOSED":0,"IS_AMBIGUOUS":0}]}]}`
 */
-func (client *Szengine) FindPathByRecordID(ctx context.Context, startDataSourceCode string, startRecordID string, endDataSourceCode string, endRecordID string, maxDegrees int64, exclusions string, requiredDataSources string, flags int64) (string, error) {
+func (client *Szengine) FindPathByRecordID(ctx context.Context, startDataSourceCode string, startRecordID string, endDataSourceCode string, endRecordID string, maxDegrees int64, avoidRecordKeys string, requiredDataSources string, flags int64) (string, error) {
 	var result string
 	var err error
 	entryTime := time.Now()
 	if client.isTrace {
-		client.traceEntry(33, startDataSourceCode, startRecordID, endDataSourceCode, endRecordID, maxDegrees, exclusions, requiredDataSources, flags)
+		client.traceEntry(33, startDataSourceCode, startRecordID, endDataSourceCode, endRecordID, maxDegrees, avoidRecordKeys, requiredDataSources, flags)
 		defer func() {
-			client.traceExit(34, startDataSourceCode, startRecordID, endDataSourceCode, endRecordID, maxDegrees, exclusions, requiredDataSources, flags, result, err, time.Since(entryTime))
+			client.traceExit(34, startDataSourceCode, startRecordID, endDataSourceCode, endRecordID, maxDegrees, avoidRecordKeys, requiredDataSources, flags, result, err, time.Since(entryTime))
 		}()
 	}
 	switch {
 	case len(requiredDataSources) > 0:
-		result, err = client.findPathIncludingSourceByRecordIDV2(ctx, startDataSourceCode, startRecordID, endDataSourceCode, endRecordID, maxDegrees, exclusions, requiredDataSources, flags)
-	case len(exclusions) > 0:
-		result, err = client.findPathExcludingByRecordIDV2(ctx, startDataSourceCode, startRecordID, endDataSourceCode, endRecordID, maxDegrees, exclusions, flags)
+		result, err = client.findPathIncludingSourceByRecordIDV2(ctx, startDataSourceCode, startRecordID, endDataSourceCode, endRecordID, maxDegrees, avoidRecordKeys, requiredDataSources, flags)
+	case len(avoidRecordKeys) > 0:
+		result, err = client.findPathExcludingByRecordIDV2(ctx, startDataSourceCode, startRecordID, endDataSourceCode, endRecordID, maxDegrees, avoidRecordKeys, flags)
 	default:
 		result, err = client.findPathByRecordIDV2(ctx, startDataSourceCode, startRecordID, endDataSourceCode, endRecordID, maxDegrees, flags)
 	}
@@ -1472,17 +1478,17 @@ func (client *Szengine) RegisterObserver(ctx context.Context, observer observer.
 	var err error
 	if client.isTrace {
 		entryTime := time.Now()
-		client.traceEntry(703, observer.GetObserverId(ctx))
-		defer func() { client.traceExit(704, observer.GetObserverId(ctx), err, time.Since(entryTime)) }()
+		client.traceEntry(703, observer.GetObserverID(ctx))
+		defer func() { client.traceExit(704, observer.GetObserverID(ctx), err, time.Since(entryTime)) }()
 	}
 	if client.observers == nil {
-		client.observers = &subject.SubjectImpl{}
+		client.observers = &subject.SimpleSubject{}
 	}
 	err = client.observers.RegisterObserver(ctx, observer)
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
-				"observerID": observer.GetObserverId(ctx),
+				"observerID": observer.GetObserverID(ctx),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8702, err, details)
 		}()
@@ -1545,8 +1551,8 @@ func (client *Szengine) UnregisterObserver(ctx context.Context, observer observe
 	var err error
 	if client.isTrace {
 		entryTime := time.Now()
-		client.traceEntry(159, observer.GetObserverId(ctx))
-		defer func() { client.traceExit(160, observer.GetObserverId(ctx), err, time.Since(entryTime)) }()
+		client.traceEntry(159, observer.GetObserverID(ctx))
+		defer func() { client.traceExit(160, observer.GetObserverID(ctx), err, time.Since(entryTime)) }()
 	}
 	if client.observers != nil {
 		// Tricky code:
@@ -1554,7 +1560,7 @@ func (client *Szengine) UnregisterObserver(ctx context.Context, observer observe
 		// In client.notify, each observer will get notified in a goroutine.
 		// Then client.observers may be set to nil, but observer goroutines will be OK.
 		details := map[string]string{
-			"observerID": observer.GetObserverId(ctx),
+			"observerID": observer.GetObserverID(ctx),
 		}
 		notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8704, err, details)
 		err = client.observers.UnregisterObserver(ctx, observer)
@@ -1797,7 +1803,7 @@ func (client *Szengine) findPathExcludingByEntityIDV2(ctx context.Context, start
 	entryTime := time.Now()
 	exclusionsForC := C.CString(exclusions)
 	defer C.free(unsafe.Pointer(exclusionsForC))
-	result := C.G2_findPathExcludingByEntityID_V2_helper(C.longlong(startEntityID), C.longlong(endEntityID), C.longlong(maxDegrees), exclusionsForC, C.longlong(flags))
+	result := C.G2_findPathByEntityIDWithAvoids_V2_helper(C.longlong(startEntityID), C.longlong(endEntityID), C.longlong(maxDegrees), exclusionsForC, C.longlong(flags))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4021, startEntityID, endEntityID, maxDegrees, exclusions, flags, result.returnCode, time.Since(entryTime))
 	}
@@ -1848,7 +1854,7 @@ func (client *Szengine) findPathExcludingByRecordIDV2(ctx context.Context, start
 	defer C.free(unsafe.Pointer(endRecordIDForC))
 	exclusionsForC := C.CString(exclusions)
 	defer C.free(unsafe.Pointer(exclusionsForC))
-	result := C.G2_findPathExcludingByRecordID_V2_helper(startDataSourceCodeForC, startRecordIDForC, endDataSourceCodeForC, endRecordIDForC, C.longlong(maxDegrees), exclusionsForC, C.longlong(flags))
+	result := C.G2_findPathByRecordIDWithAvoids_V2_helper(startDataSourceCodeForC, startRecordIDForC, endDataSourceCodeForC, endRecordIDForC, C.longlong(maxDegrees), exclusionsForC, C.longlong(flags))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4023, startDataSourceCode, startRecordID, endDataSourceCode, endRecordID, maxDegrees, exclusions, flags, result.returnCode, time.Since(entryTime))
 	}
@@ -1888,7 +1894,7 @@ func (client *Szengine) findPathIncludingSourceByEntityIDV2(ctx context.Context,
 	defer C.free(unsafe.Pointer(exclusionsForC))
 	requiredDataSourcesForC := C.CString(requiredDataSources)
 	defer C.free(unsafe.Pointer(requiredDataSourcesForC))
-	result := C.G2_findPathIncludingSourceByEntityID_V2_helper(C.longlong(startEntityID), C.longlong(endEntityID), C.longlong(maxDegrees), exclusionsForC, requiredDataSourcesForC, C.longlong(flags))
+	result := C.G2_findPathByEntityIDIncludingSource_V2_helper(C.longlong(startEntityID), C.longlong(endEntityID), C.longlong(maxDegrees), exclusionsForC, requiredDataSourcesForC, C.longlong(flags))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4025, startEntityID, endEntityID, maxDegrees, exclusions, requiredDataSources, flags, result.returnCode, time.Since(entryTime))
 	}
@@ -1938,7 +1944,7 @@ func (client *Szengine) findPathIncludingSourceByRecordIDV2(ctx context.Context,
 	defer C.free(unsafe.Pointer(exclusionsForC))
 	requiredDataSourcesForC := C.CString(requiredDataSources)
 	defer C.free(unsafe.Pointer(requiredDataSourcesForC))
-	result := C.G2_findPathIncludingSourceByRecordID_V2_helper(startDataSourceCodeForC, startRecordIDForC, endDataSourceCodeForC, endRecordIDForC, C.longlong(maxDegrees), exclusionsForC, requiredDataSourcesForC, C.longlong(flags))
+	result := C.G2_findPathByRecordIDIncludingSource_V2_helper(startDataSourceCodeForC, startRecordIDForC, endDataSourceCodeForC, endRecordIDForC, C.longlong(maxDegrees), exclusionsForC, requiredDataSourcesForC, C.longlong(flags))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4027, startDataSourceCode, startRecordID, endDataSourceCode, endRecordID, maxDegrees, exclusions, requiredDataSources, flags, result.returnCode, time.Since(entryTime))
 	}
@@ -2348,18 +2354,19 @@ func (client *Szengine) whyRecordsV2(ctx context.Context, dataSourceCode1 string
 // --- Logging ----------------------------------------------------------------
 
 // Get the Logger singleton.
-func (client *Szengine) getLogger() logging.LoggingInterface {
-	var err error
+func (client *Szengine) getLogger() logging.Logging {
 	if client.logger == nil {
-		options := []interface{}{
-			&logging.OptionCallerSkip{Value: 4},
-		}
-		client.logger, err = logging.NewSenzingSdkLogger(ComponentID, szengineapi.IDMessages, options...)
-		if err != nil {
-			panic(err)
-		}
+		client.logger = helpers.GetLogger(ComponentID, szengineapi.IDMessages, baseCallerSkip)
 	}
 	return client.logger
+}
+
+// Get the Messenger singleton.
+func (client *Szengine) getMessenger() messenger.Messenger {
+	if client.messenger == nil {
+		client.messenger = helpers.GetMessenger(ComponentID, szengineapi.IDMessages, baseCallerSkip)
+	}
+	return client.messenger
 }
 
 // Trace method entry.
@@ -2382,8 +2389,10 @@ func (client *Szengine) newError(ctx context.Context, errorNumber int, details .
 	if err != nil {
 		lastException = err.Error()
 	}
+	details = append(details, messenger.MessageCode{Value: fmt.Sprintf(ExceptionCodeTemplate, lastExceptionCode)})
+	details = append(details, messenger.MessageReason{Value: lastException})
 	details = append(details, errors.New(lastException))
-	errorMessage := client.getLogger().Json(errorNumber, details...)
+	errorMessage := client.getMessenger().NewJSON(errorNumber, details...)
 	return szerror.New(lastExceptionCode, errorMessage)
 }
 
@@ -2441,9 +2450,6 @@ func (client *Szengine) getLastException(ctx context.Context) (string, error) {
 	}
 	stringBuffer := client.getByteArray(initialByteArraySize)
 	C.G2_getLastException((*C.char)(unsafe.Pointer(&stringBuffer[0])), C.size_t(len(stringBuffer)))
-	// if result == 0 { // "result" is length of exception message.
-	// 	err = client.getLogger().Error(4038, result, time.Since(entryTime))
-	// }
 	result = string(bytes.Trim(stringBuffer, "\x00"))
 	return result, err
 }
