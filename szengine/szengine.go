@@ -1803,7 +1803,7 @@ func (client *Szengine) findPathExcludingByEntityIDV2(ctx context.Context, start
 	entryTime := time.Now()
 	exclusionsForC := C.CString(exclusions)
 	defer C.free(unsafe.Pointer(exclusionsForC))
-	result := C.G2_findPathExcludingByEntityID_V2_helper(C.longlong(startEntityID), C.longlong(endEntityID), C.longlong(maxDegrees), exclusionsForC, C.longlong(flags))
+	result := C.G2_findPathByEntityIDWithAvoids_V2_helper(C.longlong(startEntityID), C.longlong(endEntityID), C.longlong(maxDegrees), exclusionsForC, C.longlong(flags))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4021, startEntityID, endEntityID, maxDegrees, exclusions, flags, result.returnCode, time.Since(entryTime))
 	}
@@ -1854,7 +1854,7 @@ func (client *Szengine) findPathExcludingByRecordIDV2(ctx context.Context, start
 	defer C.free(unsafe.Pointer(endRecordIDForC))
 	exclusionsForC := C.CString(exclusions)
 	defer C.free(unsafe.Pointer(exclusionsForC))
-	result := C.G2_findPathExcludingByRecordID_V2_helper(startDataSourceCodeForC, startRecordIDForC, endDataSourceCodeForC, endRecordIDForC, C.longlong(maxDegrees), exclusionsForC, C.longlong(flags))
+	result := C.G2_findPathByRecordIDWithAvoids_V2_helper(startDataSourceCodeForC, startRecordIDForC, endDataSourceCodeForC, endRecordIDForC, C.longlong(maxDegrees), exclusionsForC, C.longlong(flags))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4023, startDataSourceCode, startRecordID, endDataSourceCode, endRecordID, maxDegrees, exclusions, flags, result.returnCode, time.Since(entryTime))
 	}
@@ -1894,7 +1894,7 @@ func (client *Szengine) findPathIncludingSourceByEntityIDV2(ctx context.Context,
 	defer C.free(unsafe.Pointer(exclusionsForC))
 	requiredDataSourcesForC := C.CString(requiredDataSources)
 	defer C.free(unsafe.Pointer(requiredDataSourcesForC))
-	result := C.G2_findPathIncludingSourceByEntityID_V2_helper(C.longlong(startEntityID), C.longlong(endEntityID), C.longlong(maxDegrees), exclusionsForC, requiredDataSourcesForC, C.longlong(flags))
+	result := C.G2_findPathByEntityIDIncludingSource_V2_helper(C.longlong(startEntityID), C.longlong(endEntityID), C.longlong(maxDegrees), exclusionsForC, requiredDataSourcesForC, C.longlong(flags))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4025, startEntityID, endEntityID, maxDegrees, exclusions, requiredDataSources, flags, result.returnCode, time.Since(entryTime))
 	}
@@ -1944,7 +1944,7 @@ func (client *Szengine) findPathIncludingSourceByRecordIDV2(ctx context.Context,
 	defer C.free(unsafe.Pointer(exclusionsForC))
 	requiredDataSourcesForC := C.CString(requiredDataSources)
 	defer C.free(unsafe.Pointer(requiredDataSourcesForC))
-	result := C.G2_findPathIncludingSourceByRecordID_V2_helper(startDataSourceCodeForC, startRecordIDForC, endDataSourceCodeForC, endRecordIDForC, C.longlong(maxDegrees), exclusionsForC, requiredDataSourcesForC, C.longlong(flags))
+	result := C.G2_findPathByRecordIDIncludingSource_V2_helper(startDataSourceCodeForC, startRecordIDForC, endDataSourceCodeForC, endRecordIDForC, C.longlong(maxDegrees), exclusionsForC, requiredDataSourcesForC, C.longlong(flags))
 	if result.returnCode != 0 {
 		err = client.newError(ctx, 4027, startDataSourceCode, startRecordID, endDataSourceCode, endRecordID, maxDegrees, exclusions, requiredDataSources, flags, result.returnCode, time.Since(entryTime))
 	}
