@@ -3,11 +3,9 @@
 package szengine
 
 import (
-	"bytes"
 	"context"
 	"fmt"
 	"io"
-	"log"
 	"os"
 	"syscall"
 	"testing"
@@ -87,7 +85,8 @@ func TestSzengine_AddRecord_parameterCheck(test *testing.T) {
 	fmt.Printf("\n\n\n\n\n\n\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n\n")
 
 	w.Close()
-	syscall.Dup2(origStderr, syscall.Stdout)
+	err = syscall.Dup2(origStderr, syscall.Stdout)
+	require.NoError(test, err)
 	syscall.Close(origStderr)
 
 	b, _ := io.ReadAll(r)
@@ -114,7 +113,7 @@ func InterceptStdout() (*os.File, *os.File, func()) {
 	backupStd := os.Stdout
 	backupErr := os.Stderr
 	r, w, _ := os.Pipe()
-	//Restore streams
+	// Restore streams
 	cleanup := func() {
 		os.Stdout = backupStd
 		os.Stderr = backupErr
@@ -124,13 +123,13 @@ func InterceptStdout() (*os.File, *os.File, func()) {
 	return r, w, cleanup
 }
 
-func captureOutput(f func()) string {
-	var buf bytes.Buffer
-	log.SetOutput(&buf)
-	f()
-	log.SetOutput(os.Stderr)
-	return buf.String()
-}
+// func captureOutput(f func()) string {
+// 	var buf bytes.Buffer
+// 	log.SetOutput(&buf)
+// 	f()
+// 	log.SetOutput(os.Stderr)
+// 	return buf.String()
+// }
 
 func getVerboseSzEngine(ctx context.Context) *Szengine {
 	_ = ctx
@@ -167,9 +166,9 @@ func getVerboseSzEngine(ctx context.Context) *Szengine {
 	return szEngineVerboseSingleton
 }
 
-func getVerboseSzEngineAsInterface(ctx context.Context) senzing.SzEngine {
-	return getVerboseSzEngine(ctx)
-}
+// func getVerboseSzEngineAsInterface(ctx context.Context) senzing.SzEngine {
+// 	return getVerboseSzEngine(ctx)
+// }
 
 func getVerboseTestObject(ctx context.Context, test *testing.T) *Szengine {
 	_ = test
