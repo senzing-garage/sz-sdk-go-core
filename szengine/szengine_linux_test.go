@@ -51,18 +51,18 @@ func TestSzengine_AddRecord_parameterCheck(test *testing.T) {
 	// })
 
 	// use syscall.Dup to get a copy of stderr
-	origStderr, err := syscall.Dup(syscall.Stdout)
-	if err != nil {
-		panic(err)
-	}
+	// origStderr, err := syscall.Dup(syscall.Stdout)
+	// if err != nil {
+	// 	panic(err)
+	// }
 
-	r, w, _ := os.Pipe()
+	// r, w, _ := os.Pipe()
 
 	// Clone the pipe's writer to the actual Stderr descriptor; from this point
 	// on, writes to Stderr will go to w.
-	if err = syscall.Dup2(int(w.Fd()), syscall.Stdout); err != nil {
-		panic(err)
-	}
+	// if err = syscall.Dup2(int(w.Fd()), syscall.Stdout); err != nil {
+	// 	panic(err)
+	// }
 
 	ctx := context.TODO()
 	szEngine := getVerboseTestObject(ctx, test)
@@ -74,6 +74,12 @@ func TestSzengine_AddRecord_parameterCheck(test *testing.T) {
 	for _, record := range records {
 		actual, err := szEngine.AddRecord(ctx, record.DataSource, record.ID, record.JSON, flags)
 		require.NoError(test, err)
+
+		// aBuffer, err := io.ReadAll(r)
+		// require.NoError(test, err)
+
+		// fmt.Fprintf(os.Stderr, "\n\n\n\n\n\n\n>>>>>>>>>>>>>>>>>>>>>>>>>>>> Buffer:\n%v\n<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n\n\n", aBuffer)
+
 		printActual(test, actual)
 	}
 	for _, record := range records {
@@ -84,16 +90,16 @@ func TestSzengine_AddRecord_parameterCheck(test *testing.T) {
 
 	fmt.Printf("\n\n\n\n\n\n\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n\n")
 
-	w.Close()
-	err = syscall.Dup2(origStderr, syscall.Stdout)
-	require.NoError(test, err)
-	syscall.Close(origStderr)
+	// w.Close()
+	// err = syscall.Dup2(origStderr, syscall.Stdout)
+	// require.NoError(test, err)
+	// syscall.Close(origStderr)
 
-	b, _ := io.ReadAll(r)
+	// b, _ := io.ReadAll(r)
 
-	fmt.Printf("\n\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> got output: %s\n", string(b))
-	fmt.Fprintf(os.Stderr, "\n\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>2> got output: %s\n", string(b))
-	fmt.Fprintf(os.Stderr, "stderr works normally\n")
+	// fmt.Printf("\n\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> got output: %s\n", string(b))
+	// fmt.Fprintf(os.Stderr, "\n\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>2> got output: %s\n", string(b))
+	// fmt.Fprintf(os.Stderr, "stderr works normally\n")
 
 	// aBuffer := make([]byte, 5000)
 	// n1, err := file.Read(aBuffer)
@@ -130,6 +136,35 @@ func InterceptStdout() (*os.File, *os.File, func()) {
 // 	log.SetOutput(os.Stderr)
 // 	return buf.String()
 // }
+
+func captureOutput(f func()) string {
+
+	// use syscall.Dup to get a copy of stderr
+	origStderr, err := syscall.Dup(syscall.Stdout)
+	if err != nil {
+		panic(err)
+	}
+
+	r, w, _ := os.Pipe()
+
+	// Clone the pipe's writer to the actual Stderr descriptor; from this point
+	// on, writes to Stderr will go to w.
+	if err = syscall.Dup2(int(w.Fd()), syscall.Stdout); err != nil {
+		panic(err)
+	}
+
+	f()
+
+	w.Close()
+	err = syscall.Dup2(origStderr, syscall.Stdout)
+	if err != nil {
+		panic(err)
+	}
+	syscall.Close(origStderr)
+
+	b, _ := io.ReadAll(r)
+	return string(b)
+}
 
 func getVerboseSzEngine(ctx context.Context) *Szengine {
 	_ = ctx
