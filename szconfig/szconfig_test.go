@@ -31,7 +31,6 @@ const (
 	instanceName        = "SzConfig Test"
 	observerOrigin      = "SzConfig observer"
 	printResults        = false
-	verboseLogging      = senzing.SzNoLogging
 )
 
 var (
@@ -42,6 +41,7 @@ var (
 		IsSilent: true,
 	}
 	szConfigSingleton *Szconfig
+	verboseLogging    = int64(senzing.SzVerboseLogging)
 )
 
 // ----------------------------------------------------------------------------

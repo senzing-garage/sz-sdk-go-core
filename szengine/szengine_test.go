@@ -48,8 +48,9 @@ const (
 	defaultTruncation      = 76
 	instanceName           = "SzEngine Test"
 	observerOrigin         = "SzEngine observer"
-	printResults           = false
-	verboseLogging         = senzing.SzNoLogging
+
+	printResults   = false
+	verboseLogging = senzing.SzNoLogging
 )
 
 type GetEntityByRecordIDResponse struct {

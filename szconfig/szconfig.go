@@ -389,6 +389,7 @@ func (client *Szconfig) Initialize(ctx context.Context, instanceName string, set
 	defer C.free(unsafe.Pointer(instanceNameForC))
 	settingsForC := C.CString(settings)
 	defer C.free(unsafe.Pointer(settingsForC))
+
 	result := C.G2Config_init(instanceNameForC, settingsForC, C.longlong(verboseLogging))
 	if result != 0 {
 		err = client.newError(ctx, 4007, instanceName, settings, verboseLogging, result, time.Since(entryTime))
