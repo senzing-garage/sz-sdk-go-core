@@ -72,8 +72,14 @@ func TestSzengine_AddRecord_parameterCheck(test *testing.T) {
 		truthset.CustomerRecords["1002"],
 	}
 	for _, record := range records {
-		actual, err := szEngine.AddRecord(ctx, record.DataSource, record.ID, record.JSON, flags)
+		// actual, err := szEngine.AddRecord(ctx, record.DataSource, record.ID, record.JSON, flags)
+
+		stdOut, actual, err := captureStdoutReturningString(func() (string, error) {
+			return szEngine.AddRecord(ctx, record.DataSource, record.ID, record.JSON, flags)
+		})
 		require.NoError(test, err)
+
+		fmt.Printf("\n\n\n\n\n\n\n>>>>>>>>>>>>>>>>>>>>>>>>>>>> stdOut:\n%s\n<<<<< stdOut <<<<<<<<<<<<<<<<<<<<<<<\n\n\n", stdOut)
 
 		// aBuffer, err := io.ReadAll(r)
 		// require.NoError(test, err)
@@ -137,7 +143,7 @@ func InterceptStdout() (*os.File, *os.File, func()) {
 // 	return buf.String()
 // }
 
-func captureOutput(f func()) string {
+func captureStdoutReturningString(f func() (string, error)) (string, string, error) {
 
 	// use syscall.Dup to get a copy of stderr
 	origStderr, err := syscall.Dup(syscall.Stdout)
@@ -153,7 +159,7 @@ func captureOutput(f func()) string {
 		panic(err)
 	}
 
-	f()
+	result, resultErr := f()
 
 	w.Close()
 	err = syscall.Dup2(origStderr, syscall.Stdout)
@@ -163,7 +169,7 @@ func captureOutput(f func()) string {
 	syscall.Close(origStderr)
 
 	b, _ := io.ReadAll(r)
-	return string(b)
+	return string(b), result, resultErr
 }
 
 func getVerboseSzEngine(ctx context.Context) *Szengine {
