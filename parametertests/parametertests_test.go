@@ -36,7 +36,7 @@ var (
 
 // TODO: See if there's any way to use currying to simplify the captureStdout* methods
 
-func captureStdout(f func() error) (string, error) {
+func captureStdout(functionName func() error) (string, error) {
 	// Reference: https://stackoverflow.com/questions/76565007/how-to-capture-the-contents-of-stderr-in-a-c-function-call-from-golang
 
 	// Switch STDOUT.
@@ -53,7 +53,7 @@ func captureStdout(f func() error) (string, error) {
 
 	// Call function.
 
-	resultErr := f()
+	resultErr := functionName()
 
 	// Restore STDOUT.
 
@@ -70,7 +70,7 @@ func captureStdout(f func() error) (string, error) {
 	return string(stdoutBuffer), resultErr
 }
 
-func captureStdoutReturningInt64(f func() (int64, error)) (string, int64, error) {
+func captureStdoutReturningInt64(functionName func() (int64, error)) (string, int64, error) {
 	// Reference: https://stackoverflow.com/questions/76565007/how-to-capture-the-contents-of-stderr-in-a-c-function-call-from-golang
 
 	// Switch STDOUT.
@@ -87,7 +87,7 @@ func captureStdoutReturningInt64(f func() (int64, error)) (string, int64, error)
 
 	// Call function.
 
-	result, resultErr := f()
+	result, resultErr := functionName()
 
 	// Restore STDOUT.
 
@@ -103,7 +103,7 @@ func captureStdoutReturningInt64(f func() (int64, error)) (string, int64, error)
 	stdoutBuffer, _ := io.ReadAll(readFile)
 	return string(stdoutBuffer), result, resultErr
 }
-func captureStdoutReturningString(f func() (string, error)) (string, string, error) {
+func captureStdoutReturningString(functionName func() (string, error)) (string, string, error) {
 	// Reference: https://stackoverflow.com/questions/76565007/how-to-capture-the-contents-of-stderr-in-a-c-function-call-from-golang
 
 	// Switch STDOUT.
@@ -120,7 +120,7 @@ func captureStdoutReturningString(f func() (string, error)) (string, string, err
 
 	// Call function.
 
-	result, resultErr := f()
+	result, resultErr := functionName()
 
 	// Restore STDOUT.
 
@@ -137,7 +137,7 @@ func captureStdoutReturningString(f func() (string, error)) (string, string, err
 	return string(stdoutBuffer), result, resultErr
 }
 
-func captureStdoutReturningUintptr(f func() (uintptr, error)) (string, uintptr, error) {
+func captureStdoutReturningUintptr(functionName func() (uintptr, error)) (string, uintptr, error) {
 	// Reference: https://stackoverflow.com/questions/76565007/how-to-capture-the-contents-of-stderr-in-a-c-function-call-from-golang
 
 	// Switch STDOUT.
@@ -154,7 +154,7 @@ func captureStdoutReturningUintptr(f func() (uintptr, error)) (string, uintptr, 
 
 	// Call function.
 
-	result, resultErr := f()
+	result, resultErr := functionName()
 
 	// Restore STDOUT.
 
