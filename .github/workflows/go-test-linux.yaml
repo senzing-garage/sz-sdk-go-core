@@ -41,7 +41,7 @@ jobs:
       - name: Set up gotestfmt
         uses: gotesttools/gotestfmt-action@v2
         with:
-          token: ${{ secrets.SENZING_GITHUB_ACCESS_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: copy /etc files
         run: sudo cp testdata/senzing-license/g2.lic /etc/opt/senzing/g2.lic
