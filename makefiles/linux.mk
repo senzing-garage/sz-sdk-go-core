@@ -47,8 +47,8 @@ setup-osarch-specific:
 
 .PHONY: test-osarch-specific
 test-osarch-specific:
-	# @go test -v -p 1 ./...
-	@go test -v --v -p 1 ./parametertests
+	@go test -v -p 1 ./...
+	# @go test -v --v -p 1 ./parametertests
 
 
 # -----------------------------------------------------------------------------
