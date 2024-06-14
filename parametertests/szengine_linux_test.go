@@ -32,9 +32,10 @@ func TestParameters_Szengine_AddRecord(test *testing.T) {
 		require.NoError(test, err)
 	}
 	for _, record := range records {
-		_, _, err := captureStdoutReturningString(func() (string, error) {
+		stdOut, _, err := captureStdoutReturningString(func() (string, error) {
 			return szEngine.DeleteRecord(ctx, record.DataSource, record.ID, flags)
 		})
 		require.NoError(test, err)
+		test.Logf("\n\n>>>>>>>>>  stdout:\n%s\n<<<<<<<<<\n", stdOut)
 	}
 }

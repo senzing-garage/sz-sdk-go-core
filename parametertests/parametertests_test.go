@@ -34,6 +34,8 @@ var (
 // Internal functions
 // ----------------------------------------------------------------------------
 
+// TODO: See if there's any way to use currying to simplify the captureStdout* methods
+
 func captureStdout(f func() error) (string, error) {
 	// Reference: https://stackoverflow.com/questions/76565007/how-to-capture-the-contents-of-stderr-in-a-c-function-call-from-golang
 
