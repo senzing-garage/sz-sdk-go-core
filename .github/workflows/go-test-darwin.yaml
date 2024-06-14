@@ -1,6 +1,6 @@
 name: go test darwin
 
-on: [pull_request, workflow_dispatch]
+on: [push]
 
 env:
   CGO_ENABLED: 1
