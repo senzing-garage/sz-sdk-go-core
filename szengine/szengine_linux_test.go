@@ -74,7 +74,7 @@ func TestSzengine_AddRecord_parameterCheck(test *testing.T) {
 	for _, record := range records {
 		// actual, err := szEngine.AddRecord(ctx, record.DataSource, record.ID, record.JSON, flags)
 
-		stdOut, actual, err := captureStdoutReturningString(func() (string, error) {
+		actual, err, stdOut := captureStdoutReturningString(func() (string, error) {
 			return szEngine.AddRecord(ctx, record.DataSource, record.ID, record.JSON, flags)
 		})
 		require.NoError(test, err)
@@ -94,7 +94,7 @@ func TestSzengine_AddRecord_parameterCheck(test *testing.T) {
 		printActual(test, actual)
 	}
 
-	fmt.Printf("\n\n\n\n\n\n\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n\n")
+	// fmt.Printf("\n\n\n\n\n\n\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n\n")
 
 	// w.Close()
 	// err = syscall.Dup2(origStderr, syscall.Stdout)
@@ -135,41 +135,38 @@ func InterceptStdout() (*os.File, *os.File, func()) {
 	return r, w, cleanup
 }
 
-// func captureOutput(f func()) string {
-// 	var buf bytes.Buffer
-// 	log.SetOutput(&buf)
-// 	f()
-// 	log.SetOutput(os.Stderr)
-// 	return buf.String()
-// }
+func captureStdoutReturningString(f func() (string, error)) (string, error, string) {
+	// Reference: https://stackoverflow.com/questions/76565007/how-to-capture-the-contents-of-stderr-in-a-c-function-call-from-golang
 
-func captureStdoutReturningString(f func() (string, error)) (string, string, error) {
+	// Switch STDOUT.
 
-	// use syscall.Dup to get a copy of stderr
-	origStderr, err := syscall.Dup(syscall.Stdout)
+	originalStdout, err := syscall.Dup(syscall.Stdout)
 	if err != nil {
-		panic(err)
+		return "", err, ""
+	}
+	readFile, writeFile, _ := os.Pipe()
+	err = syscall.Dup2(int(writeFile.Fd()), syscall.Stdout)
+	if err != nil {
+		return "", err, ""
 	}
 
-	r, w, _ := os.Pipe()
-
-	// Clone the pipe's writer to the actual Stderr descriptor; from this point
-	// on, writes to Stderr will go to w.
-	if err = syscall.Dup2(int(w.Fd()), syscall.Stdout); err != nil {
-		panic(err)
-	}
+	// Call function.
 
 	result, resultErr := f()
 
-	w.Close()
-	err = syscall.Dup2(origStderr, syscall.Stdout)
-	if err != nil {
-		panic(err)
-	}
-	syscall.Close(origStderr)
+	// Restore STDOUT.
 
-	b, _ := io.ReadAll(r)
-	return string(b), result, resultErr
+	writeFile.Close()
+	err = syscall.Dup2(originalStdout, syscall.Stdout)
+	if err != nil {
+		return "", err, ""
+	}
+	syscall.Close(originalStdout)
+
+	// Return results.
+
+	stdoutBuffer, _ := io.ReadAll(readFile)
+	return result, resultErr, string(stdoutBuffer)
 }
 
 func getVerboseSzEngine(ctx context.Context) *Szengine {
