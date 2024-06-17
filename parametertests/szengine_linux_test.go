@@ -26,10 +26,11 @@ func TestParameters_Szengine_AddRecord(test *testing.T) {
 		truthset.CustomerRecords["1002"],
 	}
 	for _, record := range records {
-		_, _, err := captureStdoutReturningString(func() (string, error) {
+		stdOut, _, err := captureStdoutReturningString(func() (string, error) {
 			return szEngine.AddRecord(ctx, record.DataSource, record.ID, record.JSON, flags)
 		})
 		require.NoError(test, err)
+		test.Logf("\n\n>>>>>>>>>  stdout:\n%s\n<<<<<<<<<\n", stdOut)
 	}
 	for _, record := range records {
 		stdOut, _, err := captureStdoutReturningString(func() (string, error) {

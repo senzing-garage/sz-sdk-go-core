@@ -103,6 +103,7 @@ func captureStdoutReturningInt64(functionName func() (int64, error)) (string, in
 	stdoutBuffer, _ := io.ReadAll(readFile)
 	return string(stdoutBuffer), result, resultErr
 }
+
 func captureStdoutReturningString(functionName func() (string, error)) (string, string, error) {
 	// Reference: https://stackoverflow.com/questions/76565007/how-to-capture-the-contents-of-stderr-in-a-c-function-call-from-golang
 
@@ -174,6 +175,7 @@ func captureStdoutReturningUintptr(functionName func() (uintptr, error)) (string
 func getDatabaseTemplatePath() string {
 	return filepath.FromSlash("../testdata/sqlite/G2C.db")
 }
+
 func getSettings() (string, error) {
 
 	// Determine Database URL.
