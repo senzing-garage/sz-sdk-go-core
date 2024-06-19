@@ -212,7 +212,7 @@ func ExampleSzengine_FindInterestingEntitiesByEntityID() {
 	ctx := context.TODO()
 	szEngine := getSzEngine(ctx)
 	entityID := getEntityIDForRecord("CUSTOMERS", "1001")
-	flags := int64(0)
+	flags := senzing.SzNoFlags
 	result, err := szEngine.FindInterestingEntitiesByEntityID(ctx, entityID, flags)
 	if err != nil {
 		fmt.Println(err)
@@ -227,7 +227,7 @@ func ExampleSzengine_FindInterestingEntitiesByRecordID() {
 	szEngine := getSzEngine(ctx)
 	dataSourceCode := "CUSTOMERS"
 	recordID := "1001"
-	flags := int64(0)
+	flags := senzing.SzNoFlags
 	result, err := szEngine.FindInterestingEntitiesByRecordID(ctx, dataSourceCode, recordID, flags)
 	if err != nil {
 		fmt.Println(err)

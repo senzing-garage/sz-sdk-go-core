@@ -56,13 +56,13 @@ func TestSzconfigmanager_AddConfig(test *testing.T) {
 	szConfigManager := getTestObject(ctx, test)
 	now := time.Now()
 	szConfig := getSzConfig(ctx)
-	configHandle, err1 := szConfig.CreateConfig(ctx)
-	require.NoError(test, err1)
+	configHandle, err := szConfig.CreateConfig(ctx)
+	require.NoError(test, err)
 	dataSourceCode := "GO_TEST_" + strconv.FormatInt(now.Unix(), 10)
-	_, err2 := szConfig.AddDataSource(ctx, configHandle, dataSourceCode)
-	require.NoError(test, err2)
-	configDefinition, err3 := szConfig.ExportConfig(ctx, configHandle)
-	require.NoError(test, err3)
+	_, err = szConfig.AddDataSource(ctx, configHandle, dataSourceCode)
+	require.NoError(test, err)
+	configDefinition, err := szConfig.ExportConfig(ctx, configHandle)
+	require.NoError(test, err)
 	configComment := fmt.Sprintf("szconfigmanager_test at %s", now.UTC())
 	actual, err := szConfigManager.AddConfig(ctx, configDefinition, configComment)
 	require.NoError(test, err)
@@ -294,7 +294,6 @@ func TestSzconfigmanager_Destroy_withObserver(test *testing.T) {
 // ----------------------------------------------------------------------------
 
 func createError(errorID int, err error) error {
-	// return errors.Cast(logger.NewError(errorID, err), err)
 	return logger.NewError(errorID, err)
 }
 
@@ -382,7 +381,7 @@ func getSzConfigManager(ctx context.Context) *Szconfigmanager {
 			}
 			err = szConfigManagerSingleton.SetLogLevel(ctx, logLevel) // Duplicated for coverage testing
 			if err != nil {
-				fmt.Printf("SetLogLevel() - 2 Error: %v\n", err)
+				fmt.Printf("SetLogLevel() Error: %v\n", err)
 				return nil
 			}
 		}

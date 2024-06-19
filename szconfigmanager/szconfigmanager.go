@@ -163,7 +163,7 @@ func (client *Szconfigmanager) GetConfig(ctx context.Context, configID int64) (s
 }
 
 /*
-The GetConfigList method retrieves a list of Senzing configurations from the Senzing database.
+The GetConfigs method retrieves a list of Senzing configurations from the Senzing database.
 
 Input
   - ctx: A context to control lifecycle.

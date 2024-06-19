@@ -95,7 +95,7 @@ func TestSzdiagnostic_GetFeature(test *testing.T) {
 	require.NoError(test, err)
 	szDiagnostic := getTestObject(ctx, test)
 	featureID := int64(1)
-	actual, err := szDiagnostic.GetFeature(ctx, int64(featureID))
+	actual, err := szDiagnostic.GetFeature(ctx, featureID)
 	require.NoError(test, err)
 	printActual(test, actual)
 }

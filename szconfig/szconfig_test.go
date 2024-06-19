@@ -41,7 +41,7 @@ var (
 		IsSilent: true,
 	}
 	szConfigSingleton *Szconfig
-	verboseLogging    = int64(senzing.SzVerboseLogging)
+	verboseLogging    = senzing.SzVerboseLogging
 )
 
 // ----------------------------------------------------------------------------

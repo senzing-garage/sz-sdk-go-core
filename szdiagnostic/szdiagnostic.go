@@ -53,7 +53,7 @@ const (
 // ----------------------------------------------------------------------------
 
 /*
-The CheckDatabasePerformance method performs inserts to determine rate of insertion.
+The CheckDatastorePerformance method performs inserts to determine rate of insertion.
 
 Input
   - ctx: A context to control lifecycle.
