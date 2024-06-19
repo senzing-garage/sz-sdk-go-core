@@ -510,19 +510,24 @@ func setupSenzingConfiguration() error {
 	ctx := context.TODO()
 	now := time.Now()
 
+	// Create sz objects.
+
 	settings, err := getSettings()
 	if err != nil {
 		return createError(5901, err)
 	}
-
-	// Create sz objects.
-
 	szConfig := &szconfig.Szconfig{}
 	err = szConfig.Initialize(ctx, instanceName, settings, verboseLogging)
 	if err != nil {
 		return createError(5902, err)
 	}
 	defer func() { handleError(szConfig.Destroy(ctx)) }()
+	szConfigManager := &szconfigmanager.Szconfigmanager{}
+	err = szConfigManager.Initialize(ctx, instanceName, settings, verboseLogging)
+	if err != nil {
+		return createError(5907, err)
+	}
+	defer func() { handleError(szConfigManager.Destroy(ctx)) }()
 
 	// Create an in memory Senzing configuration.
 
@@ -556,13 +561,6 @@ func setupSenzingConfiguration() error {
 	}
 
 	// Persist the Senzing configuration to the Senzing repository as default.
-
-	szConfigManager := &szconfigmanager.Szconfigmanager{}
-	err = szConfigManager.Initialize(ctx, instanceName, settings, verboseLogging)
-	if err != nil {
-		return createError(5907, err)
-	}
-	defer func() { handleError(szConfigManager.Destroy(ctx)) }()
 
 	configComment := fmt.Sprintf("Created by szdiagnostic_test at %s", now.UTC())
 	configID, err := szConfigManager.AddConfig(ctx, configDefinition, configComment)
