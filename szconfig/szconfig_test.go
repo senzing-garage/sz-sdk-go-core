@@ -86,7 +86,6 @@ func TestSzconfig_AddDataSource_badDataSourceCode(test *testing.T) {
 	configHandle, err := szConfig.CreateConfig(ctx)
 	require.NoError(test, err)
 	actual, err := szConfig.AddDataSource(ctx, configHandle, badDataSourceCode)
-	test.Log(err.Error())
 	require.ErrorIs(test, err, szerror.ErrSzBadInput)
 	printActual(test, actual)
 }

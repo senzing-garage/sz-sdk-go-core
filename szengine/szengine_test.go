@@ -48,9 +48,8 @@ const (
 	defaultTruncation      = 76
 	instanceName           = "SzEngine Test"
 	observerOrigin         = "SzEngine observer"
-
-	printResults   = false
-	verboseLogging = senzing.SzNoLogging
+	printResults           = false
+	verboseLogging         = senzing.SzNoLogging
 )
 
 type GetEntityByRecordIDResponse struct {
@@ -61,13 +60,13 @@ type GetEntityByRecordIDResponse struct {
 
 var (
 	defaultConfigID   int64
-	szEngineSingleton *Szengine
 	logger            logging.Logging
 	logLevel          = "INFO"
 	observerSingleton = &observer.NullObserver{
 		ID:       "Observer 1",
 		IsSilent: true,
 	}
+	szEngineSingleton *Szengine
 )
 
 // ----------------------------------------------------------------------------
@@ -380,6 +379,36 @@ func TestSzengine_ExportJSONEntityReport(test *testing.T) {
 	jsonEntityReport := ""
 	for {
 		jsonEntityReportFragment, err := szEngine.FetchNext(ctx, exportHandle)
+		require.NoError(test, err)
+		if len(jsonEntityReportFragment) == 0 {
+			break
+		}
+		jsonEntityReport += jsonEntityReportFragment
+	}
+	require.NoError(test, err)
+	assert.Greater(test, len(jsonEntityReport), 65536)
+}
+func TestSzengine_ExportJSONEntityReport_65536(test *testing.T) {
+	ctx := context.TODO()
+	szEngine := getTestObject(ctx, test)
+	aRecord := testfixtures.FixtureRecords["65536-periods"]
+	flags := senzing.SzWithInfo
+	actual, err := szEngine.AddRecord(ctx, aRecord.DataSource, aRecord.ID, aRecord.JSON, flags)
+	require.NoError(test, err)
+	printActual(test, actual)
+	defer func() { _, _ = szEngine.DeleteRecord(ctx, aRecord.DataSource, aRecord.ID, senzing.SzWithoutInfo) }()
+	// TODO: Figure out correct flags.
+	// flags := senzing.Flags(senzing.SZ_EXPORT_DEFAULT_FLAGS, senzing.SZ_EXPORT_INCLUDE_ALL_HAVING_RELATIONSHIPS, senzing.SZ_EXPORT_INCLUDE_ALL_HAVING_RELATIONSHIPS)
+	flags = int64(-1)
+	aHandle, err := szEngine.ExportJSONEntityReport(ctx, flags)
+	defer func() {
+		err := szEngine.CloseExport(ctx, aHandle)
+		require.NoError(test, err)
+	}()
+	require.NoError(test, err)
+	jsonEntityReport := ""
+	for {
+		jsonEntityReportFragment, err := szEngine.FetchNext(ctx, aHandle)
 		require.NoError(test, err)
 		if len(jsonEntityReportFragment) == 0 {
 			break
@@ -1940,7 +1969,6 @@ func addRecords(ctx context.Context, records []record.Record) error {
 }
 
 func createError(errorID int, err error) error {
-	// return errors.Cast(logger.NewError(errorID, err), err)
 	return logger.NewError(errorID, err)
 }
 
@@ -2187,12 +2215,12 @@ func setupSenzingConfiguration() error {
 	ctx := context.TODO()
 	now := time.Now()
 
+	// Create sz objects.
+
 	settings, err := getSettings()
 	if err != nil {
 		return createError(5901, err)
 	}
-
-	// Create sz objects.
 
 	szConfig := &szconfig.Szconfig{}
 	err = szConfig.Initialize(ctx, instanceName, settings, verboseLogging)
@@ -2200,6 +2228,13 @@ func setupSenzingConfiguration() error {
 		return createError(5902, err)
 	}
 	defer func() { handleError(szConfig.Destroy(ctx)) }()
+
+	szConfigManager := &szconfigmanager.Szconfigmanager{}
+	err = szConfigManager.Initialize(ctx, instanceName, settings, verboseLogging)
+	if err != nil {
+		return createError(5907, err)
+	}
+	defer func() { handleError(szConfigManager.Destroy(ctx)) }()
 
 	// Create an in memory Senzing configuration.
 
@@ -2234,14 +2269,7 @@ func setupSenzingConfiguration() error {
 
 	// Persist the Senzing configuration to the Senzing repository as default.
 
-	szConfigManager := &szconfigmanager.Szconfigmanager{}
-	err = szConfigManager.Initialize(ctx, instanceName, settings, verboseLogging)
-	if err != nil {
-		return createError(5907, err)
-	}
-	defer func() { handleError(szConfigManager.Destroy(ctx)) }()
-
-	configComment := fmt.Sprintf("Created by szdiagnostic_test at %s", now.UTC())
+	configComment := fmt.Sprintf("Created by szengine_test at %s", now.UTC())
 	configID, err := szConfigManager.AddConfig(ctx, configDefinition, configComment)
 	if err != nil {
 		return createError(5908, err)
