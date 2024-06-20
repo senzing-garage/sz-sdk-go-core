@@ -95,7 +95,6 @@ func TestSzAbstractFactory_CreateSzProduct(test *testing.T) {
 // ----------------------------------------------------------------------------
 
 func createError(errorID int, err error) error {
-	// return errors.Cast(logger.NewError(errorId, err), err)
 	return logger.NewError(errorID, err)
 }
 
@@ -130,8 +129,7 @@ func getSzAbstractFactory(ctx context.Context) senzing.SzAbstractFactory {
 	_ = ctx
 	settings, err := getSettings()
 	if err != nil {
-		fmt.Printf("getSettings() Error: %v\n", err)
-		return nil
+		panic(err)
 	}
 	result := &Szabstractfactory{
 		ConfigID:       senzing.SzInitializeWithDefaultConfiguration,

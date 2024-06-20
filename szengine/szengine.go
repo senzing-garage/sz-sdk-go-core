@@ -71,7 +71,7 @@ func (client *Szengine) AddRecord(ctx context.Context, dataSourceCode string, re
 		entryTime := time.Now()
 		client.traceEntry(1, dataSourceCode, recordID, recordDefinition, flags)
 		defer func() {
-			client.traceExit(2, dataSourceCode, recordID, recordDefinition, flags, err, time.Since(entryTime))
+			client.traceExit(2, dataSourceCode, recordID, recordDefinition, flags, result, err, time.Since(entryTime))
 		}()
 	}
 	if (flags & senzing.SzWithInfo) == senzing.SzNoFlags {
@@ -160,7 +160,7 @@ func (client *Szengine) DeleteRecord(ctx context.Context, dataSourceCode string,
 	if client.isTrace {
 		entryTime := time.Now()
 		client.traceEntry(9, dataSourceCode, recordID, flags)
-		defer func() { client.traceExit(10, dataSourceCode, recordID, flags, err, time.Since(entryTime)) }()
+		defer func() { client.traceExit(10, dataSourceCode, recordID, flags, result, err, time.Since(entryTime)) }()
 	}
 	if (flags & senzing.SzWithInfo) == senzing.SzNoFlags {
 		result, err = client.deleteRecord(ctx, dataSourceCode, recordID)
@@ -467,7 +467,7 @@ func (client *Szengine) FindInterestingEntitiesByEntityID(ctx context.Context, e
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
-				"entityID": strconv.FormatInt(entityID, baseTen),
+				"entityID": formatEntityID(entityID),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8011, err, details)
 		}()
@@ -619,17 +619,19 @@ func (client *Szengine) FindPathByEntityID(ctx context.Context, startEntityID in
 	}
 	switch {
 	case len(requiredDataSources) > 0:
-		result, err = client.findPathIncludingSourceByEntityIDV2(ctx, startEntityID, endEntityID, maxDegrees, avoidEntityIDs, requiredDataSources, flags)
+		result, err = client.findPathByEntityIDIncludingSourceV2(ctx, startEntityID, endEntityID, maxDegrees, avoidEntityIDs, requiredDataSources, flags)
 	case len(avoidEntityIDs) > 0:
-		result, err = client.findPathExcludingByEntityIDV2(ctx, startEntityID, endEntityID, maxDegrees, avoidEntityIDs, flags)
+		result, err = client.findPathByEntityIDWithAvoidsV2(ctx, startEntityID, endEntityID, maxDegrees, avoidEntityIDs, flags)
 	default:
 		result, err = client.findPathByEntityIDV2(ctx, startEntityID, endEntityID, maxDegrees, flags)
 	}
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
-				"startEntityID": strconv.FormatInt(startEntityID, baseTen),
-				"endEntityID":   strconv.FormatInt(endEntityID, baseTen),
+				"startEntityID":       formatEntityID(startEntityID),
+				"endEntityID":         formatEntityID(endEntityID),
+				"avoidEntityIDs":      avoidEntityIDs,
+				"requiredDataSources": requiredDataSources,
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8015, err, details)
 		}()
@@ -670,9 +672,9 @@ func (client *Szengine) FindPathByRecordID(ctx context.Context, startDataSourceC
 	}
 	switch {
 	case len(requiredDataSources) > 0:
-		result, err = client.findPathIncludingSourceByRecordIDV2(ctx, startDataSourceCode, startRecordID, endDataSourceCode, endRecordID, maxDegrees, avoidRecordKeys, requiredDataSources, flags)
+		result, err = client.findPathByRecordIDIncludingSourceV2(ctx, startDataSourceCode, startRecordID, endDataSourceCode, endRecordID, maxDegrees, avoidRecordKeys, requiredDataSources, flags)
 	case len(avoidRecordKeys) > 0:
-		result, err = client.findPathExcludingByRecordIDV2(ctx, startDataSourceCode, startRecordID, endDataSourceCode, endRecordID, maxDegrees, avoidRecordKeys, flags)
+		result, err = client.findPathByRecordIDWithAvoidsV2(ctx, startDataSourceCode, startRecordID, endDataSourceCode, endRecordID, maxDegrees, avoidRecordKeys, flags)
 	default:
 		result, err = client.findPathByRecordIDV2(ctx, startDataSourceCode, startRecordID, endDataSourceCode, endRecordID, maxDegrees, flags)
 	}
@@ -683,6 +685,8 @@ func (client *Szengine) FindPathByRecordID(ctx context.Context, startDataSourceC
 				"startRecordID":       startRecordID,
 				"endDataSourceCode":   endDataSourceCode,
 				"endRecordID":         endRecordID,
+				"avoidRecordKeys":     avoidRecordKeys,
+				"requiredDataSources": requiredDataSources,
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8016, err, details)
 		}()
@@ -742,7 +746,7 @@ func (client *Szengine) GetEntityByEntityID(ctx context.Context, entityID int64,
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
-				"entityID": strconv.FormatInt(entityID, baseTen),
+				"entityID": formatEntityID(entityID),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8018, err, details)
 		}()
@@ -764,7 +768,6 @@ Output
     Example: `{"RESOLVED_ENTITY":{"ENTITY_ID":1,"ENTITY_NAME":"JOHNSON","FEATURES":{"ACCT_NUM":[{"FEAT_DESC":"5534202208773608","LIB_FEAT_ID":8,"USAGE_TYPE":"CC","FEAT_DESC_VALUES":[{"FEAT_DESC":"5534202208773608","LIB_FEAT_ID":8}]}],"ADDRESS":[{"FEAT_DESC":"772 Armstrong RD Delhi LA 71232","LIB_FEAT_ID":4,"FEAT_DESC_VALUES":[{"FEAT_DESC":"772 Armstrong RD Delhi LA 71232","LIB_FEAT_ID":4}]}],"DOB":[{"FEAT_DESC":"4/8/1983","LIB_FEAT_ID":2,"FEAT_DESC_VALUES":[{"FEAT_DESC":"4/8/1983","LIB_FEAT_ID":2}]}],"GENDER":[{"FEAT_DESC":"F","LIB_FEAT_ID":3,"FEAT_DESC_VALUES":[{"FEAT_DESC":"F","LIB_FEAT_ID":3}]}],"LOGIN_ID":[{"FEAT_DESC":"flavorh","LIB_FEAT_ID":7,"FEAT_DESC_VALUES":[{"FEAT_DESC":"flavorh","LIB_FEAT_ID":7}]}],"NAME":[{"FEAT_DESC":"JOHNSON","LIB_FEAT_ID":1,"FEAT_DESC_VALUES":[{"FEAT_DESC":"JOHNSON","LIB_FEAT_ID":1}]}],"PHONE":[{"FEAT_DESC":"225-671-0796","LIB_FEAT_ID":5,"FEAT_DESC_VALUES":[{"FEAT_DESC":"225-671-0796","LIB_FEAT_ID":5}]}],"SSN":[{"FEAT_DESC":"053-39-3251","LIB_FEAT_ID":6,"FEAT_DESC_VALUES":[{"FEAT_DESC":"053-39-3251","LIB_FEAT_ID":6}]}]},"RECORD_SUMMARY":[{"DATA_SOURCE":"TEST","RECORD_COUNT":2,"FIRST_SEEN_DT":"2022-12-06 15:12:25.464","LAST_SEEN_DT":"2022-12-06 15:12:25.597"}],"LAST_SEEN_DT":"2022-12-06 15:12:25.597","RECORDS":[{"DATA_SOURCE":"TEST","RECORD_ID":"111","ENTITY_TYPE":"TEST","INTERNAL_ID":1,"ENTITY_KEY":"C6063D4396612FBA7324DB0739273BA1FE815C43","ENTITY_DESC":"JOHNSON","MATCH_KEY":"","MATCH_LEVEL":0,"MATCH_LEVEL_CODE":"","ERRULE_CODE":"","LAST_SEEN_DT":"2022-12-06 15:12:25.464"},{"DATA_SOURCE":"TEST","RECORD_ID":"FCCE9793DAAD23159DBCCEB97FF2745B92CE7919","ENTITY_TYPE":"TEST","INTERNAL_ID":1,"ENTITY_KEY":"C6063D4396612FBA7324DB0739273BA1FE815C43","ENTITY_DESC":"JOHNSON","MATCH_KEY":"+EXACTLY_SAME","MATCH_LEVEL":0,"MATCH_LEVEL_CODE":"","ERRULE_CODE":"","LAST_SEEN_DT":"2022-12-06 15:12:25.597"}]},"RELATED_ENTITIES":[{"ENTITY_ID":2,"MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED","MATCH_KEY":"+PHONE+ACCT_NUM-SSN","ERRULE_CODE":"SF1","IS_DISCLOSED":0,"IS_AMBIGUOUS":0,"ENTITY_NAME":"OCEANGUY","RECORD_SUMMARY":[{"DATA_SOURCE":"TEST","RECORD_COUNT":1,"FIRST_SEEN_DT":"2022-12-06 15:12:25.536","LAST_SEEN_DT":"2022-12-06 15:12:25.536"}],"LAST_SEEN_DT":"2022-12-06 15:12:25.536"},{"ENTITY_ID":3,"MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED","MATCH_KEY":"+PHONE+ACCT_NUM-DOB-SSN","ERRULE_CODE":"SF1","IS_DISCLOSED":0,"IS_AMBIGUOUS":0,"ENTITY_NAME":"Smith","RECORD_SUMMARY":[{"DATA_SOURCE":"TEST","RECORD_COUNT":1,"FIRST_SEEN_DT":"2022-12-06 15:12:25.603","LAST_SEEN_DT":"2022-12-06 15:12:25.603"}],"LAST_SEEN_DT":"2022-12-06 15:12:25.603"}]}`
 */
 func (client *Szengine) GetEntityByRecordID(ctx context.Context, dataSourceCode string, recordID string, flags int64) (string, error) {
-	//  _DLEXPORT int G2_getEntityByRecordID_V2(const char* dataSourceCode, const char* recordID, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	var err error
 	var result string
 	if client.isTrace {
@@ -939,7 +942,7 @@ func (client *Szengine) HowEntityByEntityID(ctx context.Context, entityID int64,
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
-				"entityID": strconv.FormatInt(entityID, baseTen),
+				"entityID": formatEntityID(entityID),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8024, err, details)
 		}()
@@ -1030,7 +1033,7 @@ func (client *Szengine) ReevaluateEntity(ctx context.Context, entityID int64, fl
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
-				"entityID": strconv.FormatInt(entityID, baseTen),
+				"entityID": formatEntityID(entityID),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8028, err, details)
 		}()
@@ -1054,7 +1057,7 @@ func (client *Szengine) ReevaluateRecord(ctx context.Context, dataSourceCode str
 	if client.isTrace {
 		entryTime := time.Now()
 		client.traceEntry(63, dataSourceCode, recordID, flags)
-		defer func() { client.traceExit(64, dataSourceCode, recordID, flags, err, time.Since(entryTime)) }()
+		defer func() { client.traceExit(64, dataSourceCode, recordID, flags, result, err, time.Since(entryTime)) }()
 	}
 	if (flags & senzing.SzWithInfo) == senzing.SzNoFlags {
 		result, err = client.reevaluateRecord(ctx, dataSourceCode, recordID, flags)
@@ -1088,7 +1091,7 @@ func (client *Szengine) Reinitialize(ctx context.Context, configID int64) error 
 		client.traceEntry(65, configID)
 		defer func() { client.traceExit(66, configID, err, time.Since(entryTime)) }()
 	}
-	err = client.reinitialize(ctx, configID)
+	err = client.reinit(ctx, configID)
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -1129,7 +1132,10 @@ func (client *Szengine) SearchByAttributes(ctx context.Context, attributes strin
 	}
 	if client.observers != nil {
 		go func() {
-			details := map[string]string{}
+			details := map[string]string{
+				"attributes":    attributes,
+				"searchProfile": searchProfile,
+			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8031, err, details)
 		}()
 	}
@@ -1164,8 +1170,8 @@ func (client *Szengine) WhyEntities(ctx context.Context, entityID1 int64, entity
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
-				"entityID1": strconv.FormatInt(entityID1, baseTen),
-				"entityID2": strconv.FormatInt(entityID2, baseTen),
+				"entityID1": formatEntityID(entityID1),
+				"entityID2": formatEntityID(entityID2),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8032, err, details)
 		}()
@@ -1287,9 +1293,9 @@ func (client *Szengine) Initialize(ctx context.Context, instanceName string, set
 		}()
 	}
 	if configID > 0 {
-		err = client.initializeWithConfigID(ctx, instanceName, settings, configID, verboseLogging)
+		err = client.initWithConfigID(ctx, instanceName, settings, configID, verboseLogging)
 	} else {
-		err = client.initialize(ctx, instanceName, settings, verboseLogging)
+		err = client.init(ctx, instanceName, settings, verboseLogging)
 	}
 	if client.observers != nil {
 		go func() {
@@ -1408,7 +1414,7 @@ func (client *Szengine) UnregisterObserver(ctx context.Context, observer observe
 }
 
 // ----------------------------------------------------------------------------
-// Private, delegated methods for interface methods
+// Private methods that call the Senzing C API
 // ----------------------------------------------------------------------------
 
 /*
@@ -1749,7 +1755,7 @@ func (client *Szengine) findPathByRecordIDV2(ctx context.Context, startDataSourc
 }
 
 /*
-The findPathExcludingByEntityIDV2 method finds single relationship paths between two entities.
+The findPathByEntityIDWithAvoidsV2 method finds single relationship paths between two entities.
 Paths are found using known relationships with other entities.
 In addition, it will find paths that exclude certain entities from being on the path.
 It extends FindPathExcludingByEntityID() by adding output control flags.
@@ -1771,7 +1777,7 @@ Output
   - A JSON document.
     See the example output.
 */
-func (client *Szengine) findPathExcludingByEntityIDV2(ctx context.Context, startEntityID int64, endEntityID int64, maxDegrees int64, exclusions string, flags int64) (string, error) {
+func (client *Szengine) findPathByEntityIDWithAvoidsV2(ctx context.Context, startEntityID int64, endEntityID int64, maxDegrees int64, exclusions string, flags int64) (string, error) {
 	//  _DLEXPORT int G2_findPathExcludingByEntityID_V2(const long long entityID1, const long long entityID2, const int maxDegree, const char* excludedEntities, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -1789,7 +1795,7 @@ func (client *Szengine) findPathExcludingByEntityIDV2(ctx context.Context, start
 }
 
 /*
-The findPathExcludingByRecordIDV2 method finds single relationship paths between two entities.
+The findPathByRecordIDWithAvoidsV2 method finds single relationship paths between two entities.
 Paths are found using known relationships with other entities.
 In addition, it will find paths that exclude certain entities from being on the path.
 It extends FindPathExcludingByRecordID() by adding output control flags.
@@ -1813,7 +1819,7 @@ Output
   - A JSON document.
     See the example output.
 */
-func (client *Szengine) findPathExcludingByRecordIDV2(ctx context.Context, startDataSourceCode string, startRecordID string, endDataSourceCode string, endRecordID string, maxDegrees int64, exclusions string, flags int64) (string, error) {
+func (client *Szengine) findPathByRecordIDWithAvoidsV2(ctx context.Context, startDataSourceCode string, startRecordID string, endDataSourceCode string, endRecordID string, maxDegrees int64, exclusions string, flags int64) (string, error) {
 	//  _DLEXPORT int G2_findPathExcludingByRecordID_V2(const char* dataSourceCode1, const char* recordID1, const char* dataSourceCode2, const char* recordID2, const int maxDegree, const char* excludedRecords, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -1839,7 +1845,7 @@ func (client *Szengine) findPathExcludingByRecordIDV2(ctx context.Context, start
 }
 
 /*
-The findPathIncludingSourceByEntityIDV2 method finds single relationship paths between two entities.
+The findPathByEntityIDIncludingSourceV2 method finds single relationship paths between two entities.
 In addition, one of the enties along the path must include a specified data source.
 Specific entities may also be excluded,
 using the same methodology as the FindPathExcludingByEntityID_V2() and FindPathExcludingByRecordID_V2().
@@ -1858,7 +1864,7 @@ Output
   - A JSON document.
     See the example output.
 */
-func (client *Szengine) findPathIncludingSourceByEntityIDV2(ctx context.Context, startEntityID int64, endEntityID int64, maxDegrees int64, exclusions string, requiredDataSources string, flags int64) (string, error) {
+func (client *Szengine) findPathByEntityIDIncludingSourceV2(ctx context.Context, startEntityID int64, endEntityID int64, maxDegrees int64, exclusions string, requiredDataSources string, flags int64) (string, error) {
 	//  _DLEXPORT int G2_findPathIncludingSourceByEntityID_V2(const long long entityID1, const long long entityID2, const int maxDegree, const char* excludedEntities, const char* requiredDsrcs, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -1878,7 +1884,7 @@ func (client *Szengine) findPathIncludingSourceByEntityIDV2(ctx context.Context,
 }
 
 /*
-The findPathIncludingSourceByRecordIDV2 method finds single relationship paths between two entities.
+The findPathByRecordIDIncludingSourceV2 method finds single relationship paths between two entities.
 In addition, one of the enties along the path must include a specified data source.
 Specific entities may also be excluded,
 using the same methodology as the FindPathExcludingByEntityID_V2() and FindPathExcludingByRecordID_V2().
@@ -1899,7 +1905,7 @@ Output
   - A JSON document.
     See the example output.
 */
-func (client *Szengine) findPathIncludingSourceByRecordIDV2(ctx context.Context, startDataSourceCode string, startRecordID string, endDataSourceCode string, endRecordID string, maxDegrees int64, exclusions string, requiredDataSources string, flags int64) (string, error) {
+func (client *Szengine) findPathByRecordIDIncludingSourceV2(ctx context.Context, startDataSourceCode string, startRecordID string, endDataSourceCode string, endRecordID string, maxDegrees int64, exclusions string, requiredDataSources string, flags int64) (string, error) {
 	//  _DLEXPORT int G2_findPathIncludingSourceByRecordID_V2(const char* dataSourceCode1, const char* recordID1, const char* dataSourceCode2, const char* recordID2, const int maxDegree, const char* excludedRecords, const char* requiredDsrcs, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -2057,7 +2063,7 @@ func (client *Szengine) howEntityByEntityIDV2(ctx context.Context, entityID int6
 }
 
 /*
-The initialize method initializes the SzEngine object.
+The init method initializes the SzEngine object.
 It must be called prior to any other calls.
 
 Input
@@ -2066,7 +2072,7 @@ Input
   - settings: A JSON string containing configuration parameters.
   - verboseLogging: A flag to enable deeper logging of the G2 processing. 0 for no Senzing logging; 1 for logging.
 */
-func (client *Szengine) initialize(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
+func (client *Szengine) init(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
 	// _DLEXPORT int G2_init(const char *moduleName, const char *iniParams, const int verboseLogging);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -2083,7 +2089,7 @@ func (client *Szengine) initialize(ctx context.Context, instanceName string, set
 }
 
 /*
-The initializeWithConfigID method initializes the Senzing G2 object with a non-default configuration ID.
+The initWithConfigID method initializes the Senzing G2 object with a non-default configuration ID.
 It must be called prior to any other calls.
 
 Input
@@ -2093,7 +2099,7 @@ Input
   - configID: The configuration ID used for the initialization.
   - verboseLogging: A flag to enable deeper logging of the G2 processing. 0 for no Senzing logging; 1 for logging.
 */
-func (client *Szengine) initializeWithConfigID(ctx context.Context, instanceName string, settings string, configID int64, verboseLogging int64) error {
+func (client *Szengine) initWithConfigID(ctx context.Context, instanceName string, settings string, configID int64, verboseLogging int64) error {
 	//  _DLEXPORT int G2_initWithConfigID(const char *moduleName, const char *iniParams, const long long initConfigID, const int verboseLogging);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -2284,7 +2290,7 @@ func (client *Szengine) reevaluateRecordWithInfo(ctx context.Context, dataSource
 	return resultResponse, err
 }
 
-func (client *Szengine) reinitialize(ctx context.Context, configID int64) error {
+func (client *Szengine) reinit(ctx context.Context, configID int64) error {
 	//  _DLEXPORT int G2_reinit(const long long initConfigID);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -2491,6 +2497,10 @@ func (client *Szengine) traceEntry(errorNumber int, details ...interface{}) {
 // Trace method exit.
 func (client *Szengine) traceExit(errorNumber int, details ...interface{}) {
 	client.getLogger().Log(errorNumber, details...)
+}
+
+func formatEntityID(entityID int64) string {
+	return strconv.FormatInt(entityID, 10)
 }
 
 // --- Errors -----------------------------------------------------------------

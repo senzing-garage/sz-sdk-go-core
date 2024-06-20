@@ -67,37 +67,26 @@ Output
     See the example output.
 */
 func (client *Szconfig) AddDataSource(ctx context.Context, configHandle uintptr, dataSourceCode string) (string, error) {
-	// _DLEXPORT int G2Config_addDataSource(ConfigHandle configHandle, const char *inputJson, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
-	runtime.LockOSThread()
-	defer runtime.UnlockOSThread()
 	var err error
-	var resultResponse string
+	var result string
 	if client.isTrace {
 		entryTime := time.Now()
 		client.traceEntry(1, configHandle, dataSourceCode)
 		defer func() {
-			client.traceExit(2, configHandle, dataSourceCode, resultResponse, err, time.Since(entryTime))
+			client.traceExit(2, configHandle, dataSourceCode, result, err, time.Since(entryTime))
 		}()
 	}
-	dataSourceDefinition := `{"DSRC_CODE": "` + dataSourceCode + `"}`
-	dataSourceDefinitionForC := C.CString(dataSourceDefinition)
-	defer C.free(unsafe.Pointer(dataSourceDefinitionForC))
-	result := C.G2Config_addDataSource_helper(C.uintptr_t(configHandle), dataSourceDefinitionForC)
-	if result.returnCode != noError {
-		err = client.newError(ctx, 4001, configHandle, dataSourceCode, result.returnCode, result)
-	}
-	resultResponse = C.GoString(result.response)
-	C.G2GoHelper_free(unsafe.Pointer(result.response))
+	result, err = client.addDataSource(ctx, configHandle, dataSourceCode)
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
 				"dataSourceCode": dataSourceCode,
-				"return":         resultResponse,
+				"return":         result,
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8001, err, details)
 		}()
 	}
-	return resultResponse, err
+	return result, err
 }
 
 /*
@@ -109,19 +98,13 @@ Input
   - configHandle: An identifier of an in-memory configuration.
 */
 func (client *Szconfig) CloseConfig(ctx context.Context, configHandle uintptr) error {
-	// _DLEXPORT int G2Config_close(ConfigHandle configHandle);
-	runtime.LockOSThread()
-	defer runtime.UnlockOSThread()
 	var err error
 	if client.isTrace {
 		entryTime := time.Now()
 		client.traceEntry(5, configHandle)
 		defer func() { client.traceExit(6, configHandle, err, time.Since(entryTime)) }()
 	}
-	result := C.G2Config_close_helper(C.uintptr_t(configHandle))
-	if result != noError {
-		err = client.newError(ctx, 4002, configHandle, result)
-	}
+	err = client.close(ctx, configHandle)
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
@@ -145,28 +128,21 @@ Output
   - A Pointer to an in-memory Senzing configuration.
 */
 func (client *Szconfig) CreateConfig(ctx context.Context) (uintptr, error) {
-	// _DLEXPORT int G2Config_create(ConfigHandle* configHandle);
-	runtime.LockOSThread()
-	defer runtime.UnlockOSThread()
 	var err error
-	var resultResponse uintptr
+	var result uintptr
 	if client.isTrace {
 		entryTime := time.Now()
 		client.traceEntry(7)
-		defer func() { client.traceExit(8, resultResponse, err, time.Since(entryTime)) }()
+		defer func() { client.traceExit(8, result, err, time.Since(entryTime)) }()
 	}
-	result := C.G2Config_create_helper()
-	if result.returnCode != noError {
-		err = client.newError(ctx, 4003, result.returnCode)
-	}
-	resultResponse = uintptr(result.response)
+	result, err = client.create(ctx)
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8003, err, details)
 		}()
 	}
-	return resultResponse, err
+	return result, err
 }
 
 /*
@@ -179,22 +155,13 @@ Input
   - dataSourceCode: The datasource name (e.g. "TEST_DATASOURCE").
 */
 func (client *Szconfig) DeleteDataSource(ctx context.Context, configHandle uintptr, dataSourceCode string) error {
-	// _DLEXPORT int G2Config_deleteDataSource(ConfigHandle configHandle, const char *inputJson);
-	runtime.LockOSThread()
-	defer runtime.UnlockOSThread()
 	var err error
 	if client.isTrace {
 		entryTime := time.Now()
 		client.traceEntry(9, configHandle, dataSourceCode)
 		defer func() { client.traceExit(10, configHandle, dataSourceCode, err, time.Since(entryTime)) }()
 	}
-	dataSourceDefinition := `{"DSRC_CODE": "` + dataSourceCode + `"}`
-	dataSourceDefinitionForC := C.CString(dataSourceDefinition)
-	defer C.free(unsafe.Pointer(dataSourceDefinitionForC))
-	result := C.G2Config_deleteDataSource_helper(C.uintptr_t(configHandle), dataSourceDefinitionForC)
-	if result != noError {
-		err = client.newError(ctx, 4004, configHandle, dataSourceCode, result)
-	}
+	err = client.deleteDataSource(ctx, configHandle, dataSourceCode)
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -214,19 +181,13 @@ Input
   - ctx: A context to control lifecycle.
 */
 func (client *Szconfig) Destroy(ctx context.Context) error {
-	// _DLEXPORT int G2Config_destroy();
-	runtime.LockOSThread()
-	defer runtime.UnlockOSThread()
 	var err error
 	if client.isTrace {
 		entryTime := time.Now()
 		client.traceEntry(11)
 		defer func() { client.traceExit(12, err, time.Since(entryTime)) }()
 	}
-	result := C.G2Config_destroy()
-	if result != noError {
-		err = client.newError(ctx, 4005, result)
-	}
+	err = client.destroy(ctx)
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
@@ -249,29 +210,21 @@ Output
     See the example output.
 */
 func (client *Szconfig) ExportConfig(ctx context.Context, configHandle uintptr) (string, error) {
-	// _DLEXPORT int G2Config_save(ConfigHandle configHandle, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize) );
-	runtime.LockOSThread()
-	defer runtime.UnlockOSThread()
 	var err error
-	var resultResponse string
+	var result string
 	if client.isTrace {
 		entryTime := time.Now()
 		client.traceEntry(13, configHandle)
-		defer func() { client.traceExit(14, configHandle, resultResponse, err, time.Since(entryTime)) }()
+		defer func() { client.traceExit(14, configHandle, result, err, time.Since(entryTime)) }()
 	}
-	result := C.G2Config_save_helper(C.uintptr_t(configHandle))
-	if result.returnCode != noError {
-		err = client.newError(ctx, 4010, configHandle, result.returnCode, result)
-	}
-	resultResponse = C.GoString(result.response)
-	C.G2GoHelper_free(unsafe.Pointer(result.response))
+	result, err = client.save(ctx, configHandle)
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8006, err, details)
 		}()
 	}
-	return resultResponse, err
+	return result, err
 }
 
 /*
@@ -287,29 +240,21 @@ Output
     See the example output.
 */
 func (client *Szconfig) GetDataSources(ctx context.Context, configHandle uintptr) (string, error) {
-	// _DLEXPORT int G2Config_listDataSources(ConfigHandle configHandle, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
-	runtime.LockOSThread()
-	defer runtime.UnlockOSThread()
 	var err error
-	var resultResponse string
+	var result string
 	if client.isTrace {
 		entryTime := time.Now()
 		client.traceEntry(15, configHandle)
-		defer func() { client.traceExit(16, configHandle, resultResponse, err, time.Since(entryTime)) }()
+		defer func() { client.traceExit(16, configHandle, result, err, time.Since(entryTime)) }()
 	}
-	result := C.G2Config_listDataSources_helper(C.uintptr_t(configHandle))
-	if result.returnCode != noError {
-		err = client.newError(ctx, 4008, result.returnCode, result)
-	}
-	resultResponse = C.GoString(result.response)
-	C.G2GoHelper_free(unsafe.Pointer(result.response))
+	result, err = client.listDataSources(ctx, configHandle)
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8008, err, details)
 		}()
 	}
-	return resultResponse, err
+	return result, err
 }
 
 /*
@@ -323,30 +268,21 @@ Output
   - An identifier of an in-memory configuration.
 */
 func (client *Szconfig) ImportConfig(ctx context.Context, configDefinition string) (uintptr, error) {
-	// _DLEXPORT int G2Config_load(const char *jsonConfig,ConfigHandle* configHandle);
-	runtime.LockOSThread()
-	defer runtime.UnlockOSThread()
 	var err error
-	var resultResponse uintptr
+	var result uintptr
 	if client.isTrace {
 		entryTime := time.Now()
 		client.traceEntry(21, configDefinition)
-		defer func() { client.traceExit(22, configDefinition, resultResponse, err, time.Since(entryTime)) }()
+		defer func() { client.traceExit(22, configDefinition, result, err, time.Since(entryTime)) }()
 	}
-	jsonConfigForC := C.CString(configDefinition)
-	defer C.free(unsafe.Pointer(jsonConfigForC))
-	result := C.G2Config_load_helper(jsonConfigForC)
-	if result.returnCode != noError {
-		err = client.newError(ctx, 4009, configDefinition, result.returnCode)
-	}
-	resultResponse = uintptr(result.response)
+	result, err = client.load(ctx, configDefinition)
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8009, err, details)
 		}()
 	}
-	return resultResponse, err
+	return result, err
 }
 
 // ----------------------------------------------------------------------------
@@ -378,23 +314,13 @@ Input
   - verboseLogging: A flag to enable deeper logging of the G2 processing. 0 for no Senzing logging; 1 for logging.
 */
 func (client *Szconfig) Initialize(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
-	// _DLEXPORT int G2Config_init(const char *moduleName, const char *iniParams, const int verboseLogging);
-	runtime.LockOSThread()
-	defer runtime.UnlockOSThread()
 	var err error
 	if client.isTrace {
 		entryTime := time.Now()
 		client.traceEntry(23, instanceName, settings, verboseLogging)
 		defer func() { client.traceExit(24, instanceName, settings, verboseLogging, err, time.Since(entryTime)) }()
 	}
-	instanceNameForC := C.CString(instanceName)
-	defer C.free(unsafe.Pointer(instanceNameForC))
-	settingsForC := C.CString(settings)
-	defer C.free(unsafe.Pointer(settingsForC))
-	result := C.G2Config_init(instanceNameForC, settingsForC, C.longlong(verboseLogging))
-	if result != noError {
-		err = client.newError(ctx, 4007, instanceName, settings, verboseLogging, result)
-	}
+	err = client.init(ctx, instanceName, settings, verboseLogging)
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -445,8 +371,6 @@ Input
   - logLevelName: The desired log level. TRACE, DEBUG, INFO, WARN, ERROR, FATAL or PANIC.
 */
 func (client *Szconfig) SetLogLevel(ctx context.Context, logLevelName string) error {
-	runtime.LockOSThread()
-	defer runtime.UnlockOSThread()
 	var err error
 	if client.isTrace {
 		entryTime := time.Now()
@@ -508,6 +432,143 @@ func (client *Szconfig) UnregisterObserver(ctx context.Context, observer observe
 		if !client.observers.HasObservers(ctx) {
 			client.observers = nil
 		}
+	}
+	return err
+}
+
+// ----------------------------------------------------------------------------
+// Private methods that call the Senzing C API
+// ----------------------------------------------------------------------------
+
+func (client *Szconfig) addDataSource(ctx context.Context, configHandle uintptr, dataSourceCode string) (string, error) {
+	// _DLEXPORT int G2Config_addDataSource(ConfigHandle configHandle, const char *inputJson, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	var err error
+	var resultResponse string
+	dataSourceDefinition := `{"DSRC_CODE": "` + dataSourceCode + `"}`
+	dataSourceDefinitionForC := C.CString(dataSourceDefinition)
+	defer C.free(unsafe.Pointer(dataSourceDefinitionForC))
+	result := C.G2Config_addDataSource_helper(C.uintptr_t(configHandle), dataSourceDefinitionForC)
+	if result.returnCode != noError {
+		err = client.newError(ctx, 4001, configHandle, dataSourceCode, result.returnCode, result)
+	}
+	resultResponse = C.GoString(result.response)
+	C.G2GoHelper_free(unsafe.Pointer(result.response))
+	return resultResponse, err
+}
+
+func (client *Szconfig) close(ctx context.Context, configHandle uintptr) error {
+	// _DLEXPORT int G2Config_close(ConfigHandle configHandle);
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	var err error
+	result := C.G2Config_close_helper(C.uintptr_t(configHandle))
+	if result != noError {
+		err = client.newError(ctx, 4002, configHandle, result)
+	}
+	return err
+}
+
+func (client *Szconfig) create(ctx context.Context) (uintptr, error) {
+	// _DLEXPORT int G2Config_create(ConfigHandle* configHandle);
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	var err error
+	var resultResponse uintptr
+	result := C.G2Config_create_helper()
+	if result.returnCode != noError {
+		err = client.newError(ctx, 4003, result.returnCode)
+	}
+	resultResponse = uintptr(result.response)
+	return resultResponse, err
+}
+
+func (client *Szconfig) deleteDataSource(ctx context.Context, configHandle uintptr, dataSourceCode string) error {
+	// _DLEXPORT int G2Config_deleteDataSource(ConfigHandle configHandle, const char *inputJson);
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	var err error
+	dataSourceDefinition := `{"DSRC_CODE": "` + dataSourceCode + `"}`
+	dataSourceDefinitionForC := C.CString(dataSourceDefinition)
+	defer C.free(unsafe.Pointer(dataSourceDefinitionForC))
+	result := C.G2Config_deleteDataSource_helper(C.uintptr_t(configHandle), dataSourceDefinitionForC)
+	if result != noError {
+		err = client.newError(ctx, 4004, configHandle, dataSourceCode, result)
+	}
+	return err
+}
+
+func (client *Szconfig) destroy(ctx context.Context) error {
+	// _DLEXPORT int G2Config_destroy();
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	var err error
+	result := C.G2Config_destroy()
+	if result != noError {
+		err = client.newError(ctx, 4005, result)
+	}
+	return err
+}
+
+func (client *Szconfig) save(ctx context.Context, configHandle uintptr) (string, error) {
+	// _DLEXPORT int G2Config_save(ConfigHandle configHandle, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize) );
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	var err error
+	var resultResponse string
+	result := C.G2Config_save_helper(C.uintptr_t(configHandle))
+	if result.returnCode != noError {
+		err = client.newError(ctx, 4010, configHandle, result.returnCode, result)
+	}
+	resultResponse = C.GoString(result.response)
+	C.G2GoHelper_free(unsafe.Pointer(result.response))
+	return resultResponse, err
+}
+
+func (client *Szconfig) listDataSources(ctx context.Context, configHandle uintptr) (string, error) {
+	// _DLEXPORT int G2Config_listDataSources(ConfigHandle configHandle, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	var err error
+	var resultResponse string
+	result := C.G2Config_listDataSources_helper(C.uintptr_t(configHandle))
+	if result.returnCode != noError {
+		err = client.newError(ctx, 4008, result.returnCode, result)
+	}
+	resultResponse = C.GoString(result.response)
+	C.G2GoHelper_free(unsafe.Pointer(result.response))
+	return resultResponse, err
+}
+
+func (client *Szconfig) load(ctx context.Context, configDefinition string) (uintptr, error) {
+	// _DLEXPORT int G2Config_load(const char *jsonConfig,ConfigHandle* configHandle);
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	var err error
+	var resultResponse uintptr
+	jsonConfigForC := C.CString(configDefinition)
+	defer C.free(unsafe.Pointer(jsonConfigForC))
+	result := C.G2Config_load_helper(jsonConfigForC)
+	if result.returnCode != noError {
+		err = client.newError(ctx, 4009, configDefinition, result.returnCode)
+	}
+	resultResponse = uintptr(result.response)
+	return resultResponse, err
+}
+
+func (client *Szconfig) init(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
+	// _DLEXPORT int G2Config_init(const char *moduleName, const char *iniParams, const int verboseLogging);
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	var err error
+	instanceNameForC := C.CString(instanceName)
+	defer C.free(unsafe.Pointer(instanceNameForC))
+	settingsForC := C.CString(settings)
+	defer C.free(unsafe.Pointer(settingsForC))
+	result := C.G2Config_init(instanceNameForC, settingsForC, C.longlong(verboseLogging))
+	if result != noError {
+		err = client.newError(ctx, 4007, instanceName, settings, verboseLogging, result)
 	}
 	return err
 }

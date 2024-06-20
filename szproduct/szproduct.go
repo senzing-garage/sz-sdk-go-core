@@ -60,19 +60,13 @@ Input
   - ctx: A context to control lifecycle.
 */
 func (client *Szproduct) Destroy(ctx context.Context) error {
-	// _DLEXPORT int G2Config_destroy();
-	runtime.LockOSThread()
-	defer runtime.UnlockOSThread()
 	var err error
 	if client.isTrace {
 		entryTime := time.Now()
 		client.traceEntry(3)
 		defer func() { client.traceExit(4, err, time.Since(entryTime)) }()
 	}
-	result := C.G2Product_destroy()
-	if result != noError {
-		err = client.newError(ctx, 4001, result)
-	}
+	err = client.destroy(ctx)
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
@@ -93,25 +87,21 @@ Output
     See the example output.
 */
 func (client *Szproduct) GetLicense(ctx context.Context) (string, error) {
-	// _DLEXPORT char* G2Product_license();
-	runtime.LockOSThread()
-	defer runtime.UnlockOSThread()
 	var err error
-	var resultResponse string
+	var result string
 	if client.isTrace {
 		entryTime := time.Now()
 		client.traceEntry(9)
-		defer func() { client.traceExit(10, resultResponse, err, time.Since(entryTime)) }()
+		defer func() { client.traceExit(10, result, err, time.Since(entryTime)) }()
 	}
-	result := C.G2Product_license()
-	resultResponse = C.GoString(result)
+	result, err = client.license(ctx)
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8003, err, details)
 		}()
 	}
-	return resultResponse, err
+	return result, err
 }
 
 /*
@@ -125,25 +115,21 @@ Output
     See the example output.
 */
 func (client *Szproduct) GetVersion(ctx context.Context) (string, error) {
-	// _DLEXPORT char* G2Product_license();
-	runtime.LockOSThread()
-	defer runtime.UnlockOSThread()
 	var err error
-	var resultResponse string
+	var result string
 	if client.isTrace {
 		entryTime := time.Now()
 		client.traceEntry(11)
-		defer func() { client.traceExit(12, resultResponse, err, time.Since(entryTime)) }()
+		defer func() { client.traceExit(12, result, err, time.Since(entryTime)) }()
 	}
-	result := C.G2Product_version()
-	resultResponse = C.GoString(result)
+	result, err = client.version(ctx)
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8004, err, details)
 		}()
 	}
-	return resultResponse, err
+	return result, err
 }
 
 // ----------------------------------------------------------------------------
@@ -175,23 +161,13 @@ Input
   - verboseLogging: A flag to enable deeper logging of the G2 processing. 0 for no Senzing logging; 1 for logging.
 */
 func (client *Szproduct) Initialize(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
-	// _DLEXPORT int G2Config_init(const char *moduleName, const char *iniParams, const int verboseLogging);
-	runtime.LockOSThread()
-	defer runtime.UnlockOSThread()
 	var err error
 	if client.isTrace {
 		entryTime := time.Now()
 		client.traceEntry(13, instanceName, settings, verboseLogging)
 		defer func() { client.traceExit(14, instanceName, settings, verboseLogging, err, time.Since(entryTime)) }()
 	}
-	moduleNameForC := C.CString(instanceName)
-	defer C.free(unsafe.Pointer(moduleNameForC))
-	iniParamsForC := C.CString(settings)
-	defer C.free(unsafe.Pointer(iniParamsForC))
-	result := C.G2Product_init(moduleNameForC, iniParamsForC, C.longlong(verboseLogging))
-	if result != noError {
-		err = client.newError(ctx, 4002, instanceName, settings, verboseLogging, result)
-	}
+	err = client.init(ctx, instanceName, settings, verboseLogging)
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -242,8 +218,6 @@ Input
   - logLevelName: The desired log level. TRACE, DEBUG, INFO, WARN, ERROR, FATAL or PANIC.
 */
 func (client *Szproduct) SetLogLevel(ctx context.Context, logLevelName string) error {
-	runtime.LockOSThread()
-	defer runtime.UnlockOSThread()
 	var err error
 	if client.isTrace {
 		entryTime := time.Now()
@@ -305,6 +279,62 @@ func (client *Szproduct) UnregisterObserver(ctx context.Context, observer observ
 		if !client.observers.HasObservers(ctx) {
 			client.observers = nil
 		}
+	}
+	return err
+}
+
+// ----------------------------------------------------------------------------
+// Private methods that call the Senzing C API
+// ----------------------------------------------------------------------------
+
+func (client *Szproduct) destroy(ctx context.Context) error {
+	// _DLEXPORT int G2Config_destroy();
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	var err error
+	result := C.G2Product_destroy()
+	if result != noError {
+		err = client.newError(ctx, 4001, result)
+	}
+	return err
+}
+
+func (client *Szproduct) license(ctx context.Context) (string, error) {
+	// _DLEXPORT char* G2Product_license();
+	_ = ctx
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	var err error
+	var resultResponse string
+	result := C.G2Product_license()
+	resultResponse = C.GoString(result)
+	return resultResponse, err
+}
+
+func (client *Szproduct) version(ctx context.Context) (string, error) {
+	// _DLEXPORT char* G2Product_license();
+	_ = ctx
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	var err error
+	var resultResponse string
+	result := C.G2Product_version()
+	resultResponse = C.GoString(result)
+	return resultResponse, err
+}
+
+func (client *Szproduct) init(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
+	// _DLEXPORT int G2Config_init(const char *moduleName, const char *iniParams, const int verboseLogging);
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	var err error
+	moduleNameForC := C.CString(instanceName)
+	defer C.free(unsafe.Pointer(moduleNameForC))
+	iniParamsForC := C.CString(settings)
+	defer C.free(unsafe.Pointer(iniParamsForC))
+	result := C.G2Product_init(moduleNameForC, iniParamsForC, C.longlong(verboseLogging))
+	if result != noError {
+		err = client.newError(ctx, 4002, instanceName, settings, verboseLogging, result)
 	}
 	return err
 }
