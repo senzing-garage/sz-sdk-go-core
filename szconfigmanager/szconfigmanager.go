@@ -68,8 +68,8 @@ func (client *Szconfigmanager) AddConfig(ctx context.Context, configDefinition s
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultConfigID int64
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(1, configDefinition, configComment)
 		defer func() {
 			client.traceExit(2, configDefinition, configComment, resultConfigID, err, time.Since(entryTime))
@@ -81,7 +81,7 @@ func (client *Szconfigmanager) AddConfig(ctx context.Context, configDefinition s
 	defer C.free(unsafe.Pointer(configCommentForC))
 	result := C.G2ConfigMgr_addConfig_helper(configDefinitionForC, configCommentForC)
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4001, configDefinition, configComment, result.returnCode, result, time.Since(entryTime))
+		err = client.newError(ctx, 4001, configDefinition, configComment, result.returnCode, result)
 	}
 	resultConfigID = int64(C.longlong(result.configID))
 	if client.observers != nil {
@@ -107,14 +107,14 @@ func (client *Szconfigmanager) Destroy(ctx context.Context) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(5)
 		defer func() { client.traceExit(6, err, time.Since(entryTime)) }()
 	}
 	result := C.G2ConfigMgr_destroy()
 	if result != 0 {
-		err = client.newError(ctx, 4002, result, time.Since(entryTime))
+		err = client.newError(ctx, 4002, result)
 	}
 	if client.observers != nil {
 		go func() {
@@ -142,14 +142,14 @@ func (client *Szconfigmanager) GetConfig(ctx context.Context, configID int64) (s
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultResponse string
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(7, configID)
 		defer func() { client.traceExit(8, configID, resultResponse, err, time.Since(entryTime)) }()
 	}
 	result := C.G2ConfigMgr_getConfig_helper(C.longlong(configID))
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4003, configID, result.returnCode, result, time.Since(entryTime))
+		err = client.newError(ctx, 4003, configID, result.returnCode, result)
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
@@ -178,14 +178,14 @@ func (client *Szconfigmanager) GetConfigs(ctx context.Context) (string, error) {
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultResponse string
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(9)
 		defer func() { client.traceExit(10, resultResponse, err, time.Since(entryTime)) }()
 	}
 	result := C.G2ConfigMgr_getConfigList_helper()
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4004, result.returnCode, result, time.Since(entryTime))
+		err = client.newError(ctx, 4004, result.returnCode, result)
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
@@ -213,14 +213,14 @@ func (client *Szconfigmanager) GetDefaultConfigID(ctx context.Context) (int64, e
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultConfigID int64
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(11)
 		defer func() { client.traceExit(12, resultConfigID, err, time.Since(entryTime)) }()
 	}
 	result := C.G2ConfigMgr_getDefaultConfigID_helper()
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4005, result.returnCode, result, time.Since(entryTime))
+		err = client.newError(ctx, 4005, result.returnCode, result)
 	}
 	resultConfigID = int64(C.longlong(result.configID))
 	if client.observers != nil {
@@ -248,14 +248,14 @@ func (client *Szconfigmanager) ReplaceDefaultConfigID(ctx context.Context, curre
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(19, currentDefaultConfigID, newDefaultConfigID)
 		defer func() { client.traceExit(20, currentDefaultConfigID, newDefaultConfigID, err, time.Since(entryTime)) }()
 	}
 	result := C.G2ConfigMgr_replaceDefaultConfigID(C.longlong(currentDefaultConfigID), C.longlong(newDefaultConfigID))
 	if result != 0 {
-		err = client.newError(ctx, 4008, currentDefaultConfigID, newDefaultConfigID, result, time.Since(entryTime))
+		err = client.newError(ctx, 4007, currentDefaultConfigID, newDefaultConfigID, result)
 	}
 	if client.observers != nil {
 		go func() {
@@ -281,14 +281,14 @@ func (client *Szconfigmanager) SetDefaultConfigID(ctx context.Context, configID 
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(21, configID)
 		defer func() { client.traceExit(22, configID, err, time.Since(entryTime)) }()
 	}
 	result := C.G2ConfigMgr_setDefaultConfigID(C.longlong(configID))
 	if result != 0 {
-		err = client.newError(ctx, 4009, configID, result, time.Since(entryTime))
+		err = client.newError(ctx, 4008, configID, result)
 	}
 	if client.observers != nil {
 		go func() {
@@ -334,8 +334,8 @@ func (client *Szconfigmanager) Initialize(ctx context.Context, instanceName stri
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(17, instanceName, settings, verboseLogging)
 		defer func() { client.traceExit(18, instanceName, settings, verboseLogging, err, time.Since(entryTime)) }()
 	}
@@ -345,7 +345,7 @@ func (client *Szconfigmanager) Initialize(ctx context.Context, instanceName stri
 	defer C.free(unsafe.Pointer(iniParamsForC))
 	result := C.G2ConfigMgr_init(moduleNameForC, iniParamsForC, C.longlong(verboseLogging))
 	if result != 0 {
-		err = client.newError(ctx, 4007, instanceName, settings, verboseLogging, result, time.Since(entryTime))
+		err = client.newError(ctx, 4006, instanceName, settings, verboseLogging, result)
 	}
 	if client.observers != nil {
 		go func() {

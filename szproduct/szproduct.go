@@ -63,14 +63,14 @@ func (client *Szproduct) Destroy(ctx context.Context) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(3)
 		defer func() { client.traceExit(4, err, time.Since(entryTime)) }()
 	}
 	result := C.G2Product_destroy()
 	if result != 0 {
-		err = client.newError(ctx, 4001, result, time.Since(entryTime))
+		err = client.newError(ctx, 4001, result)
 	}
 	if client.observers != nil {
 		go func() {
@@ -107,7 +107,7 @@ func (client *Szproduct) GetLicense(ctx context.Context) (string, error) {
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8002, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8003, err, details)
 		}()
 	}
 	return resultResponse, err
@@ -139,7 +139,7 @@ func (client *Szproduct) GetVersion(ctx context.Context) (string, error) {
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8003, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8004, err, details)
 		}()
 	}
 	return resultResponse, err
@@ -178,8 +178,8 @@ func (client *Szproduct) Initialize(ctx context.Context, instanceName string, se
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(13, instanceName, settings, verboseLogging)
 		defer func() { client.traceExit(14, instanceName, settings, verboseLogging, err, time.Since(entryTime)) }()
 	}
@@ -189,7 +189,7 @@ func (client *Szproduct) Initialize(ctx context.Context, instanceName string, se
 	defer C.free(unsafe.Pointer(iniParamsForC))
 	result := C.G2Product_init(moduleNameForC, iniParamsForC, C.longlong(verboseLogging))
 	if result != 0 {
-		err = client.newError(ctx, 4003, instanceName, settings, verboseLogging, result, time.Since(entryTime))
+		err = client.newError(ctx, 4002, instanceName, settings, verboseLogging, result)
 	}
 	if client.observers != nil {
 		go func() {
@@ -198,7 +198,7 @@ func (client *Szproduct) Initialize(ctx context.Context, instanceName string, se
 				"settings":       settings,
 				"verboseLogging": strconv.FormatInt(verboseLogging, 10),
 			}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8004, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8002, err, details)
 		}()
 	}
 	return err

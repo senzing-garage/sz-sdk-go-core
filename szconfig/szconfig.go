@@ -70,8 +70,8 @@ func (client *Szconfig) AddDataSource(ctx context.Context, configHandle uintptr,
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultResponse string
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(1, configHandle, dataSourceCode)
 		defer func() {
 			client.traceExit(2, configHandle, dataSourceCode, resultResponse, err, time.Since(entryTime))
@@ -82,7 +82,7 @@ func (client *Szconfig) AddDataSource(ctx context.Context, configHandle uintptr,
 	defer C.free(unsafe.Pointer(dataSourceDefinitionForC))
 	result := C.G2Config_addDataSource_helper(C.uintptr_t(configHandle), dataSourceDefinitionForC)
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4001, configHandle, dataSourceCode, result.returnCode, result, time.Since(entryTime))
+		err = client.newError(ctx, 4001, configHandle, dataSourceCode, result.returnCode, result)
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
@@ -111,14 +111,14 @@ func (client *Szconfig) CloseConfig(ctx context.Context, configHandle uintptr) e
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(5, configHandle)
 		defer func() { client.traceExit(6, configHandle, err, time.Since(entryTime)) }()
 	}
 	result := C.G2Config_close_helper(C.uintptr_t(configHandle))
 	if result != 0 {
-		err = client.newError(ctx, 4002, configHandle, result, time.Since(entryTime))
+		err = client.newError(ctx, 4002, configHandle, result)
 	}
 	if client.observers != nil {
 		go func() {
@@ -148,14 +148,14 @@ func (client *Szconfig) CreateConfig(ctx context.Context) (uintptr, error) {
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultResponse uintptr
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(7)
 		defer func() { client.traceExit(8, resultResponse, err, time.Since(entryTime)) }()
 	}
 	result := C.G2Config_create_helper()
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4003, result.returnCode, time.Since(entryTime))
+		err = client.newError(ctx, 4003, result.returnCode)
 	}
 	resultResponse = uintptr(result.response)
 	if client.observers != nil {
@@ -181,8 +181,8 @@ func (client *Szconfig) DeleteDataSource(ctx context.Context, configHandle uintp
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(9, configHandle, dataSourceCode)
 		defer func() { client.traceExit(10, configHandle, dataSourceCode, err, time.Since(entryTime)) }()
 	}
@@ -191,7 +191,7 @@ func (client *Szconfig) DeleteDataSource(ctx context.Context, configHandle uintp
 	defer C.free(unsafe.Pointer(dataSourceDefinitionForC))
 	result := C.G2Config_deleteDataSource_helper(C.uintptr_t(configHandle), dataSourceDefinitionForC)
 	if result != 0 {
-		err = client.newError(ctx, 4004, configHandle, dataSourceCode, result, time.Since(entryTime))
+		err = client.newError(ctx, 4004, configHandle, dataSourceCode, result)
 	}
 	if client.observers != nil {
 		go func() {
@@ -216,14 +216,14 @@ func (client *Szconfig) Destroy(ctx context.Context) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(11)
 		defer func() { client.traceExit(12, err, time.Since(entryTime)) }()
 	}
 	result := C.G2Config_destroy()
 	if result != 0 {
-		err = client.newError(ctx, 4005, result, time.Since(entryTime))
+		err = client.newError(ctx, 4005, result)
 	}
 	if client.observers != nil {
 		go func() {
@@ -252,14 +252,14 @@ func (client *Szconfig) ExportConfig(ctx context.Context, configHandle uintptr) 
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultResponse string
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(13, configHandle)
 		defer func() { client.traceExit(14, configHandle, resultResponse, err, time.Since(entryTime)) }()
 	}
 	result := C.G2Config_save_helper(C.uintptr_t(configHandle))
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4010, configHandle, result.returnCode, result, time.Since(entryTime))
+		err = client.newError(ctx, 4010, configHandle, result.returnCode, result)
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
@@ -290,21 +290,21 @@ func (client *Szconfig) GetDataSources(ctx context.Context, configHandle uintptr
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultResponse string
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(15, configHandle)
 		defer func() { client.traceExit(16, configHandle, resultResponse, err, time.Since(entryTime)) }()
 	}
 	result := C.G2Config_listDataSources_helper(C.uintptr_t(configHandle))
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4008, result.returnCode, result, time.Since(entryTime))
+		err = client.newError(ctx, 4008, result.returnCode, result)
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8007, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8008, err, details)
 		}()
 	}
 	return resultResponse, err
@@ -326,8 +326,8 @@ func (client *Szconfig) ImportConfig(ctx context.Context, configDefinition strin
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultResponse uintptr
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(21, configDefinition)
 		defer func() { client.traceExit(22, configDefinition, resultResponse, err, time.Since(entryTime)) }()
 	}
@@ -335,13 +335,13 @@ func (client *Szconfig) ImportConfig(ctx context.Context, configDefinition strin
 	defer C.free(unsafe.Pointer(jsonConfigForC))
 	result := C.G2Config_load_helper(jsonConfigForC)
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4009, configDefinition, result.returnCode, time.Since(entryTime))
+		err = client.newError(ctx, 4009, configDefinition, result.returnCode)
 	}
 	resultResponse = uintptr(result.response)
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8008, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8009, err, details)
 		}()
 	}
 	return resultResponse, err
@@ -380,8 +380,8 @@ func (client *Szconfig) Initialize(ctx context.Context, instanceName string, set
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(23, instanceName, settings, verboseLogging)
 		defer func() { client.traceExit(24, instanceName, settings, verboseLogging, err, time.Since(entryTime)) }()
 	}
@@ -392,7 +392,7 @@ func (client *Szconfig) Initialize(ctx context.Context, instanceName string, set
 
 	result := C.G2Config_init(instanceNameForC, settingsForC, C.longlong(verboseLogging))
 	if result != 0 {
-		err = client.newError(ctx, 4007, instanceName, settings, verboseLogging, result, time.Since(entryTime))
+		err = client.newError(ctx, 4007, instanceName, settings, verboseLogging, result)
 	}
 	if client.observers != nil {
 		go func() {
@@ -401,7 +401,7 @@ func (client *Szconfig) Initialize(ctx context.Context, instanceName string, set
 				"settings":       settings,
 				"verboseLogging": strconv.FormatInt(verboseLogging, 10),
 			}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8009, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8007, err, details)
 		}()
 	}
 	return err

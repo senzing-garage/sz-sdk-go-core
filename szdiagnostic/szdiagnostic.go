@@ -70,14 +70,14 @@ func (client *Szdiagnostic) CheckDatastorePerformance(ctx context.Context, secon
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultResponse string
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(1, secondsToRun)
 		defer func() { client.traceExit(2, secondsToRun, resultResponse, err, time.Since(entryTime)) }()
 	}
 	result := C.G2Diagnostic_checkDatastorePerformance_helper(C.longlong(secondsToRun))
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4001, secondsToRun, result.returnCode, time.Since(entryTime))
+		err = client.newError(ctx, 4001, secondsToRun, result.returnCode)
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
@@ -102,14 +102,14 @@ func (client *Szdiagnostic) Destroy(ctx context.Context) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(5)
 		defer func() { client.traceExit(6, err, time.Since(entryTime)) }()
 	}
 	result := C.G2Diagnostic_destroy()
 	if result != 0 {
-		err = client.newError(ctx, 4002, result, time.Since(entryTime))
+		err = client.newError(ctx, 4002, result)
 	}
 	if client.observers != nil {
 		go func() {
@@ -136,14 +136,14 @@ func (client *Szdiagnostic) GetDatastoreInfo(ctx context.Context) (string, error
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultResponse string
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(7)
 		defer func() { client.traceExit(8, resultResponse, err, time.Since(entryTime)) }()
 	}
 	result := C.G2Diagnostic_getDatastoreInfo_helper()
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4003, result.returnCode, time.Since(entryTime))
+		err = client.newError(ctx, 4003, result.returnCode)
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
@@ -169,14 +169,14 @@ func (client *Szdiagnostic) GetFeature(ctx context.Context, featureID int64) (st
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultResponse string
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(9, featureID)
 		defer func() { client.traceExit(10, featureID, err, time.Since(entryTime)) }()
 	}
 	result := C.G2Diagnostic_getFeature_helper(C.longlong(featureID))
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4004, featureID, result, time.Since(entryTime))
+		err = client.newError(ctx, 4004, featureID, result)
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
@@ -204,19 +204,19 @@ func (client *Szdiagnostic) PurgeRepository(ctx context.Context) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(17)
 		defer func() { client.traceExit(18, err, time.Since(entryTime)) }()
 	}
 	result := C.G2Diagnostic_purgeRepository()
 	if result != 0 {
-		err = client.newError(ctx, 4008, result, time.Since(entryTime))
+		err = client.newError(ctx, 4007, result)
 	}
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8006, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8007, err, details)
 		}()
 	}
 	return err
@@ -234,21 +234,21 @@ func (client *Szdiagnostic) Reinitialize(ctx context.Context, configID int64) er
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(19, configID)
 		defer func() { client.traceExit(20, configID, err, time.Since(entryTime)) }()
 	}
 	result := C.G2Diagnostic_reinit(C.longlong(configID))
 	if result != 0 {
-		err = client.newError(ctx, 4009, configID, result, time.Since(entryTime))
+		err = client.newError(ctx, 4008, configID, result)
 	}
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
 				"configID": strconv.FormatInt(configID, 10),
 			}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8007, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8008, err, details)
 		}()
 	}
 	return err
@@ -285,8 +285,8 @@ Input
 */
 func (client *Szdiagnostic) Initialize(ctx context.Context, instanceName string, settings string, configID int64, verboseLogging int64) error {
 	var err error
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(15, instanceName, settings, configID, verboseLogging)
 		defer func() {
 			client.traceExit(16, instanceName, settings, configID, verboseLogging, err, time.Since(entryTime))
@@ -434,14 +434,13 @@ func (client *Szdiagnostic) initialize(ctx context.Context, instanceName string,
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
-	entryTime := time.Now()
 	instanceNameForC := C.CString(instanceName)
 	defer C.free(unsafe.Pointer(instanceNameForC))
 	settingsForC := C.CString(settings)
 	defer C.free(unsafe.Pointer(settingsForC))
 	result := C.G2Diagnostic_init(instanceNameForC, settingsForC, C.longlong(verboseLogging))
 	if result != 0 {
-		err = client.newError(ctx, 4006, instanceName, settings, verboseLogging, result, time.Since(entryTime))
+		err = client.newError(ctx, 4005, instanceName, settings, verboseLogging, result)
 	}
 	return err
 }
@@ -462,14 +461,13 @@ func (client *Szdiagnostic) initializeWithConfigID(ctx context.Context, instance
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
-	entryTime := time.Now()
 	instanceNameForC := C.CString(instanceName)
 	defer C.free(unsafe.Pointer(instanceNameForC))
 	settingsForC := C.CString(settings)
 	defer C.free(unsafe.Pointer(settingsForC))
 	result := C.G2Diagnostic_initWithConfigID(instanceNameForC, settingsForC, C.longlong(configID), C.longlong(verboseLogging))
 	if result != 0 {
-		err = client.newError(ctx, 4007, instanceName, settings, configID, verboseLogging, result, time.Since(entryTime))
+		err = client.newError(ctx, 4006, instanceName, settings, configID, verboseLogging, result)
 	}
 	return err
 }

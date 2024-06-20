@@ -65,8 +65,8 @@ Input
 func (client *Szengine) AddRecord(ctx context.Context, dataSourceCode string, recordID string, recordDefinition string, flags int64) (string, error) {
 	var result string
 	var err error
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(1, dataSourceCode, recordID, recordDefinition, flags)
 		defer func() {
 			client.traceExit(2, dataSourceCode, recordID, recordDefinition, flags, err, time.Since(entryTime))
@@ -104,14 +104,14 @@ func (client *Szengine) CloseExport(ctx context.Context, exportHandle uintptr) e
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(5, exportHandle)
 		defer func() { client.traceExit(6, exportHandle, err, time.Since(entryTime)) }()
 	}
 	result := C.G2_closeExport_helper(C.uintptr_t(exportHandle))
 	if result != 0 {
-		err = client.newError(ctx, 4003, exportHandle, result, time.Since(entryTime))
+		err = client.newError(ctx, 4003, exportHandle, result)
 	}
 	if client.observers != nil {
 		go func() {
@@ -164,8 +164,8 @@ Input
 func (client *Szengine) DeleteRecord(ctx context.Context, dataSourceCode string, recordID string, flags int64) (string, error) {
 	var result string
 	var err error
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(9, dataSourceCode, recordID, flags)
 		defer func() { client.traceExit(10, dataSourceCode, recordID, flags, err, time.Since(entryTime)) }()
 	}
@@ -199,14 +199,14 @@ func (client *Szengine) Destroy(ctx context.Context) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(11)
 		defer func() { client.traceExit(12, err, time.Since(entryTime)) }()
 	}
 	result := C.G2_destroy()
 	if result != 0 {
-		err = client.newError(ctx, 4006, result, time.Since(entryTime))
+		err = client.newError(ctx, 4006, result)
 	}
 	if client.observers != nil {
 		go func() {
@@ -236,8 +236,8 @@ func (client *Szengine) ExportCsvEntityReport(ctx context.Context, csvColumnList
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultExportHandle uintptr
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(13, csvColumnList, flags)
 		defer func() { client.traceExit(14, csvColumnList, flags, resultExportHandle, err, time.Since(entryTime)) }()
 	}
@@ -245,7 +245,7 @@ func (client *Szengine) ExportCsvEntityReport(ctx context.Context, csvColumnList
 	defer C.free(unsafe.Pointer(csvColumnListForC))
 	result := C.G2_exportCSVEntityReport_helper(csvColumnListForC, C.longlong(flags))
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4007, csvColumnList, flags, result.returnCode, result, time.Since(entryTime))
+		err = client.newError(ctx, 4007, csvColumnList, flags, result.returnCode, result)
 	}
 	resultExportHandle = (uintptr)(result.exportHandle)
 	if client.observers != nil {
@@ -349,14 +349,14 @@ func (client *Szengine) ExportJSONEntityReport(ctx context.Context, flags int64)
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultExportHandle uintptr
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(17, flags)
 		defer func() { client.traceExit(18, flags, resultExportHandle, err, time.Since(entryTime)) }()
 	}
 	result := C.G2_exportJSONEntityReport_helper(C.longlong(flags))
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4008, flags, result.returnCode, result, time.Since(entryTime))
+		err = client.newError(ctx, 4008, flags, result.returnCode, result)
 	}
 	resultExportHandle = (uintptr)(result.exportHandle)
 	if client.observers != nil {
@@ -459,14 +459,14 @@ func (client *Szengine) FetchNext(ctx context.Context, exportHandle uintptr) (st
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultResponse string
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(21, exportHandle)
 		defer func() { client.traceExit(22, exportHandle, resultResponse, err, time.Since(entryTime)) }()
 	}
 	result := C.G2_fetchNext_helper(C.uintptr_t(exportHandle))
 	if result.returnCode < 0 {
-		err = client.newError(ctx, 4009, exportHandle, result.returnCode, result, time.Since(entryTime))
+		err = client.newError(ctx, 4009, exportHandle, result.returnCode, result)
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
@@ -498,14 +498,14 @@ func (client *Szengine) FindInterestingEntitiesByEntityID(ctx context.Context, e
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultResponse string
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(23, entityID, flags)
 		defer func() { client.traceExit(24, entityID, flags, resultResponse, err, time.Since(entryTime)) }()
 	}
 	result := C.G2_findInterestingEntitiesByEntityID_helper(C.longlong(entityID), C.longlong(flags))
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4010, entityID, flags, result.returnCode, time.Since(entryTime))
+		err = client.newError(ctx, 4010, entityID, flags, result.returnCode)
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
@@ -540,8 +540,8 @@ func (client *Szengine) FindInterestingEntitiesByRecordID(ctx context.Context, d
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultResponse string
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(25, dataSourceCode, recordID, flags)
 		defer func() {
 			client.traceExit(26, dataSourceCode, recordID, flags, resultResponse, err, time.Since(entryTime))
@@ -553,7 +553,7 @@ func (client *Szengine) FindInterestingEntitiesByRecordID(ctx context.Context, d
 	defer C.free(unsafe.Pointer(recordIDForC))
 	result := C.G2_findInterestingEntitiesByRecordID_helper(dataSourceCodeForC, recordIDForC, C.longlong(flags))
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4011, dataSourceCode, recordID, flags, result.returnCode, time.Since(entryTime))
+		err = client.newError(ctx, 4011, dataSourceCode, recordID, flags, result.returnCode)
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
@@ -592,8 +592,8 @@ func (client *Szengine) FindNetworkByEntityID(ctx context.Context, entityIDs str
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultResponse string
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(27, entityIDs, maxDegrees, buildOutDegree, maxDegrees, flags)
 		defer func() {
 			client.traceExit(28, entityIDs, maxDegrees, buildOutDegree, maxDegrees, flags, resultResponse, err, time.Since(entryTime))
@@ -603,7 +603,7 @@ func (client *Szengine) FindNetworkByEntityID(ctx context.Context, entityIDs str
 	defer C.free(unsafe.Pointer(entityListForC))
 	result := C.G2_findNetworkByEntityID_V2_helper(entityListForC, C.longlong(maxDegrees), C.longlong(buildOutDegree), C.longlong(buildOutMaxEntities), C.longlong(flags))
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4013, entityIDs, maxDegrees, buildOutDegree, buildOutMaxEntities, flags, result.returnCode, time.Since(entryTime))
+		err = client.newError(ctx, 4013, entityIDs, maxDegrees, buildOutDegree, buildOutMaxEntities, flags, result.returnCode)
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
@@ -641,8 +641,8 @@ func (client *Szengine) FindNetworkByRecordID(ctx context.Context, recordKeys st
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultResponse string
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(39, recordKeys, maxDegrees, buildOutDegree, maxDegrees, flags)
 		defer func() {
 			client.traceExit(40, recordKeys, maxDegrees, buildOutDegree, maxDegrees, flags, resultResponse, err, time.Since(entryTime))
@@ -652,7 +652,7 @@ func (client *Szengine) FindNetworkByRecordID(ctx context.Context, recordKeys st
 	defer C.free(unsafe.Pointer(recordListForC))
 	result := C.G2_findNetworkByRecordID_V2_helper(recordListForC, C.longlong(maxDegrees), C.longlong(buildOutDegree), C.longlong(buildOutMaxEntities), C.longlong(flags))
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4015, recordKeys, maxDegrees, buildOutDegree, buildOutMaxEntities, flags, result.returnCode, time.Since(entryTime))
+		err = client.newError(ctx, 4015, recordKeys, maxDegrees, buildOutDegree, buildOutMaxEntities, flags, result.returnCode)
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
@@ -687,8 +687,8 @@ Output
 func (client *Szengine) FindPathByEntityID(ctx context.Context, startEntityID int64, endEntityID int64, maxDegrees int64, avoidEntityIDs string, requiredDataSources string, flags int64) (string, error) {
 	var result string
 	var err error
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(31, startEntityID, endEntityID, maxDegrees, avoidEntityIDs, requiredDataSources, flags)
 		defer func() {
 			client.traceExit(32, startEntityID, endEntityID, maxDegrees, avoidEntityIDs, requiredDataSources, flags, result, err, time.Since(entryTime))
@@ -738,8 +738,8 @@ Output
 func (client *Szengine) FindPathByRecordID(ctx context.Context, startDataSourceCode string, startRecordID string, endDataSourceCode string, endRecordID string, maxDegrees int64, avoidRecordKeys string, requiredDataSources string, flags int64) (string, error) {
 	var result string
 	var err error
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(33, startDataSourceCode, startRecordID, endDataSourceCode, endRecordID, maxDegrees, avoidRecordKeys, requiredDataSources, flags)
 		defer func() {
 			client.traceExit(34, startDataSourceCode, startRecordID, endDataSourceCode, endRecordID, maxDegrees, avoidRecordKeys, requiredDataSources, flags, result, err, time.Since(entryTime))
@@ -782,14 +782,14 @@ func (client *Szengine) GetActiveConfigID(ctx context.Context) (int64, error) {
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultConfigID int64
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(35)
 		defer func() { client.traceExit(36, resultConfigID, err, time.Since(entryTime)) }()
 	}
 	result := C.G2_getActiveConfigID_helper()
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4028, result.returnCode, result, time.Since(entryTime))
+		err = client.newError(ctx, 4028, result.returnCode, result)
 	}
 	resultConfigID = int64(C.longlong(result.configID))
 	if client.observers != nil {
@@ -820,14 +820,14 @@ func (client *Szengine) GetEntityByEntityID(ctx context.Context, entityID int64,
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultResponse string
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(37, entityID, flags)
 		defer func() { client.traceExit(38, entityID, flags, resultResponse, err, time.Since(entryTime)) }()
 	}
 	result := C.G2_getEntityByEntityID_V2_helper(C.longlong(entityID), C.longlong(flags))
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4030, entityID, flags, result.returnCode, time.Since(entryTime))
+		err = client.newError(ctx, 4030, entityID, flags, result.returnCode)
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
@@ -861,8 +861,8 @@ func (client *Szengine) GetEntityByRecordID(ctx context.Context, dataSourceCode 
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultResponse string
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(39, dataSourceCode, recordID, flags)
 		defer func() {
 			client.traceExit(40, dataSourceCode, recordID, flags, resultResponse, err, time.Since(entryTime))
@@ -874,7 +874,7 @@ func (client *Szengine) GetEntityByRecordID(ctx context.Context, dataSourceCode 
 	defer C.free(unsafe.Pointer(recordIDForC))
 	result := C.G2_getEntityByRecordID_V2_helper(dataSourceCodeForC, recordIDForC, C.longlong(flags))
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4032, dataSourceCode, recordID, flags, result.returnCode, time.Since(entryTime))
+		err = client.newError(ctx, 4032, dataSourceCode, recordID, flags, result.returnCode)
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
@@ -909,8 +909,8 @@ func (client *Szengine) GetRecord(ctx context.Context, dataSourceCode string, re
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultResponse string
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(45, dataSourceCode, recordID, flags)
 		defer func() {
 			client.traceExit(46, dataSourceCode, recordID, flags, resultResponse, err, time.Since(entryTime))
@@ -922,7 +922,7 @@ func (client *Szengine) GetRecord(ctx context.Context, dataSourceCode string, re
 	defer C.free(unsafe.Pointer(recordIDForC))
 	result := C.G2_getRecord_V2_helper(dataSourceCodeForC, recordIDForC, C.longlong(flags))
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4035, dataSourceCode, recordID, flags, result.returnCode, time.Since(entryTime))
+		err = client.newError(ctx, 4035, dataSourceCode, recordID, flags, result.returnCode)
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
@@ -955,14 +955,14 @@ func (client *Szengine) GetRedoRecord(ctx context.Context) (string, error) {
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultResponse string
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(47)
 		defer func() { client.traceExit(48, resultResponse, err, time.Since(entryTime)) }()
 	}
 	result := C.G2_getRedoRecord_helper()
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4036, result.returnCode, result, time.Since(entryTime))
+		err = client.newError(ctx, 4036, result.returnCode, result)
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
@@ -993,14 +993,14 @@ func (client *Szengine) GetStats(ctx context.Context) (string, error) {
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultResponse string
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(49)
 		defer func() { client.traceExit(50, resultResponse, err, time.Since(entryTime)) }()
 	}
 	result := C.G2_stats_helper()
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4054, result.returnCode, time.Since(entryTime))
+		err = client.newError(ctx, 4054, result.returnCode)
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
@@ -1033,8 +1033,8 @@ func (client *Szengine) GetVirtualEntityByRecordID(ctx context.Context, recordKe
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultResponse string
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(51, recordKeys, flags)
 		defer func() { client.traceExit(52, recordKeys, flags, resultResponse, err, time.Since(entryTime)) }()
 	}
@@ -1042,7 +1042,7 @@ func (client *Szengine) GetVirtualEntityByRecordID(ctx context.Context, recordKe
 	defer C.free(unsafe.Pointer(recordListForC))
 	result := C.G2_getVirtualEntityByRecordID_V2_helper(recordListForC, C.longlong(flags))
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4038, recordKeys, flags, result.returnCode, time.Since(entryTime))
+		err = client.newError(ctx, 4038, recordKeys, flags, result.returnCode)
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
@@ -1075,14 +1075,14 @@ func (client *Szengine) HowEntityByEntityID(ctx context.Context, entityID int64,
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultResponse string
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(53, entityID, flags)
 		defer func() { client.traceExit(54, entityID, flags, resultResponse, err, time.Since(entryTime)) }()
 	}
 	result := C.G2_howEntityByEntityID_V2_helper(C.longlong(entityID), C.longlong(flags))
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4040, entityID, flags, result.returnCode, time.Since(entryTime))
+		err = client.newError(ctx, 4040, entityID, flags, result.returnCode)
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
@@ -1110,14 +1110,14 @@ func (client *Szengine) PrimeEngine(ctx context.Context) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(57)
 		defer func() { client.traceExit(58, err, time.Since(entryTime)) }()
 	}
 	result := C.G2_primeEngine()
 	if result != 0 {
-		err = client.newError(ctx, 4043, result, time.Since(entryTime))
+		err = client.newError(ctx, 4043, result)
 	}
 	if client.observers != nil {
 		go func() {
@@ -1141,8 +1141,8 @@ Output
 func (client *Szengine) ProcessRedoRecord(ctx context.Context, redoRecord string, flags int64) (string, error) {
 	var result string
 	var err error
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(59, redoRecord, flags)
 		defer func() { client.traceExit(60, redoRecord, flags, result, err, time.Since(entryTime)) }()
 	}
@@ -1172,8 +1172,8 @@ Input
 func (client *Szengine) ReevaluateEntity(ctx context.Context, entityID int64, flags int64) (string, error) {
 	var result string
 	var err error
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(61, entityID, flags)
 		defer func() { client.traceExit(62, entityID, flags, result, err, time.Since(entryTime)) }()
 	}
@@ -1207,8 +1207,8 @@ Input
 func (client *Szengine) ReevaluateRecord(ctx context.Context, dataSourceCode string, recordID string, flags int64) (string, error) {
 	var result string
 	var err error
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(63, dataSourceCode, recordID, flags)
 		defer func() { client.traceExit(64, dataSourceCode, recordID, flags, err, time.Since(entryTime)) }()
 	}
@@ -1242,14 +1242,14 @@ func (client *Szengine) Reinitialize(ctx context.Context, configID int64) error 
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(65, configID)
 		defer func() { client.traceExit(66, configID, err, time.Since(entryTime)) }()
 	}
 	result := C.G2_reinit(C.longlong(configID))
 	if result != 0 {
-		err = client.newError(ctx, 4050, configID, result, time.Since(entryTime))
+		err = client.newError(ctx, 4050, configID, result)
 	}
 	if client.observers != nil {
 		go func() {
@@ -1279,8 +1279,8 @@ Output
 func (client *Szengine) SearchByAttributes(ctx context.Context, attributes string, searchProfile string, flags int64) (string, error) {
 	var result string
 	var err error
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(69, attributes, searchProfile, flags)
 		defer func() { client.traceExit(70, attributes, searchProfile, flags, result, err, time.Since(entryTime)) }()
 	}
@@ -1317,8 +1317,8 @@ Output
 func (client *Szengine) WhyEntities(ctx context.Context, entityID1 int64, entityID2 int64, flags int64) (string, error) {
 	var result string
 	var err error
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(71, entityID1, entityID2, flags)
 		defer func() { client.traceExit(72, entityID1, entityID2, flags, result, err, time.Since(entryTime)) }()
 	}
@@ -1352,8 +1352,8 @@ Output
 func (client *Szengine) WhyRecordInEntity(ctx context.Context, dataSourceCode string, recordID string, flags int64) (string, error) {
 	var result string
 	var err error
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(73, dataSourceCode, recordID, flags)
 		defer func() { client.traceExit(74, dataSourceCode, recordID, flags, result, err, time.Since(entryTime)) }()
 	}
@@ -1388,8 +1388,8 @@ Output
 func (client *Szengine) WhyRecords(ctx context.Context, dataSourceCode1 string, recordID1 string, dataSourceCode2 string, recordID2 string, flags int64) (string, error) {
 	var result string
 	var err error
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(75, dataSourceCode1, recordID1, dataSourceCode2, recordID2, flags)
 		defer func() {
 			client.traceExit(76, dataSourceCode1, recordID1, dataSourceCode2, recordID2, flags, result, err, time.Since(entryTime))
@@ -1441,8 +1441,8 @@ Input
 */
 func (client *Szengine) Initialize(ctx context.Context, instanceName string, settings string, configID int64, verboseLogging int64) error {
 	var err error
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(55, instanceName, settings, configID, verboseLogging)
 		defer func() {
 			client.traceExit(56, instanceName, settings, configID, verboseLogging, err, time.Since(entryTime))
@@ -1551,8 +1551,8 @@ func (client *Szengine) UnregisterObserver(ctx context.Context, observer observe
 	var err error
 	if client.isTrace {
 		entryTime := time.Now()
-		client.traceEntry(159, observer.GetObserverID(ctx))
-		defer func() { client.traceExit(160, observer.GetObserverID(ctx), err, time.Since(entryTime)) }()
+		client.traceEntry(707, observer.GetObserverID(ctx))
+		defer func() { client.traceExit(708, observer.GetObserverID(ctx), err, time.Since(entryTime)) }()
 	}
 	if client.observers != nil {
 		// Tricky code:
@@ -1589,7 +1589,6 @@ func (client *Szengine) addRecord(ctx context.Context, dataSourceCode string, re
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
-	entryTime := time.Now()
 	dataSourceCodeForC := C.CString(dataSourceCode)
 	defer C.free(unsafe.Pointer(dataSourceCodeForC))
 	recordIDForC := C.CString(recordID)
@@ -1598,7 +1597,7 @@ func (client *Szengine) addRecord(ctx context.Context, dataSourceCode string, re
 	defer C.free(unsafe.Pointer(recordDefinitionForC))
 	result := C.G2_addRecord(dataSourceCodeForC, recordIDForC, recordDefinitionForC)
 	if result != 0 {
-		err = client.newError(ctx, 4001, dataSourceCode, recordID, recordDefinition, result, time.Since(entryTime))
+		err = client.newError(ctx, 4001, dataSourceCode, recordID, recordDefinition, result)
 	}
 	return "{}", err
 }
@@ -1623,7 +1622,6 @@ func (client *Szengine) addRecordWithInfo(ctx context.Context, dataSourceCode st
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultResponse string
-	entryTime := time.Now()
 	dataSourceCodeForC := C.CString(dataSourceCode)
 	defer C.free(unsafe.Pointer(dataSourceCodeForC))
 	recordIDForC := C.CString(recordID)
@@ -1632,7 +1630,7 @@ func (client *Szengine) addRecordWithInfo(ctx context.Context, dataSourceCode st
 	defer C.free(unsafe.Pointer(recordDefinitionForC))
 	result := C.G2_addRecordWithInfo_helper(dataSourceCodeForC, recordIDForC, recordDefinitionForC, C.longlong(flags))
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4002, dataSourceCode, recordID, recordDefinition, flags, result.returnCode, time.Since(entryTime))
+		err = client.newError(ctx, 4002, dataSourceCode, recordID, recordDefinition, flags, result.returnCode)
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
@@ -1652,14 +1650,13 @@ func (client *Szengine) deleteRecord(ctx context.Context, dataSourceCode string,
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
-	entryTime := time.Now()
 	dataSourceCodeForC := C.CString(dataSourceCode)
 	defer C.free(unsafe.Pointer(dataSourceCodeForC))
 	recordIDForC := C.CString(recordID)
 	defer C.free(unsafe.Pointer(recordIDForC))
 	result := C.G2_deleteRecord(dataSourceCodeForC, recordIDForC)
 	if result != 0 {
-		err = client.newError(ctx, 4004, dataSourceCode, recordID, result, time.Since(entryTime))
+		err = client.newError(ctx, 4004, dataSourceCode, recordID, result)
 	}
 	return "{}", err
 }
@@ -1683,14 +1680,13 @@ func (client *Szengine) deleteRecordWithInfo(ctx context.Context, dataSourceCode
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultResponse string
-	entryTime := time.Now()
 	dataSourceCodeForC := C.CString(dataSourceCode)
 	defer C.free(unsafe.Pointer(dataSourceCodeForC))
 	recordIDForC := C.CString(recordID)
 	defer C.free(unsafe.Pointer(recordIDForC))
 	result := C.G2_deleteRecordWithInfo_helper(dataSourceCodeForC, recordIDForC, C.longlong(flags))
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4005, dataSourceCode, recordID, flags, result.returnCode, time.Since(entryTime))
+		err = client.newError(ctx, 4005, dataSourceCode, recordID, flags, result.returnCode)
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
@@ -1718,10 +1714,9 @@ func (client *Szengine) findPathByEntityIDV2(ctx context.Context, startEntityID 
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultResponse string
-	entryTime := time.Now()
 	result := C.G2_findPathByEntityID_V2_helper(C.longlong(startEntityID), C.longlong(endEntityID), C.longlong(maxDegrees), C.longlong(flags))
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4017, startEntityID, endEntityID, maxDegrees, flags, result.returnCode, time.Since(entryTime))
+		err = client.newError(ctx, 4017, startEntityID, endEntityID, maxDegrees, flags, result.returnCode)
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
@@ -1753,7 +1748,6 @@ func (client *Szengine) findPathByRecordIDV2(ctx context.Context, startDataSourc
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultResponse string
-	entryTime := time.Now()
 	startDataSourceCodeForC := C.CString(startDataSourceCode)
 	defer C.free(unsafe.Pointer(startDataSourceCodeForC))
 	startRecordIDForC := C.CString(startRecordID)
@@ -1764,7 +1758,7 @@ func (client *Szengine) findPathByRecordIDV2(ctx context.Context, startDataSourc
 	defer C.free(unsafe.Pointer(endRecordIDForC))
 	result := C.G2_findPathByRecordID_V2_helper(startDataSourceCodeForC, startRecordIDForC, endDataSourceCodeForC, endRecordIDForC, C.longlong(maxDegrees), C.longlong(flags))
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4019, startDataSourceCode, startRecordID, endDataSourceCode, endRecordID, maxDegrees, flags, result.returnCode, time.Since(entryTime))
+		err = client.newError(ctx, 4019, startDataSourceCode, startRecordID, endDataSourceCode, endRecordID, maxDegrees, flags, result.returnCode)
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
@@ -1800,12 +1794,11 @@ func (client *Szengine) findPathExcludingByEntityIDV2(ctx context.Context, start
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultResponse string
-	entryTime := time.Now()
 	exclusionsForC := C.CString(exclusions)
 	defer C.free(unsafe.Pointer(exclusionsForC))
 	result := C.G2_findPathByEntityIDWithAvoids_V2_helper(C.longlong(startEntityID), C.longlong(endEntityID), C.longlong(maxDegrees), exclusionsForC, C.longlong(flags))
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4021, startEntityID, endEntityID, maxDegrees, exclusions, flags, result.returnCode, time.Since(entryTime))
+		err = client.newError(ctx, 4021, startEntityID, endEntityID, maxDegrees, exclusions, flags, result.returnCode)
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
@@ -1843,7 +1836,6 @@ func (client *Szengine) findPathExcludingByRecordIDV2(ctx context.Context, start
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultResponse string
-	entryTime := time.Now()
 	startDataSourceCodeForC := C.CString(startDataSourceCode)
 	defer C.free(unsafe.Pointer(startDataSourceCodeForC))
 	startRecordIDForC := C.CString(startRecordID)
@@ -1856,7 +1848,7 @@ func (client *Szengine) findPathExcludingByRecordIDV2(ctx context.Context, start
 	defer C.free(unsafe.Pointer(exclusionsForC))
 	result := C.G2_findPathByRecordIDWithAvoids_V2_helper(startDataSourceCodeForC, startRecordIDForC, endDataSourceCodeForC, endRecordIDForC, C.longlong(maxDegrees), exclusionsForC, C.longlong(flags))
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4023, startDataSourceCode, startRecordID, endDataSourceCode, endRecordID, maxDegrees, exclusions, flags, result.returnCode, time.Since(entryTime))
+		err = client.newError(ctx, 4023, startDataSourceCode, startRecordID, endDataSourceCode, endRecordID, maxDegrees, exclusions, flags, result.returnCode)
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
@@ -1889,14 +1881,13 @@ func (client *Szengine) findPathIncludingSourceByEntityIDV2(ctx context.Context,
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultResponse string
-	entryTime := time.Now()
 	exclusionsForC := C.CString(exclusions)
 	defer C.free(unsafe.Pointer(exclusionsForC))
 	requiredDataSourcesForC := C.CString(requiredDataSources)
 	defer C.free(unsafe.Pointer(requiredDataSourcesForC))
 	result := C.G2_findPathByEntityIDIncludingSource_V2_helper(C.longlong(startEntityID), C.longlong(endEntityID), C.longlong(maxDegrees), exclusionsForC, requiredDataSourcesForC, C.longlong(flags))
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4025, startEntityID, endEntityID, maxDegrees, exclusions, requiredDataSources, flags, result.returnCode, time.Since(entryTime))
+		err = client.newError(ctx, 4025, startEntityID, endEntityID, maxDegrees, exclusions, requiredDataSources, flags, result.returnCode)
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
@@ -1931,7 +1922,6 @@ func (client *Szengine) findPathIncludingSourceByRecordIDV2(ctx context.Context,
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultResponse string
-	entryTime := time.Now()
 	startDataSourceCodeForC := C.CString(startDataSourceCode)
 	defer C.free(unsafe.Pointer(startDataSourceCodeForC))
 	startRecordIDForC := C.CString(startRecordID)
@@ -1946,7 +1936,7 @@ func (client *Szengine) findPathIncludingSourceByRecordIDV2(ctx context.Context,
 	defer C.free(unsafe.Pointer(requiredDataSourcesForC))
 	result := C.G2_findPathByRecordIDIncludingSource_V2_helper(startDataSourceCodeForC, startRecordIDForC, endDataSourceCodeForC, endRecordIDForC, C.longlong(maxDegrees), exclusionsForC, requiredDataSourcesForC, C.longlong(flags))
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4027, startDataSourceCode, startRecordID, endDataSourceCode, endRecordID, maxDegrees, exclusions, requiredDataSources, flags, result.returnCode, time.Since(entryTime))
+		err = client.newError(ctx, 4027, startDataSourceCode, startRecordID, endDataSourceCode, endRecordID, maxDegrees, exclusions, requiredDataSources, flags, result.returnCode)
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
@@ -1968,14 +1958,13 @@ func (client *Szengine) initialize(ctx context.Context, instanceName string, set
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
-	entryTime := time.Now()
 	instanceNameForC := C.CString(instanceName)
 	defer C.free(unsafe.Pointer(instanceNameForC))
 	settingsForC := C.CString(settings)
 	defer C.free(unsafe.Pointer(settingsForC))
 	result := C.G2_init(instanceNameForC, settingsForC, C.longlong(verboseLogging))
 	if result != 0 {
-		err = client.newError(ctx, 4041, instanceName, settings, verboseLogging, result, time.Since(entryTime))
+		err = client.newError(ctx, 4041, instanceName, settings, verboseLogging, result)
 	}
 	return err
 }
@@ -1996,14 +1985,13 @@ func (client *Szengine) initializeWithConfigID(ctx context.Context, instanceName
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
-	entryTime := time.Now()
 	instanceNameForC := C.CString(instanceName)
 	defer C.free(unsafe.Pointer(instanceNameForC))
 	settingsForC := C.CString(settings)
 	defer C.free(unsafe.Pointer(settingsForC))
 	result := C.G2_initWithConfigID(instanceNameForC, settingsForC, C.longlong(configID), C.longlong(verboseLogging))
 	if result != 0 {
-		err = client.newError(ctx, 4042, instanceName, settings, configID, verboseLogging, result, time.Since(entryTime))
+		err = client.newError(ctx, 4042, instanceName, settings, configID, verboseLogging, result)
 	}
 	return err
 }
@@ -2024,12 +2012,11 @@ func (client *Szengine) processRedoRecord(ctx context.Context, redoRecord string
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
-	entryTime := time.Now()
 	redoRecordForC := C.CString(redoRecord)
 	defer C.free(unsafe.Pointer(redoRecordForC))
 	result := C.G2_processRedoRecord(redoRecordForC)
 	if result != 0 {
-		err = client.newError(ctx, 4044, result, time.Since(entryTime))
+		err = client.newError(ctx, 4044, result)
 	}
 	return "{}", err
 }
@@ -2051,12 +2038,11 @@ func (client *Szengine) processRedoRecordWithInfo(ctx context.Context, redoRecor
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultResponse string
-	entryTime := time.Now()
 	redoRecordForC := C.CString(redoRecord)
 	defer C.free(unsafe.Pointer(redoRecordForC))
 	result := C.G2_processRedoRecordWithInfo_helper(redoRecordForC)
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4045, result.returnCode, time.Since(entryTime))
+		err = client.newError(ctx, 4045, result.returnCode)
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
@@ -2077,10 +2063,9 @@ func (client *Szengine) reevaluateEntity(ctx context.Context, entityID int64, fl
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
-	entryTime := time.Now()
 	result := C.G2_reevaluateEntity(C.longlong(entityID), C.longlong(flags))
 	if result != 0 {
-		err = client.newError(ctx, 4046, entityID, flags, result, time.Since(entryTime))
+		err = client.newError(ctx, 4046, entityID, flags, result)
 	}
 	return "{}", err
 }
@@ -2105,10 +2090,9 @@ func (client *Szengine) reevaluateEntityWithInfo(ctx context.Context, entityID i
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultResponse string
-	entryTime := time.Now()
 	result := C.G2_reevaluateEntityWithInfo_helper(C.longlong(entityID), C.longlong(flags))
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4047, entityID, flags, result.returnCode, time.Since(entryTime))
+		err = client.newError(ctx, 4047, entityID, flags, result.returnCode)
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
@@ -2130,14 +2114,13 @@ func (client *Szengine) reevaluateRecord(ctx context.Context, dataSourceCode str
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
-	entryTime := time.Now()
 	dataSourceCodeForC := C.CString(dataSourceCode)
 	defer C.free(unsafe.Pointer(dataSourceCodeForC))
 	recordIDForC := C.CString(recordID)
 	defer C.free(unsafe.Pointer(recordIDForC))
 	result := C.G2_reevaluateRecord(dataSourceCodeForC, recordIDForC, C.longlong(flags))
 	if result != 0 {
-		err = client.newError(ctx, 4048, dataSourceCode, recordID, flags, result, time.Since(entryTime))
+		err = client.newError(ctx, 4048, dataSourceCode, recordID, flags, result)
 	}
 	return "{}", err
 }
@@ -2163,14 +2146,13 @@ func (client *Szengine) reevaluateRecordWithInfo(ctx context.Context, dataSource
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultResponse string
-	entryTime := time.Now()
 	dataSourceCodeForC := C.CString(dataSourceCode)
 	defer C.free(unsafe.Pointer(dataSourceCodeForC))
 	recordIDForC := C.CString(recordID)
 	defer C.free(unsafe.Pointer(recordIDForC))
 	result := C.G2_reevaluateRecordWithInfo_helper(dataSourceCodeForC, recordIDForC, C.longlong(flags))
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4049, dataSourceCode, recordID, flags, result.returnCode, time.Since(entryTime))
+		err = client.newError(ctx, 4049, dataSourceCode, recordID, flags, result.returnCode)
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
@@ -2196,12 +2178,11 @@ func (client *Szengine) searchByAttributesV2(ctx context.Context, attributes str
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultResponse string
-	entryTime := time.Now()
 	attributesForC := C.CString(attributes)
 	defer C.free(unsafe.Pointer(attributesForC))
 	result := C.G2_searchByAttributes_V2_helper(attributesForC, C.longlong(flags))
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4052, attributes, flags, result.returnCode, time.Since(entryTime))
+		err = client.newError(ctx, 4052, attributes, flags, result.returnCode)
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
@@ -2227,14 +2208,13 @@ func (client *Szengine) searchByAttributesV3(ctx context.Context, attributes str
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultResponse string
-	entryTime := time.Now()
 	attributesForC := C.CString(attributes)
 	defer C.free(unsafe.Pointer(attributesForC))
 	searchProfileForC := C.CString(searchProfile)
 	defer C.free(unsafe.Pointer(searchProfileForC))
 	result := C.G2_searchByAttributes_V3_helper(attributesForC, searchProfileForC, C.longlong(flags))
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4053, attributes, searchProfile, flags, result.returnCode, time.Since(entryTime))
+		err = client.newError(ctx, 4053, attributes, searchProfile, flags, result.returnCode)
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
@@ -2264,10 +2244,9 @@ func (client *Szengine) whyEntitiesV2(ctx context.Context, entityID1 int64, enti
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultResponse string
-	entryTime := time.Now()
 	result := C.G2_whyEntities_V2_helper(C.longlong(entityID1), C.longlong(entityID2), C.longlong(flags))
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4056, entityID1, entityID2, flags, result.returnCode, time.Since(entryTime))
+		err = client.newError(ctx, 4056, entityID1, entityID2, flags, result.returnCode)
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
@@ -2293,14 +2272,13 @@ func (client *Szengine) whyRecordInEntityV2(ctx context.Context, dataSourceCode 
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultResponse string
-	entryTime := time.Now()
 	dataSourceCodeForC := C.CString(dataSourceCode)
 	defer C.free(unsafe.Pointer(dataSourceCodeForC))
 	recordIDForC := C.CString(recordID)
 	defer C.free(unsafe.Pointer(recordIDForC))
 	result := C.G2_whyRecordInEntity_V2_helper(dataSourceCodeForC, recordIDForC, C.longlong(flags))
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4058, dataSourceCode, recordID, flags, result.returnCode, time.Since(entryTime))
+		err = client.newError(ctx, 4058, dataSourceCode, recordID, flags, result.returnCode)
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
@@ -2329,7 +2307,6 @@ func (client *Szengine) whyRecordsV2(ctx context.Context, dataSourceCode1 string
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultResponse string
-	entryTime := time.Now()
 	dataSource1CodeForC := C.CString(dataSourceCode1)
 	defer C.free(unsafe.Pointer(dataSource1CodeForC))
 	recordID1ForC := C.CString(recordID1)
@@ -2340,7 +2317,7 @@ func (client *Szengine) whyRecordsV2(ctx context.Context, dataSourceCode1 string
 	defer C.free(unsafe.Pointer(recordID2ForC))
 	result := C.G2_whyRecords_V2_helper(dataSource1CodeForC, recordID1ForC, dataSource2CodeForC, recordID2ForC, C.longlong(flags))
 	if result.returnCode != 0 {
-		err = client.newError(ctx, 4060, dataSourceCode1, recordID1, dataSourceCode2, recordID2, flags, result.returnCode, time.Since(entryTime))
+		err = client.newError(ctx, 4060, dataSourceCode1, recordID1, dataSourceCode2, recordID2, flags, result.returnCode)
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
