@@ -403,7 +403,7 @@ func (client *Szconfigmanager) UnregisterObserver(ctx context.Context, observer 
 }
 
 // ----------------------------------------------------------------------------
-// Private methods that call the Senzing C API
+// Private methods for calling the Senzing C API
 // ----------------------------------------------------------------------------
 
 func (client *Szconfigmanager) addConfig(ctx context.Context, configDefinition string, configComment string) (int64, error) {

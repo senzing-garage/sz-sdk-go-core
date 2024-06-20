@@ -1414,7 +1414,7 @@ func (client *Szengine) UnregisterObserver(ctx context.Context, observer observe
 }
 
 // ----------------------------------------------------------------------------
-// Private methods that call the Senzing C API
+// Private methods for calling the Senzing C API
 // ----------------------------------------------------------------------------
 
 /*

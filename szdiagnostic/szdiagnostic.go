@@ -138,11 +138,16 @@ func (client *Szdiagnostic) GetDatastoreInfo(ctx context.Context) (string, error
 }
 
 /*
-The Reinitialize method re-initializes the Senzing G2Diagnostic object.
+TODO: Document GetFeature()
+The GetFeature method...
 
 Input
   - ctx: A context to control lifecycle.
-  - featureID: The...  TODO: fix featureID definition.
+  - featureID: The identifier of the feature to describe.
+
+Output
+
+  - A string containing a JSON document.
 */
 func (client *Szdiagnostic) GetFeature(ctx context.Context, featureID int64) (string, error) {
 	var err error
@@ -150,7 +155,7 @@ func (client *Szdiagnostic) GetFeature(ctx context.Context, featureID int64) (st
 	if client.isTrace {
 		entryTime := time.Now()
 		client.traceEntry(9, featureID)
-		defer func() { client.traceExit(10, featureID, err, time.Since(entryTime)) }()
+		defer func() { client.traceExit(10, featureID, result, err, time.Since(entryTime)) }()
 	}
 	result, err = client.getFeature(ctx, featureID)
 	if client.observers != nil {
@@ -261,7 +266,7 @@ func (client *Szdiagnostic) Initialize(ctx context.Context, instanceName string,
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
-				"initConfigID":   strconv.FormatInt(configID, baseTen),
+				"configID":       strconv.FormatInt(configID, baseTen),
 				"instanceName":   instanceName,
 				"settings":       settings,
 				"verboseLogging": strconv.FormatInt(verboseLogging, baseTen),
@@ -375,7 +380,7 @@ func (client *Szdiagnostic) UnregisterObserver(ctx context.Context, observer obs
 }
 
 // ----------------------------------------------------------------------------
-// Private methods that call the Senzing C API
+// Private methods for calling the Senzing C API
 // ----------------------------------------------------------------------------
 
 func (client *Szdiagnostic) checkDatastorePerformance(ctx context.Context, secondsToRun int) (string, error) {

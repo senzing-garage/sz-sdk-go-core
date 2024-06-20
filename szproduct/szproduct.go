@@ -284,7 +284,7 @@ func (client *Szproduct) UnregisterObserver(ctx context.Context, observer observ
 }
 
 // ----------------------------------------------------------------------------
-// Private methods that call the Senzing C API
+// Private methods for calling the Senzing C API
 // ----------------------------------------------------------------------------
 
 func (client *Szproduct) destroy(ctx context.Context) error {
