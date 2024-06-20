@@ -44,7 +44,9 @@ type Szconfig struct {
 
 const (
 	baseCallerSkip       = 4
+	baseTen              = 10
 	initialByteArraySize = 65535
+	noError              = 0
 )
 
 // ----------------------------------------------------------------------------
@@ -81,7 +83,7 @@ func (client *Szconfig) AddDataSource(ctx context.Context, configHandle uintptr,
 	dataSourceDefinitionForC := C.CString(dataSourceDefinition)
 	defer C.free(unsafe.Pointer(dataSourceDefinitionForC))
 	result := C.G2Config_addDataSource_helper(C.uintptr_t(configHandle), dataSourceDefinitionForC)
-	if result.returnCode != 0 {
+	if result.returnCode != noError {
 		err = client.newError(ctx, 4001, configHandle, dataSourceCode, result.returnCode, result)
 	}
 	resultResponse = C.GoString(result.response)
@@ -117,7 +119,7 @@ func (client *Szconfig) CloseConfig(ctx context.Context, configHandle uintptr) e
 		defer func() { client.traceExit(6, configHandle, err, time.Since(entryTime)) }()
 	}
 	result := C.G2Config_close_helper(C.uintptr_t(configHandle))
-	if result != 0 {
+	if result != noError {
 		err = client.newError(ctx, 4002, configHandle, result)
 	}
 	if client.observers != nil {
@@ -154,7 +156,7 @@ func (client *Szconfig) CreateConfig(ctx context.Context) (uintptr, error) {
 		defer func() { client.traceExit(8, resultResponse, err, time.Since(entryTime)) }()
 	}
 	result := C.G2Config_create_helper()
-	if result.returnCode != 0 {
+	if result.returnCode != noError {
 		err = client.newError(ctx, 4003, result.returnCode)
 	}
 	resultResponse = uintptr(result.response)
@@ -190,7 +192,7 @@ func (client *Szconfig) DeleteDataSource(ctx context.Context, configHandle uintp
 	dataSourceDefinitionForC := C.CString(dataSourceDefinition)
 	defer C.free(unsafe.Pointer(dataSourceDefinitionForC))
 	result := C.G2Config_deleteDataSource_helper(C.uintptr_t(configHandle), dataSourceDefinitionForC)
-	if result != 0 {
+	if result != noError {
 		err = client.newError(ctx, 4004, configHandle, dataSourceCode, result)
 	}
 	if client.observers != nil {
@@ -222,7 +224,7 @@ func (client *Szconfig) Destroy(ctx context.Context) error {
 		defer func() { client.traceExit(12, err, time.Since(entryTime)) }()
 	}
 	result := C.G2Config_destroy()
-	if result != 0 {
+	if result != noError {
 		err = client.newError(ctx, 4005, result)
 	}
 	if client.observers != nil {
@@ -258,7 +260,7 @@ func (client *Szconfig) ExportConfig(ctx context.Context, configHandle uintptr) 
 		defer func() { client.traceExit(14, configHandle, resultResponse, err, time.Since(entryTime)) }()
 	}
 	result := C.G2Config_save_helper(C.uintptr_t(configHandle))
-	if result.returnCode != 0 {
+	if result.returnCode != noError {
 		err = client.newError(ctx, 4010, configHandle, result.returnCode, result)
 	}
 	resultResponse = C.GoString(result.response)
@@ -296,7 +298,7 @@ func (client *Szconfig) GetDataSources(ctx context.Context, configHandle uintptr
 		defer func() { client.traceExit(16, configHandle, resultResponse, err, time.Since(entryTime)) }()
 	}
 	result := C.G2Config_listDataSources_helper(C.uintptr_t(configHandle))
-	if result.returnCode != 0 {
+	if result.returnCode != noError {
 		err = client.newError(ctx, 4008, result.returnCode, result)
 	}
 	resultResponse = C.GoString(result.response)
@@ -334,7 +336,7 @@ func (client *Szconfig) ImportConfig(ctx context.Context, configDefinition strin
 	jsonConfigForC := C.CString(configDefinition)
 	defer C.free(unsafe.Pointer(jsonConfigForC))
 	result := C.G2Config_load_helper(jsonConfigForC)
-	if result.returnCode != 0 {
+	if result.returnCode != noError {
 		err = client.newError(ctx, 4009, configDefinition, result.returnCode)
 	}
 	resultResponse = uintptr(result.response)
@@ -389,9 +391,8 @@ func (client *Szconfig) Initialize(ctx context.Context, instanceName string, set
 	defer C.free(unsafe.Pointer(instanceNameForC))
 	settingsForC := C.CString(settings)
 	defer C.free(unsafe.Pointer(settingsForC))
-
 	result := C.G2Config_init(instanceNameForC, settingsForC, C.longlong(verboseLogging))
-	if result != 0 {
+	if result != noError {
 		err = client.newError(ctx, 4007, instanceName, settings, verboseLogging, result)
 	}
 	if client.observers != nil {
@@ -399,7 +400,7 @@ func (client *Szconfig) Initialize(ctx context.Context, instanceName string, set
 			details := map[string]string{
 				"instanceName":   instanceName,
 				"settings":       settings,
-				"verboseLogging": strconv.FormatInt(verboseLogging, 10),
+				"verboseLogging": strconv.FormatInt(verboseLogging, baseTen),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8007, err, details)
 		}()

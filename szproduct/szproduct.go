@@ -45,6 +45,7 @@ type Szproduct struct {
 const (
 	baseCallerSkip       = 4
 	initialByteArraySize = 65535
+	noError              = 0
 )
 
 // ----------------------------------------------------------------------------
@@ -69,7 +70,7 @@ func (client *Szproduct) Destroy(ctx context.Context) error {
 		defer func() { client.traceExit(4, err, time.Since(entryTime)) }()
 	}
 	result := C.G2Product_destroy()
-	if result != 0 {
+	if result != noError {
 		err = client.newError(ctx, 4001, result)
 	}
 	if client.observers != nil {
@@ -188,7 +189,7 @@ func (client *Szproduct) Initialize(ctx context.Context, instanceName string, se
 	iniParamsForC := C.CString(settings)
 	defer C.free(unsafe.Pointer(iniParamsForC))
 	result := C.G2Product_init(moduleNameForC, iniParamsForC, C.longlong(verboseLogging))
-	if result != 0 {
+	if result != noError {
 		err = client.newError(ctx, 4002, instanceName, settings, verboseLogging, result)
 	}
 	if client.observers != nil {

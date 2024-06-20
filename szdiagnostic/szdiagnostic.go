@@ -31,6 +31,7 @@ import (
 	"github.com/senzing-garage/go-observing/observer"
 	"github.com/senzing-garage/go-observing/subject"
 	"github.com/senzing-garage/sz-sdk-go-core/helpers"
+	"github.com/senzing-garage/sz-sdk-go/senzing"
 	szdiagnosticapi "github.com/senzing-garage/sz-sdk-go/szdiagnostic"
 	"github.com/senzing-garage/sz-sdk-go/szerror"
 )
@@ -45,7 +46,9 @@ type Szdiagnostic struct {
 
 const (
 	baseCallerSkip       = 4
+	baseTen              = 10
 	initialByteArraySize = 65535
+	noError              = 0
 )
 
 // ----------------------------------------------------------------------------
@@ -76,7 +79,7 @@ func (client *Szdiagnostic) CheckDatastorePerformance(ctx context.Context, secon
 		defer func() { client.traceExit(2, secondsToRun, resultResponse, err, time.Since(entryTime)) }()
 	}
 	result := C.G2Diagnostic_checkDatastorePerformance_helper(C.longlong(secondsToRun))
-	if result.returnCode != 0 {
+	if result.returnCode != noError {
 		err = client.newError(ctx, 4001, secondsToRun, result.returnCode)
 	}
 	resultResponse = C.GoString(result.response)
@@ -108,7 +111,7 @@ func (client *Szdiagnostic) Destroy(ctx context.Context) error {
 		defer func() { client.traceExit(6, err, time.Since(entryTime)) }()
 	}
 	result := C.G2Diagnostic_destroy()
-	if result != 0 {
+	if result != noError {
 		err = client.newError(ctx, 4002, result)
 	}
 	if client.observers != nil {
@@ -142,7 +145,7 @@ func (client *Szdiagnostic) GetDatastoreInfo(ctx context.Context) (string, error
 		defer func() { client.traceExit(8, resultResponse, err, time.Since(entryTime)) }()
 	}
 	result := C.G2Diagnostic_getDatastoreInfo_helper()
-	if result.returnCode != 0 {
+	if result.returnCode != noError {
 		err = client.newError(ctx, 4003, result.returnCode)
 	}
 	resultResponse = C.GoString(result.response)
@@ -175,7 +178,7 @@ func (client *Szdiagnostic) GetFeature(ctx context.Context, featureID int64) (st
 		defer func() { client.traceExit(10, featureID, err, time.Since(entryTime)) }()
 	}
 	result := C.G2Diagnostic_getFeature_helper(C.longlong(featureID))
-	if result.returnCode != 0 {
+	if result.returnCode != noError {
 		err = client.newError(ctx, 4004, featureID, result)
 	}
 	resultResponse = C.GoString(result.response)
@@ -183,7 +186,7 @@ func (client *Szdiagnostic) GetFeature(ctx context.Context, featureID int64) (st
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
-				"featureID": strconv.FormatInt(featureID, 10),
+				"featureID": strconv.FormatInt(featureID, baseTen),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8004, err, details)
 		}()
@@ -210,7 +213,7 @@ func (client *Szdiagnostic) PurgeRepository(ctx context.Context) error {
 		defer func() { client.traceExit(18, err, time.Since(entryTime)) }()
 	}
 	result := C.G2Diagnostic_purgeRepository()
-	if result != 0 {
+	if result != noError {
 		err = client.newError(ctx, 4007, result)
 	}
 	if client.observers != nil {
@@ -240,13 +243,13 @@ func (client *Szdiagnostic) Reinitialize(ctx context.Context, configID int64) er
 		defer func() { client.traceExit(20, configID, err, time.Since(entryTime)) }()
 	}
 	result := C.G2Diagnostic_reinit(C.longlong(configID))
-	if result != 0 {
+	if result != noError {
 		err = client.newError(ctx, 4008, configID, result)
 	}
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
-				"configID": strconv.FormatInt(configID, 10),
+				"configID": strconv.FormatInt(configID, baseTen),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8008, err, details)
 		}()
@@ -292,18 +295,18 @@ func (client *Szdiagnostic) Initialize(ctx context.Context, instanceName string,
 			client.traceExit(16, instanceName, settings, configID, verboseLogging, err, time.Since(entryTime))
 		}()
 	}
-	if configID > 0 {
-		err = client.initializeWithConfigID(ctx, instanceName, settings, configID, verboseLogging)
-	} else {
+	if configID == senzing.SzInitializeWithDefaultConfiguration {
 		err = client.initialize(ctx, instanceName, settings, verboseLogging)
+	} else {
+		err = client.initializeWithConfigID(ctx, instanceName, settings, configID, verboseLogging)
 	}
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
-				"initConfigID":   strconv.FormatInt(configID, 10),
+				"initConfigID":   strconv.FormatInt(configID, baseTen),
 				"instanceName":   instanceName,
 				"settings":       settings,
-				"verboseLogging": strconv.FormatInt(verboseLogging, 10),
+				"verboseLogging": strconv.FormatInt(verboseLogging, baseTen),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8005, err, details)
 		}()
@@ -439,7 +442,7 @@ func (client *Szdiagnostic) initialize(ctx context.Context, instanceName string,
 	settingsForC := C.CString(settings)
 	defer C.free(unsafe.Pointer(settingsForC))
 	result := C.G2Diagnostic_init(instanceNameForC, settingsForC, C.longlong(verboseLogging))
-	if result != 0 {
+	if result != noError {
 		err = client.newError(ctx, 4005, instanceName, settings, verboseLogging, result)
 	}
 	return err
@@ -466,7 +469,7 @@ func (client *Szdiagnostic) initializeWithConfigID(ctx context.Context, instance
 	settingsForC := C.CString(settings)
 	defer C.free(unsafe.Pointer(settingsForC))
 	result := C.G2Diagnostic_initWithConfigID(instanceNameForC, settingsForC, C.longlong(configID), C.longlong(verboseLogging))
-	if result != 0 {
+	if result != noError {
 		err = client.newError(ctx, 4006, instanceName, settings, configID, verboseLogging, result)
 	}
 	return err

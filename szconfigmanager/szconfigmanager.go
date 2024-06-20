@@ -44,7 +44,9 @@ type Szconfigmanager struct {
 
 const (
 	baseCallerSkip       = 4
+	baseTen              = 10
 	initialByteArraySize = 65535
+	noError              = 0
 )
 
 // ----------------------------------------------------------------------------
@@ -80,7 +82,7 @@ func (client *Szconfigmanager) AddConfig(ctx context.Context, configDefinition s
 	configCommentForC := C.CString(configComment)
 	defer C.free(unsafe.Pointer(configCommentForC))
 	result := C.G2ConfigMgr_addConfig_helper(configDefinitionForC, configCommentForC)
-	if result.returnCode != 0 {
+	if result.returnCode != noError {
 		err = client.newError(ctx, 4001, configDefinition, configComment, result.returnCode, result)
 	}
 	resultConfigID = int64(C.longlong(result.configID))
@@ -113,7 +115,7 @@ func (client *Szconfigmanager) Destroy(ctx context.Context) error {
 		defer func() { client.traceExit(6, err, time.Since(entryTime)) }()
 	}
 	result := C.G2ConfigMgr_destroy()
-	if result != 0 {
+	if result != noError {
 		err = client.newError(ctx, 4002, result)
 	}
 	if client.observers != nil {
@@ -148,7 +150,7 @@ func (client *Szconfigmanager) GetConfig(ctx context.Context, configID int64) (s
 		defer func() { client.traceExit(8, configID, resultResponse, err, time.Since(entryTime)) }()
 	}
 	result := C.G2ConfigMgr_getConfig_helper(C.longlong(configID))
-	if result.returnCode != 0 {
+	if result.returnCode != noError {
 		err = client.newError(ctx, 4003, configID, result.returnCode, result)
 	}
 	resultResponse = C.GoString(result.response)
@@ -184,7 +186,7 @@ func (client *Szconfigmanager) GetConfigs(ctx context.Context) (string, error) {
 		defer func() { client.traceExit(10, resultResponse, err, time.Since(entryTime)) }()
 	}
 	result := C.G2ConfigMgr_getConfigList_helper()
-	if result.returnCode != 0 {
+	if result.returnCode != noError {
 		err = client.newError(ctx, 4004, result.returnCode, result)
 	}
 	resultResponse = C.GoString(result.response)
@@ -219,7 +221,7 @@ func (client *Szconfigmanager) GetDefaultConfigID(ctx context.Context) (int64, e
 		defer func() { client.traceExit(12, resultConfigID, err, time.Since(entryTime)) }()
 	}
 	result := C.G2ConfigMgr_getDefaultConfigID_helper()
-	if result.returnCode != 0 {
+	if result.returnCode != noError {
 		err = client.newError(ctx, 4005, result.returnCode, result)
 	}
 	resultConfigID = int64(C.longlong(result.configID))
@@ -254,13 +256,13 @@ func (client *Szconfigmanager) ReplaceDefaultConfigID(ctx context.Context, curre
 		defer func() { client.traceExit(20, currentDefaultConfigID, newDefaultConfigID, err, time.Since(entryTime)) }()
 	}
 	result := C.G2ConfigMgr_replaceDefaultConfigID(C.longlong(currentDefaultConfigID), C.longlong(newDefaultConfigID))
-	if result != 0 {
+	if result != noError {
 		err = client.newError(ctx, 4007, currentDefaultConfigID, newDefaultConfigID, result)
 	}
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
-				"newDefaultConfigID": strconv.FormatInt(newDefaultConfigID, 10),
+				"newDefaultConfigID": strconv.FormatInt(newDefaultConfigID, baseTen),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8007, err, details)
 		}()
@@ -287,13 +289,13 @@ func (client *Szconfigmanager) SetDefaultConfigID(ctx context.Context, configID 
 		defer func() { client.traceExit(22, configID, err, time.Since(entryTime)) }()
 	}
 	result := C.G2ConfigMgr_setDefaultConfigID(C.longlong(configID))
-	if result != 0 {
+	if result != noError {
 		err = client.newError(ctx, 4008, configID, result)
 	}
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
-				"configID": strconv.FormatInt(configID, 10),
+				"configID": strconv.FormatInt(configID, baseTen),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8008, err, details)
 		}()
@@ -344,7 +346,7 @@ func (client *Szconfigmanager) Initialize(ctx context.Context, instanceName stri
 	iniParamsForC := C.CString(settings)
 	defer C.free(unsafe.Pointer(iniParamsForC))
 	result := C.G2ConfigMgr_init(moduleNameForC, iniParamsForC, C.longlong(verboseLogging))
-	if result != 0 {
+	if result != noError {
 		err = client.newError(ctx, 4006, instanceName, settings, verboseLogging, result)
 	}
 	if client.observers != nil {
@@ -352,7 +354,7 @@ func (client *Szconfigmanager) Initialize(ctx context.Context, instanceName stri
 			details := map[string]string{
 				"instanceName":   instanceName,
 				"settings":       settings,
-				"verboseLogging": strconv.FormatInt(verboseLogging, 10),
+				"verboseLogging": strconv.FormatInt(verboseLogging, baseTen),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8006, err, details)
 		}()
