@@ -290,7 +290,7 @@ func ExampleSzengine_FindPathByEntityID() {
 
 func ExampleSzengine_FindPathByEntityID_excluding() {
 	// TODO: Implement ExampleSzEngine_FindPathByEntityID_excluding
-	// // For more information, visit https://github.com/senzing-garage/sz-sdk-go-grpc/blob/main/szengine/szengine_examples_test.go
+	// // For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	// ctx := context.TODO()
 	// szEngine := getSzEngineExample(ctx)
 	// startEntityID := getEntityIDForRecord("CUSTOMERS", "1001")
@@ -313,7 +313,7 @@ func ExampleSzEngine_FindPathByEntityID_excludingAndIncluding() {
 
 func ExampleSzengine_FindPathByEntityID_including() {
 	// TODO: Implement ExampleSzEngine_FindPathByEntityID_including
-	// // For more information, visit https://github.com/senzing-garage/sz-sdk-go-grpc/blob/main/szengine/szengine_examples_test.go
+	// // For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	// ctx := context.TODO()
 	// szEngine := getSzEngineExample(ctx)
 	// startEntityID := getEntityIDForRecord("CUSTOMERS", "1001")

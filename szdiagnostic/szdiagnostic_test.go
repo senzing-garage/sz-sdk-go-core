@@ -312,7 +312,6 @@ func getSettings() (string, error) {
 
 func getSzDiagnostic(ctx context.Context) (*Szdiagnostic, error) {
 	var err error
-	_ = ctx
 	if szDiagnosticSingleton == nil {
 		settings, err := getSettings()
 		if err != nil {
@@ -344,7 +343,6 @@ func getSzDiagnostic(ctx context.Context) (*Szdiagnostic, error) {
 
 func getSzEngine(ctx context.Context) (*szengine.Szengine, error) {
 	var err error
-	_ = ctx
 	if szEngineSingleton == nil {
 		settings, err := getSettings()
 		if err != nil {
@@ -456,7 +454,7 @@ func setup() error {
 	}
 	err = setupSenzingConfiguration()
 	if err != nil {
-		return fmt.Errorf("Failed to set up Senzing configuration. Error: %w", err)
+		return fmt.Errorf("failed to set up Senzing configuration. Error: %w", err)
 	}
 	return err
 }

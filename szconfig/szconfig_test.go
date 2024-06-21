@@ -397,7 +397,6 @@ func getSettings() (string, error) {
 
 func getSzConfig(ctx context.Context) (*Szconfig, error) {
 	var err error
-	_ = ctx
 	if szConfigSingleton == nil {
 		settings, err := getSettings()
 		if err != nil {

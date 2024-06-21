@@ -190,7 +190,6 @@ func getSettings() (string, error) {
 
 func getSzProduct(ctx context.Context) (*Szproduct, error) {
 	var err error
-	_ = ctx
 	if szProductSingleton == nil {
 		settings, err := getSettings()
 		if err != nil {

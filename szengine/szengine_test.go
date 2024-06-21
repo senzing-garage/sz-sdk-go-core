@@ -2049,7 +2049,6 @@ func getSettings() (string, error) {
 
 func getSzEngine(ctx context.Context) (*Szengine, error) {
 	var err error
-	_ = ctx
 	if szEngineSingleton == nil {
 		settings, err := getSettings()
 		if err != nil {

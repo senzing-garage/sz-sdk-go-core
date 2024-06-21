@@ -320,7 +320,6 @@ func getSettings() (string, error) {
 
 func getSzConfig(ctx context.Context) (senzing.SzConfig, error) {
 	var err error
-	_ = ctx
 	if szConfigSingleton == nil {
 		settings, err := getSettings()
 		if err != nil {
@@ -352,7 +351,6 @@ func getSzConfig(ctx context.Context) (senzing.SzConfig, error) {
 
 func getSzConfigManager(ctx context.Context) (*Szconfigmanager, error) {
 	var err error
-	_ = ctx
 	if szConfigManagerSingleton == nil {
 		settings, err := getSettings()
 		if err != nil {
