@@ -2290,7 +2290,11 @@ func teardown() error {
 }
 
 func teardownSzEngine(ctx context.Context) error {
-	err := szEngineSingleton.Destroy(ctx)
+	err := szEngineSingleton.UnregisterObserver(ctx, observerSingleton)
+	if err != nil {
+		return err
+	}
+	err = szEngineSingleton.Destroy(ctx)
 	if err != nil {
 		return err
 	}

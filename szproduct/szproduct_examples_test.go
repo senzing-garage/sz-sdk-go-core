@@ -89,10 +89,7 @@ func ExampleSzproduct_GetObserverOrigin() {
 func ExampleSzproduct_Initialize() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szproduct/szproduct_examples_test.go
 	ctx := context.TODO()
-	szProduct, err := getSzProduct(ctx)
-	if err != nil {
-		fmt.Println(err)
-	}
+	szProduct := &Szproduct{}
 	instanceName := "Test name"
 	settings, err := getSettings()
 	if err != nil {

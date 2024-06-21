@@ -421,7 +421,7 @@ func getSzConfig(ctx context.Context) (*Szconfig, error) {
 		}
 		err = szConfigSingleton.Initialize(ctx, instanceName, settings, verboseLogging)
 		if err != nil {
-			fmt.Println(err)
+			return szConfigSingleton, fmt.Errorf("Initialize() Error: %w", err)
 		}
 	}
 	return szConfigSingleton, err
@@ -561,5 +561,5 @@ func teardownSzConfig(ctx context.Context) error {
 		return err
 	}
 	szConfigSingleton = nil
-	return nil
+	return err
 }

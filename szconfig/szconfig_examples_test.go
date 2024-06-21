@@ -177,10 +177,7 @@ func ExampleSzconfig_GetObserverOrigin() {
 func ExampleSzconfig_Initialize() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig_examples_test.go
 	ctx := context.TODO()
-	szConfig, err := getSzConfig(ctx)
-	if err != nil {
-		fmt.Println(err)
-	}
+	szConfig := &Szconfig{}
 	instanceName := "Test name"
 	settings, err := getSettings()
 	if err != nil {

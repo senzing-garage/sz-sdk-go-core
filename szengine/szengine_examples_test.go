@@ -726,11 +726,8 @@ func ExampleSzengine_GetObserverOrigin() {
 func ExampleSzengine_Initialize() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	szEngine, err := getSzEngine(ctx)
-	if err != nil {
-		fmt.Println(err)
-	}
-	instanceName := "Test module name"
+	szEngine := &Szengine{}
+	instanceName := "Test name"
 	settings, err := getSettings()
 	if err != nil {
 		fmt.Println(err)

@@ -120,8 +120,8 @@ func ExampleSzdiagnostic_Initialize() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	verboseLogging := senzing.SzNoLogging
 	configID := senzing.SzInitializeWithDefaultConfiguration
+	verboseLogging := senzing.SzNoLogging
 	err = szDiagnostic.Initialize(ctx, instanceName, settings, configID, verboseLogging)
 	if err != nil {
 		fmt.Println(err)

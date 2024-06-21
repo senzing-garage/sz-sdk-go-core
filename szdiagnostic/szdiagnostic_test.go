@@ -576,6 +576,13 @@ func setupSenzingConfiguration() error {
 func teardown() error {
 	ctx := context.TODO()
 	err := teardownSzDiagnostic(ctx)
+	if err != nil {
+		return err
+	}
+	err = teardownSzEngine(ctx)
+	if err != nil {
+		return err
+	}
 	return err
 }
 
@@ -590,7 +597,11 @@ func teardownSzDiagnostic(ctx context.Context) error {
 		return err
 	}
 	szDiagnosticSingleton = nil
-	err = szEngineSingleton.UnregisterObserver(ctx, observerSingleton)
+	return err
+}
+
+func teardownSzEngine(ctx context.Context) error {
+	err := szEngineSingleton.UnregisterObserver(ctx, observerSingleton)
 	if err != nil {
 		return err
 	}

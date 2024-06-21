@@ -261,7 +261,6 @@ func TestSzconfigmanager_AsInterface(test *testing.T) {
 func TestSzconfigmanager_Initialize(test *testing.T) {
 	ctx := context.TODO()
 	szConfigManager := getTestObject(ctx, test)
-	verboseLogging := senzing.SzNoLogging
 	settings, err := getSettings()
 	require.NoError(test, err)
 	err = szConfigManager.Initialize(ctx, instanceName, settings, verboseLogging)
@@ -583,23 +582,24 @@ func setupSenzingConfiguration() error {
 }
 
 func teardown() error {
-	var resultErr error
 	ctx := context.TODO()
 	err := teardownSzConfig(ctx)
 	if err != nil {
-		fmt.Println(err)
-		resultErr = err
+		return err
 	}
 	err = teardownSzConfigManager(ctx)
 	if err != nil {
-		fmt.Println(err)
-		resultErr = err
+		return err
 	}
-	return resultErr
+	return err
 }
 
 func teardownSzConfig(ctx context.Context) error {
-	err := szConfigSingleton.Destroy(ctx)
+	err := szConfigSingleton.UnregisterObserver(ctx, observerSingleton)
+	if err != nil {
+		return err
+	}
+	err = szConfigSingleton.Destroy(ctx)
 	if err != nil {
 		return err
 	}
@@ -608,7 +608,11 @@ func teardownSzConfig(ctx context.Context) error {
 }
 
 func teardownSzConfigManager(ctx context.Context) error {
-	err := szConfigManagerSingleton.Destroy(ctx)
+	err := szConfigManagerSingleton.UnregisterObserver(ctx, observerSingleton)
+	if err != nil {
+		return err
+	}
+	err = szConfigManagerSingleton.Destroy(ctx)
 	if err != nil {
 		return err
 	}
