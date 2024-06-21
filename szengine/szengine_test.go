@@ -1957,7 +1957,10 @@ func TestSzengine_Destroy_withObserver(test *testing.T) {
 
 func addRecords(ctx context.Context, records []record.Record) error {
 	var err error
-	szEngine := getSzEngine(ctx)
+	szEngine, err := getSzEngine(ctx)
+	if err != nil {
+		return err
+	}
 	flags := senzing.SzWithoutInfo
 	for _, record := range records {
 		_, err = szEngine.AddRecord(ctx, record.DataSource, record.ID, record.JSON, flags)
@@ -1968,13 +1971,12 @@ func addRecords(ctx context.Context, records []record.Record) error {
 	return err
 }
 
-func createError(errorID int, err error) error {
-	return logger.NewError(errorID, err)
-}
-
 func deleteRecords(ctx context.Context, records []record.Record) error {
 	var err error
-	szEngine := getSzEngine(ctx)
+	szEngine, err := getSzEngine(ctx)
+	if err != nil {
+		return err
+	}
 	flags := senzing.SzWithoutInfo
 	for _, record := range records {
 		_, err = szEngine.DeleteRecord(ctx, record.DataSource, record.ID, flags)
@@ -2000,7 +2002,7 @@ func getEntityID(record record.Record) int64 {
 func getEntityIDForRecord(datasource string, id string) int64 {
 	ctx := context.TODO()
 	var result int64
-	szEngine := getSzEngine(ctx)
+	szEngine := getSzEngineExample(ctx)
 	response, err := szEngine.GetEntityByRecordID(ctx, datasource, id, senzing.SzWithoutInfo)
 	if err != nil {
 		return result
@@ -2024,65 +2026,65 @@ func getEntityIDStringForRecord(datasource string, id string) string {
 }
 
 func getSettings() (string, error) {
+	var result string
 
 	// Determine Database URL.
 
 	testDirectoryPath := getTestDirectoryPath()
 	dbTargetPath, err := filepath.Abs(filepath.Join(testDirectoryPath, "G2C.db"))
 	if err != nil {
-		err = fmt.Errorf("failed to make target database path (%s) absolute: %w",
-			dbTargetPath, err)
-		return "", err
+		return result, fmt.Errorf("failed to make target database path (%s) absolute. Error: %w", dbTargetPath, err)
 	}
 	databaseURL := fmt.Sprintf("sqlite3://na:na@nowhere/%s", dbTargetPath)
 
 	// Create Senzing engine configuration JSON.
 
 	configAttrMap := map[string]string{"databaseUrl": databaseURL}
-	settings, err := settings.BuildSimpleSettingsUsingMap(configAttrMap)
+	result, err = settings.BuildSimpleSettingsUsingMap(configAttrMap)
 	if err != nil {
-		err = createError(5900, err)
+		return result, fmt.Errorf("failed to BuildSimpleSettingsUsingMap(%s) Error: %w", configAttrMap, err)
 	}
-	return settings, err
+	return result, err
 }
 
-func getSzEngine(ctx context.Context) *Szengine {
+func getSzEngine(ctx context.Context) (*Szengine, error) {
+	var err error
 	_ = ctx
 	if szEngineSingleton == nil {
 		settings, err := getSettings()
 		if err != nil {
-			fmt.Printf("getSettings() Error: %v\n", err)
-			return nil
+			return szEngineSingleton, fmt.Errorf("getSettings() Error: %w", err)
 		}
 		szEngineSingleton = &Szengine{}
 		err = szEngineSingleton.SetLogLevel(ctx, logLevel)
 		if err != nil {
-			fmt.Printf("SetLogLevel() Error: %v\n", err)
-			return nil
+			return szEngineSingleton, fmt.Errorf("SetLogLevel() Error: %w", err)
 		}
 		if logLevel == "TRACE" {
 			szEngineSingleton.SetObserverOrigin(ctx, observerOrigin)
 			err = szEngineSingleton.RegisterObserver(ctx, observerSingleton)
 			if err != nil {
-				fmt.Printf("RegisterObserver() Error: %v\n", err)
-				return nil
+				return szEngineSingleton, fmt.Errorf("RegisterObserver() Error: %w", err)
 			}
 			err = szEngineSingleton.SetLogLevel(ctx, logLevel) // Duplicated for coverage testing
 			if err != nil {
-				fmt.Printf("SetLogLevel() - 2 Error: %v\n", err)
-				return nil
+				return szEngineSingleton, fmt.Errorf("SetLogLevel() - 2 Error: %w", err)
 			}
 		}
 		err = szEngineSingleton.Initialize(ctx, instanceName, settings, getDefaultConfigID(), verboseLogging)
 		if err != nil {
-			fmt.Println(err)
+			return szEngineSingleton, fmt.Errorf("Initialize() Error: %w", err)
 		}
 	}
-	return szEngineSingleton
+	return szEngineSingleton, err
 }
 
 func getSzEngineAsInterface(ctx context.Context) senzing.SzEngine {
-	return getSzEngine(ctx)
+	result, err := getSzEngine(ctx)
+	if err != nil {
+		panic(err)
+	}
+	return result
 }
 
 func getTestDirectoryPath() string {
@@ -2090,8 +2092,9 @@ func getTestDirectoryPath() string {
 }
 
 func getTestObject(ctx context.Context, test *testing.T) *Szengine {
-	_ = test
-	return getSzEngine(ctx)
+	result, err := getSzEngine(ctx)
+	require.NoError(test, err)
+	return result
 }
 
 func handleError(err error) {
@@ -2102,9 +2105,7 @@ func handleError(err error) {
 
 func handleErrorWithString(aString string, err error) {
 	_ = aString
-	if err != nil {
-		panic(err)
-	}
+	handleError(err)
 }
 
 func printActual(test *testing.T, actual interface{}) {
@@ -2165,7 +2166,7 @@ func setup() error {
 	}
 	err = setupSenzingConfiguration()
 	if err != nil {
-		return createError(5920, err)
+		return fmt.Errorf("Failed to set up Senzing configuration. Error: %w", err)
 	}
 	return err
 }
@@ -2178,7 +2179,7 @@ func setupDatabase() error {
 	testDirectoryPath := getTestDirectoryPath()
 	dbTargetPath, err := filepath.Abs(filepath.Join(testDirectoryPath, "G2C.db"))
 	if err != nil {
-		return fmt.Errorf("failed to make target database path (%s) absolute: %w",
+		return fmt.Errorf("failed to make target database path (%s) absolute. Error: %w",
 			dbTargetPath, err)
 	}
 	databaseTemplatePath, err := filepath.Abs(getDatabaseTemplatePath())
@@ -2202,11 +2203,11 @@ func setupDirectories() error {
 	testDirectoryPath := getTestDirectoryPath()
 	err = os.RemoveAll(filepath.Clean(testDirectoryPath)) // cleanup any previous test run
 	if err != nil {
-		return fmt.Errorf("Failed to remove target test directory (%v): %w", testDirectoryPath, err)
+		return fmt.Errorf("failed to remove target test directory (%v): %w", testDirectoryPath, err)
 	}
 	err = os.MkdirAll(filepath.Clean(testDirectoryPath), 0750) // recreate the test target directory
 	if err != nil {
-		return fmt.Errorf("Failed to recreate target test directory (%v): %w", testDirectoryPath, err)
+		return fmt.Errorf("failed to recreate target test directory (%v): %w", testDirectoryPath, err)
 	}
 	return err
 }
@@ -2219,20 +2220,19 @@ func setupSenzingConfiguration() error {
 
 	settings, err := getSettings()
 	if err != nil {
-		return createError(5901, err)
+		return fmt.Errorf("failed to get settings. Error: %w", err)
 	}
-
 	szConfig := &szconfig.Szconfig{}
 	err = szConfig.Initialize(ctx, instanceName, settings, verboseLogging)
 	if err != nil {
-		return createError(5902, err)
+		return fmt.Errorf("failed to szConfig.Initialize(). Error: %w", err)
 	}
 	defer func() { handleError(szConfig.Destroy(ctx)) }()
 
 	szConfigManager := &szconfigmanager.Szconfigmanager{}
 	err = szConfigManager.Initialize(ctx, instanceName, settings, verboseLogging)
 	if err != nil {
-		return createError(5907, err)
+		return fmt.Errorf("failed to szConfigManager.Initialize(). Error: %w", err)
 	}
 	defer func() { handleError(szConfigManager.Destroy(ctx)) }()
 
@@ -2240,7 +2240,7 @@ func setupSenzingConfiguration() error {
 
 	configHandle, err := szConfig.CreateConfig(ctx)
 	if err != nil {
-		return createError(5903, err)
+		return fmt.Errorf("failed to szConfig.CreateConfig(). Error: %w", err)
 	}
 
 	// Add data sources to in-memory Senzing configuration.
@@ -2249,7 +2249,7 @@ func setupSenzingConfiguration() error {
 	for _, dataSourceCode := range dataSourceCodes {
 		_, err := szConfig.AddDataSource(ctx, configHandle, dataSourceCode)
 		if err != nil {
-			return createError(5904, err)
+			return fmt.Errorf("failed to szConfig.AddDataSource(). Error: %w", err)
 		}
 	}
 
@@ -2257,14 +2257,14 @@ func setupSenzingConfiguration() error {
 
 	configDefinition, err := szConfig.ExportConfig(ctx, configHandle)
 	if err != nil {
-		return createError(5905, err)
+		return fmt.Errorf("failed to szConfig.ExportConfig(). Error: %w", err)
 	}
 
 	// Close szConfig in-memory object.
 
 	err = szConfig.CloseConfig(ctx, configHandle)
 	if err != nil {
-		return createError(5906, err)
+		return fmt.Errorf("failed to szConfig.CloseConfig(). Error: %w", err)
 	}
 
 	// Persist the Senzing configuration to the Senzing repository as default.
@@ -2272,15 +2272,14 @@ func setupSenzingConfiguration() error {
 	configComment := fmt.Sprintf("Created by szengine_test at %s", now.UTC())
 	configID, err := szConfigManager.AddConfig(ctx, configDefinition, configComment)
 	if err != nil {
-		return createError(5908, err)
+		return fmt.Errorf("failed to szConfigManager.AddConfig(). Error: %w", err)
 	}
 
 	err = szConfigManager.SetDefaultConfigID(ctx, configID)
 	if err != nil {
-		return createError(5909, err)
+		return fmt.Errorf("failed to szConfigManager.SetDefaultConfigID(). Error: %w", err)
 	}
 	defaultConfigID = configID
-
 	return err
 }
 
@@ -2296,5 +2295,5 @@ func teardownSzEngine(ctx context.Context) error {
 		return err
 	}
 	szEngineSingleton = nil
-	return nil
+	return err
 }

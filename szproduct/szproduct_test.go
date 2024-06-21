@@ -131,10 +131,8 @@ func TestSzproduct_AsInterface(test *testing.T) {
 func TestSzproduct_Initialize(test *testing.T) {
 	ctx := context.TODO()
 	szProduct := &Szproduct{}
-	instanceName := "Test name"
 	settings, err := getSettings()
 	require.NoError(test, err)
-	verboseLogging := senzing.SzNoLogging
 	err = szProduct.Initialize(ctx, instanceName, settings, verboseLogging)
 	require.NoError(test, err)
 }
@@ -164,75 +162,70 @@ func TestSzproduct_Destroy_withObserver(test *testing.T) {
 // Internal functions
 // ----------------------------------------------------------------------------
 
-func createError(errorID int, err error) error {
-	// return errors.Cast(logger.NewError(errorId, err), err)
-	return logger.NewError(errorID, err)
-}
-
 func getDatabaseTemplatePath() string {
 	return filepath.FromSlash("../testdata/sqlite/G2C.db")
 }
 
 func getSettings() (string, error) {
+	var result string
 
 	// Determine Database URL.
 
 	testDirectoryPath := getTestDirectoryPath()
 	dbTargetPath, err := filepath.Abs(filepath.Join(testDirectoryPath, "G2C.db"))
 	if err != nil {
-		err = fmt.Errorf("failed to make target database path (%s) absolute: %w",
-			dbTargetPath, err)
-		return "", err
+		return result, fmt.Errorf("failed to make target database path (%s) absolute. Error: %w", dbTargetPath, err)
 	}
 	databaseURL := fmt.Sprintf("sqlite3://na:na@nowhere/%s", dbTargetPath)
 
 	// Create Senzing engine configuration JSON.
 
 	configAttrMap := map[string]string{"databaseUrl": databaseURL}
-	settings, err := settings.BuildSimpleSettingsUsingMap(configAttrMap)
+	result, err = settings.BuildSimpleSettingsUsingMap(configAttrMap)
 	if err != nil {
-		err = createError(5900, err)
+		return result, fmt.Errorf("failed to BuildSimpleSettingsUsingMap(%s) Error: %w", configAttrMap, err)
 	}
-	return settings, err
+	return result, err
 }
 
-func getSzProduct(ctx context.Context) *Szproduct {
+func getSzProduct(ctx context.Context) (*Szproduct, error) {
+	var err error
 	_ = ctx
 	if szProductSingleton == nil {
 		settings, err := getSettings()
 		if err != nil {
-			fmt.Printf("getSettings() Error: %v\n", err)
-			return nil
+			return szProductSingleton, fmt.Errorf("getSettings() Error: %w", err)
 		}
 		szProductSingleton = &Szproduct{}
 		err = szProductSingleton.SetLogLevel(ctx, logLevel)
 		if err != nil {
-			fmt.Printf("SetLogLevel() Error: %v\n", err)
-			return nil
+			return szProductSingleton, fmt.Errorf("SetLogLevel() Error: %w", err)
 		}
 		if logLevel == "TRACE" {
 			szProductSingleton.SetObserverOrigin(ctx, observerOrigin)
 			err = szProductSingleton.RegisterObserver(ctx, observerSingleton)
 			if err != nil {
-				fmt.Printf("RegisterObserver() Error: %v\n", err)
-				return nil
+				return szProductSingleton, fmt.Errorf("RegisterObserver() Error: %w", err)
 			}
 			err = szProductSingleton.SetLogLevel(ctx, logLevel) // Duplicated for coverage testing
 			if err != nil {
-				fmt.Printf("SetLogLevel()-2 Error: %v\n", err)
-				return nil
+				return szProductSingleton, fmt.Errorf("SetLogLevel() - 2 Error: %w", err)
 			}
 		}
 		err = szProductSingleton.Initialize(ctx, instanceName, settings, verboseLogging)
 		if err != nil {
-			fmt.Println(err)
+			return szProductSingleton, fmt.Errorf("Initialize() Error: %w", err)
 		}
 	}
-	return szProductSingleton
+	return szProductSingleton, err
 }
 
 func getSzProductAsInterface(ctx context.Context) senzing.SzProduct {
-	return getSzProduct(ctx)
+	result, err := getSzProduct(ctx)
+	if err != nil {
+		panic(err)
+	}
+	return result
 }
 
 func getTestDirectoryPath() string {
@@ -240,14 +233,9 @@ func getTestDirectoryPath() string {
 }
 
 func getTestObject(ctx context.Context, test *testing.T) *Szproduct {
-	_ = test
-	return getSzProduct(ctx)
-}
-
-func handleError(err error) {
-	if err != nil {
-		panic(err)
-	}
+	result, err := getSzProduct(ctx)
+	require.NoError(test, err)
+	return result
 }
 
 func printActual(test *testing.T, actual interface{}) {
@@ -317,7 +305,7 @@ func setupDatabase() error {
 	testDirectoryPath := getTestDirectoryPath()
 	dbTargetPath, err := filepath.Abs(filepath.Join(testDirectoryPath, "G2C.db"))
 	if err != nil {
-		return fmt.Errorf("failed to make target database path (%s) absolute: %w",
+		return fmt.Errorf("failed to make target database path (%s) absolute. Error: %w",
 			dbTargetPath, err)
 	}
 	databaseTemplatePath, err := filepath.Abs(getDatabaseTemplatePath())
@@ -341,11 +329,11 @@ func setupDirectories() error {
 	testDirectoryPath := getTestDirectoryPath()
 	err = os.RemoveAll(filepath.Clean(testDirectoryPath)) // cleanup any previous test run
 	if err != nil {
-		return fmt.Errorf("Failed to remove target test directory (%v): %w", testDirectoryPath, err)
+		return fmt.Errorf("failed to remove target test directory (%v): %w", testDirectoryPath, err)
 	}
 	err = os.MkdirAll(filepath.Clean(testDirectoryPath), 0750) // recreate the test target directory
 	if err != nil {
-		return fmt.Errorf("Failed to recreate target test directory (%v): %w", testDirectoryPath, err)
+		return fmt.Errorf("failed to recreate target test directory (%v): %w", testDirectoryPath, err)
 	}
 	return err
 }
@@ -357,8 +345,11 @@ func teardown() error {
 }
 
 func teardownSzProduct(ctx context.Context) error {
-	handleError(szProductSingleton.UnregisterObserver(ctx, observerSingleton))
-	err := szProductSingleton.Destroy(ctx)
+	err := szProductSingleton.UnregisterObserver(ctx, observerSingleton)
+	if err != nil {
+		return err
+	}
+	err = szProductSingleton.Destroy(ctx)
 	if err != nil {
 		return err
 	}

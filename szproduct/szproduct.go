@@ -44,6 +44,7 @@ type Szproduct struct {
 
 const (
 	baseCallerSkip       = 4
+	baseTen              = 10
 	initialByteArraySize = 65535
 	noError              = 0
 )
@@ -202,7 +203,7 @@ func (client *Szproduct) RegisterObserver(ctx context.Context, observer observer
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
-				"observerId": observer.GetObserverID(ctx),
+				"observerID": observer.GetObserverID(ctx),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8702, err, details)
 		}()

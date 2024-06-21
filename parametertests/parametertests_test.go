@@ -177,39 +177,38 @@ func getDatabaseTemplatePath() string {
 }
 
 func getSettings() (string, error) {
+	var result string
 
 	// Determine Database URL.
 
 	testDirectoryPath := getTestDirectoryPath()
 	dbTargetPath, err := filepath.Abs(filepath.Join(testDirectoryPath, "G2C.db"))
 	if err != nil {
-		err = fmt.Errorf("failed to make target database path (%s) absolute: %w",
-			dbTargetPath, err)
-		return "", err
+		return result, fmt.Errorf("failed to make target database path (%s) absolute. Error: %w", dbTargetPath, err)
 	}
 	databaseURL := fmt.Sprintf("sqlite3://na:na@nowhere/%s", dbTargetPath)
 
 	// Create Senzing engine configuration JSON.
 
 	configAttrMap := map[string]string{"databaseUrl": databaseURL}
-	settings, err := settings.BuildSimpleSettingsUsingMap(configAttrMap)
+	result, err = settings.BuildSimpleSettingsUsingMap(configAttrMap)
 	if err != nil {
-		panic(err)
+		return result, fmt.Errorf("failed to BuildSimpleSettingsUsingMap(%s) Error: %w", configAttrMap, err)
 	}
-	return settings, err
+	return result, err
 }
 
 func getTestDirectoryPath() string {
 	return filepath.FromSlash("../target/test/szengine")
 }
 
-func getSzEngine(ctx context.Context) senzing.SzEngine {
+func getSzEngine(ctx context.Context) (senzing.SzEngine, error) {
+	var err error
 	_ = ctx
 	if szEngineSingleton == nil {
 		settings, err := getSettings()
 		if err != nil {
-			fmt.Printf("getSettings() Error: %v\n", err)
-			return nil
+			return szEngineSingleton, fmt.Errorf("getSettings() Error: %w", err)
 		}
 		szEngine := &szengine.Szengine{}
 		_, err = captureStdout(func() error {
@@ -220,14 +219,14 @@ func getSzEngine(ctx context.Context) senzing.SzEngine {
 		}
 		szEngineSingleton = szEngine
 	}
-	return szEngineSingleton
+	return szEngineSingleton, err
 }
 
 // func getVerboseSzEngineAsInterface(ctx context.Context) senzing.SzEngine {
 // 	return getVerboseSzEngine(ctx)
 // }
 
-func getVerboseTestObject(ctx context.Context, test *testing.T) senzing.SzEngine {
+func getVerboseTestObject(ctx context.Context, test *testing.T) (senzing.SzEngine, error) {
 	_ = test
 	return getSzEngine(ctx)
 }
@@ -278,7 +277,7 @@ func setup() error {
 	}
 	err = setupSenzingConfiguration()
 	if err != nil {
-		panic(err)
+		return fmt.Errorf("Failed to set up Senzing configuration. Error: %w", err)
 	}
 	return err
 }
@@ -291,21 +290,18 @@ func setupDatabase() error {
 	testDirectoryPath := getTestDirectoryPath()
 	dbTargetPath, err := filepath.Abs(filepath.Join(testDirectoryPath, "G2C.db"))
 	if err != nil {
-		return fmt.Errorf("failed to make target database path (%s) absolute: %w",
-			dbTargetPath, err)
+		return fmt.Errorf("failed to make target database path (%s) absolute. Error: %w", dbTargetPath, err)
 	}
 	databaseTemplatePath, err := filepath.Abs(getDatabaseTemplatePath())
 	if err != nil {
-		return fmt.Errorf("failed to obtain absolute path to database file (%s): %s",
-			databaseTemplatePath, err.Error())
+		return fmt.Errorf("failed to obtain absolute path to database file (%s): %s", databaseTemplatePath, err.Error())
 	}
 
 	// Copy template file to test directory.
 
 	_, _, err = fileutil.CopyFile(databaseTemplatePath, testDirectoryPath, true) // Copy the SQLite database file.
 	if err != nil {
-		return fmt.Errorf("setup failed to copy template database (%v) to target path (%v): %w",
-			databaseTemplatePath, testDirectoryPath, err)
+		return fmt.Errorf("setup failed to copy template database (%v) to target path (%v): %w", databaseTemplatePath, testDirectoryPath, err)
 	}
 	return err
 }
@@ -330,7 +326,7 @@ func setupSenzingConfiguration() error {
 
 	settings, err := getSettings()
 	if err != nil {
-		panic(err)
+		return fmt.Errorf("failed to get settings. Error: %w", err)
 	}
 
 	// Create sz objects.
@@ -340,7 +336,7 @@ func setupSenzingConfiguration() error {
 		return szConfig.Initialize(ctx, instanceName, settings, senzing.SzNoLogging)
 	})
 	if err != nil {
-		panic(err)
+		return fmt.Errorf("failed to szConfig.Initialize(). Error: %w", err)
 	}
 	defer func() { handleError(szConfig.Destroy(ctx)) }()
 
@@ -350,7 +346,7 @@ func setupSenzingConfiguration() error {
 		return szConfig.CreateConfig(ctx)
 	})
 	if err != nil {
-		panic(err)
+		return fmt.Errorf("failed to szConfig.CreateConfig(). Error: %w", err)
 	}
 
 	// Add data sources to in-memory Senzing configuration.
@@ -361,7 +357,7 @@ func setupSenzingConfiguration() error {
 			return szConfig.AddDataSource(ctx, configHandle, dataSourceCode)
 		})
 		if err != nil {
-			panic(err)
+			return fmt.Errorf("failed to szConfig.AddDataSource(). Error: %w", err)
 		}
 	}
 
@@ -371,7 +367,7 @@ func setupSenzingConfiguration() error {
 		return szConfig.ExportConfig(ctx, configHandle)
 	})
 	if err != nil {
-		panic(err)
+		return fmt.Errorf("failed to szConfig.ExportConfig(). Error: %w", err)
 	}
 
 	// Close szConfig in-memory object.
@@ -380,7 +376,7 @@ func setupSenzingConfiguration() error {
 		return szConfig.CloseConfig(ctx, configHandle)
 	})
 	if err != nil {
-		panic(err)
+		return fmt.Errorf("failed to szConfig.CloseConfig(). Error: %w", err)
 	}
 
 	// Persist the Senzing configuration to the Senzing repository as default.
@@ -390,7 +386,7 @@ func setupSenzingConfiguration() error {
 		return szConfigManager.Initialize(ctx, instanceName, settings, senzing.SzNoLogging)
 	})
 	if err != nil {
-		panic(err)
+		return fmt.Errorf("failed to szConfigManager.Initialize(). Error: %w", err)
 	}
 	defer func() { handleError(szConfigManager.Destroy(ctx)) }()
 
@@ -399,14 +395,14 @@ func setupSenzingConfiguration() error {
 		return szConfigManager.AddConfig(ctx, configDefinition, configComment)
 	})
 	if err != nil {
-		panic(err)
+		return fmt.Errorf("failed to szConfigManager.AddConfig(). Error: %w", err)
 	}
 
 	_, err = captureStdout(func() error {
 		return szConfigManager.SetDefaultConfigID(ctx, configID)
 	})
 	if err != nil {
-		panic(err)
+		return fmt.Errorf("failed to szConfigManager.SetDefaultConfigID(). Error: %w", err)
 	}
 
 	return err

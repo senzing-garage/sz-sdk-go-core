@@ -19,7 +19,8 @@ import (
 
 func TestParameters_Szengine_AddRecord(test *testing.T) {
 	ctx := context.TODO()
-	szEngine := getVerboseTestObject(ctx, test)
+	szEngine, err := getVerboseTestObject(ctx, test)
+	require.NoError(test, err)
 	flags := senzing.SzWithoutInfo
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],

@@ -194,30 +194,26 @@ func demonstrateSenzingFunctions(ctx context.Context, szAbstractFactory senzing.
 // ----------------------------------------------------------------------------
 
 func copyDatabase() (string, error) {
+	var result string
 
 	// Construct SQLite database URL.
 
 	testDirectoryPath := getTestDirectoryPath()
 	dbTargetPath, err := filepath.Abs(filepath.Join(testDirectoryPath, "G2C.db"))
 	if err != nil {
-		err = fmt.Errorf("failed to make target database path (%s) absolute: %w",
-			dbTargetPath, err)
-		return "", err
+		return result, fmt.Errorf("failed to make target database path (%s) absolute. Error: %w", dbTargetPath, err)
 	}
-	result := fmt.Sprintf("sqlite3://na:na@nowhere/%s", dbTargetPath)
+	result = fmt.Sprintf("sqlite3://na:na@nowhere/%s", dbTargetPath)
 
 	// Copy template file to test directory.
 
 	databaseTemplatePath, err := filepath.Abs(getDatabaseTemplatePath())
 	if err != nil {
-		err = fmt.Errorf("failed to obtain absolute path to database file (%s): %s",
-			databaseTemplatePath, err.Error())
-		return "", err
+		return result, fmt.Errorf("failed to obtain absolute path to database file (%s): %s", databaseTemplatePath, err.Error())
 	}
 	_, _, err = fileutil.CopyFile(databaseTemplatePath, testDirectoryPath, true) // Copy the SQLite database file.
 	if err != nil {
-		return result, fmt.Errorf("setup failed to copy template database (%v) to target path (%v): %w",
-			databaseTemplatePath, testDirectoryPath, err)
+		return result, fmt.Errorf("setup failed to copy template database (%v) to target path (%v): %w", databaseTemplatePath, testDirectoryPath, err)
 	}
 
 	return result, nil
@@ -241,11 +237,11 @@ func getLogger(ctx context.Context) (logging.Logging, error) {
 
 func getSettings(databaseURL string) (string, error) {
 	configAttrMap := map[string]string{"databaseUrl": databaseURL}
-	settings, err := settings.BuildSimpleSettingsUsingMap(configAttrMap)
+	result, err := settings.BuildSimpleSettingsUsingMap(configAttrMap)
 	if err != nil {
-		return "", err
+		return result, err
 	}
-	return settings, err
+	return result, err
 }
 
 func getTestDirectoryPath() string {
