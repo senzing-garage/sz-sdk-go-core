@@ -29,7 +29,7 @@ import (
 	"github.com/senzing-garage/go-observing/notifier"
 	"github.com/senzing-garage/go-observing/observer"
 	"github.com/senzing-garage/go-observing/subject"
-	"github.com/senzing-garage/sz-sdk-go-core/helpers"
+	"github.com/senzing-garage/sz-sdk-go-core/helper"
 	"github.com/senzing-garage/sz-sdk-go/szconfigmanager"
 	"github.com/senzing-garage/sz-sdk-go/szerror"
 )
@@ -529,7 +529,7 @@ func (client *Szconfigmanager) setDefaultConfigID(ctx context.Context, configID 
 // Get the Logger singleton.
 func (client *Szconfigmanager) getLogger() logging.Logging {
 	if client.logger == nil {
-		client.logger = helpers.GetLogger(ComponentID, szconfigmanager.IDMessages, baseCallerSkip)
+		client.logger = helper.GetLogger(ComponentID, szconfigmanager.IDMessages, baseCallerSkip)
 	}
 	return client.logger
 }
@@ -537,7 +537,7 @@ func (client *Szconfigmanager) getLogger() logging.Logging {
 // Get the Messenger singleton.
 func (client *Szconfigmanager) getMessenger() messenger.Messenger {
 	if client.messenger == nil {
-		client.messenger = helpers.GetMessenger(ComponentID, szconfigmanager.IDMessages, baseCallerSkip)
+		client.messenger = helper.GetMessenger(ComponentID, szconfigmanager.IDMessages, baseCallerSkip)
 	}
 	return client.messenger
 }

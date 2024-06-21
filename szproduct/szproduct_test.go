@@ -13,7 +13,7 @@ import (
 	"github.com/senzing-garage/go-helpers/settings"
 	"github.com/senzing-garage/go-logging/logging"
 	"github.com/senzing-garage/go-observing/observer"
-	"github.com/senzing-garage/sz-sdk-go-core/helpers"
+	"github.com/senzing-garage/sz-sdk-go-core/helper"
 	"github.com/senzing-garage/sz-sdk-go/senzing"
 	"github.com/senzing-garage/sz-sdk-go/szerror"
 	"github.com/senzing-garage/sz-sdk-go/szproduct"
@@ -281,7 +281,7 @@ func TestMain(m *testing.M) {
 
 func setup() error {
 	var err error
-	logger = helpers.GetLogger(ComponentID, szproduct.IDMessages, baseCallerSkip)
+	logger = helper.GetLogger(ComponentID, szproduct.IDMessages, baseCallerSkip)
 	osenvLogLevel := os.Getenv("SENZING_LOG_LEVEL")
 	if len(osenvLogLevel) > 0 {
 		logLevel = osenvLogLevel

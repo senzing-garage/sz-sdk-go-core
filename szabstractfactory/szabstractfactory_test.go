@@ -11,7 +11,7 @@ import (
 	"github.com/senzing-garage/go-helpers/fileutil"
 	"github.com/senzing-garage/go-helpers/settings"
 	"github.com/senzing-garage/go-logging/logging"
-	"github.com/senzing-garage/sz-sdk-go-core/helpers"
+	"github.com/senzing-garage/sz-sdk-go-core/helper"
 	"github.com/senzing-garage/sz-sdk-go/senzing"
 	"github.com/senzing-garage/sz-sdk-go/szconfig"
 	"github.com/stretchr/testify/require"
@@ -187,7 +187,7 @@ func TestMain(m *testing.M) {
 
 func setup() error {
 	var err error
-	logger = helpers.GetLogger(ComponentID, szconfig.IDMessages, baseCallerSkip)
+	logger = helper.GetLogger(ComponentID, szconfig.IDMessages, baseCallerSkip)
 	err = setupDirectories()
 	if err != nil {
 		return fmt.Errorf("failed to set up directories. Error: %w", err)
