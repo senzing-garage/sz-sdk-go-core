@@ -543,7 +543,7 @@ func (client *Szengine) FindNetworkByEntityID(ctx context.Context, entityIDs str
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
-				"entityList": entityIDs,
+				"entityIDs": entityIDs,
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8013, err, details)
 		}()
@@ -582,7 +582,7 @@ func (client *Szengine) FindNetworkByRecordID(ctx context.Context, recordKeys st
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
-				"recordList": recordKeys,
+				"recordKeys": recordKeys,
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8014, err, details)
 		}()
@@ -910,7 +910,7 @@ func (client *Szengine) GetVirtualEntityByRecordID(ctx context.Context, recordKe
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
-				"recordList": recordKeys}
+				"recordKeys": recordKeys}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8023, err, details)
 		}()
 	}

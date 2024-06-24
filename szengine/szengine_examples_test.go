@@ -208,7 +208,7 @@ func ExampleSzengine_FetchNext() {
 }
 
 func ExampleSzengine_FindInterestingEntitiesByEntityID() {
-	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
 	szEngine := getSzEngineExample(ctx)
 	entityID := getEntityIDForRecord("CUSTOMERS", "1001")
@@ -222,7 +222,7 @@ func ExampleSzengine_FindInterestingEntitiesByEntityID() {
 }
 
 func ExampleSzengine_FindInterestingEntitiesByRecordID() {
-	// For more information, visit https://github.com/senzing-garage/g2-sdk-go-base/blob/main/g2engine/g2engine_examples_test.go
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
 	szEngine := getSzEngineExample(ctx)
 	dataSourceCode := "CUSTOMERS"
