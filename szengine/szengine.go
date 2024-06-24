@@ -534,9 +534,9 @@ func (client *Szengine) FindNetworkByEntityID(ctx context.Context, entityIDs str
 	var result string
 	if client.isTrace {
 		entryTime := time.Now()
-		client.traceEntry(27, entityIDs, maxDegrees, buildOutDegree, maxDegrees, flags)
+		client.traceEntry(27, entityIDs, maxDegrees, buildOutDegree, buildOutMaxEntities, flags)
 		defer func() {
-			client.traceExit(28, entityIDs, maxDegrees, buildOutDegree, maxDegrees, flags, result, err, time.Since(entryTime))
+			client.traceExit(28, entityIDs, maxDegrees, buildOutDegree, buildOutMaxEntities, flags, result, err, time.Since(entryTime))
 		}()
 	}
 	result, err = client.findNetworkByEntityIDV2(ctx, entityIDs, maxDegrees, buildOutDegree, buildOutMaxEntities, flags)
@@ -573,9 +573,9 @@ func (client *Szengine) FindNetworkByRecordID(ctx context.Context, recordKeys st
 	var result string
 	if client.isTrace {
 		entryTime := time.Now()
-		client.traceEntry(39, recordKeys, maxDegrees, buildOutDegree, maxDegrees, flags)
+		client.traceEntry(39, recordKeys, maxDegrees, buildOutDegree, buildOutMaxEntities, flags)
 		defer func() {
-			client.traceExit(40, recordKeys, maxDegrees, buildOutDegree, maxDegrees, flags, result, err, time.Since(entryTime))
+			client.traceExit(40, recordKeys, maxDegrees, buildOutDegree, buildOutMaxEntities, flags, result, err, time.Since(entryTime))
 		}()
 	}
 	result, err = client.findNetworkByRecordIDV2(ctx, recordKeys, maxDegrees, buildOutDegree, buildOutMaxEntities, flags)
