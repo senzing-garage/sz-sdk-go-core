@@ -31,7 +31,7 @@ import (
 	"github.com/senzing-garage/go-observing/subject"
 	"github.com/senzing-garage/sz-sdk-go-core/helper"
 	"github.com/senzing-garage/sz-sdk-go/szerror"
-	szproductapi "github.com/senzing-garage/sz-sdk-go/szproduct"
+	"github.com/senzing-garage/sz-sdk-go/szproduct"
 )
 
 type Szproduct struct {
@@ -174,7 +174,7 @@ func (client *Szproduct) Initialize(ctx context.Context, instanceName string, se
 			details := map[string]string{
 				"instanceName":   instanceName,
 				"settings":       settings,
-				"verboseLogging": strconv.FormatInt(verboseLogging, 10),
+				"verboseLogging": strconv.FormatInt(verboseLogging, baseTen),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8002, err, details)
 		}()
@@ -349,7 +349,7 @@ func (client *Szproduct) init(ctx context.Context, instanceName string, settings
 // Get the Logger singleton.
 func (client *Szproduct) getLogger() logging.Logging {
 	if client.logger == nil {
-		client.logger = helper.GetLogger(ComponentID, szproductapi.IDMessages, baseCallerSkip)
+		client.logger = helper.GetLogger(ComponentID, szproduct.IDMessages, baseCallerSkip)
 	}
 	return client.logger
 }
@@ -357,7 +357,7 @@ func (client *Szproduct) getLogger() logging.Logging {
 // Get the Messenger singleton.
 func (client *Szproduct) getMessenger() messenger.Messenger {
 	if client.messenger == nil {
-		client.messenger = helper.GetMessenger(ComponentID, szproductapi.IDMessages, baseCallerSkip)
+		client.messenger = helper.GetMessenger(ComponentID, szproduct.IDMessages, baseCallerSkip)
 	}
 	return client.messenger
 }

@@ -32,7 +32,7 @@ import (
 	"github.com/senzing-garage/go-observing/subject"
 	"github.com/senzing-garage/sz-sdk-go-core/helper"
 	"github.com/senzing-garage/sz-sdk-go/senzing"
-	szdiagnosticapi "github.com/senzing-garage/sz-sdk-go/szdiagnostic"
+	"github.com/senzing-garage/sz-sdk-go/szdiagnostic"
 	"github.com/senzing-garage/sz-sdk-go/szerror"
 )
 
@@ -526,7 +526,7 @@ func (client *Szdiagnostic) reinit(ctx context.Context, configID int64) error {
 // Get the Logger singleton.
 func (client *Szdiagnostic) getLogger() logging.Logging {
 	if client.logger == nil {
-		client.logger = helper.GetLogger(ComponentID, szdiagnosticapi.IDMessages, baseCallerSkip)
+		client.logger = helper.GetLogger(ComponentID, szdiagnostic.IDMessages, baseCallerSkip)
 	}
 	return client.logger
 }
@@ -534,7 +534,7 @@ func (client *Szdiagnostic) getLogger() logging.Logging {
 // Get the Messenger singleton.
 func (client *Szdiagnostic) getMessenger() messenger.Messenger {
 	if client.messenger == nil {
-		client.messenger = helper.GetMessenger(ComponentID, szdiagnosticapi.IDMessages, baseCallerSkip)
+		client.messenger = helper.GetMessenger(ComponentID, szdiagnostic.IDMessages, baseCallerSkip)
 	}
 	return client.messenger
 }

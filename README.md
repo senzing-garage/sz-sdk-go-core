@@ -41,8 +41,8 @@ Other implementations of the [sz-sdk-go]
 interface include:
 
 - [sz-sdk-go-mock] - for unit testing calls to the Senzing Go SDK
-- [sz-sdk-go-grpc] - for  calling Senzing SDK APIs over [gRPC]
-- [go-sdk-abstract-factory] - An [abstract factory pattern]for switching among implementations
+- [sz-sdk-go-grpc] - for calling Senzing SDK APIs over [gRPC]
+- [go-sdk-abstract-factory] - An [abstract factory pattern] for switching among implementations
 
 ## Use
 
@@ -55,17 +55,17 @@ interface include:
 1. [Examples]
 1. [Package reference]
 
-[Go]: https://go.dev/
-[Senzing]: https://senzing.com/
-[Senzing Quick Start guides]: https://docs.senzing.com/quickstart/
-[Senzing Garage]: https://github.com/senzing-garage-garage
-[sz-sdk-go]: https://github.com/senzing-garage/sz-sdk-go
-[sz-sdk-go-mock]: https://github.com/senzing-garage/sz-sdk-go-mock
-[sz-sdk-go-grpc]: https://github.com/senzing-garage/sz-sdk-go-grpc
-[go-sdk-abstract-factory]: https://github.com/senzing-garage/go-sdk-abstract-factory
 [abstract factory pattern]: https://en.wikipedia.org/wiki/Abstract_factory_pattern
-[gRPC]: https://grpc.io/
 [Development]: docs/development.md
 [Errors]: docs/errors.md
 [Examples]: docs/examples.md
+[go-sdk-abstract-factory]: https://github.com/senzing-garage/go-sdk-abstract-factory
+[Go]: https://go.dev/
+[gRPC]: https://grpc.io/
 [Package reference]: https://pkg.go.dev/github.com/senzing-garage/sz-sdk-go-core
+[Senzing Garage]: https://github.com/senzing-garage-garage
+[Senzing Quick Start guides]: https://docs.senzing.com/quickstart/
+[Senzing]: https://senzing.com/
+[sz-sdk-go-grpc]: https://github.com/senzing-garage/sz-sdk-go-grpc
+[sz-sdk-go-mock]: https://github.com/senzing-garage/sz-sdk-go-mock
+[sz-sdk-go]: https://github.com/senzing-garage/sz-sdk-go

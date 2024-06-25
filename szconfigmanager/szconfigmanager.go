@@ -590,7 +590,7 @@ Input
   - ctx: A context to control lifecycle.
 */
 func (client *Szconfigmanager) clearLastException(ctx context.Context) error {
-	// _DLEXPORT void G2Config_clearLastException()
+	// _DLEXPORT void G2Config_clearLastException();
 	_ = ctx
 	var err error
 	if client.isTrace {
