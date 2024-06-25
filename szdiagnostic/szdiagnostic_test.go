@@ -14,14 +14,12 @@ import (
 	"github.com/senzing-garage/go-helpers/record"
 	"github.com/senzing-garage/go-helpers/settings"
 	"github.com/senzing-garage/go-helpers/truthset"
-	"github.com/senzing-garage/go-logging/logging"
 	"github.com/senzing-garage/go-observing/observer"
 	"github.com/senzing-garage/sz-sdk-go-core/helper"
 	"github.com/senzing-garage/sz-sdk-go-core/szconfig"
 	"github.com/senzing-garage/sz-sdk-go-core/szconfigmanager"
 	"github.com/senzing-garage/sz-sdk-go-core/szengine"
 	"github.com/senzing-garage/sz-sdk-go/senzing"
-	"github.com/senzing-garage/sz-sdk-go/szdiagnostic"
 	"github.com/senzing-garage/sz-sdk-go/szerror"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -40,8 +38,7 @@ const (
 
 var (
 	defaultConfigID   int64
-	logger            logging.Logging
-	logLevel          = "INFO"
+	logLevel          = helper.GetEnv("SENZING_LOG_LEVEL", "INFO")
 	observerSingleton = &observer.NullObserver{
 		ID:       "Observer 1",
 		IsSilent: true,
@@ -341,7 +338,7 @@ func getSzDiagnostic(ctx context.Context) (*Szdiagnostic, error) {
 	return szDiagnosticSingleton, err
 }
 
-func getSzEngine(ctx context.Context) (*szengine.Szengine, error) {
+func getSzEngine(ctx context.Context) (senzing.SzEngine, error) {
 	var err error
 	if szEngineSingleton == nil {
 		settings, err := getSettings()
@@ -439,11 +436,6 @@ func TestMain(m *testing.M) {
 
 func setup() error {
 	var err error
-	logger = helper.GetLogger(ComponentID, szdiagnostic.IDMessages, baseCallerSkip)
-	osenvLogLevel := os.Getenv("SENZING_LOG_LEVEL")
-	if len(osenvLogLevel) > 0 {
-		logLevel = osenvLogLevel
-	}
 	err = setupDirectories()
 	if err != nil {
 		return fmt.Errorf("Failed to set up directories. Error: %w", err)
@@ -562,7 +554,6 @@ func setupSenzingConfiguration() error {
 	if err != nil {
 		return fmt.Errorf("failed to szConfigManager.AddConfig(). Error: %w", err)
 	}
-
 	err = szConfigManager.SetDefaultConfigID(ctx, configID)
 	if err != nil {
 		return fmt.Errorf("failed to szConfigManager.SetDefaultConfigID(). Error: %w", err)
