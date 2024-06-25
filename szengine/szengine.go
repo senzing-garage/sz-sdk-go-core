@@ -2135,7 +2135,7 @@ func (client *Szengine) processRedoRecord(ctx context.Context, redoRecord string
 	defer C.free(unsafe.Pointer(redoRecordForC))
 	result := C.G2_processRedoRecord(redoRecordForC)
 	if result != noError {
-		err = client.newError(ctx, 4044, result)
+		err = client.newError(ctx, 4044, redoRecord, result)
 	}
 	return "{}", err
 }
@@ -2161,7 +2161,7 @@ func (client *Szengine) processRedoRecordWithInfo(ctx context.Context, redoRecor
 	defer C.free(unsafe.Pointer(redoRecordForC))
 	result := C.G2_processRedoRecordWithInfo_helper(redoRecordForC)
 	if result.returnCode != noError {
-		err = client.newError(ctx, 4045, result.returnCode)
+		err = client.newError(ctx, 4045, redoRecord, result.returnCode)
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))

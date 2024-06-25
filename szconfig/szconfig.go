@@ -534,7 +534,7 @@ func (client *Szconfig) listDataSources(ctx context.Context, configHandle uintpt
 	var resultResponse string
 	result := C.G2Config_listDataSources_helper(C.uintptr_t(configHandle))
 	if result.returnCode != noError {
-		err = client.newError(ctx, 4008, result.returnCode, result)
+		err = client.newError(ctx, 4008, configHandle, result.returnCode)
 	}
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
