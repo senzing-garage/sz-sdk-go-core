@@ -2115,6 +2115,18 @@ func (client *Szengine) initWithConfigID(ctx context.Context, instanceName strin
 	return err
 }
 
+func (client *Szengine) primeEngine(ctx context.Context) error {
+	//  _DLEXPORT int G2_primeEngine();
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	var err error
+	result := C.G2_primeEngine()
+	if result != noError {
+		err = client.newError(ctx, 4043, result)
+	}
+	return err
+}
+
 /*
 The processRedoRecord method processes given redo record.
 Calling processRedoRecord() has the potential to create more redo records in certain situations.
@@ -2166,18 +2178,6 @@ func (client *Szengine) processRedoRecordWithInfo(ctx context.Context, redoRecor
 	resultResponse = C.GoString(result.response)
 	C.G2GoHelper_free(unsafe.Pointer(result.response))
 	return resultResponse, err
-}
-
-func (client *Szengine) primeEngine(ctx context.Context) error {
-	//  _DLEXPORT int G2_primeEngine();
-	runtime.LockOSThread()
-	defer runtime.UnlockOSThread()
-	var err error
-	result := C.G2_primeEngine()
-	if result != noError {
-		err = client.newError(ctx, 4043, result)
-	}
-	return err
 }
 
 /*
