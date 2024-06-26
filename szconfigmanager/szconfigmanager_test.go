@@ -56,7 +56,7 @@ func TestSzconfigmanager_AddConfig(test *testing.T) {
 	require.NoError(test, err)
 	configHandle, err := szConfig.CreateConfig(ctx)
 	require.NoError(test, err)
-	dataSourceCode := "GO_TEST_" + strconv.FormatInt(now.Unix(), 10)
+	dataSourceCode := "GO_TEST_" + strconv.FormatInt(now.Unix(), baseTen)
 	_, err = szConfig.AddDataSource(ctx, configHandle, dataSourceCode)
 	require.NoError(test, err)
 	configDefinition, err := szConfig.ExportConfig(ctx, configHandle)

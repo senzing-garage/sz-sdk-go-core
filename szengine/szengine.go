@@ -2500,7 +2500,7 @@ func (client *Szengine) traceExit(errorNumber int, details ...interface{}) {
 }
 
 func formatEntityID(entityID int64) string {
-	return strconv.FormatInt(entityID, 10)
+	return strconv.FormatInt(entityID, baseTen)
 }
 
 // --- Errors -----------------------------------------------------------------

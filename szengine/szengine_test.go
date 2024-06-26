@@ -2014,12 +2014,12 @@ func getEntityIDForRecord(datasource string, id string) int64 {
 
 func getEntityIDString(record record.Record) string {
 	entityID := getEntityID(record)
-	return strconv.FormatInt(entityID, 10)
+	return strconv.FormatInt(entityID, baseTen)
 }
 
 func getEntityIDStringForRecord(datasource string, id string) string {
 	entityID := getEntityIDForRecord(datasource, id)
-	return strconv.FormatInt(entityID, 10)
+	return strconv.FormatInt(entityID, baseTen)
 }
 
 func getSettings() (string, error) {

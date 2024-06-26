@@ -10,6 +10,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 -
 
+## [0.7.4] - 2024-06-26
+
+### Changed in 0.7.4
+
+- Updated dependencies
+- Included `parametertests` spike
+- Synchronized with [sz-sdk-go-grpc](https://github.com/senzing-garage/sz-sdk-go-grpc) and [sz-sdk-go-mock](https://github.com/senzing-garage/sz-sdk-go-mock)
+
 ## [0.7.3] - 2024-06-13
 
 ### Changed in 0.7.3
