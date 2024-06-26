@@ -19,7 +19,8 @@ import (
 
 func TestParameters_Szengine_AddRecord(test *testing.T) {
 	ctx := context.TODO()
-	szEngine := getVerboseTestObject(ctx, test)
+	szEngine, err := getVerboseTestObject(ctx, test)
+	require.NoError(test, err)
 	flags := senzing.SzWithoutInfo
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
@@ -30,13 +31,21 @@ func TestParameters_Szengine_AddRecord(test *testing.T) {
 			return szEngine.AddRecord(ctx, record.DataSource, record.ID, record.JSON, flags)
 		})
 		require.NoError(test, err)
-		test.Logf("\n\n>>>>>>>>>  stdout:\n%s\n<<<<<<<<<\n", stdOut)
+		inspectStdout(stdOut)
 	}
 	for _, record := range records {
 		stdOut, _, err := captureStdoutReturningString(func() (string, error) {
 			return szEngine.DeleteRecord(ctx, record.DataSource, record.ID, flags)
 		})
 		require.NoError(test, err)
-		test.Logf("\n\n>>>>>>>>>  stdout:\n%s\n<<<<<<<<<\n", stdOut)
+		inspectStdout(stdOut)
 	}
+}
+
+// ----------------------------------------------------------------------------
+// utility functions
+// ----------------------------------------------------------------------------
+
+func inspectStdout(stdout string) {
+	_ = stdout
 }

@@ -17,7 +17,7 @@ import (
 func ExampleSzconfig_AddDataSource() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig_examples_test.go
 	ctx := context.TODO()
-	szConfig := getSzConfig(ctx)
+	szConfig := getSzConfigExample(ctx)
 	configHandle, err := szConfig.CreateConfig(ctx)
 	if err != nil {
 		fmt.Println(err)
@@ -34,7 +34,7 @@ func ExampleSzconfig_AddDataSource() {
 func ExampleSzconfig_CloseConfig() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig_examples_test.go
 	ctx := context.TODO()
-	szConfig := getSzConfig(ctx)
+	szConfig := getSzConfigExample(ctx)
 	configHandle, err := szConfig.CreateConfig(ctx)
 	if err != nil {
 		fmt.Println(err)
@@ -49,7 +49,7 @@ func ExampleSzconfig_CloseConfig() {
 func ExampleSzconfig_CreateConfig() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig_examples_test.go
 	ctx := context.TODO()
-	szConfig := getSzConfig(ctx)
+	szConfig := getSzConfigExample(ctx)
 	configHandle, err := szConfig.CreateConfig(ctx)
 	if err != nil {
 		fmt.Println(err)
@@ -61,7 +61,7 @@ func ExampleSzconfig_CreateConfig() {
 func ExampleSzconfig_DeleteDataSource() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig_examples_test.go
 	ctx := context.TODO()
-	szConfig := getSzConfig(ctx)
+	szConfig := getSzConfigExample(ctx)
 	configHandle, err := szConfig.CreateConfig(ctx)
 	if err != nil {
 		fmt.Println(err)
@@ -77,7 +77,7 @@ func ExampleSzconfig_DeleteDataSource() {
 func ExampleSzconfig_ExportConfig() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig_examples_test.go
 	ctx := context.TODO()
-	szConfig := getSzConfig(ctx)
+	szConfig := getSzConfigExample(ctx)
 	configHandle, err := szConfig.CreateConfig(ctx)
 	if err != nil {
 		fmt.Println(err)
@@ -93,7 +93,7 @@ func ExampleSzconfig_ExportConfig() {
 func ExampleSzconfig_GetDataSources() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig_examples_test.go
 	ctx := context.TODO()
-	szConfig := getSzConfig(ctx)
+	szConfig := getSzConfigExample(ctx)
 	configHandle, err := szConfig.CreateConfig(ctx)
 	if err != nil {
 		fmt.Println(err)
@@ -109,7 +109,7 @@ func ExampleSzconfig_GetDataSources() {
 func ExampleSzconfig_ImportConfig() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig_examples_test.go
 	ctx := context.TODO()
-	szConfig := getSzConfig(ctx)
+	szConfig := getSzConfigExample(ctx)
 	mockConfigHandle, err := szConfig.CreateConfig(ctx)
 	if err != nil {
 		fmt.Println(err)
@@ -133,8 +133,11 @@ func ExampleSzconfig_ImportConfig() {
 func ExampleSzconfig_SetLogLevel() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig_examples_test.go
 	ctx := context.TODO()
-	szConfig := getSzConfig(ctx)
-	err := szConfig.SetLogLevel(ctx, logging.LevelInfoName)
+	szConfig, err := getSzConfig(ctx)
+	if err != nil {
+		fmt.Println(err)
+	}
+	err = szConfig.SetLogLevel(ctx, logging.LevelInfoName)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -144,7 +147,10 @@ func ExampleSzconfig_SetLogLevel() {
 func ExampleSzconfig_SetObserverOrigin() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig_examples_test.go
 	ctx := context.TODO()
-	szConfig := getSzConfig(ctx)
+	szConfig, err := getSzConfig(ctx)
+	if err != nil {
+		fmt.Println(err)
+	}
 	origin := "Machine: nn; Task: UnitTest"
 	szConfig.SetObserverOrigin(ctx, origin)
 	// Output:
@@ -153,7 +159,10 @@ func ExampleSzconfig_SetObserverOrigin() {
 func ExampleSzconfig_GetObserverOrigin() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig_examples_test.go
 	ctx := context.TODO()
-	szConfig := getSzConfig(ctx)
+	szConfig, err := getSzConfig(ctx)
+	if err != nil {
+		fmt.Println(err)
+	}
 	origin := "Machine: nn; Task: UnitTest"
 	szConfig.SetObserverOrigin(ctx, origin)
 	result := szConfig.GetObserverOrigin(ctx)
@@ -168,7 +177,7 @@ func ExampleSzconfig_GetObserverOrigin() {
 func ExampleSzconfig_Initialize() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig_examples_test.go
 	ctx := context.TODO()
-	szConfig := getSzConfig(ctx)
+	szConfig := &Szconfig{}
 	instanceName := "Test name"
 	settings, err := getSettings()
 	if err != nil {
@@ -185,10 +194,22 @@ func ExampleSzconfig_Initialize() {
 func ExampleSzconfig_Destroy() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig_examples_test.go
 	ctx := context.TODO()
-	szConfig := getSzConfig(ctx)
+	szConfig := getSzConfigExample(ctx)
 	err := szConfig.Destroy(ctx)
 	if err != nil {
 		fmt.Println(err)
 	}
 	// Output:
+}
+
+// ----------------------------------------------------------------------------
+// Helper functions
+// ----------------------------------------------------------------------------
+
+func getSzConfigExample(ctx context.Context) senzing.SzConfig {
+	result, err := getSzConfig(ctx)
+	if err != nil {
+		panic(err)
+	}
+	return result
 }

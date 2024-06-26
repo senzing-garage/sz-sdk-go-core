@@ -29,7 +29,7 @@ import (
 	"github.com/senzing-garage/go-observing/notifier"
 	"github.com/senzing-garage/go-observing/observer"
 	"github.com/senzing-garage/go-observing/subject"
-	"github.com/senzing-garage/sz-sdk-go-core/helpers"
+	"github.com/senzing-garage/sz-sdk-go-core/helper"
 	"github.com/senzing-garage/sz-sdk-go/szconfigmanager"
 	"github.com/senzing-garage/sz-sdk-go/szerror"
 )
@@ -44,7 +44,9 @@ type Szconfigmanager struct {
 
 const (
 	baseCallerSkip       = 4
+	baseTen              = 10
 	initialByteArraySize = 65535
+	noError              = 0
 )
 
 // ----------------------------------------------------------------------------
@@ -63,27 +65,16 @@ Output
   - A configuration identifier.
 */
 func (client *Szconfigmanager) AddConfig(ctx context.Context, configDefinition string, configComment string) (int64, error) {
-	// _DLEXPORT int G2ConfigMgr_addConfig(const char* configStr, const char* configComments, long long* configID);
-	runtime.LockOSThread()
-	defer runtime.UnlockOSThread()
 	var err error
-	var resultConfigID int64
-	entryTime := time.Now()
+	var result int64
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(1, configDefinition, configComment)
 		defer func() {
-			client.traceExit(2, configDefinition, configComment, resultConfigID, err, time.Since(entryTime))
+			client.traceExit(2, configDefinition, configComment, result, err, time.Since(entryTime))
 		}()
 	}
-	configDefinitionForC := C.CString(configDefinition)
-	defer C.free(unsafe.Pointer(configDefinitionForC))
-	configCommentForC := C.CString(configComment)
-	defer C.free(unsafe.Pointer(configCommentForC))
-	result := C.G2ConfigMgr_addConfig_helper(configDefinitionForC, configCommentForC)
-	if result.returnCode != 0 {
-		err = client.newError(ctx, 4001, configDefinition, configComment, result.returnCode, result, time.Since(entryTime))
-	}
-	resultConfigID = int64(C.longlong(result.configID))
+	result, err = client.addConfig(ctx, configDefinition, configComment)
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -92,7 +83,7 @@ func (client *Szconfigmanager) AddConfig(ctx context.Context, configDefinition s
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8001, err, details)
 		}()
 	}
-	return resultConfigID, err
+	return result, err
 }
 
 /*
@@ -103,19 +94,13 @@ Input
   - ctx: A context to control lifecycle.
 */
 func (client *Szconfigmanager) Destroy(ctx context.Context) error {
-	// _DLEXPORT int G2Config_destroy();
-	runtime.LockOSThread()
-	defer runtime.UnlockOSThread()
 	var err error
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(5)
 		defer func() { client.traceExit(6, err, time.Since(entryTime)) }()
 	}
-	result := C.G2ConfigMgr_destroy()
-	if result != 0 {
-		err = client.newError(ctx, 4002, result, time.Since(entryTime))
-	}
+	err = client.destroy(ctx)
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
@@ -137,33 +122,25 @@ Output
     See the example output.
 */
 func (client *Szconfigmanager) GetConfig(ctx context.Context, configID int64) (string, error) {
-	// _DLEXPORT int G2ConfigMgr_getConfig(const long long configID, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
-	runtime.LockOSThread()
-	defer runtime.UnlockOSThread()
 	var err error
-	var resultResponse string
-	entryTime := time.Now()
+	var result string
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(7, configID)
-		defer func() { client.traceExit(8, configID, resultResponse, err, time.Since(entryTime)) }()
+		defer func() { client.traceExit(8, configID, result, err, time.Since(entryTime)) }()
 	}
-	result := C.G2ConfigMgr_getConfig_helper(C.longlong(configID))
-	if result.returnCode != 0 {
-		err = client.newError(ctx, 4003, configID, result.returnCode, result, time.Since(entryTime))
-	}
-	resultResponse = C.GoString(result.response)
-	C.G2GoHelper_free(unsafe.Pointer(result.response))
+	result, err = client.getConfig(ctx, configID)
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8003, err, details)
 		}()
 	}
-	return resultResponse, err
+	return result, err
 }
 
 /*
-The GetConfigList method retrieves a list of Senzing configurations from the Senzing database.
+The GetConfigs method retrieves a list of Senzing configurations from the Senzing database.
 
 Input
   - ctx: A context to control lifecycle.
@@ -173,29 +150,21 @@ Output
     See the example output.
 */
 func (client *Szconfigmanager) GetConfigs(ctx context.Context) (string, error) {
-	// _DLEXPORT int G2ConfigMgr_getConfigList(char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
-	runtime.LockOSThread()
-	defer runtime.UnlockOSThread()
 	var err error
-	var resultResponse string
-	entryTime := time.Now()
+	var result string
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(9)
-		defer func() { client.traceExit(10, resultResponse, err, time.Since(entryTime)) }()
+		defer func() { client.traceExit(10, result, err, time.Since(entryTime)) }()
 	}
-	result := C.G2ConfigMgr_getConfigList_helper()
-	if result.returnCode != 0 {
-		err = client.newError(ctx, 4004, result.returnCode, result, time.Since(entryTime))
-	}
-	resultResponse = C.GoString(result.response)
-	C.G2GoHelper_free(unsafe.Pointer(result.response))
+	result, err = client.getConfigList(ctx)
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8004, err, details)
 		}()
 	}
-	return resultResponse, err
+	return result, err
 }
 
 /*
@@ -208,28 +177,21 @@ Output
   - A configuration identifier which identifies the current configuration in use.
 */
 func (client *Szconfigmanager) GetDefaultConfigID(ctx context.Context) (int64, error) {
-	//  _DLEXPORT int G2ConfigMgr_getDefaultConfigID(long long* configID);
-	runtime.LockOSThread()
-	defer runtime.UnlockOSThread()
 	var err error
-	var resultConfigID int64
-	entryTime := time.Now()
+	var result int64
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(11)
-		defer func() { client.traceExit(12, resultConfigID, err, time.Since(entryTime)) }()
+		defer func() { client.traceExit(12, result, err, time.Since(entryTime)) }()
 	}
-	result := C.G2ConfigMgr_getDefaultConfigID_helper()
-	if result.returnCode != 0 {
-		err = client.newError(ctx, 4005, result.returnCode, result, time.Since(entryTime))
-	}
-	resultConfigID = int64(C.longlong(result.configID))
+	result, err = client.getDefaultConfigID(ctx)
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8005, err, details)
 		}()
 	}
-	return resultConfigID, err
+	return result, err
 }
 
 /*
@@ -244,23 +206,17 @@ Input
   - newDefaultConfigID: The configuration identifier to use as the default.
 */
 func (client *Szconfigmanager) ReplaceDefaultConfigID(ctx context.Context, currentDefaultConfigID int64, newDefaultConfigID int64) error {
-	// _DLEXPORT int G2ConfigMgr_replaceDefaultConfigID(const long long oldConfigID, const long long newConfigID);
-	runtime.LockOSThread()
-	defer runtime.UnlockOSThread()
 	var err error
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(19, currentDefaultConfigID, newDefaultConfigID)
 		defer func() { client.traceExit(20, currentDefaultConfigID, newDefaultConfigID, err, time.Since(entryTime)) }()
 	}
-	result := C.G2ConfigMgr_replaceDefaultConfigID(C.longlong(currentDefaultConfigID), C.longlong(newDefaultConfigID))
-	if result != 0 {
-		err = client.newError(ctx, 4008, currentDefaultConfigID, newDefaultConfigID, result, time.Since(entryTime))
-	}
+	err = client.replaceDefaultConfigID(ctx, currentDefaultConfigID, newDefaultConfigID)
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
-				"newDefaultConfigID": strconv.FormatInt(newDefaultConfigID, 10),
+				"newDefaultConfigID": strconv.FormatInt(newDefaultConfigID, baseTen),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8007, err, details)
 		}()
@@ -277,23 +233,17 @@ Input
   - configID: The configuration identifier of the Senzing Engine configuration to use as the default.
 */
 func (client *Szconfigmanager) SetDefaultConfigID(ctx context.Context, configID int64) error {
-	// _DLEXPORT int G2ConfigMgr_setDefaultConfigID(const long long configID);
-	runtime.LockOSThread()
-	defer runtime.UnlockOSThread()
 	var err error
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(21, configID)
 		defer func() { client.traceExit(22, configID, err, time.Since(entryTime)) }()
 	}
-	result := C.G2ConfigMgr_setDefaultConfigID(C.longlong(configID))
-	if result != 0 {
-		err = client.newError(ctx, 4009, configID, result, time.Since(entryTime))
-	}
+	err = client.setDefaultConfigID(ctx, configID)
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
-				"configID": strconv.FormatInt(configID, 10),
+				"configID": strconv.FormatInt(configID, baseTen),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8008, err, details)
 		}()
@@ -330,29 +280,19 @@ Input
   - verboseLogging: A flag to enable deeper logging of the G2 processing. 0 for no Senzing logging; 1 for logging.
 */
 func (client *Szconfigmanager) Initialize(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
-	// _DLEXPORT int G2Config_init(const char *moduleName, const char *iniParams, const int verboseLogging);
-	runtime.LockOSThread()
-	defer runtime.UnlockOSThread()
 	var err error
-	entryTime := time.Now()
 	if client.isTrace {
+		entryTime := time.Now()
 		client.traceEntry(17, instanceName, settings, verboseLogging)
 		defer func() { client.traceExit(18, instanceName, settings, verboseLogging, err, time.Since(entryTime)) }()
 	}
-	moduleNameForC := C.CString(instanceName)
-	defer C.free(unsafe.Pointer(moduleNameForC))
-	iniParamsForC := C.CString(settings)
-	defer C.free(unsafe.Pointer(iniParamsForC))
-	result := C.G2ConfigMgr_init(moduleNameForC, iniParamsForC, C.longlong(verboseLogging))
-	if result != 0 {
-		err = client.newError(ctx, 4007, instanceName, settings, verboseLogging, result, time.Since(entryTime))
-	}
+	err = client.init(ctx, instanceName, settings, verboseLogging)
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
 				"instanceName":   instanceName,
 				"settings":       settings,
-				"verboseLogging": strconv.FormatInt(verboseLogging, 10),
+				"verboseLogging": strconv.FormatInt(verboseLogging, baseTen),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8006, err, details)
 		}()
@@ -397,8 +337,6 @@ Input
   - logLevelName: The desired log level. TRACE, DEBUG, INFO, WARN, ERROR, FATAL or PANIC.
 */
 func (client *Szconfigmanager) SetLogLevel(ctx context.Context, logLevelName string) error {
-	runtime.LockOSThread()
-	defer runtime.UnlockOSThread()
 	var err error
 	if client.isTrace {
 		entryTime := time.Now()
@@ -465,6 +403,124 @@ func (client *Szconfigmanager) UnregisterObserver(ctx context.Context, observer 
 }
 
 // ----------------------------------------------------------------------------
+// Private methods for calling the Senzing C API
+// ----------------------------------------------------------------------------
+
+func (client *Szconfigmanager) addConfig(ctx context.Context, configDefinition string, configComment string) (int64, error) {
+	// _DLEXPORT int G2ConfigMgr_addConfig(const char* configStr, const char* configComments, long long* configID);
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	var err error
+	var resultConfigID int64
+	configDefinitionForC := C.CString(configDefinition)
+	defer C.free(unsafe.Pointer(configDefinitionForC))
+	configCommentForC := C.CString(configComment)
+	defer C.free(unsafe.Pointer(configCommentForC))
+	result := C.G2ConfigMgr_addConfig_helper(configDefinitionForC, configCommentForC)
+	if result.returnCode != noError {
+		err = client.newError(ctx, 4001, configDefinition, configComment, result.returnCode, result)
+	}
+	resultConfigID = int64(C.longlong(result.configID))
+	return resultConfigID, err
+}
+
+func (client *Szconfigmanager) destroy(ctx context.Context) error {
+	// _DLEXPORT int G2Config_destroy();
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	var err error
+	result := C.G2ConfigMgr_destroy()
+	if result != noError {
+		err = client.newError(ctx, 4002, result)
+	}
+	return err
+}
+
+func (client *Szconfigmanager) getConfig(ctx context.Context, configID int64) (string, error) {
+	// _DLEXPORT int G2ConfigMgr_getConfig(const long long configID, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	var err error
+	var resultResponse string
+	result := C.G2ConfigMgr_getConfig_helper(C.longlong(configID))
+	if result.returnCode != noError {
+		err = client.newError(ctx, 4003, configID, result.returnCode, result)
+	}
+	resultResponse = C.GoString(result.response)
+	C.G2GoHelper_free(unsafe.Pointer(result.response))
+	return resultResponse, err
+}
+
+func (client *Szconfigmanager) getConfigList(ctx context.Context) (string, error) {
+	// _DLEXPORT int G2ConfigMgr_getConfigList(char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	var err error
+	var resultResponse string
+	result := C.G2ConfigMgr_getConfigList_helper()
+	if result.returnCode != noError {
+		err = client.newError(ctx, 4004, result.returnCode, result)
+	}
+	resultResponse = C.GoString(result.response)
+	C.G2GoHelper_free(unsafe.Pointer(result.response))
+	return resultResponse, err
+}
+
+func (client *Szconfigmanager) getDefaultConfigID(ctx context.Context) (int64, error) {
+	//  _DLEXPORT int G2ConfigMgr_getDefaultConfigID(long long* configID);
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	var err error
+	var resultConfigID int64
+	result := C.G2ConfigMgr_getDefaultConfigID_helper()
+	if result.returnCode != noError {
+		err = client.newError(ctx, 4005, result.returnCode, result)
+	}
+	resultConfigID = int64(C.longlong(result.configID))
+	return resultConfigID, err
+}
+
+func (client *Szconfigmanager) init(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
+	// _DLEXPORT int G2Config_init(const char *moduleName, const char *iniParams, const int verboseLogging);
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	var err error
+	moduleNameForC := C.CString(instanceName)
+	defer C.free(unsafe.Pointer(moduleNameForC))
+	iniParamsForC := C.CString(settings)
+	defer C.free(unsafe.Pointer(iniParamsForC))
+	result := C.G2ConfigMgr_init(moduleNameForC, iniParamsForC, C.longlong(verboseLogging))
+	if result != noError {
+		err = client.newError(ctx, 4006, instanceName, settings, verboseLogging, result)
+	}
+	return err
+}
+
+func (client *Szconfigmanager) replaceDefaultConfigID(ctx context.Context, currentDefaultConfigID int64, newDefaultConfigID int64) error {
+	// _DLEXPORT int G2ConfigMgr_replaceDefaultConfigID(const long long oldConfigID, const long long newConfigID);
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	var err error
+	result := C.G2ConfigMgr_replaceDefaultConfigID(C.longlong(currentDefaultConfigID), C.longlong(newDefaultConfigID))
+	if result != noError {
+		err = client.newError(ctx, 4007, currentDefaultConfigID, newDefaultConfigID, result)
+	}
+	return err
+}
+
+func (client *Szconfigmanager) setDefaultConfigID(ctx context.Context, configID int64) error {
+	// _DLEXPORT int G2ConfigMgr_setDefaultConfigID(const long long configID);
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	var err error
+	result := C.G2ConfigMgr_setDefaultConfigID(C.longlong(configID))
+	if result != noError {
+		err = client.newError(ctx, 4008, configID, result)
+	}
+	return err
+}
+
+// ----------------------------------------------------------------------------
 // Internal methods
 // ----------------------------------------------------------------------------
 
@@ -473,7 +529,7 @@ func (client *Szconfigmanager) UnregisterObserver(ctx context.Context, observer 
 // Get the Logger singleton.
 func (client *Szconfigmanager) getLogger() logging.Logging {
 	if client.logger == nil {
-		client.logger = helpers.GetLogger(ComponentID, szconfigmanager.IDMessages, baseCallerSkip)
+		client.logger = helper.GetLogger(ComponentID, szconfigmanager.IDMessages, baseCallerSkip)
 	}
 	return client.logger
 }
@@ -481,7 +537,7 @@ func (client *Szconfigmanager) getLogger() logging.Logging {
 // Get the Messenger singleton.
 func (client *Szconfigmanager) getMessenger() messenger.Messenger {
 	if client.messenger == nil {
-		client.messenger = helpers.GetMessenger(ComponentID, szconfigmanager.IDMessages, baseCallerSkip)
+		client.messenger = helper.GetMessenger(ComponentID, szconfigmanager.IDMessages, baseCallerSkip)
 	}
 	return client.messenger
 }
@@ -534,7 +590,7 @@ Input
   - ctx: A context to control lifecycle.
 */
 func (client *Szconfigmanager) clearLastException(ctx context.Context) error {
-	// _DLEXPORT void G2Config_clearLastException()
+	// _DLEXPORT void G2Config_clearLastException();
 	_ = ctx
 	var err error
 	if client.isTrace {
