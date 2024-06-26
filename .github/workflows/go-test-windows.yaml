@@ -1,7 +1,6 @@
 name: go test windows
 
-on: [push]
-# on: [pull_request, workflow_dispatch]
+on: [pull_request, workflow_dispatch]
 
 env:
   CGO_ENABLED: 1
