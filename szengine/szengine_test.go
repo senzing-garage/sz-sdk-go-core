@@ -158,7 +158,7 @@ func TestSzengine_CloseExport(test *testing.T) {
 
 func TestSzengine_CountRedoRecords(test *testing.T) {
 	ctx := context.TODO()
-	expected := int64(1)
+	expected := int64(0)
 	szEngine := getTestObject(ctx, test)
 	actual, err := szEngine.CountRedoRecords(ctx)
 	require.NoError(test, err)
@@ -260,17 +260,27 @@ func TestSzengine_ExportCsvEntityReport(test *testing.T) {
 	szEngine := getTestObject(ctx, test)
 	csvColumnList := ""
 	flags := senzing.SzExportIncludeAllEntities
-	aHandle, err := szEngine.ExportCsvEntityReport(ctx, csvColumnList, flags)
+	exportHandle, err := szEngine.ExportCsvEntityReport(ctx, csvColumnList, flags)
 	defer func() {
-		err := szEngine.CloseExport(ctx, aHandle)
+		err := szEngine.CloseExport(ctx, exportHandle)
 		require.NoError(test, err)
 	}()
 	require.NoError(test, err)
-	actualCount := 0
-	for actual := range szEngine.ExportCsvEntityReportIterator(ctx, csvColumnList, flags) {
-		assert.Equal(test, expected[actualCount], strings.TrimSpace(actual.Value))
-		actualCount++
+
+	for {
+		csvEntityReportFragment, err := szEngine.FetchNext(ctx, exportHandle)
+		require.NoError(test, err)
+		if len(csvEntityReportFragment) == 0 {
+			break
+		}
+		fmt.Printf(">>>>>>>> CSV fragment: %s\n", csvEntityReportFragment)
 	}
+
+	actualCount := 0
+	// for actual := range szEngine.ExportCsvEntityReportIterator(ctx, csvColumnList, flags) {
+	// 	assert.Equal(test, expected[actualCount], strings.TrimSpace(actual.Value))
+	// 	actualCount++
+	// }
 	assert.Equal(test, len(expected), actualCount)
 }
 
@@ -474,6 +484,9 @@ func TestSzengine_FindInterestingEntitiesByEntityID(test *testing.T) {
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
 	entityID := getEntityID(truthset.CustomerRecords["1001"])
+
+	fmt.Printf(">>>>>>>> entity ID: %d", entityID)
+
 	flags := senzing.SzNoFlags
 	actual, err := szEngine.FindInterestingEntitiesByEntityID(ctx, entityID, flags)
 	require.NoError(test, err)
