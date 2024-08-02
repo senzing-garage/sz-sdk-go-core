@@ -20,14 +20,14 @@ The Senzing `sz-sdk-go-core` packages provide a [Go]
 language Software Development Kit that wraps the
 Senzing C SDK APIs.
 
-[![Go Reference](https://pkg.go.dev/badge/github.com/senzing-garage/sz-sdk-go-core.svg)](https://pkg.go.dev/github.com/senzing-garage/sz-sdk-go-core)
-[![Go Report Card](https://goreportcard.com/badge/github.com/senzing-garage/sz-sdk-go-core)](https://goreportcard.com/report/github.com/senzing-garage/sz-sdk-go-core)
-[![License](https://img.shields.io/badge/License-Apache2-brightgreen.svg)](https://github.com/senzing-garage/sz-sdk-go-core/blob/main/LICENSE)
+[![Go Reference Badge]][Package reference]
+[![Go Report Card Badge]][Go Report Card]
+[![License Badge]][License]
+[![go-test-linux.yaml Badge]][go-test-linux.yaml]
+[![go-test-darwin.yaml Badge]][go-test-darwin.yaml]
+[![go-test-windows.yaml Badge]][go-test-windows.yaml]
 
-[![gosec.yaml](https://github.com/senzing-garage/sz-sdk-go-core/actions/workflows/gosec.yaml/badge.svg)](https://github.com/senzing-garage/sz-sdk-go-core/actions/workflows/gosec.yaml)
-[![go-test-linux.yaml](https://github.com/senzing-garage/sz-sdk-go-core/actions/workflows/go-test-linux.yaml/badge.svg)](https://github.com/senzing-garage/sz-sdk-go-core/actions/workflows/go-test-linux.yaml)
-[![go-test-darwin.yaml](https://github.com/senzing-garage/sz-sdk-go-core/actions/workflows/go-test-darwin.yaml/badge.svg)](https://github.com/senzing-garage/sz-sdk-go-core/actions/workflows/go-test-darwin.yaml)
-[![go-test-windows.yaml](https://github.com/senzing-garage/sz-sdk-go-core/actions/workflows/go-test-windows.yaml/badge.svg)](https://github.com/senzing-garage/sz-sdk-go-core/actions/workflows/go-test-windows.yaml)
+[![golangci-lint.yaml Badge]][golangci-lint.yaml]
 
 ## Overview
 
@@ -59,11 +59,24 @@ interface include:
 [Development]: docs/development.md
 [Errors]: docs/errors.md
 [Examples]: docs/examples.md
+[Go Reference Badge]: https://pkg.go.dev/badge/github.com/senzing-garage/sz-sdk-go-core.svg
+[Go Report Card Badge]: https://goreportcard.com/badge/github.com/senzing-garage/sz-sdk-go-core
+[Go Report Card]: https://goreportcard.com/report/github.com/senzing-garage/sz-sdk-go-core
 [go-sdk-abstract-factory]: https://github.com/senzing-garage/go-sdk-abstract-factory
-[Go]: https://go.dev/
-[gRPC]: https://grpc.io/
+[go-test-darwin.yaml Badge]: https://github.com/senzing-garage/sz-sdk-go-core/actions/workflows/go-test-darwin.yaml/badge.svg
+[go-test-darwin.yaml]: https://github.com/senzing-garage/sz-sdk-go-core/actions/workflows/go-test-darwin.yaml
+[go-test-linux.yaml Badge]: https://github.com/senzing-garage/sz-sdk-go-core/actions/workflows/go-test-linux.yaml/badge.svg
+[go-test-linux.yaml]: https://github.com/senzing-garage/sz-sdk-go-core/actions/workflows/go-test-linux.yaml
+[go-test-windows.yaml Badge]: https://github.com/senzing-garage/sz-sdk-go-core/actions/workflows/go-test-windows.yaml/badge.svg
+[go-test-windows.yaml]: https://github.com/senzing-garage/sz-sdk-go-core/actions/workflows/go-test-windows.yaml
+[Go]: https://github.com/senzing-garage/knowledge-base/blob/main/WHATIS/go.md
+[golangci-lint.yaml Badge]: https://github.com/senzing-garage/sz-sdk-go-core/actions/workflows/golangci-lint.yaml/badge.svg
+[golangci-lint.yaml]: https://github.com/senzing-garage/sz-sdk-go-core/actions/workflows/golangci-lint.yaml
+[gRPC]: https://github.com/senzing-garage/knowledge-base/blob/main/WHATIS/grpc.md
+[License Badge]: https://img.shields.io/badge/License-Apache2-brightgreen.svg
+[License]: https://github.com/senzing-garage/sz-sdk-go-core/blob/main/LICENSE
 [Package reference]: https://pkg.go.dev/github.com/senzing-garage/sz-sdk-go-core
-[Senzing Garage]: https://github.com/senzing-garage-garage
+[Senzing Garage]: https://github.com/senzing-garage
 [Senzing Quick Start guides]: https://docs.senzing.com/quickstart/
 [Senzing]: https://senzing.com/
 [sz-sdk-go-grpc]: https://github.com/senzing-garage/sz-sdk-go-grpc

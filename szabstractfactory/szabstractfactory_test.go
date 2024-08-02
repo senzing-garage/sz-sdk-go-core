@@ -6,10 +6,13 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+	"time"
 
 	truncator "github.com/aquilax/truncate"
 	"github.com/senzing-garage/go-helpers/fileutil"
 	"github.com/senzing-garage/go-helpers/settings"
+	"github.com/senzing-garage/sz-sdk-go-core/szconfig"
+	"github.com/senzing-garage/sz-sdk-go-core/szconfigmanager"
 	"github.com/senzing-garage/sz-sdk-go/senzing"
 	"github.com/stretchr/testify/require"
 )
@@ -20,6 +23,10 @@ const (
 	instanceName      = "SzAbstractFactory Test"
 	printResults      = false
 	verboseLogging    = senzing.SzNoLogging
+)
+
+var (
+	defaultConfigID int64
 )
 
 // ----------------------------------------------------------------------------
@@ -188,6 +195,10 @@ func setup() error {
 	if err != nil {
 		return fmt.Errorf("failed to set up database. Error: %w", err)
 	}
+	err = setupSenzingConfiguration()
+	if err != nil {
+		return fmt.Errorf("failed to set up Senzing configuration. Error: %w", err)
+	}
 	return err
 }
 
@@ -226,6 +237,76 @@ func setupDirectories() error {
 	if err != nil {
 		return fmt.Errorf("failed to recreate target test directory (%v). Error: %w", testDirectoryPath, err)
 	}
+	return err
+}
+
+func setupSenzingConfiguration() error {
+	ctx := context.TODO()
+	now := time.Now()
+
+	// Create sz objects.
+
+	settings, err := getSettings()
+	if err != nil {
+		return fmt.Errorf("failed to get settings. Error: %w", err)
+	}
+	szConfig := &szconfig.Szconfig{}
+	err = szConfig.Initialize(ctx, instanceName, settings, verboseLogging)
+	if err != nil {
+		return fmt.Errorf("failed to szConfig.Initialize(). Error: %w", err)
+	}
+	defer func() { handleError(szConfig.Destroy(ctx)) }()
+
+	szConfigManager := &szconfigmanager.Szconfigmanager{}
+	err = szConfigManager.Initialize(ctx, instanceName, settings, verboseLogging)
+	if err != nil {
+		return fmt.Errorf("failed to szConfigManager.Initialize(). Error: %w", err)
+	}
+	defer func() { handleError(szConfigManager.Destroy(ctx)) }()
+
+	// Create an in memory Senzing configuration.
+
+	configHandle, err := szConfig.CreateConfig(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to szConfig.CreateConfig(). Error: %w", err)
+	}
+
+	// Add data sources to in-memory Senzing configuration.
+
+	dataSourceCodes := []string{"CUSTOMERS", "REFERENCE", "WATCHLIST"}
+	for _, dataSourceCode := range dataSourceCodes {
+		_, err := szConfig.AddDataSource(ctx, configHandle, dataSourceCode)
+		if err != nil {
+			return fmt.Errorf("failed to szConfig.AddDataSource(). Error: %w", err)
+		}
+	}
+
+	// Create a string representation of the in-memory configuration.
+
+	configDefinition, err := szConfig.ExportConfig(ctx, configHandle)
+	if err != nil {
+		return fmt.Errorf("failed to szConfig.ExportConfig(). Error: %w", err)
+	}
+
+	// Close szConfig in-memory object.
+
+	err = szConfig.CloseConfig(ctx, configHandle)
+	if err != nil {
+		return fmt.Errorf("failed to szConfig.CloseConfig(). Error: %w", err)
+	}
+
+	// Persist the Senzing configuration to the Senzing repository as default.
+
+	configComment := fmt.Sprintf("Created by szdiagnostic_test at %s", now.UTC())
+	configID, err := szConfigManager.AddConfig(ctx, configDefinition, configComment)
+	if err != nil {
+		return fmt.Errorf("failed to szConfigManager.AddConfig(). Error: %w", err)
+	}
+	err = szConfigManager.SetDefaultConfigID(ctx, configID)
+	if err != nil {
+		return fmt.Errorf("failed to szConfigManager.SetDefaultConfigID(). Error: %w", err)
+	}
+	defaultConfigID = configID
 	return err
 }
 

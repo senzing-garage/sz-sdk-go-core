@@ -15,4 +15,4 @@ build-osarch-specific: linux/arm64
 
 .PHONY: only-linux-arm64
 only-linux-arm64:
-	@echo "Only linux-arm64 has this Makefile target."
+	$(info Only linux-arm64 has this Makefile target.)

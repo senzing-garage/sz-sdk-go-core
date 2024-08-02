@@ -73,7 +73,7 @@ func TestSzconfigmanager_AddConfig_badConfigDefinition(test *testing.T) {
 	now := time.Now()
 	configComment := fmt.Sprintf("szconfigmanager_test at %s", now.UTC())
 	_, err := szConfigManager.AddConfig(ctx, badConfigDefinition, configComment)
-	require.NoError(test, err) // TODO: TestSzconfigmanager_AddConfig_badConfigDefinition should fail.
+	require.ErrorIs(test, err, szerror.ErrSzConfiguration)
 }
 
 // TODO: Implement TestSzconfigmanager_AddConfig_error
@@ -152,7 +152,7 @@ func TestSzconfigmanager_ReplaceDefaultConfigID_badCurrentDefaultConfigID(test *
 		assert.FailNow(test, "szConfigManager.GetDefaultConfigID()-2")
 	}
 	err := szConfigManager.ReplaceDefaultConfigID(ctx, badCurrentDefaultConfigID, newDefaultConfigID)
-	require.ErrorIs(test, err, szerror.ErrSzConfiguration)
+	require.ErrorIs(test, err, szerror.ErrSzReplaceConflict)
 }
 
 func TestSzconfigmanager_ReplaceDefaultConfigID_badNewDefaultConfigID(test *testing.T) {
