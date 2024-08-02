@@ -152,7 +152,7 @@ func TestSzconfigmanager_ReplaceDefaultConfigID_badCurrentDefaultConfigID(test *
 		assert.FailNow(test, "szConfigManager.GetDefaultConfigID()-2")
 	}
 	err := szConfigManager.ReplaceDefaultConfigID(ctx, badCurrentDefaultConfigID, newDefaultConfigID)
-	require.ErrorIs(test, err, szerror.ErrSzConfiguration)
+	require.ErrorIs(test, err, szerror.ErrSzReplaceConflict)
 }
 
 func TestSzconfigmanager_ReplaceDefaultConfigID_badNewDefaultConfigID(test *testing.T) {
