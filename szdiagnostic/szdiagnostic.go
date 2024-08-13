@@ -64,7 +64,7 @@ Input
 
 Output
 
-  - A JSON document of performance results.
+  - A JSON document containing performance results.
     Example: `{"numRecordsInserted":0,"insertTime":0}`
 */
 func (client *Szdiagnostic) CheckDatastorePerformance(ctx context.Context, secondsToRun int) (string, error) {
@@ -117,7 +117,7 @@ Input
 
 Output
 
-  - A JSON document of Senzing datastore metadata.
+  - A JSON document containing Senzing datastore metadata.
 */
 func (client *Szdiagnostic) GetDatastoreInfo(ctx context.Context) (string, error) {
 	var err error
@@ -146,7 +146,7 @@ Input
 
 Output
 
-  - A JSON document of feature metadata.
+  - A JSON document containing feature metadata.
 */
 func (client *Szdiagnostic) GetFeature(ctx context.Context, featureID int64) (string, error) {
 	var err error

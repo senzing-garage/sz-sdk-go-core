@@ -119,7 +119,6 @@ Input
 
 Output
   - configDefinition: A Senzing configuration JSON document.
-    See the example output.
 */
 func (client *Szconfigmanager) GetConfig(ctx context.Context, configID int64) (string, error) {
 	var err error
@@ -147,7 +146,6 @@ Input
 
 Output
   - A JSON document listing Senzing configuration JSON document metadata.
-    See the example output.
 */
 func (client *Szconfigmanager) GetConfigs(ctx context.Context) (string, error) {
 	var err error

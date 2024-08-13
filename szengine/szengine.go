@@ -453,7 +453,6 @@ Input
 
 Output
   - A JSON document.
-    See the example output.
 */
 func (client *Szengine) FindInterestingEntitiesByEntityID(ctx context.Context, entityID int64, flags int64) (string, error) {
 	var err error
@@ -487,7 +486,6 @@ Input
 
 Output
   - A JSON document.
-    See the example output.
 */
 func (client *Szengine) FindInterestingEntitiesByRecordID(ctx context.Context, dataSourceCode string, recordID string, flags int64) (string, error) {
 	var err error
@@ -791,7 +789,7 @@ func (client *Szengine) GetEntityByRecordID(ctx context.Context, dataSourceCode 
 }
 
 /*
-The GetRecord method returns a JSON document of a single record from the Senzing repository.
+The GetRecord method returns a JSON document containing a single record from the Senzing repository.
 
 Input
   - ctx: A context to control lifecycle.
@@ -801,7 +799,6 @@ Input
 
 Output
   - A JSON document.
-    See the example output.
 */
 func (client *Szengine) GetRecord(ctx context.Context, dataSourceCode string, recordID string, flags int64) (string, error) {
 	var err error
@@ -928,7 +925,6 @@ Input
 
 Output
   - A JSON document.
-    See the example output.
 */
 func (client *Szengine) HowEntityByEntityID(ctx context.Context, entityID int64, flags int64) (string, error) {
 	var err error
@@ -1191,7 +1187,6 @@ Input
 
 Output
   - A JSON document.
-    See the example output.
 */
 func (client *Szengine) WhyRecordInEntity(ctx context.Context, dataSourceCode string, recordID string, flags int64) (string, error) {
 	var err error
@@ -1456,7 +1451,6 @@ Input
 
 Output
   - A JSON document.
-    See the example output.
 */
 func (client *Szengine) addRecordWithInfo(ctx context.Context, dataSourceCode string, recordID string, recordDefinition string, flags int64) (string, error) {
 	//  _DLEXPORT int G2_addRecordWithInfo(const char* dataSourceCode, const char* recordID, const char* jsonData, const char *loadID, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
@@ -1536,7 +1530,6 @@ Input
 
 Output
   - A JSON document.
-    See the example output.
 */
 func (client *Szengine) deleteRecordWithInfo(ctx context.Context, dataSourceCode string, recordID string, flags int64) (string, error) {
 	//  _DLEXPORT int G2_deleteRecordWithInfo(const char* dataSourceCode, const char* recordID, const char* loadID, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
@@ -1729,7 +1722,6 @@ Input
 
 Output
   - A JSON document.
-    See the example output.
 */
 func (client *Szengine) findPathByRecordIDV2(ctx context.Context, startDataSourceCode string, startRecordID string, endDataSourceCode string, endRecordID string, maxDegrees int64, flags int64) (string, error) {
 	//  _DLEXPORT int G2_findPathByRecordID_V2(const char* dataSourceCode1, const char* recordID1, const char* dataSourceCode2, const char* recordID2, const int maxDegree, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
@@ -1775,7 +1767,6 @@ Input
 
 Output
   - A JSON document.
-    See the example output.
 */
 func (client *Szengine) findPathByEntityIDWithAvoidsV2(ctx context.Context, startEntityID int64, endEntityID int64, maxDegrees int64, exclusions string, flags int64) (string, error) {
 	//  _DLEXPORT int G2_findPathExcludingByEntityID_V2(const long long entityID1, const long long entityID2, const int maxDegree, const char* excludedEntities, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
@@ -1817,7 +1808,6 @@ Input
 
 Output
   - A JSON document.
-    See the example output.
 */
 func (client *Szengine) findPathByRecordIDWithAvoidsV2(ctx context.Context, startDataSourceCode string, startRecordID string, endDataSourceCode string, endRecordID string, maxDegrees int64, exclusions string, flags int64) (string, error) {
 	//  _DLEXPORT int G2_findPathExcludingByRecordID_V2(const char* dataSourceCode1, const char* recordID1, const char* dataSourceCode2, const char* recordID2, const int maxDegree, const char* excludedRecords, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
@@ -1862,7 +1852,6 @@ Input
 
 Output
   - A JSON document.
-    See the example output.
 */
 func (client *Szengine) findPathByEntityIDIncludingSourceV2(ctx context.Context, startEntityID int64, endEntityID int64, maxDegrees int64, exclusions string, requiredDataSources string, flags int64) (string, error) {
 	//  _DLEXPORT int G2_findPathIncludingSourceByEntityID_V2(const long long entityID1, const long long entityID2, const int maxDegree, const char* excludedEntities, const char* requiredDsrcs, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
@@ -1903,7 +1892,6 @@ Input
 
 Output
   - A JSON document.
-    See the example output.
 */
 func (client *Szengine) findPathByRecordIDIncludingSourceV2(ctx context.Context, startDataSourceCode string, startRecordID string, endDataSourceCode string, endRecordID string, maxDegrees int64, exclusions string, requiredDataSources string, flags int64) (string, error) {
 	//  _DLEXPORT int G2_findPathIncludingSourceByRecordID_V2(const char* dataSourceCode1, const char* recordID1, const char* dataSourceCode2, const char* recordID2, const int maxDegree, const char* excludedRecords, const char* requiredDsrcs, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
@@ -2213,7 +2201,6 @@ Input
 Output
 
   - A JSON document.
-    See the example output.
 */
 func (client *Szengine) reevaluateEntityWithInfo(ctx context.Context, entityID int64, flags int64) (string, error) {
 	//  _DLEXPORT int G2_reevaluateEntityWithInfo(const long long entityID, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
@@ -2269,7 +2256,6 @@ Input
 Output
 
   - A JSON document.
-    See the example output.
 */
 func (client *Szengine) reevaluateRecordWithInfo(ctx context.Context, dataSourceCode string, recordID string, flags int64) (string, error) {
 	//  _DLEXPORT int G2_reevaluateRecordWithInfo(const char* dataSourceCode, const char* recordID, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
@@ -2313,7 +2299,6 @@ Input
 
 Output
   - A JSON document.
-    See the example output.
 */
 func (client *Szengine) searchByAttributesV2(ctx context.Context, attributes string, flags int64) (string, error) {
 	//  _DLEXPORT int G2_searchByAttributes_V2(const char* jsonData, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
@@ -2343,7 +2328,6 @@ Input
 
 Output
   - A JSON document.
-    See the example output.
 */
 func (client *Szengine) searchByAttributesV3(ctx context.Context, attributes string, searchProfile string, flags int64) (string, error) {
 	// _DLEXPORT struct G2_searchByAttributes_V3_result G2_searchByAttributes_V3_helper(const char *jsonData, const char* profile, const long long flags);
@@ -2379,7 +2363,6 @@ Input
 
 Output
   - A JSON document.
-    See the example output.
 */
 func (client *Szengine) whyEntitiesV2(ctx context.Context, entityID1 int64, entityID2 int64, flags int64) (string, error) {
 	//  _DLEXPORT int G2_whyEntities_V2(const long long entityID1, const long long entityID2, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
@@ -2408,7 +2391,6 @@ Input
 
 Output
   - A JSON document.
-    See the example output.
 */
 func (client *Szengine) whyRecordInEntityV2(ctx context.Context, dataSourceCode string, recordID string, flags int64) (string, error) {
 	runtime.LockOSThread()
@@ -2442,7 +2424,6 @@ Input
 
 Output
   - A JSON document.
-    See the example output.
 */
 func (client *Szengine) whyRecordsV2(ctx context.Context, dataSourceCode1 string, recordID1 string, dataSourceCode2 string, recordID2 string, flags int64) (string, error) {
 	//  _DLEXPORT int G2_whyRecords_V2(const char* dataSourceCode1, const char* recordID1, const char* dataSourceCode2, const char* recordID2, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));

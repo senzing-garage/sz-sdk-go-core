@@ -63,7 +63,6 @@ Input
 
 Output
   - A JSON document listing the newly created data source.
-    See the example output.
 */
 func (client *Szconfig) AddDataSource(ctx context.Context, configHandle uintptr, dataSourceCode string) (string, error) {
 	var err error
@@ -204,7 +203,6 @@ Input
 
 Output
   - configDefinition: A JSON document representation of the in-memory configuration.
-    See the example output.
 */
 func (client *Szconfig) ExportConfig(ctx context.Context, configHandle uintptr) (string, error) {
 	var err error
@@ -225,7 +223,7 @@ func (client *Szconfig) ExportConfig(ctx context.Context, configHandle uintptr) 
 }
 
 /*
-The GetDataSources method returns a JSON document of data sources defined in an in-memory configuration.
+The GetDataSources method returns a JSON document containing data sources defined in an in-memory configuration.
 
 Input
   - ctx: A context to control lifecycle.
@@ -233,7 +231,6 @@ Input
 
 Output
   - A JSON document listing data sources in the in-memory configuration.
-    See the example output.
 */
 func (client *Szconfig) GetDataSources(ctx context.Context, configHandle uintptr) (string, error) {
 	var err error

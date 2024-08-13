@@ -78,14 +78,13 @@ func (client *Szproduct) Destroy(ctx context.Context) error {
 }
 
 /*
-The GetLicense method retrieves information about the currently used license by the Senzing API.
+The GetLicense method retrieves information about the license used by the Senzing API.
 
 Input
   - ctx: A context to control lifecycle.
 
 Output
   - A JSON document containing Senzing license metadata.
-    See the example output.
 */
 func (client *Szproduct) GetLicense(ctx context.Context) (string, error) {
 	var err error
@@ -106,14 +105,13 @@ func (client *Szproduct) GetLicense(ctx context.Context) (string, error) {
 }
 
 /*
-The GetVersion method returns the version of the Senzing API.
+The GetVersion method returns the Senzing API version information.
 
 Input
   - ctx: A context to control lifecycle.
 
 Output
   - A JSON document containing metadata about the Senzing Engine version being used.
-    See the example output.
 */
 func (client *Szproduct) GetVersion(ctx context.Context) (string, error) {
 	var err error

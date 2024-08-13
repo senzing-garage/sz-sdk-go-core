@@ -32,7 +32,6 @@ Input
 
 Output
   - An senzing.SzConfig object.
-    See the example output.
 */
 func (factory *Szabstractfactory) CreateSzConfig(ctx context.Context) (senzing.SzConfig, error) {
 	result := &szconfig.Szconfig{}
@@ -49,7 +48,6 @@ Input
 
 Output
   - An senzing.CreateConfigManager object.
-    See the example output.
 */
 func (factory *Szabstractfactory) CreateSzConfigManager(ctx context.Context) (senzing.SzConfigManager, error) {
 	result := &szconfigmanager.Szconfigmanager{}
@@ -66,7 +64,6 @@ Input
 
 Output
   - An senzing.SzDiagnostic object.
-    See the example output.
 */
 func (factory *Szabstractfactory) CreateSzDiagnostic(ctx context.Context) (senzing.SzDiagnostic, error) {
 	result := &szdiagnostic.Szdiagnostic{}
@@ -83,7 +80,6 @@ Input
 
 Output
   - An senzing.SzEngine object.
-    See the example output.
 */
 func (factory *Szabstractfactory) CreateSzEngine(ctx context.Context) (senzing.SzEngine, error) {
 	result := &szengine.Szengine{}
@@ -100,7 +96,6 @@ Input
 
 Output
   - An senzing.SzProduct object.
-    See the example output.
 */
 func (factory *Szabstractfactory) CreateSzProduct(ctx context.Context) (senzing.SzProduct, error) {
 	result := &szproduct.Szproduct{}
