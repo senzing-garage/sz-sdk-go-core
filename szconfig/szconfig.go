@@ -62,7 +62,7 @@ Input
   - dataSourceCode: Unique identifier of the data source (e.g. "TEST_DATASOURCE").
 
 Output
-  - A string containing a JSON document listing the newly created data source.
+  - A JSON document listing the newly created data source.
     See the example output.
 */
 func (client *Szconfig) AddDataSource(ctx context.Context, configHandle uintptr, dataSourceCode string) (string, error) {
@@ -90,7 +90,7 @@ func (client *Szconfig) AddDataSource(ctx context.Context, configHandle uintptr,
 
 /*
 The CloseConfig method terminates an in-memory configuration and cleans up system resources.
-After calling CloseConfig, the configuration handle can no longer be used and becomes invalid.
+After calling CloseConfig, the configuration handle can no longer be used and is invalid.
 
 Input
   - ctx: A context to control lifecycle.
@@ -114,8 +114,8 @@ func (client *Szconfig) CloseConfig(ctx context.Context, configHandle uintptr) e
 }
 
 /*
-The CreateConfig method creates an in-memory configuration using the default
-template configuration file, `g2config.json`, located in the PIPELINE.RESOURCEPATH path.
+The CreateConfig method creates an in-memory configuration using the default template.
+The default template is the Senzing configuration file, `g2config.json`, located in the PIPELINE.RESOURCEPATH path.
 A configHandle is returned identifying the in-memory configuration.
 The configHandle is used by the AddDataSource(), DeleteDataSource(), ExportConfig(), and GetDataSources() methods.
 The configHandle is terminated by the CloseConfig() method.
@@ -145,7 +145,7 @@ func (client *Szconfig) CreateConfig(ctx context.Context) (uintptr, error) {
 }
 
 /*
-The DeleteDataSource method removes a data source from an existing in-memory configuration.
+The DeleteDataSource method removes a data source from an in-memory configuration.
 
 Input
   - ctx: A context to control lifecycle.
@@ -196,14 +196,14 @@ func (client *Szconfig) Destroy(ctx context.Context) error {
 }
 
 /*
-The ExportConfig method creates a JSON string representation of an in-memory configuration.
+The ExportConfig method creates a JSON document representation of an in-memory configuration.
 
 Input
   - ctx: A context to control lifecycle.
   - configHandle: Identifier of an in-memory configuration. It was created by the CreateConfig() or ImportConfig() methods.
 
 Output
-  - configDefinition: A string containing a JSON document representation of the in-memory configuration.
+  - configDefinition: A JSON document representation of the in-memory configuration.
     See the example output.
 */
 func (client *Szconfig) ExportConfig(ctx context.Context, configHandle uintptr) (string, error) {
@@ -232,7 +232,7 @@ Input
   - configHandle: Identifier of an in-memory configuration. It was created by the CreateConfig() or ImportConfig() methods.
 
 Output
-  - A string containing a JSON document listing data sources in the in-memory configuration.
+  - A JSON document listing data sources in the in-memory configuration.
     See the example output.
 */
 func (client *Szconfig) GetDataSources(ctx context.Context, configHandle uintptr) (string, error) {
@@ -254,14 +254,14 @@ func (client *Szconfig) GetDataSources(ctx context.Context, configHandle uintptr
 }
 
 /*
-The ImportConfig method creates a new in-memory configuration from a JSON string.
+The ImportConfig method creates a new in-memory configuration from a JSON document.
 A configHandle is returned identifying the in-memory configuration.
 The configHandle is used by the AddDataSource(), DeleteDataSource(), ExportConfig(), and GetDataSources() methods.
 The configHandle is terminated by the CloseConfig() method.
 
 Input
   - ctx: A context to control lifecycle.
-  - configDefinition: A JSON document containing the configuration.
+  - configDefinition: A JSON document containing the Senzing configuration.
 
 Output
   - configHandle: Identifier of the in-memory configuration.

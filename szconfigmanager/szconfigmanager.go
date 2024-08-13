@@ -54,15 +54,15 @@ const (
 // ----------------------------------------------------------------------------
 
 /*
-The AddConfig method adds a Senzing configuration JSON document to the Senzing database.
+The AddConfig method adds a Senzing configuration JSON document to the Senzing datastore.
 
 Input
   - ctx: A context to control lifecycle.
   - configDefinition: The Senzing configuration JSON document.
-  - configComment: A free-form string describing the configuration document.
+  - configComment: A free-form string describing the Senzing configuration document.
 
 Output
-  - A configuration identifier.
+  - configID: A Senzing configuration identifier.
 */
 func (client *Szconfigmanager) AddConfig(ctx context.Context, configDefinition string, configComment string) (int64, error) {
 	var err error
@@ -111,14 +111,14 @@ func (client *Szconfigmanager) Destroy(ctx context.Context) error {
 }
 
 /*
-The GetConfig method retrieves a specific Senzing configuration JSON document from the Senzing database.
+The GetConfig method retrieves a specific Senzing configuration JSON document from the Senzing datastore.
 
 Input
   - ctx: A context to control lifecycle.
   - configID: The configuration identifier of the desired Senzing Engine configuration JSON document to retrieve.
 
 Output
-  - A JSON document containing the Senzing configuration.
+  - configDefinition: A string containing a Senzing configuration JSON document.
     See the example output.
 */
 func (client *Szconfigmanager) GetConfig(ctx context.Context, configID int64) (string, error) {
@@ -140,7 +140,7 @@ func (client *Szconfigmanager) GetConfig(ctx context.Context, configID int64) (s
 }
 
 /*
-The GetConfigs method retrieves a list of Senzing configurations from the Senzing database.
+The GetConfigs method retrieves a list of Senzing configurations from the Senzing datastore.
 
 Input
   - ctx: A context to control lifecycle.
@@ -168,13 +168,13 @@ func (client *Szconfigmanager) GetConfigs(ctx context.Context) (string, error) {
 }
 
 /*
-The GetDefaultConfigID method retrieves from the Senzing database the configuration identifier of the default Senzing configuration.
+The GetDefaultConfigID method retrieves from the Senzing datastore the configuration identifier of the default Senzing configuration.
 
 Input
   - ctx: A context to control lifecycle.
 
 Output
-  - A configuration identifier which identifies the current configuration in use.
+  - configID: A configuration identifier which identifies the current configuration in use or zero (0) if none exists.
 */
 func (client *Szconfigmanager) GetDefaultConfigID(ctx context.Context) (int64, error) {
 	var err error
@@ -195,9 +195,14 @@ func (client *Szconfigmanager) GetDefaultConfigID(ctx context.Context) (int64, e
 }
 
 /*
-The ReplaceDefaultConfigID method replaces the old configuration identifier with a new configuration identifier in the Senzing database.
-It is like a "compare-and-swap" instruction to serialize concurrent editing of configuration.
-If currentDefaultConfigID is no longer the "old configuration identifier", the operation will fail.
+Similar to the SetDefaultConfigID method,
+the ReplaceDefaultConfigID method sets which Senzing configuration is used when initializing or reinitializing the system.
+The difference is that ReplaceDefaultConfigID only succeeds when the old configuration identifier is the existing default
+before the new configuration identifier is applied.
+In other words, if currentDefaultConfigID is no longer the "old configuration identifier", the operation will fail.
+It is like a "compare-and-swap" instruction to avoid a "race condition".
+Note that calling the ReplaceDefaultConfigID method does not modify the currently
+running Senzing configuration.
 To simply set the default configuration ID, use SetDefaultConfigID().
 
 Input
@@ -225,8 +230,12 @@ func (client *Szconfigmanager) ReplaceDefaultConfigID(ctx context.Context, curre
 }
 
 /*
-The SetDefaultConfigID method replaces the sets a new configuration identifier in the Senzing database.
-To serialize modifying of the configuration identifier, see ReplaceDefaultConfigID().
+The SetDefaultConfigID method sets which Senzing configuration
+is used when initializing or reinitializing the system.
+Note that calling the SetDefaultConfigID method does not modify the currently
+running Senzing configuration.
+SetDefaultConfigID is susceptible to "race conditions".
+To avoid race conditions, see ReplaceDefaultConfigID().
 
 Input
   - ctx: A context to control lifecycle.
