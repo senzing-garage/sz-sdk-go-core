@@ -908,11 +908,11 @@ func (client *Szengine) GetStats(ctx context.Context) (string, error) {
 }
 
 /*
-The GetVirtualEntityByRecordID method describes a hypothetical entity consisting of specific records.
+The GetVirtualEntityByRecordID method describes a hypothetical entity based on a list of records.
 
 Input
   - ctx: A context to control lifecycle.
-  - recordKeys: A JSON document.
+  - recordKeys: A JSON document listing records to include in the hypothetical entity.
     Example: `{"RECORDS": [{"DATA_SOURCE": "CUSTOMERS", "RECORD_ID": "1001"}]}`
   - flags: Flags used to control information returned.
 
@@ -971,9 +971,7 @@ func (client *Szengine) HowEntityByEntityID(ctx context.Context, entityID int64,
 }
 
 /*
-The PrimeEngine method pre-initializes some of the heavier weight internal resources of the G2 engine.
-The G2 Engine uses "lazy initialization".
-PrimeEngine() forces initialization.
+The PrimeEngine method pre-initializes some of the heavier weight internal resources of the Senzing engine.
 
 Input
   - ctx: A context to control lifecycle.
@@ -996,7 +994,7 @@ func (client *Szengine) PrimeEngine(ctx context.Context) error {
 }
 
 /*
-The ProcessRedoRecord method processes the next redo record and returns it.
+The ProcessRedoRecord method processes a redo record retrieved by GetRedoRecord().
 Calling ProcessRedoRecord() has the potential to create more redo records in certain situations.
 
 Input
@@ -1028,8 +1026,10 @@ func (client *Szengine) ProcessRedoRecord(ctx context.Context, redoRecord string
 }
 
 /*
-TODO: Document ReevaluateEntity
-The ReevaluateEntity method...
+The ReevaluateEntity method verifies that the entity is consistent with its records.
+If inconsistent, ReevaluateEntity() adjusts the entity definition, splits entities, and/or merges entities.
+Usually, the ReevaluateEntity method is called after a Senzing configuration change to impact
+entities immediately.
 
 Input
   - ctx: A context to control lifecycle.
@@ -1062,10 +1062,12 @@ func (client *Szengine) ReevaluateEntity(ctx context.Context, entityID int64, fl
 }
 
 /*
-TODO: Document ReevaluateRecord
-The ReevaluateRecord method...
+The ReevaluateRecord method verifies that a record is consistent with the entity to which it belongs.
+If inconsistent, ReevaluateRecord() adjusts the entity definition, splits entities, and/or merges entities.
+Usually, the ReevaluateRecord method is called after a Senzing configuration change to impact
+the record immediately.
 
-Input
+Input“
   - ctx: A context to control lifecycle.
   - dataSourceCode: Identifies the provenance of the data.
   - recordID: The unique identifier within the records of the same data source.
@@ -1098,11 +1100,11 @@ func (client *Szengine) ReevaluateRecord(ctx context.Context, dataSourceCode str
 }
 
 /*
-The Reinitialize method re-initializes the Senzing G2Engine object using a specified configuration identifier.
+The Reinitialize method re-initializes the Senzing engine object with a specific Senzing configuration JSON document identifier.
 
 Input
   - ctx: A context to control lifecycle.
-  - configID: The configuration ID used for the initialization.
+  - configID: The Senzing configuration JSON document identifier used for the initialization.
 */
 func (client *Szengine) Reinitialize(ctx context.Context, configID int64) error {
 	var err error
@@ -1124,13 +1126,16 @@ func (client *Szengine) Reinitialize(ctx context.Context, configID int64) error 
 }
 
 /*
-The SearchByAttributes method retrieves entity data based on a user-specified set of entity attributes.
+The SearchByAttributes method retrieves entity data based on a user-specified set of entity attributes
+and an optional search profile.
 
-TODO: Write description of Input for SearchByAttributes
 Input
   - ctx: A context to control lifecycle.
-  - attributes: A JSON document containing the record to be added to the Senzing datastore.
-  - searchProfile: TODO:
+  - attributes: A JSON document containing the attributes desired in the result set.
+    Example: TODO:
+  - searchProfile: The name of the search profile to use in the search.
+    An empty string will use the default search profile.
+    Example: TODO:
   - flags: Flags used to control information returned.
 
 Output
@@ -1163,15 +1168,12 @@ func (client *Szengine) SearchByAttributes(ctx context.Context, attributes strin
 }
 
 /*
-The WhyEntities method explains why records belong to their resolved entities.
-WhyEntities() will compare the record data within an entity
-against the rest of the entity data and show why they are connected.
-This is calculated based on the features that record data represents.
+The WhyEntities method explains the ways in which two entities are related to each other.
 
 Input
   - ctx: A context to control lifecycle.
-  - entityID1: The entity ID for the starting entity of the search path.
-  - entityID2: The entity ID for the ending entity of the search path.
+  - entityID1: The first of two entity IDs.
+  - entityID2: The second of two entity IDs.
   - flags: Flags used to control information returned.
 
 Output
@@ -1201,7 +1203,7 @@ func (client *Szengine) WhyEntities(ctx context.Context, entityID1 int64, entity
 
 /*
 TODO: Document WhyRecordInEntity
-The WhyRecordInEntity method...
+The WhyRecordInEntity method explains why a record belongs to its resolved entities.
 
 Input
   - ctx: A context to control lifecycle.
@@ -1234,7 +1236,7 @@ func (client *Szengine) WhyRecordInEntity(ctx context.Context, dataSourceCode st
 }
 
 /*
-The WhyRecords method explains why records belong to their resolved entities.
+The WhyRecords method describes ways in which two records are related to each other.
 
 Input
   - ctx: A context to control lifecycle.
