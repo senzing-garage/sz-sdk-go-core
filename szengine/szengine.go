@@ -850,8 +850,7 @@ func (client *Szengine) GetRecord(ctx context.Context, dataSourceCode string, re
 }
 
 /*
-The GetRedoRecord method returns the next internally queued maintenance
-record from the Senzing datastore.
+The GetRedoRecord method returns the next maintenance record from the Senzing datastore.
 Usually, the ProcessRedoRecord method is called to process the maintenance record retrieved by GetRedoRecord().
 
 Input
@@ -1100,7 +1099,7 @@ func (client *Szengine) ReevaluateRecord(ctx context.Context, dataSourceCode str
 }
 
 /*
-The Reinitialize method re-initializes the Senzing engine object with a specific Senzing configuration JSON document identifier.
+The Reinitialize method re-initializes the Senzing engine with a specific Senzing configuration JSON document identifier.
 
 Input
   - ctx: A context to control lifecycle.
@@ -1126,7 +1125,7 @@ func (client *Szengine) Reinitialize(ctx context.Context, configID int64) error 
 }
 
 /*
-The SearchByAttributes method retrieves entity data based on a user-specified set of entity attributes
+The SearchByAttributes method retrieves entity data based on entity attributes
 and an optional search profile.
 
 Input
@@ -1202,8 +1201,7 @@ func (client *Szengine) WhyEntities(ctx context.Context, entityID1 int64, entity
 }
 
 /*
-TODO: Document WhyRecordInEntity
-The WhyRecordInEntity method explains why a record belongs to its resolved entities.
+The WhyRecordInEntity method explains why a record belongs to its resolved entitiy.
 
 Input
   - ctx: A context to control lifecycle.
