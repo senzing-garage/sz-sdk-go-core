@@ -253,7 +253,7 @@ func (client *Szengine) ExportCsvEntityReport(ctx context.Context, csvColumnList
 
 /*
 The ExportCsvEntityReportIterator method creates an Iterator that can be used in a for-loop
-to scroll through a document of exported entities.
+to scroll through a CSV document of exported entities.
 It is a convenience method for the ExportCsvEntityReport(), FetchNext(), CloseExport()
 lifecycle of a list of entities to export.
 
@@ -326,7 +326,7 @@ func (client *Szengine) ExportCsvEntityReportIterator(ctx context.Context, csvCo
 }
 
 /*
-The ExportJSONEntityReport method initializes a cursor over a document of exported entities.
+The ExportJSONEntityReport method initializes a cursor over a JSON document of exported entities.
 It is part of the ExportJSONEntityReport(), FetchNext(), CloseExport()
 lifecycle of a list of entities to export.
 
@@ -357,7 +357,7 @@ func (client *Szengine) ExportJSONEntityReport(ctx context.Context, flags int64)
 
 /*
 The ExportJSONEntityReportIterator method creates an Iterator that can be used in a for-loop
-to scroll through a document of exported entities.
+to scroll through a JSON document of exported entities.
 It is a convenience method for the ExportJSONEntityReport(), FetchNext(), CloseExport()
 lifecycle of a list of entities to export.
 
@@ -429,7 +429,7 @@ func (client *Szengine) ExportJSONEntityReportIterator(ctx context.Context, flag
 }
 
 /*
-The FetchNext method is used to scroll through an exported document.
+The FetchNext method is used to scroll through an exported JSON or CSV document.
 It is part of the ExportJSONEntityReport() or ExportCsvEntityReport(), FetchNext(), CloseExport()
 lifecycle of a list of exported entities.
 
@@ -438,7 +438,7 @@ Input
   - exportHandle: A handle created by ExportJSONEntityReport() or ExportCsvEntityReport().
 
 Output
-  - TODO: Document output for FetchNext
+  - The next chunk of exported data. An empty string signifies end of data.
 */
 func (client *Szengine) FetchNext(ctx context.Context, exportHandle uintptr) (string, error) {
 	var err error
@@ -527,16 +527,17 @@ func (client *Szengine) FindInterestingEntitiesByRecordID(ctx context.Context, d
 }
 
 /*
-The FindNetworkByEntityID method finds all entities surrounding a requested set of entities.
+The FindNetworkByEntityID method finds a network of entities surrounding a requested set of entities.
 This includes the requested entities, paths between them, and relations to other nearby entities.
+The size and character of the returned network can be modified by input parameters.
 
 Input
   - ctx: A context to control lifecycle.
-  - entityList: A JSON document listing entities.
+  - entityIDs: A JSON document listing entities.
     Example: `{"ENTITIES": [{"ENTITY_ID": 1}, {"ENTITY_ID": 2}, {"ENTITY_ID": 3}]}`
-  - maxDegrees: The maximum number of degrees in paths between search entities.
-  - buildOutDegree: The number of degrees of relationships to show around each search entity.
-  - maxEntities: The maximum number of entities to return in the discovered network.
+  - maxDegrees: The maximum number of degrees in paths between entityIDs.
+  - buildOutDegree: The number of degrees of relationships to show around each search entity. Zero (0) prevents buildout.
+  - buildOutMaxEntities: The maximum number of entities to build out in the returned network.
   - flags: Flags used to control information returned.
 
 Output
@@ -566,16 +567,17 @@ func (client *Szengine) FindNetworkByEntityID(ctx context.Context, entityIDs str
 }
 
 /*
-The FindNetworkByRecordID method finds all entities surrounding a requested set of entities identified by record identifiers.
+The FindNetworkByRecordID method finds a network of entities surrounding a requested set of entities identified by record keys.
 This includes the requested entities, paths between them, and relations to other nearby entities.
+The size and character of the returned network can be modified by input parameters.
 
 Input
   - ctx: A context to control lifecycle.
-  - recordList: A JSON document listing entities.
+  - recordKeys: A JSON document listing records.
     Example: `{"RECORDS": [{"DATA_SOURCE": "CUSTOMERS", "RECORD_ID": "1001"}]}`
-  - maxDegree: The maximum number of degrees in paths between search entities.
-  - buildOutDegree: The number of degrees of relationships to show around each search entity.
-  - maxEntities: The maximum number of entities to return in the discovered network.
+  - maxDegrees: The maximum number of degrees in paths between entities identified by the recordKeys.
+  - buildOutDegree: The number of degrees of relationships to show around each search entity. Zero (0) prevents buildout.
+  - buildOutMaxEntities: The maximum number of entities to build out in the returned network.
   - flags: Flags used to control information returned.
 
 Output
@@ -605,8 +607,9 @@ func (client *Szengine) FindNetworkByRecordID(ctx context.Context, recordKeys st
 }
 
 /*
-The FindPathByEntityID method finds single relationship paths between two entities.
+The FindPathByEntityID method finds a relationship path between two entities.
 Paths are found using known relationships with other entities.
+The path can be modified by input parameters.
 
 Input
   - ctx: A context to control lifecycle.
@@ -614,7 +617,11 @@ Input
   - endEntityID: The entity ID for the ending entity of the search path.
   - maxDegrees: The maximum number of degrees in paths between search entities.
   - avoidEntityIDs: A JSON document listing entities that should be avoided on the path.
+    An empty string disables this capability.
+    Example: TODO:
   - requiredDataSources: A JSON document listing data sources that should be included on the path.
+    An empty string disables this capability.
+    Example: TODO:
   - flags: Flags used to control information returned.
 
 Output
@@ -654,9 +661,9 @@ func (client *Szengine) FindPathByEntityID(ctx context.Context, startEntityID in
 }
 
 /*
-The FindPathByRecordID method finds single relationship paths between two entities.
-The entities are identified by starting and ending records.
+The FindPathByRecordID method finds a relationship path between two entities identified by record keys.
 Paths are found using known relationships with other entities.
+The path can be modified by input parameters.
 
 Input
   - ctx: A context to control lifecycle.
@@ -666,11 +673,14 @@ Input
   - endRecordID: The unique identifier within the records of the same data source for the ending entity of the search path.
   - maxDegrees: The maximum number of degrees in paths between search entities.
   - avoidRecordKeys: A JSON document listing entities that should be avoided on the path.
+    An empty string disables this capability.
+    Example: TODO:
   - requiredDataSources: A JSON document listing data sources that should be included on the path.
+    An empty string disables this capability.
+    Example: TODO:
   - flags: Flags used to control information returned.
 
 Output
-
   - A JSON document.
     Example: `{"ENTITY_PATHS":[{"START_ENTITY_ID":1,"END_ENTITY_ID":2,"ENTITIES":[1,2]}],"ENTITIES":[{"RESOLVED_ENTITY":{"ENTITY_ID":1,"ENTITY_NAME":"JOHNSON","RECORD_SUMMARY":[{"DATA_SOURCE":"TEST","RECORD_COUNT":2,"FIRST_SEEN_DT":"2022-12-06 14:48:19.522","LAST_SEEN_DT":"2022-12-06 14:48:19.667"}],"LAST_SEEN_DT":"2022-12-06 14:48:19.667"},"RELATED_ENTITIES":[{"ENTITY_ID":2,"MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED","MATCH_KEY":"+PHONE+ACCT_NUM-SSN","ERRULE_CODE":"SF1","IS_DISCLOSED":0,"IS_AMBIGUOUS":0},{"ENTITY_ID":3,"MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED","MATCH_KEY":"+PHONE+ACCT_NUM-DOB-SSN","ERRULE_CODE":"SF1","IS_DISCLOSED":0,"IS_AMBIGUOUS":0}]},{"RESOLVED_ENTITY":{"ENTITY_ID":2,"ENTITY_NAME":"OCEANGUY","RECORD_SUMMARY":[{"DATA_SOURCE":"TEST","RECORD_COUNT":1,"FIRST_SEEN_DT":"2022-12-06 14:48:19.593","LAST_SEEN_DT":"2022-12-06 14:48:19.593"}],"LAST_SEEN_DT":"2022-12-06 14:48:19.593"},"RELATED_ENTITIES":[{"ENTITY_ID":1,"MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED","MATCH_KEY":"+PHONE+ACCT_NUM-SSN","ERRULE_CODE":"SF1","IS_DISCLOSED":0,"IS_AMBIGUOUS":0},{"ENTITY_ID":3,"MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED","MATCH_KEY":"+ADDRESS+PHONE+ACCT_NUM-DOB-SSN","ERRULE_CODE":"SF1","IS_DISCLOSED":0,"IS_AMBIGUOUS":0}]}]}`
 */
@@ -709,13 +719,13 @@ func (client *Szengine) FindPathByRecordID(ctx context.Context, startDataSourceC
 }
 
 /*
-The GetActiveConfigID method returns the identifier of the loaded Senzing engine configuration.
+The GetActiveConfigID method returns the Senzing configuration JSON document identifier.
 
 Input
   - ctx: A context to control lifecycle.
 
 Output
-  - The identifier of the active Senzing Engine configuration.
+  - configID: The Senzing configuration JSON document identifier that is currently in use by the Senzing engine.
 */
 func (client *Szengine) GetActiveConfigID(ctx context.Context) (int64, error) {
 	var err error
@@ -736,7 +746,7 @@ func (client *Szengine) GetActiveConfigID(ctx context.Context) (int64, error) {
 }
 
 /*
-The GetEntityByEntityID method returns entity data based on the ID of a resolved identity.
+The GetEntityByEntityID method returns information about a resolved identity.
 
 Input
   - ctx: A context to control lifecycle.
@@ -769,7 +779,7 @@ func (client *Szengine) GetEntityByEntityID(ctx context.Context, entityID int64,
 }
 
 /*
-The GetEntityByRecordID method returns entity data based on the ID of a record which is a member of the entity.
+The GetEntityByRecordID method returns information about a resolved entity identified by a record which is a member of the entity.
 
 Input
   - ctx: A context to control lifecycle.
@@ -840,15 +850,15 @@ func (client *Szengine) GetRecord(ctx context.Context, dataSourceCode string, re
 }
 
 /*
-The GetRedoRecord method returns the next internally queued maintenance record from the Senzing datastore.
-Usually, the ProcessRedoRecord() or ProcessRedoRecordWithInfo() method is called to process the maintenance record
-retrieved by GetRedoRecord().
+The GetRedoRecord method returns the next internally queued maintenance
+record from the Senzing datastore.
+Usually, the ProcessRedoRecord method is called to process the maintenance record retrieved by GetRedoRecord().
 
 Input
   - ctx: A context to control lifecycle.
 
 Output
-  - A JSON document.
+  - A JSON document. If no redo records exist, an empty string is returned.
 */
 func (client *Szengine) GetRedoRecord(ctx context.Context) (string, error) {
 	var err error
@@ -870,7 +880,7 @@ func (client *Szengine) GetRedoRecord(ctx context.Context) (string, error) {
 
 /*
 The GetStats method retrieves workload statistics for the current process.
-These statistics will automatically reset after retrieval.
+These statistics are automatically reset after each call.
 
 Input
   - ctx: A context to control lifecycle.
@@ -898,8 +908,7 @@ func (client *Szengine) GetStats(ctx context.Context) (string, error) {
 }
 
 /*
-TODO: Document GetVirtualEntityByRecordID
-The GetVirtualEntityByRecordID method...
+The GetVirtualEntityByRecordID method describes a hypothetical entity consisting of specific records.
 
 Input
   - ctx: A context to control lifecycle.
@@ -931,8 +940,7 @@ func (client *Szengine) GetVirtualEntityByRecordID(ctx context.Context, recordKe
 }
 
 /*
-TODO: Document HowEntityByEntityID
-The HowEntityByEntityID method...
+The HowEntityByEntityID method explains how an entity was constructed from its constituent records.
 
 Input
   - ctx: A context to control lifecycle.
