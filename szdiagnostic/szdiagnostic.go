@@ -1,5 +1,6 @@
 /*
-The szdiagnostic implementation is a wrapper over the Senzing libg2diagnostic library.
+The [Szdiagnostic] implementation of the [senzing.SzDiagnostic] interface
+communicates with the Senzing native C binary, libG2.so.
 */
 package szdiagnostic
 
@@ -36,6 +37,10 @@ import (
 	"github.com/senzing-garage/sz-sdk-go/szerror"
 )
 
+/*
+The Szdiagnostic implementation of the [senzing.SzDiagnostic] interface
+communicates with the Senzing C binaries.
+*/
 type Szdiagnostic struct {
 	isTrace        bool
 	logger         logging.Logging
@@ -169,7 +174,7 @@ func (client *Szdiagnostic) GetFeature(ctx context.Context, featureID int64) (st
 }
 
 /*
-**WARNING:** The PurgeRepository method removes every record in the Senzing datastore.
+WARNING: The PurgeRepository method removes every record in the Senzing datastore.
 This is a destructive method that cannot be undone.
 Before calling purgeRepository(), all programs using Senzing MUST be terminated.
 
@@ -657,4 +662,9 @@ func (client *Szdiagnostic) getByteArrayC(size int) *C.char {
 // Make a byte array.
 func (client *Szdiagnostic) getByteArray(size int) []byte {
 	return make([]byte, size)
+}
+
+// A hack: Only needed to import the "senzing" package for the godoc comments.
+func junk() {
+	fmt.Printf(senzing.SzNoAttributes)
 }

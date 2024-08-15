@@ -1,5 +1,6 @@
 /*
-The szconfigmanager implementation is a wrapper over the Senzing libg2configmgr library.
+The [Szconfigmanager] implementation of the [senzing.SzConfigManager] interface
+communicates with the Senzing native C binary, libG2.so.
 */
 package szconfigmanager
 
@@ -30,10 +31,15 @@ import (
 	"github.com/senzing-garage/go-observing/observer"
 	"github.com/senzing-garage/go-observing/subject"
 	"github.com/senzing-garage/sz-sdk-go-core/helper"
+	"github.com/senzing-garage/sz-sdk-go/senzing"
 	"github.com/senzing-garage/sz-sdk-go/szconfigmanager"
 	"github.com/senzing-garage/sz-sdk-go/szerror"
 )
 
+/*
+The Szconfigmanager implementation of the [senzing.SzConfigManager] interface
+communicates with the Senzing C binaries.
+*/
 type Szconfigmanager struct {
 	isTrace        bool
 	logger         logging.Logging
@@ -168,7 +174,7 @@ func (client *Szconfigmanager) GetConfigs(ctx context.Context) (string, error) {
 /*
 The GetDefaultConfigID method retrieves the default Senzing configuration JSON document identifier from the Senzing datastore.
 Note: this may not be the currently active in-memory configuration.
-See SetDefaultConfigID() and ReplaceDefaultConfigID() for more details.
+See [Szconfigmanager.SetDefaultConfigID] and [Szconfigmanager.ReplaceDefaultConfigID] for more details.
 
 Input
   - ctx: A context to control lifecycle.
@@ -195,14 +201,14 @@ func (client *Szconfigmanager) GetDefaultConfigID(ctx context.Context) (int64, e
 }
 
 /*
-Similar to the SetDefaultConfigID method,
+Similar to the [Szconfigmanager.SetDefaultConfigID] method,
 the ReplaceDefaultConfigID method sets which Senzing configuration JSON document is used when initializing or reinitializing the system.
 The difference is that ReplaceDefaultConfigID only succeeds when the old Senzing configuration JSON document identifier
 is the existing default when the new identifier is applied.
 In other words, if currentDefaultConfigID is no longer the "old" identifier, the operation will fail.
 It is similar to a "compare-and-swap" instruction to avoid a "race condition".
 Note that calling the ReplaceDefaultConfigID method does not affect the currently running in-memory configuration.
-To simply set the default Senzing configuration JSON document identifier, use SetDefaultConfigID().
+To simply set the default Senzing configuration JSON document identifier, use [Szconfigmanager.SetDefaultConfigID].
 
 Input
   - ctx: A context to control lifecycle.
@@ -234,7 +240,7 @@ is used when initializing or reinitializing the system.
 Note that calling the SetDefaultConfigID method does not affect the currently
 running in-memory configuration.
 SetDefaultConfigID is susceptible to "race conditions".
-To avoid race conditions, see ReplaceDefaultConfigID().
+To avoid race conditions, see  [Szconfigmanager.ReplaceDefaultConfigID].
 
 Input
   - ctx: A context to control lifecycle.
@@ -669,4 +675,9 @@ func (client *Szconfigmanager) getByteArrayC(size int) *C.char {
 // Make a byte array.
 func (client *Szconfigmanager) getByteArray(size int) []byte {
 	return make([]byte, size)
+}
+
+// A hack: Only needed to import the "senzing" package for the godoc comments.
+func junk() {
+	fmt.Printf(senzing.SzNoAttributes)
 }

@@ -1,5 +1,6 @@
 /*
-The szconfig implementation is a wrapper over the Senzing libg2config library.
+The [Szconfig] implementation of the [senzing.SzConfig] interface
+communicates with the Senzing native C binary, libG2.so.
 */
 package szconfig
 

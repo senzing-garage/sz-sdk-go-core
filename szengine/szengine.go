@@ -2612,3 +2612,8 @@ func (client *Szengine) getLastExceptionCode(ctx context.Context) (int, error) {
 func (client *Szengine) getByteArray(size int) []byte {
 	return make([]byte, size)
 }
+
+// A hack: Only needed to import the "senzing" package for the godoc comments.
+func junk() {
+	fmt.Printf(senzing.SzNoAttributes)
+}
