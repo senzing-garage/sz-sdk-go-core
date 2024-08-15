@@ -4,7 +4,12 @@ package szdiagnostic
 // Constants
 // ----------------------------------------------------------------------------
 
-// Identfier of the szdiagnostic package found messages having the format "senzing-6003xxxx".
+/*
+ComponentID is the identifier of the szdiagnostic package.
+szdiagnostic package messages will have the format "SZSDK6003eeee" where "eeee" is the error identifier.
+
+ExceptionCodeTemplate is a template for the error code returned by the Senzing C binary
+*/
 const (
 	ComponentID           = 6003
 	ExceptionCodeTemplate = "SENZ%04d"

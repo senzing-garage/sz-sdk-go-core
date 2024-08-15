@@ -1,5 +1,5 @@
 /*
-The szconfigmanager package is used to modify Senzing configurations in the Senzing database.
+The szconfigmanager package is used to modify Senzing configuration JSON documents in the Senzing datastore.
 It is a wrapper over Senzing's G2Configmgr C binding.
 
 To use szconfigmanager,

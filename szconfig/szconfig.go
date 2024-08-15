@@ -30,10 +30,15 @@ import (
 	"github.com/senzing-garage/go-observing/observer"
 	"github.com/senzing-garage/go-observing/subject"
 	"github.com/senzing-garage/sz-sdk-go-core/helper"
+	"github.com/senzing-garage/sz-sdk-go/senzing"
 	"github.com/senzing-garage/sz-sdk-go/szconfig"
 	"github.com/senzing-garage/sz-sdk-go/szerror"
 )
 
+/*
+The Szconfig implementation of the [senzing.SzConfig] interface
+communicates with the Senzing C binaries.
+*/
 type Szconfig struct {
 	isTrace        bool
 	logger         logging.Logging
@@ -58,7 +63,8 @@ The AddDataSource method adds a new data source to an existing in-memory configu
 
 Input
   - ctx: A context to control lifecycle.
-  - configHandle: Identifier of an in-memory configuration. It was created by the CreateConfig() or ImportConfig() methods.
+  - configHandle: Identifier of an in-memory configuration. It was created by the
+    [Szconfig.CreateConfig] or [Szconfig.ImportConfig] methods.
   - dataSourceCode: Unique identifier of the data source (e.g. "TEST_DATASOURCE").
 
 Output
@@ -93,7 +99,8 @@ After calling CloseConfig, the configuration handle can no longer be used and is
 
 Input
   - ctx: A context to control lifecycle.
-  - configHandle: Identifier of the in-memory configuration to close. It was created by the CreateConfig() or ImportConfig() methods.
+  - configHandle: Identifier of the in-memory configuration. It was created by the
+    [Szconfig.CreateConfig] or [Szconfig.ImportConfig] methods.
 */
 func (client *Szconfig) CloseConfig(ctx context.Context, configHandle uintptr) error {
 	var err error
@@ -114,10 +121,10 @@ func (client *Szconfig) CloseConfig(ctx context.Context, configHandle uintptr) e
 
 /*
 The CreateConfig method creates an in-memory configuration using the default template.
-The default template is the Senzing configuration file, `g2config.json`, located in the PIPELINE.RESOURCEPATH path.
-A configHandle is returned identifying the in-memory configuration.
-The configHandle is used by the AddDataSource(), DeleteDataSource(), ExportConfig(), and GetDataSources() methods.
-The configHandle is terminated by the CloseConfig() method.
+The default template is the Senzing configuration JSON document file, `g2config.json`, located in the PIPELINE.RESOURCEPATH path.
+The returned configHandle is used by the [Szconfig.AddDataSource], [Szconfig.DeleteDataSource],
+[Szconfig.ExportConfig], and [Szconfig.GetDataSources] methods.
+The configHandle is terminated by the [Szconfig.CloseConfig] method.
 
 Input
   - ctx: A context to control lifecycle.
@@ -148,7 +155,8 @@ The DeleteDataSource method removes a data source from an in-memory configuratio
 
 Input
   - ctx: A context to control lifecycle.
-  - configHandle: Identifier of an in-memory configuration. It was created by the CreateConfig() or ImportConfig() methods.
+  - configHandle: Identifier of an in-memory configuration. It was created by the
+    [Szconfig.CreateConfig] or [Szconfig.ImportConfig] methods.
   - dataSourceCode: Unique identifier of the data source (e.g. "TEST_DATASOURCE").
 */
 func (client *Szconfig) DeleteDataSource(ctx context.Context, configHandle uintptr, dataSourceCode string) error {
@@ -195,14 +203,15 @@ func (client *Szconfig) Destroy(ctx context.Context) error {
 }
 
 /*
-The ExportConfig method creates a JSON document representation of an in-memory configuration.
+The ExportConfig method creates a Senzing configuration JSON document representation of an in-memory configuration.
 
 Input
   - ctx: A context to control lifecycle.
-  - configHandle: Identifier of an in-memory configuration. It was created by the CreateConfig() or ImportConfig() methods.
+  - configHandle: Identifier of an in-memory configuration. It was created by the
+    [Szconfig.CreateConfig] or [Szconfig.ImportConfig] methods.
 
 Output
-  - configDefinition: A JSON document representation of the in-memory configuration.
+  - configDefinition: A Senzing configuration JSON document representation of the in-memory configuration.
 */
 func (client *Szconfig) ExportConfig(ctx context.Context, configHandle uintptr) (string, error) {
 	var err error
@@ -227,7 +236,8 @@ The GetDataSources method returns a JSON document containing data sources define
 
 Input
   - ctx: A context to control lifecycle.
-  - configHandle: Identifier of an in-memory configuration. It was created by the CreateConfig() or ImportConfig() methods.
+  - configHandle: Identifier of an in-memory configuration. It was created by the
+    [Szconfig.CreateConfig] or [Szconfig.ImportConfig] methods.
 
 Output
   - A JSON document listing data sources in the in-memory configuration.
@@ -252,13 +262,13 @@ func (client *Szconfig) GetDataSources(ctx context.Context, configHandle uintptr
 
 /*
 The ImportConfig method creates a new in-memory configuration from a JSON document.
-A configHandle is returned identifying the in-memory configuration.
-The configHandle is used by the AddDataSource(), DeleteDataSource(), ExportConfig(), and GetDataSources() methods.
-The configHandle is terminated by the CloseConfig() method.
+The returned configHandle is used by the [Szconfig.AddDataSource], [Szconfig.DeleteDataSource],
+[Szconfig.ExportConfig], and [Szconfig.GetDataSources] methods.
+The configHandle is terminated by the [Szconfig.CloseConfig] method.
 
 Input
   - ctx: A context to control lifecycle.
-  - configDefinition: A JSON document containing the Senzing configuration.
+  - configDefinition: A Senzing configuration JSON document.
 
 Output
   - configHandle: Identifier of the in-memory configuration.
@@ -710,4 +720,9 @@ func (client *Szconfig) getByteArrayC(size int) *C.char {
 // Make a byte array.
 func (client *Szconfig) getByteArray(size int) []byte {
 	return make([]byte, size)
+}
+
+// A hack: Only needed to import the "senzing" package for the godoc comments.
+func junk() {
+	fmt.Printf(senzing.SzNoAttributes)
 }

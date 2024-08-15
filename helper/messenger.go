@@ -7,10 +7,10 @@ import (
 )
 
 /*
-The GetMessenger function returns a message generator that creates "SZSDKnnnn..." messages.
+The GetMessenger function returns a message generator that creates "SZSDKcccceeee" messages.
 
 Input
-  - componentID: The 4-digit identifier of the component used as "nnnn" in the "SZSDKnnnn" message identifier.
+  - componentID: The 4-digit identifier of the component used as "nnnn" in the "SZSDKcccceee" message identifier.
   - idMessages: A map of error identifiers to error strings.
   - callerSkip: Default number of "frames" to ascend. See [runtime.Caller].
   - options: Zero or more Option* types from [logging].

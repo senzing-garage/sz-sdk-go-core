@@ -7,10 +7,10 @@ import (
 )
 
 /*
-The GetLogger function returns a logger that logs "SZSDKnnnn..." messages.
+The GetLogger function returns a logger that logs "SZSDKcccceeee" messages.
 
 Input
-  - componentID: The 4-digit identifier of the component used as "nnnn" in the "SZSDKnnnn" message identifier.
+  - componentID: The 4-digit identifier of the component used as "nnnn" in the "SZSDKcccceeee" message identifier.
   - idMessages: A map of error identifiers to error strings.
   - callerSkip: Default number of "frames" to ascend. See [runtime.Caller].
   - options: Zero or more Option* types from [logging].
