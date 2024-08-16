@@ -1,5 +1,6 @@
 /*
-The szconfigmanager implementation is a wrapper over the Senzing libg2configmgr library.
+The [Szconfigmanager] implementation of the [senzing.SzConfigManager] interface
+communicates with the Senzing native C binary, libG2.so.
 */
 package szconfigmanager
 
@@ -30,10 +31,15 @@ import (
 	"github.com/senzing-garage/go-observing/observer"
 	"github.com/senzing-garage/go-observing/subject"
 	"github.com/senzing-garage/sz-sdk-go-core/helper"
+	"github.com/senzing-garage/sz-sdk-go/senzing"
 	"github.com/senzing-garage/sz-sdk-go/szconfigmanager"
 	"github.com/senzing-garage/sz-sdk-go/szerror"
 )
 
+/*
+The Szconfigmanager implementation of the [senzing.SzConfigManager] interface
+communicates with the Senzing C binaries.
+*/
 type Szconfigmanager struct {
 	isTrace        bool
 	logger         logging.Logging
@@ -54,15 +60,15 @@ const (
 // ----------------------------------------------------------------------------
 
 /*
-The AddConfig method adds a Senzing configuration JSON document to the Senzing database.
+The AddConfig method adds a Senzing configuration JSON document to the Senzing datastore.
 
 Input
   - ctx: A context to control lifecycle.
   - configDefinition: The Senzing configuration JSON document.
-  - configComment: A free-form string describing the configuration document.
+  - configComment: A free-form string describing the Senzing configuration JSON document.
 
 Output
-  - A configuration identifier.
+  - configID: A Senzing configuration JSON document identifier.
 */
 func (client *Szconfigmanager) AddConfig(ctx context.Context, configDefinition string, configComment string) (int64, error) {
 	var err error
@@ -111,15 +117,14 @@ func (client *Szconfigmanager) Destroy(ctx context.Context) error {
 }
 
 /*
-The GetConfig method retrieves a specific Senzing configuration JSON document from the Senzing database.
+The GetConfig method retrieves a specific Senzing configuration JSON document from the Senzing datastore.
 
 Input
   - ctx: A context to control lifecycle.
-  - configID: The configuration identifier of the desired Senzing Engine configuration JSON document to retrieve.
+  - configID: The identifier of the desired Senzing configuration JSON document to retrieve.
 
 Output
-  - A JSON document containing the Senzing configuration.
-    See the example output.
+  - configDefinition: A Senzing configuration JSON document.
 */
 func (client *Szconfigmanager) GetConfig(ctx context.Context, configID int64) (string, error) {
 	var err error
@@ -140,14 +145,13 @@ func (client *Szconfigmanager) GetConfig(ctx context.Context, configID int64) (s
 }
 
 /*
-The GetConfigs method retrieves a list of Senzing configurations from the Senzing database.
+The GetConfigs method retrieves a list of Senzing configuration JSON documents from the Senzing datastore.
 
 Input
   - ctx: A context to control lifecycle.
 
 Output
-  - A JSON document containing Senzing configurations.
-    See the example output.
+  - A JSON document listing Senzing configuration JSON document metadata.
 */
 func (client *Szconfigmanager) GetConfigs(ctx context.Context) (string, error) {
 	var err error
@@ -168,13 +172,15 @@ func (client *Szconfigmanager) GetConfigs(ctx context.Context) (string, error) {
 }
 
 /*
-The GetDefaultConfigID method retrieves from the Senzing database the configuration identifier of the default Senzing configuration.
+The GetDefaultConfigID method retrieves the default Senzing configuration JSON document identifier from the Senzing datastore.
+Note: this may not be the currently active in-memory configuration.
+See [Szconfigmanager.SetDefaultConfigID] and [Szconfigmanager.ReplaceDefaultConfigID] for more details.
 
 Input
   - ctx: A context to control lifecycle.
 
 Output
-  - A configuration identifier which identifies the current configuration in use.
+  - configID: The default Senzing configuration JSON document identifier. If none exists, zero (0) is returned.
 */
 func (client *Szconfigmanager) GetDefaultConfigID(ctx context.Context) (int64, error) {
 	var err error
@@ -195,15 +201,19 @@ func (client *Szconfigmanager) GetDefaultConfigID(ctx context.Context) (int64, e
 }
 
 /*
-The ReplaceDefaultConfigID method replaces the old configuration identifier with a new configuration identifier in the Senzing database.
-It is like a "compare-and-swap" instruction to serialize concurrent editing of configuration.
-If currentDefaultConfigID is no longer the "old configuration identifier", the operation will fail.
-To simply set the default configuration ID, use SetDefaultConfigID().
+Similar to the [Szconfigmanager.SetDefaultConfigID] method,
+the ReplaceDefaultConfigID method sets which Senzing configuration JSON document is used when initializing or reinitializing the system.
+The difference is that ReplaceDefaultConfigID only succeeds when the old Senzing configuration JSON document identifier
+is the existing default when the new identifier is applied.
+In other words, if currentDefaultConfigID is no longer the "old" identifier, the operation will fail.
+It is similar to a "compare-and-swap" instruction to avoid a "race condition".
+Note that calling the ReplaceDefaultConfigID method does not affect the currently running in-memory configuration.
+To simply set the default Senzing configuration JSON document identifier, use [Szconfigmanager.SetDefaultConfigID].
 
 Input
   - ctx: A context to control lifecycle.
-  - currentDefaultConfigID: The configuration identifier to replace.
-  - newDefaultConfigID: The configuration identifier to use as the default.
+  - currentDefaultConfigID: The Senzing configuration JSON document identifier to replace.
+  - newDefaultConfigID: The Senzing configuration JSON document identifier to use as the default.
 */
 func (client *Szconfigmanager) ReplaceDefaultConfigID(ctx context.Context, currentDefaultConfigID int64, newDefaultConfigID int64) error {
 	var err error
@@ -225,12 +235,16 @@ func (client *Szconfigmanager) ReplaceDefaultConfigID(ctx context.Context, curre
 }
 
 /*
-The SetDefaultConfigID method replaces the sets a new configuration identifier in the Senzing database.
-To serialize modifying of the configuration identifier, see ReplaceDefaultConfigID().
+The SetDefaultConfigID method sets which Senzing configuration JSON document identifier
+is used when initializing or reinitializing the system.
+Note that calling the SetDefaultConfigID method does not affect the currently
+running in-memory configuration.
+SetDefaultConfigID is susceptible to "race conditions".
+To avoid race conditions, see  [Szconfigmanager.ReplaceDefaultConfigID].
 
 Input
   - ctx: A context to control lifecycle.
-  - configID: The configuration identifier of the Senzing Engine configuration to use as the default.
+  - configID: The Senzing configuration JSON document identifier to use as the default.
 */
 func (client *Szconfigmanager) SetDefaultConfigID(ctx context.Context, configID int64) error {
 	var err error
@@ -661,4 +675,9 @@ func (client *Szconfigmanager) getByteArrayC(size int) *C.char {
 // Make a byte array.
 func (client *Szconfigmanager) getByteArray(size int) []byte {
 	return make([]byte, size)
+}
+
+// A hack: Only needed to import the "senzing" package for the godoc comments.
+func junk() {
+	fmt.Printf(senzing.SzNoAttributes)
 }

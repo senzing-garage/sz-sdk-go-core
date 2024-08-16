@@ -1,4 +1,6 @@
 /*
+The sz-sdk-go-core packages implement Senzing objects that communicate with the Senzing native C binary, libG2.so.
+
 # Synopsis
 
 The Senzing sz-sdk-go-core packages are wrappers over Senzing's C-based library.
@@ -59,5 +61,7 @@ Using Docker, install Senzing:
 # Examples
 
 Examples of use can be seen in the xxxx_test.go files.
+
+[bob]: https://www.bob.com
 */
 package main

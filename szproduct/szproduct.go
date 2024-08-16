@@ -1,5 +1,6 @@
 /*
-The Szproduct implementation is a wrapper over the Senzing libg2product library.
+The [Szproduct] implementation of the [senzing.SzProduct] interface
+communicates with the Senzing native C binary, libG2.so.
 */
 package szproduct
 
@@ -30,10 +31,15 @@ import (
 	"github.com/senzing-garage/go-observing/observer"
 	"github.com/senzing-garage/go-observing/subject"
 	"github.com/senzing-garage/sz-sdk-go-core/helper"
+	"github.com/senzing-garage/sz-sdk-go/senzing"
 	"github.com/senzing-garage/sz-sdk-go/szerror"
 	"github.com/senzing-garage/sz-sdk-go/szproduct"
 )
 
+/*
+The Szproduct implementation of the [senzing.SzProduct] interface
+communicates with the Senzing C binaries.
+*/
 type Szproduct struct {
 	isTrace        bool
 	logger         logging.Logging
@@ -78,14 +84,13 @@ func (client *Szproduct) Destroy(ctx context.Context) error {
 }
 
 /*
-The GetLicense method retrieves information about the currently used license by the Senzing API.
+The GetLicense method retrieves information about the license used by the Senzing API.
 
 Input
   - ctx: A context to control lifecycle.
 
 Output
   - A JSON document containing Senzing license metadata.
-    See the example output.
 */
 func (client *Szproduct) GetLicense(ctx context.Context) (string, error) {
 	var err error
@@ -106,14 +111,13 @@ func (client *Szproduct) GetLicense(ctx context.Context) (string, error) {
 }
 
 /*
-The GetVersion method returns the version of the Senzing API.
+The GetVersion method returns the Senzing API version information.
 
 Input
   - ctx: A context to control lifecycle.
 
 Output
   - A JSON document containing metadata about the Senzing Engine version being used.
-    See the example output.
 */
 func (client *Szproduct) GetVersion(ctx context.Context) (string, error) {
 	var err error
@@ -481,4 +485,9 @@ func (client *Szproduct) getByteArrayC(size int) *C.char {
 // Make a byte array.
 func (client *Szproduct) getByteArray(size int) []byte {
 	return make([]byte, size)
+}
+
+// A hack: Only needed to import the "senzing" package for the godoc comments.
+func junk() {
+	fmt.Printf(senzing.SzNoAttributes)
 }

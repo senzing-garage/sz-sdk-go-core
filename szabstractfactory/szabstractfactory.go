@@ -11,7 +11,11 @@ import (
 	"github.com/senzing-garage/sz-sdk-go/senzing"
 )
 
-// Szabstractfactory is an implementation of the senzing.SzAbstractFactory interface.
+/*
+Szabstractfactory is an implementation of the [senzing.SzAbstractFactory] interface.
+
+[senzing.SzAbstractFactory]: https://pkg.go.dev/github.com/senzing-garage/sz-sdk-go/senzing#SzAbstractFactory
+*/
 type Szabstractfactory struct {
 	ConfigID       int64
 	InstanceName   string
@@ -24,15 +28,14 @@ type Szabstractfactory struct {
 // ----------------------------------------------------------------------------
 
 /*
-TODO: Write description for CreateSzConfig
-The CreateSzConfig method...
+The CreateSzConfig method returns an SzConfig object
+implemented to use the Senzing native C binary, libG2.so.
 
 Input
   - ctx: A context to control lifecycle.
 
 Output
-  - An senzing.SzConfig object.
-    See the example output.
+  - An SzConfig object.
 */
 func (factory *Szabstractfactory) CreateSzConfig(ctx context.Context) (senzing.SzConfig, error) {
 	result := &szconfig.Szconfig{}
@@ -41,15 +44,14 @@ func (factory *Szabstractfactory) CreateSzConfig(ctx context.Context) (senzing.S
 }
 
 /*
-TODO: Write description for CreateSzConfigManager
-The CreateSzConfigManager method...
+The CreateSzConfigManager method returns an SzConfigManager object
+implemented to use the Senzing native C binary, libG2.so.
 
 Input
   - ctx: A context to control lifecycle.
 
 Output
-  - An senzing.CreateConfigManager object.
-    See the example output.
+  - An SzConfigManager object.
 */
 func (factory *Szabstractfactory) CreateSzConfigManager(ctx context.Context) (senzing.SzConfigManager, error) {
 	result := &szconfigmanager.Szconfigmanager{}
@@ -58,15 +60,14 @@ func (factory *Szabstractfactory) CreateSzConfigManager(ctx context.Context) (se
 }
 
 /*
-TODO: Write description for CreateSzDiagnostic
-The CreateSzDiagnostic method...
+The CreateSzDiagnostic method returns an SzDiagnostic object
+implemented to use the Senzing native C binary, libG2.so.
 
 Input
   - ctx: A context to control lifecycle.
 
 Output
-  - An senzing.SzDiagnostic object.
-    See the example output.
+  - An SzDiagnostic object.
 */
 func (factory *Szabstractfactory) CreateSzDiagnostic(ctx context.Context) (senzing.SzDiagnostic, error) {
 	result := &szdiagnostic.Szdiagnostic{}
@@ -75,15 +76,14 @@ func (factory *Szabstractfactory) CreateSzDiagnostic(ctx context.Context) (senzi
 }
 
 /*
-TODO: Write description for CreateSzEngine
-The CreateSzEngine method...
+The CreateSzEngine method returns an SzEngine object
+implemented to use the Senzing native C binary, libG2.so.
 
 Input
   - ctx: A context to control lifecycle.
 
 Output
-  - An senzing.SzEngine object.
-    See the example output.
+  - An SzEngine object.
 */
 func (factory *Szabstractfactory) CreateSzEngine(ctx context.Context) (senzing.SzEngine, error) {
 	result := &szengine.Szengine{}
@@ -92,15 +92,14 @@ func (factory *Szabstractfactory) CreateSzEngine(ctx context.Context) (senzing.S
 }
 
 /*
-TODO: Write description for CreateSzProduct
-The CreateSzProduct method...
+The CreateSzProduct method returns an SzProduct object
+implemented to use the Senzing native C binary, libG2.so.
 
 Input
   - ctx: A context to control lifecycle.
 
 Output
-  - An senzing.SzProduct object.
-    See the example output.
+  - An SzProduct object.
 */
 func (factory *Szabstractfactory) CreateSzProduct(ctx context.Context) (senzing.SzProduct, error) {
 	result := &szproduct.Szproduct{}
