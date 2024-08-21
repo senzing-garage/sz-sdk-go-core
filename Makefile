@@ -131,7 +131,7 @@ coverage: coverage-osarch-specific
 check-coverage: export SENZING_LOG_LEVEL=TRACE
 check-coverage:
 	@go test ./... -coverprofile=./cover.out -covermode=atomic -coverpkg=./...
-	@${GOBIN}/go-test-coverage --config=.github/coverage/.testcoverage.yaml
+	@${GOBIN}/go-test-coverage --config=.github/coverage/testcoverage.yaml
 
 # -----------------------------------------------------------------------------
 # Documentation
@@ -164,7 +164,7 @@ help:
 print-make-variables:
 	@$(foreach V,$(sort $(.VARIABLES)), \
 		$(if $(filter-out environment% default automatic, \
-		$(origin $V)),$(warning $V=$($V) ($(value $V)))))
+		$(origin $V)),$(info $V=$($V) ($(value $V)))))
 
 
 .PHONY: update-pkg-cache
