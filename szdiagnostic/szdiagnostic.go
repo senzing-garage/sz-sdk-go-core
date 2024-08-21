@@ -1,18 +1,18 @@
 /*
 The [Szdiagnostic] implementation of the [senzing.SzDiagnostic] interface
-communicates with the Senzing native C binary, libG2.so.
+communicates with the Senzing native C binary, libSz.so.
 */
 package szdiagnostic
 
 /*
 #include <stdlib.h>
-#include "libg2diagnostic.h"
-#include "libg2.h"
+#include "libSzdiagnostic.h"
+#include "libSz.h"
 #include "gohelpers/golang_helpers.h"
-#cgo CFLAGS: -g -I/opt/senzing/g2/sdk/c
-#cgo windows CFLAGS: -g -I"C:/Program Files/Senzing/g2/sdk/c"
-#cgo LDFLAGS: -L/opt/senzing/g2/lib -lG2
-#cgo windows LDFLAGS: -L"C:/Program Files/Senzing/g2/lib" -lG2
+#cgo CFLAGS: -g -I/opt/senzing/er/sdk/c
+#cgo windows CFLAGS: -g -I"C:/Program Files/Senzing/er/sdk/c"
+#cgo LDFLAGS: -L/opt/senzing/er/lib -lSz
+#cgo windows LDFLAGS: -L"C:/Program Files/Senzing/er/lib" -lSz
 */
 import "C"
 
@@ -91,7 +91,7 @@ func (client *Szdiagnostic) CheckDatastorePerformance(ctx context.Context, secon
 }
 
 /*
-The Destroy method will destroy and perform cleanup for the Senzing G2Diagnostic object.
+The Destroy method will destroy and perform cleanup for the Senzing SzDiagnostic object.
 It should be called after all other calls are complete.
 
 Input
@@ -199,7 +199,7 @@ func (client *Szdiagnostic) PurgeRepository(ctx context.Context) error {
 }
 
 /*
-The Reinitialize method re-initializes the Senzing G2Diagnostic object.
+The Reinitialize method re-initializes the Senzing SzDiagnostic object.
 
 Input
   - ctx: A context to control lifecycle.
@@ -251,7 +251,7 @@ Input
   - instanceName: A name for the auditing node, to help identify it within system logs.
   - settings: A JSON string containing configuration parameters.
   - configID: The configuration ID used for the initialization.  0 for current default configuration.
-  - verboseLogging: A flag to enable deeper logging of the G2 processing. 0 for no Senzing logging; 1 for logging.
+  - verboseLogging: A flag to enable deeper logging of the Sz processing. 0 for no Senzing logging; 1 for logging.
 */
 func (client *Szdiagnostic) Initialize(ctx context.Context, instanceName string, settings string, configID int64, verboseLogging int64) error {
 	var err error
@@ -388,12 +388,12 @@ func (client *Szdiagnostic) UnregisterObserver(ctx context.Context, observer obs
 // ----------------------------------------------------------------------------
 
 func (client *Szdiagnostic) checkDatastorePerformance(ctx context.Context, secondsToRun int) (string, error) {
-	// _DLEXPORT int G2Diagnostic_checkDBPerf(int secondsToRun, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize) );
+	// _DLEXPORT int SzDiagnostic_checkDBPerf(int secondsToRun, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize) );
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultResponse string
-	result := C.G2Diagnostic_checkDatastorePerformance_helper(C.longlong(secondsToRun))
+	result := C.SzDiagnostic_checkDatastorePerformance_helper(C.longlong(secondsToRun))
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4001, secondsToRun, result.returnCode)
 	}
@@ -403,11 +403,11 @@ func (client *Szdiagnostic) checkDatastorePerformance(ctx context.Context, secon
 }
 
 func (client *Szdiagnostic) destroy(ctx context.Context) error {
-	//  _DLEXPORT int G2Diagnostic_destroy();
+	//  _DLEXPORT int SzDiagnostic_destroy();
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
-	result := C.G2Diagnostic_destroy()
+	result := C.SzDiagnostic_destroy()
 	if result != noError {
 		err = client.newError(ctx, 4002, result)
 	}
@@ -415,12 +415,12 @@ func (client *Szdiagnostic) destroy(ctx context.Context) error {
 }
 
 func (client *Szdiagnostic) getDatastoreInfo(ctx context.Context) (string, error) {
-	// _DLEXPORT struct G2Diagnostic_getDatastoreInfo_result G2Diagnostic_getDatastoreInfo_helper();
+	// _DLEXPORT struct SzDiagnostic_getDatastoreInfo_result SzDiagnostic_getDatastoreInfo_helper();
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultResponse string
-	result := C.G2Diagnostic_getDatastoreInfo_helper()
+	result := C.SzDiagnostic_getDatastoreInfo_helper()
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4003, result.returnCode)
 	}
@@ -430,12 +430,12 @@ func (client *Szdiagnostic) getDatastoreInfo(ctx context.Context) (string, error
 }
 
 func (client *Szdiagnostic) getFeature(ctx context.Context, featureID int64) (string, error) {
-	//  _DLEXPORT int G2Diagnostic_getFeature(const long long libFeatID);
+	//  _DLEXPORT int SzDiagnostic_getFeature(const long long libFeatID);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultResponse string
-	result := C.G2Diagnostic_getFeature_helper(C.longlong(featureID))
+	result := C.SzDiagnostic_getFeature_helper(C.longlong(featureID))
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4004, featureID, result)
 	}
@@ -452,10 +452,10 @@ Input
   - ctx: A context to control lifecycle.
   - instanceName: A name for the auditing node, to help identify it within system logs.
   - settings: A JSON string containing configuration parameters.
-  - verboseLogging: A flag to enable deeper logging of the G2 processing. 0 for no Senzing logging; 1 for logging.
+  - verboseLogging: A flag to enable deeper logging of the Sz processing. 0 for no Senzing logging; 1 for logging.
 */
 func (client *Szdiagnostic) init(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
-	// _DLEXPORT int G2Diagnostic_init(const char *moduleName, const char *iniParams, const int verboseLogging);
+	// _DLEXPORT int SzDiagnostic_init(const char *moduleName, const char *iniParams, const int verboseLogging);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
@@ -463,7 +463,7 @@ func (client *Szdiagnostic) init(ctx context.Context, instanceName string, setti
 	defer C.free(unsafe.Pointer(instanceNameForC))
 	settingsForC := C.CString(settings)
 	defer C.free(unsafe.Pointer(settingsForC))
-	result := C.G2Diagnostic_init(instanceNameForC, settingsForC, C.longlong(verboseLogging))
+	result := C.SzDiagnostic_init(instanceNameForC, settingsForC, C.longlong(verboseLogging))
 	if result != noError {
 		err = client.newError(ctx, 4005, instanceName, settings, verboseLogging, result)
 	}
@@ -479,10 +479,10 @@ Input
   - instanceName: A name for the auditing node, to help identify it within system logs.
   - settings: A JSON string containing configuration parameters.
   - configID: The configuration ID used for the initialization.
-  - verboseLogging: A flag to enable deeper logging of the G2 processing. 0 for no Senzing logging; 1 for logging.
+  - verboseLogging: A flag to enable deeper logging of the Sz processing. 0 for no Senzing logging; 1 for logging.
 */
 func (client *Szdiagnostic) initWithConfigID(ctx context.Context, instanceName string, settings string, configID int64, verboseLogging int64) error {
-	//  _DLEXPORT int G2Diagnostic_initWithConfigID(const char *moduleName, const char *iniParams, const long long initConfigID, const int verboseLogging);
+	//  _DLEXPORT int SzDiagnostic_initWithConfigID(const char *moduleName, const char *iniParams, const long long initConfigID, const int verboseLogging);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
@@ -490,7 +490,7 @@ func (client *Szdiagnostic) initWithConfigID(ctx context.Context, instanceName s
 	defer C.free(unsafe.Pointer(instanceNameForC))
 	settingsForC := C.CString(settings)
 	defer C.free(unsafe.Pointer(settingsForC))
-	result := C.G2Diagnostic_initWithConfigID(instanceNameForC, settingsForC, C.longlong(configID), C.longlong(verboseLogging))
+	result := C.SzDiagnostic_initWithConfigID(instanceNameForC, settingsForC, C.longlong(configID), C.longlong(verboseLogging))
 	if result != noError {
 		err = client.newError(ctx, 4006, instanceName, settings, configID, verboseLogging, result)
 	}
@@ -498,11 +498,11 @@ func (client *Szdiagnostic) initWithConfigID(ctx context.Context, instanceName s
 }
 
 func (client *Szdiagnostic) purgeRepository(ctx context.Context) error {
-	//  _DLEXPORT int G2Diagnostic_purgeRepository();
+	//  _DLEXPORT int SzDiagnostic_purgeRepository();
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
-	result := C.G2Diagnostic_purgeRepository()
+	result := C.SzDiagnostic_purgeRepository()
 	if result != noError {
 		err = client.newError(ctx, 4007, result)
 	}
@@ -510,11 +510,11 @@ func (client *Szdiagnostic) purgeRepository(ctx context.Context) error {
 }
 
 func (client *Szdiagnostic) reinit(ctx context.Context, configID int64) error {
-	//  _DLEXPORT int G2Diagnostic_reinit(const long long initConfigID);
+	//  _DLEXPORT int SzDiagnostic_reinit(const long long initConfigID);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
-	result := C.G2Diagnostic_reinit(C.longlong(configID))
+	result := C.SzDiagnostic_reinit(C.longlong(configID))
 	if result != noError {
 		err = client.newError(ctx, 4008, configID, result)
 	}
@@ -585,13 +585,13 @@ func (client *Szdiagnostic) panicOnError(err error) {
 // --- Sz exception handling --------------------------------------------------
 
 /*
-The clearLastException method erases the last exception message held by the Senzing G2Diagnostic object.
+The clearLastException method erases the last exception message held by the Senzing SzDiagnostic object.
 
 Input
   - ctx: A context to control lifecycle.
 */
 func (client *Szdiagnostic) clearLastException(ctx context.Context) error {
-	// _DLEXPORT void G2Diagnostic_clearLastException();
+	// _DLEXPORT void SzDiagnostic_clearLastException();
 	_ = ctx
 	var err error
 	if client.isTrace {
@@ -599,21 +599,21 @@ func (client *Szdiagnostic) clearLastException(ctx context.Context) error {
 		client.traceEntry(3)
 		defer func() { client.traceExit(4, err, time.Since(entryTime)) }()
 	}
-	C.G2Diagnostic_clearLastException()
+	C.SzDiagnostic_clearLastException()
 	return err
 }
 
 /*
-The getLastException method retrieves the last exception thrown in Senzing's G2Diagnostic.
+The getLastException method retrieves the last exception thrown in Senzing's SzDiagnostic.
 
 Input
   - ctx: A context to control lifecycle.
 
 Output
-  - A string containing the error received from Senzing's G2Diagnostic.
+  - A string containing the error received from Senzing's SzDiagnostic.
 */
 func (client *Szdiagnostic) getLastException(ctx context.Context) (string, error) {
-	// _DLEXPORT int G2Config_getLastException(char *buffer, const size_t bufSize);
+	// _DLEXPORT int SzDiagnostic_getLastException(char *buffer, const size_t bufSize);
 	_ = ctx
 	var err error
 	var result string
@@ -623,22 +623,22 @@ func (client *Szdiagnostic) getLastException(ctx context.Context) (string, error
 		defer func() { client.traceExit(12, result, err, time.Since(entryTime)) }()
 	}
 	stringBuffer := client.getByteArray(initialByteArraySize)
-	C.G2Diagnostic_getLastException((*C.char)(unsafe.Pointer(&stringBuffer[0])), C.size_t(len(stringBuffer)))
+	C.SzDiagnostic_getLastException((*C.char)(unsafe.Pointer(&stringBuffer[0])), C.size_t(len(stringBuffer)))
 	result = string(bytes.Trim(stringBuffer, "\x00"))
 	return result, err
 }
 
 /*
-The getLastExceptionCode method retrieves the code of the last exception thrown in Senzing's G2Diagnostic.
+The getLastExceptionCode method retrieves the code of the last exception thrown in Senzing's SzDiagnostic.
 
 Input:
   - ctx: A context to control lifecycle.
 
 Output:
-  - An int containing the error received from Senzing's G2Diagnostic.
+  - An int containing the error received from Senzing's SzDiagnostic.
 */
 func (client *Szdiagnostic) getLastExceptionCode(ctx context.Context) (int, error) {
-	//  _DLEXPORT int G2Diagnostic_getLastExceptionCode();
+	//  _DLEXPORT int SzDiagnostic_getLastExceptionCode();
 	_ = ctx
 	var err error
 	var result int
@@ -647,7 +647,7 @@ func (client *Szdiagnostic) getLastExceptionCode(ctx context.Context) (int, erro
 		client.traceEntry(13)
 		defer func() { client.traceExit(14, result, err, time.Since(entryTime)) }()
 	}
-	result = int(C.G2Diagnostic_getLastExceptionCode())
+	result = int(C.SzDiagnostic_getLastExceptionCode())
 	return result, err
 }
 

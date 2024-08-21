@@ -1,17 +1,17 @@
 /*
 The [Szengine] implementation of the [senzing.SzEngine] interface
-communicates with the Senzing native C binary, libG2.so.
+communicates with the Senzing native C binary, libSz.so.
 */
 package szengine
 
 /*
 #include <stdlib.h>
-#include "libg2.h"
-#include "gohelpers/golang_helpers.h"
-#cgo CFLAGS: -g -I/opt/senzing/g2/sdk/c
-#cgo windows CFLAGS: -g -I"C:/Program Files/Senzing/g2/sdk/c"
-#cgo LDFLAGS: -L/opt/senzing/g2/lib -lG2
-#cgo windows LDFLAGS: -L"C:/Program Files/Senzing/g2/lib" -lG2
+#include "libSz.h"
+#include "gohelpers/Szlang_helpers.h"
+#cgo CFLAGS: -g -I/opt/senzing/er/sdk/c
+#cgo windows CFLAGS: -g -I"C:/Program Files/Senzing/er/sdk/c"
+#cgo LDFLAGS: -L/opt/senzing/er/lib -lSz
+#cgo windows LDFLAGS: -L"C:/Program Files/Senzing/er/lib" -lSz
 */
 import "C"
 
@@ -201,7 +201,7 @@ func (client *Szengine) DeleteRecord(ctx context.Context, dataSourceCode string,
 }
 
 /*
-The Destroy method will destroy and perform cleanup for the Senzing G2 object.
+The Destroy method will destroy and perform cleanup for the Senzing Sz object.
 It should be called after all other calls are complete.
 
 Input
@@ -1315,7 +1315,7 @@ Input
   - instanceName: A name for the auditing node, to help identify it within system logs.
   - settings: A JSON string containing configuration parameters.
   - configID: The configuration ID used for the initialization.  0 for current default configuration.
-  - verboseLogging: A flag to enable deeper logging of the G2 processing. 0 for no Senzing logging; 1 for logging.
+  - verboseLogging: A flag to enable deeper logging of the Sz processing. 0 for no Senzing logging; 1 for logging.
 */
 func (client *Szengine) Initialize(ctx context.Context, instanceName string, settings string, configID int64, verboseLogging int64) error {
 	var err error
@@ -1461,7 +1461,7 @@ Input
   - recordDefinition: A JSON document containing the record to be added to the Senzing datastore.
 */
 func (client *Szengine) addRecord(ctx context.Context, dataSourceCode string, recordID string, recordDefinition string) (string, error) {
-	//  _DLEXPORT int G2_addRecord(const char* dataSourceCode, const char* recordID, const char* jsonData, const char *loadID);
+	//  _DLEXPORT int Sz_addRecord(const char* dataSourceCode, const char* recordID, const char* jsonData, const char *loadID);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
@@ -1471,7 +1471,7 @@ func (client *Szengine) addRecord(ctx context.Context, dataSourceCode string, re
 	defer C.free(unsafe.Pointer(recordIDForC))
 	recordDefinitionForC := C.CString(recordDefinition)
 	defer C.free(unsafe.Pointer(recordDefinitionForC))
-	result := C.G2_addRecord(dataSourceCodeForC, recordIDForC, recordDefinitionForC)
+	result := C.Sz_addRecord(dataSourceCodeForC, recordIDForC, recordDefinitionForC)
 	if result != noError {
 		err = client.newError(ctx, 4001, dataSourceCode, recordID, recordDefinition, result)
 	}
@@ -1492,7 +1492,7 @@ Output
   - A JSON document.
 */
 func (client *Szengine) addRecordWithInfo(ctx context.Context, dataSourceCode string, recordID string, recordDefinition string, flags int64) (string, error) {
-	//  _DLEXPORT int G2_addRecordWithInfo(const char* dataSourceCode, const char* recordID, const char* jsonData, const char *loadID, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
+	//  _DLEXPORT int Sz_addRecordWithInfo(const char* dataSourceCode, const char* recordID, const char* jsonData, const char *loadID, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
@@ -1503,7 +1503,7 @@ func (client *Szengine) addRecordWithInfo(ctx context.Context, dataSourceCode st
 	defer C.free(unsafe.Pointer(recordIDForC))
 	recordDefinitionForC := C.CString(recordDefinition)
 	defer C.free(unsafe.Pointer(recordDefinitionForC))
-	result := C.G2_addRecordWithInfo_helper(dataSourceCodeForC, recordIDForC, recordDefinitionForC, C.longlong(flags))
+	result := C.Sz_addRecordWithInfo_helper(dataSourceCodeForC, recordIDForC, recordDefinitionForC, C.longlong(flags))
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4002, dataSourceCode, recordID, recordDefinition, flags, result.returnCode)
 	}
@@ -1513,11 +1513,11 @@ func (client *Szengine) addRecordWithInfo(ctx context.Context, dataSourceCode st
 }
 
 func (client *Szengine) closeExport(ctx context.Context, exportHandle uintptr) error {
-	//  _DLEXPORT int G2_closeExport(ExportHandle responseHandle);
+	//  _DLEXPORT int Sz_closeExport(ExportHandle responseHandle);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
-	result := C.G2_closeExport_helper(C.uintptr_t(exportHandle))
+	result := C.Sz_closeExport_helper(C.uintptr_t(exportHandle))
 	if result != noError {
 		err = client.newError(ctx, 4003, exportHandle, result)
 	}
@@ -1525,12 +1525,12 @@ func (client *Szengine) closeExport(ctx context.Context, exportHandle uintptr) e
 }
 
 func (client *Szengine) countRedoRecords(ctx context.Context) (int64, error) {
-	//  _DLEXPORT long long G2_countRedoRecords();
+	//  _DLEXPORT long long Sz_countRedoRecords();
 	_ = ctx
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
-	result := int64(C.G2_countRedoRecords())
+	result := int64(C.Sz_countRedoRecords())
 	return result, err
 }
 
@@ -1543,7 +1543,7 @@ Input
   - recordID: The unique identifier within the records of the same data source.
 */
 func (client *Szengine) deleteRecord(ctx context.Context, dataSourceCode string, recordID string) (string, error) {
-	//  _DLEXPORT int G2_deleteRecord(const char* dataSourceCode, const char* recordID, const char* loadID);
+	//  _DLEXPORT int Sz_deleteRecord(const char* dataSourceCode, const char* recordID, const char* loadID);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
@@ -1551,7 +1551,7 @@ func (client *Szengine) deleteRecord(ctx context.Context, dataSourceCode string,
 	defer C.free(unsafe.Pointer(dataSourceCodeForC))
 	recordIDForC := C.CString(recordID)
 	defer C.free(unsafe.Pointer(recordIDForC))
-	result := C.G2_deleteRecord(dataSourceCodeForC, recordIDForC)
+	result := C.Sz_deleteRecord(dataSourceCodeForC, recordIDForC)
 	if result != noError {
 		err = client.newError(ctx, 4004, dataSourceCode, recordID, result)
 	}
@@ -1571,7 +1571,7 @@ Output
   - A JSON document.
 */
 func (client *Szengine) deleteRecordWithInfo(ctx context.Context, dataSourceCode string, recordID string, flags int64) (string, error) {
-	//  _DLEXPORT int G2_deleteRecordWithInfo(const char* dataSourceCode, const char* recordID, const char* loadID, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
+	//  _DLEXPORT int Sz_deleteRecordWithInfo(const char* dataSourceCode, const char* recordID, const char* loadID, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
@@ -1580,7 +1580,7 @@ func (client *Szengine) deleteRecordWithInfo(ctx context.Context, dataSourceCode
 	defer C.free(unsafe.Pointer(dataSourceCodeForC))
 	recordIDForC := C.CString(recordID)
 	defer C.free(unsafe.Pointer(recordIDForC))
-	result := C.G2_deleteRecordWithInfo_helper(dataSourceCodeForC, recordIDForC, C.longlong(flags))
+	result := C.Sz_deleteRecordWithInfo_helper(dataSourceCodeForC, recordIDForC, C.longlong(flags))
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4005, dataSourceCode, recordID, flags, result.returnCode)
 	}
@@ -1590,11 +1590,11 @@ func (client *Szengine) deleteRecordWithInfo(ctx context.Context, dataSourceCode
 }
 
 func (client *Szengine) destroy(ctx context.Context) error {
-	//  _DLEXPORT int G2_destroy();
+	//  _DLEXPORT int Sz_destroy();
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
-	result := C.G2_destroy()
+	result := C.Sz_destroy()
 	if result != noError {
 		err = client.newError(ctx, 4006, result)
 	}
@@ -1602,14 +1602,14 @@ func (client *Szengine) destroy(ctx context.Context) error {
 }
 
 func (client *Szengine) exportCsvEntityReport(ctx context.Context, csvColumnList string, flags int64) (uintptr, error) {
-	//  _DLEXPORT int G2_exportCSVEntityReport(const char* csvColumnList, const long long flags, ExportHandle* responseHandle);
+	//  _DLEXPORT int Sz_exportCSVEntityReport(const char* csvColumnList, const long long flags, ExportHandle* responseHandle);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultExportHandle uintptr
 	csvColumnListForC := C.CString(csvColumnList)
 	defer C.free(unsafe.Pointer(csvColumnListForC))
-	result := C.G2_exportCSVEntityReport_helper(csvColumnListForC, C.longlong(flags))
+	result := C.Sz_exportCSVEntityReport_helper(csvColumnListForC, C.longlong(flags))
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4007, csvColumnList, flags, result.returnCode, result)
 	}
@@ -1618,12 +1618,12 @@ func (client *Szengine) exportCsvEntityReport(ctx context.Context, csvColumnList
 }
 
 func (client *Szengine) exportJSONEntityReport(ctx context.Context, flags int64) (uintptr, error) {
-	//  _DLEXPORT int G2_exportJSONEntityReport(const long long flags, ExportHandle* responseHandle);
+	//  _DLEXPORT int Sz_exportJSONEntityReport(const long long flags, ExportHandle* responseHandle);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultExportHandle uintptr
-	result := C.G2_exportJSONEntityReport_helper(C.longlong(flags))
+	result := C.Sz_exportJSONEntityReport_helper(C.longlong(flags))
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4008, flags, result.returnCode, result)
 	}
@@ -1632,12 +1632,12 @@ func (client *Szengine) exportJSONEntityReport(ctx context.Context, flags int64)
 }
 
 func (client *Szengine) fetchNext(ctx context.Context, exportHandle uintptr) (string, error) {
-	//  _DLEXPORT int G2_fetchNext(ExportHandle responseHandle, char *responseBuf, const size_t bufSize);
+	//  _DLEXPORT int Sz_fetchNext(ExportHandle responseHandle, char *responseBuf, const size_t bufSize);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultResponse string
-	result := C.G2_fetchNext_helper(C.uintptr_t(exportHandle))
+	result := C.Sz_fetchNext_helper(C.uintptr_t(exportHandle))
 	if result.returnCode < 0 {
 		err = client.newError(ctx, 4009, exportHandle, result.returnCode, result)
 	}
@@ -1647,12 +1647,12 @@ func (client *Szengine) fetchNext(ctx context.Context, exportHandle uintptr) (st
 }
 
 func (client *Szengine) findInterestingEntitiesByEntityID(ctx context.Context, entityID int64, flags int64) (string, error) {
-	//  _DLEXPORT int G2_findInterestingEntitiesByEntityID(const long long entityID, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
+	//  _DLEXPORT int Sz_findInterestingEntitiesByEntityID(const long long entityID, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultResponse string
-	result := C.G2_findInterestingEntitiesByEntityID_helper(C.longlong(entityID), C.longlong(flags))
+	result := C.Sz_findInterestingEntitiesByEntityID_helper(C.longlong(entityID), C.longlong(flags))
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4010, entityID, flags, result.returnCode)
 	}
@@ -1662,7 +1662,7 @@ func (client *Szengine) findInterestingEntitiesByEntityID(ctx context.Context, e
 }
 
 func (client *Szengine) findInterestingEntitiesByRecordID(ctx context.Context, dataSourceCode string, recordID string, flags int64) (string, error) {
-	//  _DLEXPORT int G2_findInterestingEntitiesByRecordID(const char* dataSourceCode, const char* recordID, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
+	//  _DLEXPORT int Sz_findInterestingEntitiesByRecordID(const char* dataSourceCode, const char* recordID, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
@@ -1671,7 +1671,7 @@ func (client *Szengine) findInterestingEntitiesByRecordID(ctx context.Context, d
 	defer C.free(unsafe.Pointer(dataSourceCodeForC))
 	recordIDForC := C.CString(recordID)
 	defer C.free(unsafe.Pointer(recordIDForC))
-	result := C.G2_findInterestingEntitiesByRecordID_helper(dataSourceCodeForC, recordIDForC, C.longlong(flags))
+	result := C.Sz_findInterestingEntitiesByRecordID_helper(dataSourceCodeForC, recordIDForC, C.longlong(flags))
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4011, dataSourceCode, recordID, flags, result.returnCode)
 	}
@@ -1681,14 +1681,14 @@ func (client *Szengine) findInterestingEntitiesByRecordID(ctx context.Context, d
 }
 
 func (client *Szengine) findNetworkByEntityIDV2(ctx context.Context, entityIDs string, maxDegrees int64, buildOutDegree int64, buildOutMaxEntities int64, flags int64) (string, error) {
-	//  _DLEXPORT int G2_findNetworkByEntityID_V2(const char* entityList, const int maxDegree, const int buildOutDegree, const int maxEntities, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
+	//  _DLEXPORT int Sz_findNetworkByEntityID_V2(const char* entityList, const int maxDegree, const int buildOutDegree, const int maxEntities, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultResponse string
 	entityListForC := C.CString(entityIDs)
 	defer C.free(unsafe.Pointer(entityListForC))
-	result := C.G2_findNetworkByEntityID_V2_helper(entityListForC, C.longlong(maxDegrees), C.longlong(buildOutDegree), C.longlong(buildOutMaxEntities), C.longlong(flags))
+	result := C.Sz_findNetworkByEntityID_V2_helper(entityListForC, C.longlong(maxDegrees), C.longlong(buildOutDegree), C.longlong(buildOutMaxEntities), C.longlong(flags))
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4013, entityIDs, maxDegrees, buildOutDegree, buildOutMaxEntities, flags, result.returnCode)
 	}
@@ -1698,14 +1698,14 @@ func (client *Szengine) findNetworkByEntityIDV2(ctx context.Context, entityIDs s
 }
 
 func (client *Szengine) findNetworkByRecordIDV2(ctx context.Context, recordKeys string, maxDegrees int64, buildOutDegree int64, buildOutMaxEntities int64, flags int64) (string, error) {
-	//  _DLEXPORT int G2_findNetworkByRecordID_V2(const char* recordList, const int maxDegree, const int buildOutDegree, const int maxEntities, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
+	//  _DLEXPORT int Sz_findNetworkByRecordID_V2(const char* recordList, const int maxDegree, const int buildOutDegree, const int maxEntities, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultResponse string
 	recordListForC := C.CString(recordKeys)
 	defer C.free(unsafe.Pointer(recordListForC))
-	result := C.G2_findNetworkByRecordID_V2_helper(recordListForC, C.longlong(maxDegrees), C.longlong(buildOutDegree), C.longlong(buildOutMaxEntities), C.longlong(flags))
+	result := C.Sz_findNetworkByRecordID_V2_helper(recordListForC, C.longlong(maxDegrees), C.longlong(buildOutDegree), C.longlong(buildOutMaxEntities), C.longlong(flags))
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4015, recordKeys, maxDegrees, buildOutDegree, buildOutMaxEntities, flags, result.returnCode)
 	}
@@ -1730,12 +1730,12 @@ Output
     Example: `{"ENTITY_PATHS":[{"START_ENTITY_ID":1,"END_ENTITY_ID":2,"ENTITIES":[1,2]}],"ENTITIES":[{"RESOLVED_ENTITY":{"ENTITY_ID":1,"ENTITY_NAME":"JOHNSON","RECORD_SUMMARY":[{"DATA_SOURCE":"TEST","RECORD_COUNT":2,"FIRST_SEEN_DT":"2022-12-06 14:43:49.024","LAST_SEEN_DT":"2022-12-06 14:43:49.164"}],"LAST_SEEN_DT":"2022-12-06 14:43:49.164"},"RELATED_ENTITIES":[{"ENTITY_ID":2,"MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED","MATCH_KEY":"+PHONE+ACCT_NUM-SSN","ERRULE_CODE":"SF1","IS_DISCLOSED":0,"IS_AMBIGUOUS":0},{"ENTITY_ID":3,"MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED","MATCH_KEY":"+PHONE+ACCT_NUM-DOB-SSN","ERRULE_CODE":"SF1","IS_DISCLOSED":0,"IS_AMBIGUOUS":0}]},{"RESOLVED_ENTITY":{"ENTITY_ID":2,"ENTITY_NAME":"OCEANGUY","RECORD_SUMMARY":[{"DATA_SOURCE":"TEST","RECORD_COUNT":1,"FIRST_SEEN_DT":"2022-12-06 14:43:49.104","LAST_SEEN_DT":"2022-12-06 14:43:49.104"}],"LAST_SEEN_DT":"2022-12-06 14:43:49.104"},"RELATED_ENTITIES":[{"ENTITY_ID":1,"MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED","MATCH_KEY":"+PHONE+ACCT_NUM-SSN","ERRULE_CODE":"SF1","IS_DISCLOSED":0,"IS_AMBIGUOUS":0},{"ENTITY_ID":3,"MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED","MATCH_KEY":"+ADDRESS+PHONE+ACCT_NUM-DOB-SSN","ERRULE_CODE":"SF1","IS_DISCLOSED":0,"IS_AMBIGUOUS":0}]}]}`
 */
 func (client *Szengine) findPathByEntityIDV2(ctx context.Context, startEntityID int64, endEntityID int64, maxDegrees int64, flags int64) (string, error) {
-	//  _DLEXPORT int G2_findPathByEntityID_V2(const long long entityID1, const long long entityID2, const int maxDegree, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
+	//  _DLEXPORT int Sz_findPathByEntityID_V2(const long long entityID1, const long long entityID2, const int maxDegree, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultResponse string
-	result := C.G2_findPathByEntityID_V2_helper(C.longlong(startEntityID), C.longlong(endEntityID), C.longlong(maxDegrees), C.longlong(flags))
+	result := C.Sz_findPathByEntityID_V2_helper(C.longlong(startEntityID), C.longlong(endEntityID), C.longlong(maxDegrees), C.longlong(flags))
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4017, startEntityID, endEntityID, maxDegrees, flags, result.returnCode)
 	}
@@ -1763,7 +1763,7 @@ Output
   - A JSON document.
 */
 func (client *Szengine) findPathByRecordIDV2(ctx context.Context, startDataSourceCode string, startRecordID string, endDataSourceCode string, endRecordID string, maxDegrees int64, flags int64) (string, error) {
-	//  _DLEXPORT int G2_findPathByRecordID_V2(const char* dataSourceCode1, const char* recordID1, const char* dataSourceCode2, const char* recordID2, const int maxDegree, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
+	//  _DLEXPORT int Sz_findPathByRecordID_V2(const char* dataSourceCode1, const char* recordID1, const char* dataSourceCode2, const char* recordID2, const int maxDegree, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
@@ -1776,7 +1776,7 @@ func (client *Szengine) findPathByRecordIDV2(ctx context.Context, startDataSourc
 	defer C.free(unsafe.Pointer(endDataSourceCodeForC))
 	endRecordIDForC := C.CString(endRecordID)
 	defer C.free(unsafe.Pointer(endRecordIDForC))
-	result := C.G2_findPathByRecordID_V2_helper(startDataSourceCodeForC, startRecordIDForC, endDataSourceCodeForC, endRecordIDForC, C.longlong(maxDegrees), C.longlong(flags))
+	result := C.Sz_findPathByRecordID_V2_helper(startDataSourceCodeForC, startRecordIDForC, endDataSourceCodeForC, endRecordIDForC, C.longlong(maxDegrees), C.longlong(flags))
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4019, startDataSourceCode, startRecordID, endDataSourceCode, endRecordID, maxDegrees, flags, result.returnCode)
 	}
@@ -1794,7 +1794,7 @@ It extends FindPathExcludingByEntityID() by adding output control flags.
 When excluding entities, the user may choose to either strictly exclude the entities,
 or prefer to exclude the entities but still include them if no other path is found.
 By default, entities will be strictly excluded.
-A "preferred exclude" may be done by specifying the G2_FIND_PATH_PREFER_EXCLUDE control flag.
+A "preferred exclude" may be done by specifying the Sz_FIND_PATH_PREFER_EXCLUDE control flag.
 
 Input
   - ctx: A context to control lifecycle.
@@ -1808,14 +1808,14 @@ Output
   - A JSON document.
 */
 func (client *Szengine) findPathByEntityIDWithAvoidsV2(ctx context.Context, startEntityID int64, endEntityID int64, maxDegrees int64, exclusions string, flags int64) (string, error) {
-	//  _DLEXPORT int G2_findPathExcludingByEntityID_V2(const long long entityID1, const long long entityID2, const int maxDegree, const char* excludedEntities, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
+	//  _DLEXPORT int Sz_findPathExcludingByEntityID_V2(const long long entityID1, const long long entityID2, const int maxDegree, const char* excludedEntities, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultResponse string
 	exclusionsForC := C.CString(exclusions)
 	defer C.free(unsafe.Pointer(exclusionsForC))
-	result := C.G2_findPathByEntityIDWithAvoids_V2_helper(C.longlong(startEntityID), C.longlong(endEntityID), C.longlong(maxDegrees), exclusionsForC, C.longlong(flags))
+	result := C.Sz_findPathByEntityIDWithAvoids_V2_helper(C.longlong(startEntityID), C.longlong(endEntityID), C.longlong(maxDegrees), exclusionsForC, C.longlong(flags))
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4021, startEntityID, endEntityID, maxDegrees, exclusions, flags, result.returnCode)
 	}
@@ -1833,7 +1833,7 @@ It extends FindPathExcludingByRecordID() by adding output control flags.
 When excluding entities, the user may choose to either strictly exclude the entities,
 or prefer to exclude the entities but still include them if no other path is found.
 By default, entities will be strictly excluded.
-A "preferred exclude" may be done by specifying the G2_FIND_PATH_PREFER_EXCLUDE control flag.
+A "preferred exclude" may be done by specifying the Sz_FIND_PATH_PREFER_EXCLUDE control flag.
 
 Input
   - ctx: A context to control lifecycle.
@@ -1849,7 +1849,7 @@ Output
   - A JSON document.
 */
 func (client *Szengine) findPathByRecordIDWithAvoidsV2(ctx context.Context, startDataSourceCode string, startRecordID string, endDataSourceCode string, endRecordID string, maxDegrees int64, exclusions string, flags int64) (string, error) {
-	//  _DLEXPORT int G2_findPathExcludingByRecordID_V2(const char* dataSourceCode1, const char* recordID1, const char* dataSourceCode2, const char* recordID2, const int maxDegree, const char* excludedRecords, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
+	//  _DLEXPORT int Sz_findPathExcludingByRecordID_V2(const char* dataSourceCode1, const char* recordID1, const char* dataSourceCode2, const char* recordID2, const int maxDegree, const char* excludedRecords, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
@@ -1864,7 +1864,7 @@ func (client *Szengine) findPathByRecordIDWithAvoidsV2(ctx context.Context, star
 	defer C.free(unsafe.Pointer(endRecordIDForC))
 	exclusionsForC := C.CString(exclusions)
 	defer C.free(unsafe.Pointer(exclusionsForC))
-	result := C.G2_findPathByRecordIDWithAvoids_V2_helper(startDataSourceCodeForC, startRecordIDForC, endDataSourceCodeForC, endRecordIDForC, C.longlong(maxDegrees), exclusionsForC, C.longlong(flags))
+	result := C.Sz_findPathByRecordIDWithAvoids_V2_helper(startDataSourceCodeForC, startRecordIDForC, endDataSourceCodeForC, endRecordIDForC, C.longlong(maxDegrees), exclusionsForC, C.longlong(flags))
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4023, startDataSourceCode, startRecordID, endDataSourceCode, endRecordID, maxDegrees, exclusions, flags, result.returnCode)
 	}
@@ -1893,7 +1893,7 @@ Output
   - A JSON document.
 */
 func (client *Szengine) findPathByEntityIDIncludingSourceV2(ctx context.Context, startEntityID int64, endEntityID int64, maxDegrees int64, exclusions string, requiredDataSources string, flags int64) (string, error) {
-	//  _DLEXPORT int G2_findPathIncludingSourceByEntityID_V2(const long long entityID1, const long long entityID2, const int maxDegree, const char* excludedEntities, const char* requiredDsrcs, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
+	//  _DLEXPORT int Sz_findPathIncludingSourceByEntityID_V2(const long long entityID1, const long long entityID2, const int maxDegree, const char* excludedEntities, const char* requiredDsrcs, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
@@ -1902,7 +1902,7 @@ func (client *Szengine) findPathByEntityIDIncludingSourceV2(ctx context.Context,
 	defer C.free(unsafe.Pointer(exclusionsForC))
 	requiredDataSourcesForC := C.CString(requiredDataSources)
 	defer C.free(unsafe.Pointer(requiredDataSourcesForC))
-	result := C.G2_findPathByEntityIDIncludingSource_V2_helper(C.longlong(startEntityID), C.longlong(endEntityID), C.longlong(maxDegrees), exclusionsForC, requiredDataSourcesForC, C.longlong(flags))
+	result := C.Sz_findPathByEntityIDIncludingSource_V2_helper(C.longlong(startEntityID), C.longlong(endEntityID), C.longlong(maxDegrees), exclusionsForC, requiredDataSourcesForC, C.longlong(flags))
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4025, startEntityID, endEntityID, maxDegrees, exclusions, requiredDataSources, flags, result.returnCode)
 	}
@@ -1933,7 +1933,7 @@ Output
   - A JSON document.
 */
 func (client *Szengine) findPathByRecordIDIncludingSourceV2(ctx context.Context, startDataSourceCode string, startRecordID string, endDataSourceCode string, endRecordID string, maxDegrees int64, exclusions string, requiredDataSources string, flags int64) (string, error) {
-	//  _DLEXPORT int G2_findPathIncludingSourceByRecordID_V2(const char* dataSourceCode1, const char* recordID1, const char* dataSourceCode2, const char* recordID2, const int maxDegree, const char* excludedRecords, const char* requiredDsrcs, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
+	//  _DLEXPORT int Sz_findPathIncludingSourceByRecordID_V2(const char* dataSourceCode1, const char* recordID1, const char* dataSourceCode2, const char* recordID2, const int maxDegree, const char* excludedRecords, const char* requiredDsrcs, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
@@ -1950,7 +1950,7 @@ func (client *Szengine) findPathByRecordIDIncludingSourceV2(ctx context.Context,
 	defer C.free(unsafe.Pointer(exclusionsForC))
 	requiredDataSourcesForC := C.CString(requiredDataSources)
 	defer C.free(unsafe.Pointer(requiredDataSourcesForC))
-	result := C.G2_findPathByRecordIDIncludingSource_V2_helper(startDataSourceCodeForC, startRecordIDForC, endDataSourceCodeForC, endRecordIDForC, C.longlong(maxDegrees), exclusionsForC, requiredDataSourcesForC, C.longlong(flags))
+	result := C.Sz_findPathByRecordIDIncludingSource_V2_helper(startDataSourceCodeForC, startRecordIDForC, endDataSourceCodeForC, endRecordIDForC, C.longlong(maxDegrees), exclusionsForC, requiredDataSourcesForC, C.longlong(flags))
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4027, startDataSourceCode, startRecordID, endDataSourceCode, endRecordID, maxDegrees, exclusions, requiredDataSources, flags, result.returnCode)
 	}
@@ -1960,12 +1960,12 @@ func (client *Szengine) findPathByRecordIDIncludingSourceV2(ctx context.Context,
 }
 
 func (client *Szengine) getActiveConfigID(ctx context.Context) (int64, error) {
-	//  _DLEXPORT int G2_getActiveConfigID(long long* configID);
+	//  _DLEXPORT int Sz_getActiveConfigID(long long* configID);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultConfigID int64
-	result := C.G2_getActiveConfigID_helper()
+	result := C.Sz_getActiveConfigID_helper()
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4028, result.returnCode, result)
 	}
@@ -1974,12 +1974,12 @@ func (client *Szengine) getActiveConfigID(ctx context.Context) (int64, error) {
 }
 
 func (client *Szengine) getEntityByEntityIDV2(ctx context.Context, entityID int64, flags int64) (string, error) {
-	//  _DLEXPORT int G2_getEntityByEntityID_V2(const long long entityID, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
+	//  _DLEXPORT int Sz_getEntityByEntityID_V2(const long long entityID, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultResponse string
-	result := C.G2_getEntityByEntityID_V2_helper(C.longlong(entityID), C.longlong(flags))
+	result := C.Sz_getEntityByEntityID_V2_helper(C.longlong(entityID), C.longlong(flags))
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4030, entityID, flags, result.returnCode)
 	}
@@ -1989,7 +1989,7 @@ func (client *Szengine) getEntityByEntityIDV2(ctx context.Context, entityID int6
 }
 
 func (client *Szengine) getEntityByRecordIDV2(ctx context.Context, dataSourceCode string, recordID string, flags int64) (string, error) {
-	//  _DLEXPORT int G2_getEntityByRecordID_V2(const char* dataSourceCode, const char* recordID, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
+	//  _DLEXPORT int Sz_getEntityByRecordID_V2(const char* dataSourceCode, const char* recordID, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
@@ -1998,7 +1998,7 @@ func (client *Szengine) getEntityByRecordIDV2(ctx context.Context, dataSourceCod
 	defer C.free(unsafe.Pointer(dataSourceCodeForC))
 	recordIDForC := C.CString(recordID)
 	defer C.free(unsafe.Pointer(recordIDForC))
-	result := C.G2_getEntityByRecordID_V2_helper(dataSourceCodeForC, recordIDForC, C.longlong(flags))
+	result := C.Sz_getEntityByRecordID_V2_helper(dataSourceCodeForC, recordIDForC, C.longlong(flags))
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4032, dataSourceCode, recordID, flags, result.returnCode)
 	}
@@ -2008,7 +2008,7 @@ func (client *Szengine) getEntityByRecordIDV2(ctx context.Context, dataSourceCod
 }
 
 func (client *Szengine) getRecordV2(ctx context.Context, dataSourceCode string, recordID string, flags int64) (string, error) {
-	//  _DLEXPORT int G2_getRecord_V2(const char* dataSourceCode, const char* recordID, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
+	//  _DLEXPORT int Sz_getRecord_V2(const char* dataSourceCode, const char* recordID, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
@@ -2017,7 +2017,7 @@ func (client *Szengine) getRecordV2(ctx context.Context, dataSourceCode string, 
 	defer C.free(unsafe.Pointer(dataSourceCodeForC))
 	recordIDForC := C.CString(recordID)
 	defer C.free(unsafe.Pointer(recordIDForC))
-	result := C.G2_getRecord_V2_helper(dataSourceCodeForC, recordIDForC, C.longlong(flags))
+	result := C.Sz_getRecord_V2_helper(dataSourceCodeForC, recordIDForC, C.longlong(flags))
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4035, dataSourceCode, recordID, flags, result.returnCode)
 	}
@@ -2027,12 +2027,12 @@ func (client *Szengine) getRecordV2(ctx context.Context, dataSourceCode string, 
 }
 
 func (client *Szengine) getRedoRecord(ctx context.Context) (string, error) {
-	//  _DLEXPORT int G2_getRedoRecord(char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize) );
+	//  _DLEXPORT int Sz_getRedoRecord(char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize) );
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultResponse string
-	result := C.G2_getRedoRecord_helper()
+	result := C.Sz_getRedoRecord_helper()
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4036, result.returnCode, result)
 	}
@@ -2043,12 +2043,12 @@ func (client *Szengine) getRedoRecord(ctx context.Context) (string, error) {
 }
 
 func (client *Szengine) getStats(ctx context.Context) (string, error) {
-	//  _DLEXPORT int G2_stats(char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize) );
+	//  _DLEXPORT int Sz_stats(char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize) );
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultResponse string
-	result := C.G2_stats_helper()
+	result := C.Sz_stats_helper()
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4054, result.returnCode)
 	}
@@ -2058,14 +2058,14 @@ func (client *Szengine) getStats(ctx context.Context) (string, error) {
 }
 
 func (client *Szengine) getVirtualEntityByRecordIDV2(ctx context.Context, recordKeys string, flags int64) (string, error) {
-	//  _DLEXPORT int G2_getVirtualEntityByRecordID_V2(const char* recordList, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
+	//  _DLEXPORT int Sz_getVirtualEntityByRecordID_V2(const char* recordList, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultResponse string
 	recordListForC := C.CString(recordKeys)
 	defer C.free(unsafe.Pointer(recordListForC))
-	result := C.G2_getVirtualEntityByRecordID_V2_helper(recordListForC, C.longlong(flags))
+	result := C.Sz_getVirtualEntityByRecordID_V2_helper(recordListForC, C.longlong(flags))
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4038, recordKeys, flags, result.returnCode)
 	}
@@ -2075,12 +2075,12 @@ func (client *Szengine) getVirtualEntityByRecordIDV2(ctx context.Context, record
 }
 
 func (client *Szengine) howEntityByEntityIDV2(ctx context.Context, entityID int64, flags int64) (string, error) {
-	//  _DLEXPORT int G2_howEntityByEntityID_V2(const long long entityID, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
+	//  _DLEXPORT int Sz_howEntityByEntityID_V2(const long long entityID, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultResponse string
-	result := C.G2_howEntityByEntityID_V2_helper(C.longlong(entityID), C.longlong(flags))
+	result := C.Sz_howEntityByEntityID_V2_helper(C.longlong(entityID), C.longlong(flags))
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4040, entityID, flags, result.returnCode)
 	}
@@ -2097,10 +2097,10 @@ Input
   - ctx: A context to control lifecycle.
   - instanceName: A name for the auditing node, to help identify it within system logs.
   - settings: A JSON string containing configuration parameters.
-  - verboseLogging: A flag to enable deeper logging of the G2 processing. 0 for no Senzing logging; 1 for logging.
+  - verboseLogging: A flag to enable deeper logging of the Sz processing. 0 for no Senzing logging; 1 for logging.
 */
 func (client *Szengine) init(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
-	// _DLEXPORT int G2_init(const char *moduleName, const char *iniParams, const int verboseLogging);
+	// _DLEXPORT int Sz_init(const char *moduleName, const char *iniParams, const int verboseLogging);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
@@ -2108,7 +2108,7 @@ func (client *Szengine) init(ctx context.Context, instanceName string, settings 
 	defer C.free(unsafe.Pointer(instanceNameForC))
 	settingsForC := C.CString(settings)
 	defer C.free(unsafe.Pointer(settingsForC))
-	result := C.G2_init(instanceNameForC, settingsForC, C.longlong(verboseLogging))
+	result := C.Sz_init(instanceNameForC, settingsForC, C.longlong(verboseLogging))
 	if result != noError {
 		err = client.newError(ctx, 4041, instanceName, settings, verboseLogging, result)
 	}
@@ -2116,7 +2116,7 @@ func (client *Szengine) init(ctx context.Context, instanceName string, settings 
 }
 
 /*
-The initWithConfigID method initializes the Senzing G2 object with a non-default configuration ID.
+The initWithConfigID method initializes the Senzing Sz object with a non-default configuration ID.
 It must be called prior to any other calls.
 
 Input
@@ -2124,10 +2124,10 @@ Input
   - instanceName: A name for the auditing node, to help identify it within system logs.
   - settings: A JSON string containing configuration parameters.
   - configID: The configuration ID used for the initialization.
-  - verboseLogging: A flag to enable deeper logging of the G2 processing. 0 for no Senzing logging; 1 for logging.
+  - verboseLogging: A flag to enable deeper logging of the Sz processing. 0 for no Senzing logging; 1 for logging.
 */
 func (client *Szengine) initWithConfigID(ctx context.Context, instanceName string, settings string, configID int64, verboseLogging int64) error {
-	//  _DLEXPORT int G2_initWithConfigID(const char *moduleName, const char *iniParams, const long long initConfigID, const int verboseLogging);
+	//  _DLEXPORT int Sz_initWithConfigID(const char *moduleName, const char *iniParams, const long long initConfigID, const int verboseLogging);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
@@ -2135,7 +2135,7 @@ func (client *Szengine) initWithConfigID(ctx context.Context, instanceName strin
 	defer C.free(unsafe.Pointer(instanceNameForC))
 	settingsForC := C.CString(settings)
 	defer C.free(unsafe.Pointer(settingsForC))
-	result := C.G2_initWithConfigID(instanceNameForC, settingsForC, C.longlong(configID), C.longlong(verboseLogging))
+	result := C.Sz_initWithConfigID(instanceNameForC, settingsForC, C.longlong(configID), C.longlong(verboseLogging))
 	if result != noError {
 		err = client.newError(ctx, 4042, instanceName, settings, configID, verboseLogging, result)
 	}
@@ -2143,11 +2143,11 @@ func (client *Szengine) initWithConfigID(ctx context.Context, instanceName strin
 }
 
 func (client *Szengine) primeEngine(ctx context.Context) error {
-	//  _DLEXPORT int G2_primeEngine();
+	//  _DLEXPORT int Sz_primeEngine();
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
-	result := C.G2_primeEngine()
+	result := C.Sz_primeEngine()
 	if result != noError {
 		err = client.newError(ctx, 4043, result)
 	}
@@ -2166,13 +2166,13 @@ Output
   - An empty JSON document.
 */
 func (client *Szengine) processRedoRecord(ctx context.Context, redoRecord string) (string, error) {
-	// _DLEXPORT long long G2_processRedoRecord(const char *redoRecord);
+	// _DLEXPORT long long Sz_processRedoRecord(const char *redoRecord);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
 	redoRecordForC := C.CString(redoRecord)
 	defer C.free(unsafe.Pointer(redoRecordForC))
-	result := C.G2_processRedoRecord(redoRecordForC)
+	result := C.Sz_processRedoRecord(redoRecordForC)
 	if result != noError {
 		err = client.newError(ctx, 4044, redoRecord, result)
 	}
@@ -2191,14 +2191,14 @@ Output
   - A JSON document with affected entities.
 */
 func (client *Szengine) processRedoRecordWithInfo(ctx context.Context, redoRecord string) (string, error) {
-	// _DLEXPORT struct G2_processRedoRecordWithInfo_result G2_processRedoRecordWithInfo_helper(const char *jsonData);
+	// _DLEXPORT struct Sz_processRedoRecordWithInfo_result Sz_processRedoRecordWithInfo_helper(const char *jsonData);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultResponse string
 	redoRecordForC := C.CString(redoRecord)
 	defer C.free(unsafe.Pointer(redoRecordForC))
-	result := C.G2_processRedoRecordWithInfo_helper(redoRecordForC)
+	result := C.Sz_processRedoRecordWithInfo_helper(redoRecordForC)
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4045, redoRecord, result.returnCode)
 	}
@@ -2217,11 +2217,11 @@ Input
   - flags: Flags used to control information returned.
 */
 func (client *Szengine) reevaluateEntity(ctx context.Context, entityID int64, flags int64) (string, error) {
-	//  _DLEXPORT int G2_reevaluateEntity(const long long entityID, const long long flags);
+	//  _DLEXPORT int Sz_reevaluateEntity(const long long entityID, const long long flags);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
-	result := C.G2_reevaluateEntity(C.longlong(entityID), C.longlong(flags))
+	result := C.Sz_reevaluateEntity(C.longlong(entityID), C.longlong(flags))
 	if result != noError {
 		err = client.newError(ctx, 4046, entityID, flags, result)
 	}
@@ -2242,12 +2242,12 @@ Output
   - A JSON document.
 */
 func (client *Szengine) reevaluateEntityWithInfo(ctx context.Context, entityID int64, flags int64) (string, error) {
-	//  _DLEXPORT int G2_reevaluateEntityWithInfo(const long long entityID, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
+	//  _DLEXPORT int Sz_reevaluateEntityWithInfo(const long long entityID, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultResponse string
-	result := C.G2_reevaluateEntityWithInfo_helper(C.longlong(entityID), C.longlong(flags))
+	result := C.Sz_reevaluateEntityWithInfo_helper(C.longlong(entityID), C.longlong(flags))
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4047, entityID, flags, result.returnCode)
 	}
@@ -2267,7 +2267,7 @@ Input
   - flags: Flags used to control information returned.
 */
 func (client *Szengine) reevaluateRecord(ctx context.Context, dataSourceCode string, recordID string, flags int64) (string, error) {
-	//  _DLEXPORT int G2_reevaluateRecord(const char* dataSourceCode, const char* recordID, const long long flags);
+	//  _DLEXPORT int Sz_reevaluateRecord(const char* dataSourceCode, const char* recordID, const long long flags);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
@@ -2275,7 +2275,7 @@ func (client *Szengine) reevaluateRecord(ctx context.Context, dataSourceCode str
 	defer C.free(unsafe.Pointer(dataSourceCodeForC))
 	recordIDForC := C.CString(recordID)
 	defer C.free(unsafe.Pointer(recordIDForC))
-	result := C.G2_reevaluateRecord(dataSourceCodeForC, recordIDForC, C.longlong(flags))
+	result := C.Sz_reevaluateRecord(dataSourceCodeForC, recordIDForC, C.longlong(flags))
 	if result != noError {
 		err = client.newError(ctx, 4048, dataSourceCode, recordID, flags, result)
 	}
@@ -2297,7 +2297,7 @@ Output
   - A JSON document.
 */
 func (client *Szengine) reevaluateRecordWithInfo(ctx context.Context, dataSourceCode string, recordID string, flags int64) (string, error) {
-	//  _DLEXPORT int G2_reevaluateRecordWithInfo(const char* dataSourceCode, const char* recordID, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
+	//  _DLEXPORT int Sz_reevaluateRecordWithInfo(const char* dataSourceCode, const char* recordID, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
@@ -2306,7 +2306,7 @@ func (client *Szengine) reevaluateRecordWithInfo(ctx context.Context, dataSource
 	defer C.free(unsafe.Pointer(dataSourceCodeForC))
 	recordIDForC := C.CString(recordID)
 	defer C.free(unsafe.Pointer(recordIDForC))
-	result := C.G2_reevaluateRecordWithInfo_helper(dataSourceCodeForC, recordIDForC, C.longlong(flags))
+	result := C.Sz_reevaluateRecordWithInfo_helper(dataSourceCodeForC, recordIDForC, C.longlong(flags))
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4049, dataSourceCode, recordID, flags, result.returnCode)
 	}
@@ -2316,11 +2316,11 @@ func (client *Szengine) reevaluateRecordWithInfo(ctx context.Context, dataSource
 }
 
 func (client *Szengine) reinit(ctx context.Context, configID int64) error {
-	//  _DLEXPORT int G2_reinit(const long long initConfigID);
+	//  _DLEXPORT int Sz_reinit(const long long initConfigID);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
-	result := C.G2_reinit(C.longlong(configID))
+	result := C.Sz_reinit(C.longlong(configID))
 	if result != noError {
 		err = client.newError(ctx, 4050, configID, result)
 	}
@@ -2340,14 +2340,14 @@ Output
   - A JSON document.
 */
 func (client *Szengine) searchByAttributesV2(ctx context.Context, attributes string, flags int64) (string, error) {
-	//  _DLEXPORT int G2_searchByAttributes_V2(const char* jsonData, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
+	//  _DLEXPORT int Sz_searchByAttributes_V2(const char* jsonData, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultResponse string
 	attributesForC := C.CString(attributes)
 	defer C.free(unsafe.Pointer(attributesForC))
-	result := C.G2_searchByAttributes_V2_helper(attributesForC, C.longlong(flags))
+	result := C.Sz_searchByAttributes_V2_helper(attributesForC, C.longlong(flags))
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4052, attributes, flags, result.returnCode)
 	}
@@ -2369,7 +2369,7 @@ Output
   - A JSON document.
 */
 func (client *Szengine) searchByAttributesV3(ctx context.Context, attributes string, searchProfile string, flags int64) (string, error) {
-	// _DLEXPORT struct G2_searchByAttributes_V3_result G2_searchByAttributes_V3_helper(const char *jsonData, const char* profile, const long long flags);
+	// _DLEXPORT struct Sz_searchByAttributes_V3_result Sz_searchByAttributes_V3_helper(const char *jsonData, const char* profile, const long long flags);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
@@ -2378,7 +2378,7 @@ func (client *Szengine) searchByAttributesV3(ctx context.Context, attributes str
 	defer C.free(unsafe.Pointer(attributesForC))
 	searchProfileForC := C.CString(searchProfile)
 	defer C.free(unsafe.Pointer(searchProfileForC))
-	result := C.G2_searchByAttributes_V3_helper(attributesForC, searchProfileForC, C.longlong(flags))
+	result := C.Sz_searchByAttributes_V3_helper(attributesForC, searchProfileForC, C.longlong(flags))
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4053, attributes, searchProfile, flags, result.returnCode)
 	}
@@ -2404,12 +2404,12 @@ Output
   - A JSON document.
 */
 func (client *Szengine) whyEntitiesV2(ctx context.Context, entityID1 int64, entityID2 int64, flags int64) (string, error) {
-	//  _DLEXPORT int G2_whyEntities_V2(const long long entityID1, const long long entityID2, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
+	//  _DLEXPORT int Sz_whyEntities_V2(const long long entityID1, const long long entityID2, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultResponse string
-	result := C.G2_whyEntities_V2_helper(C.longlong(entityID1), C.longlong(entityID2), C.longlong(flags))
+	result := C.Sz_whyEntities_V2_helper(C.longlong(entityID1), C.longlong(entityID2), C.longlong(flags))
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4056, entityID1, entityID2, flags, result.returnCode)
 	}
@@ -2440,7 +2440,7 @@ func (client *Szengine) whyRecordInEntityV2(ctx context.Context, dataSourceCode 
 	defer C.free(unsafe.Pointer(dataSourceCodeForC))
 	recordIDForC := C.CString(recordID)
 	defer C.free(unsafe.Pointer(recordIDForC))
-	result := C.G2_whyRecordInEntity_V2_helper(dataSourceCodeForC, recordIDForC, C.longlong(flags))
+	result := C.Sz_whyRecordInEntity_V2_helper(dataSourceCodeForC, recordIDForC, C.longlong(flags))
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4058, dataSourceCode, recordID, flags, result.returnCode)
 	}
@@ -2465,7 +2465,7 @@ Output
   - A JSON document.
 */
 func (client *Szengine) whyRecordsV2(ctx context.Context, dataSourceCode1 string, recordID1 string, dataSourceCode2 string, recordID2 string, flags int64) (string, error) {
-	//  _DLEXPORT int G2_whyRecords_V2(const char* dataSourceCode1, const char* recordID1, const char* dataSourceCode2, const char* recordID2, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
+	//  _DLEXPORT int Sz_whyRecords_V2(const char* dataSourceCode1, const char* recordID1, const char* dataSourceCode2, const char* recordID2, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
@@ -2478,7 +2478,7 @@ func (client *Szengine) whyRecordsV2(ctx context.Context, dataSourceCode1 string
 	defer C.free(unsafe.Pointer(dataSource2CodeForC))
 	recordID2ForC := C.CString(recordID2)
 	defer C.free(unsafe.Pointer(recordID2ForC))
-	result := C.G2_whyRecords_V2_helper(dataSource1CodeForC, recordID1ForC, dataSource2CodeForC, recordID2ForC, C.longlong(flags))
+	result := C.Sz_whyRecords_V2_helper(dataSource1CodeForC, recordID1ForC, dataSource2CodeForC, recordID2ForC, C.longlong(flags))
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4060, dataSourceCode1, recordID1, dataSourceCode2, recordID2, flags, result.returnCode)
 	}
@@ -2555,13 +2555,13 @@ func (client *Szengine) panicOnError(err error) {
 // --- Sz exception handling --------------------------------------------------
 
 /*
-The clearLastException method erases the last exception message held by the Senzing G2 object.
+The clearLastException method erases the last exception message held by the Senzing Sz object.
 
 Input
   - ctx: A context to control lifecycle.
 */
 func (client *Szengine) clearLastException(ctx context.Context) error {
-	// _DLEXPORT void G2_clearLastException();
+	// _DLEXPORT void Sz_clearLastException();
 	_ = ctx
 	var err error
 	if client.isTrace {
@@ -2569,21 +2569,21 @@ func (client *Szengine) clearLastException(ctx context.Context) error {
 		client.traceEntry(3)
 		defer func() { client.traceExit(4, err, time.Since(entryTime)) }()
 	}
-	C.G2_clearLastException()
+	C.Sz_clearLastException()
 	return err
 }
 
 /*
-The getLastException method retrieves the last exception thrown in Senzing's G2.
+The getLastException method retrieves the last exception thrown in Senzing's Sz.
 
 Input
   - ctx: A context to control lifecycle.
 
 Output
-  - A string containing the error received from Senzing's G2.
+  - A string containing the error received from Senzing's Sz.
 */
 func (client *Szengine) getLastException(ctx context.Context) (string, error) {
-	// _DLEXPORT int G2_getLastException(char *buffer, const size_t bufSize);
+	// _DLEXPORT int Sz_getLastException(char *buffer, const size_t bufSize);
 	_ = ctx
 	var err error
 	var result string
@@ -2593,22 +2593,22 @@ func (client *Szengine) getLastException(ctx context.Context) (string, error) {
 		defer func() { client.traceExit(42, result, err, time.Since(entryTime)) }()
 	}
 	stringBuffer := client.getByteArray(initialByteArraySize)
-	C.G2_getLastException((*C.char)(unsafe.Pointer(&stringBuffer[0])), C.size_t(len(stringBuffer)))
+	C.Sz_getLastException((*C.char)(unsafe.Pointer(&stringBuffer[0])), C.size_t(len(stringBuffer)))
 	result = string(bytes.Trim(stringBuffer, "\x00"))
 	return result, err
 }
 
 /*
-The getLastExceptionCode method retrieves the code of the last exception thrown in Senzing's G2.
+The getLastExceptionCode method retrieves the code of the last exception thrown in Senzing's Sz.
 
 Input:
   - ctx: A context to control lifecycle.
 
 Output:
-  - An int containing the error received from Senzing's G2.
+  - An int containing the error received from Senzing's Sz.
 */
 func (client *Szengine) getLastExceptionCode(ctx context.Context) (int, error) {
-	//  _DLEXPORT int G2_getLastExceptionCode();
+	//  _DLEXPORT int Sz_getLastExceptionCode();
 	_ = ctx
 	var err error
 	var result int
@@ -2617,7 +2617,7 @@ func (client *Szengine) getLastExceptionCode(ctx context.Context) (int, error) {
 		client.traceEntry(43)
 		defer func() { client.traceExit(44, result, err, time.Since(entryTime)) }()
 	}
-	result = int(C.G2_getLastExceptionCode())
+	result = int(C.Sz_getLastExceptionCode())
 	return result, err
 }
 

@@ -29,7 +29,7 @@ type Szabstractfactory struct {
 
 /*
 The CreateSzConfig method returns an SzConfig object
-implemented to use the Senzing native C binary, libG2.so.
+implemented to use the Senzing native C binary, libSz.so.
 
 Input
   - ctx: A context to control lifecycle.
@@ -45,7 +45,7 @@ func (factory *Szabstractfactory) CreateSzConfig(ctx context.Context) (senzing.S
 
 /*
 The CreateSzConfigManager method returns an SzConfigManager object
-implemented to use the Senzing native C binary, libG2.so.
+implemented to use the Senzing native C binary, libSz.so.
 
 Input
   - ctx: A context to control lifecycle.
@@ -61,7 +61,7 @@ func (factory *Szabstractfactory) CreateSzConfigManager(ctx context.Context) (se
 
 /*
 The CreateSzDiagnostic method returns an SzDiagnostic object
-implemented to use the Senzing native C binary, libG2.so.
+implemented to use the Senzing native C binary, libSz.so.
 
 Input
   - ctx: A context to control lifecycle.
@@ -77,7 +77,7 @@ func (factory *Szabstractfactory) CreateSzDiagnostic(ctx context.Context) (senzi
 
 /*
 The CreateSzEngine method returns an SzEngine object
-implemented to use the Senzing native C binary, libG2.so.
+implemented to use the Senzing native C binary, libSz.so.
 
 Input
   - ctx: A context to control lifecycle.
@@ -93,7 +93,7 @@ func (factory *Szabstractfactory) CreateSzEngine(ctx context.Context) (senzing.S
 
 /*
 The CreateSzProduct method returns an SzProduct object
-implemented to use the Senzing native C binary, libG2.so.
+implemented to use the Senzing native C binary, libSz.so.
 
 Input
   - ctx: A context to control lifecycle.
