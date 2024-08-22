@@ -151,7 +151,8 @@ func captureStdoutReturningUintptr(functionName func() (uintptr, error)) (string
 		return "", 0, err
 	}
 	readFile, writeFile, _ := os.Pipe()
-	err = syscall.Dup2(int(writeFile.Fd()), syscall.Stdout)
+	fileDescriptor := int(writeFile.Fd()) //nolint:gosec
+	err = syscall.Dup2(fileDescriptor, syscall.Stdout)
 	if err != nil {
 		return "", 0, err
 	}
