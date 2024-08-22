@@ -1,5 +1,5 @@
 /*
-The szconfigmanager package is used to modify Senzing configuration JSON documents in the Senzing datastore.
+Package szconfigmanager is used to modify Senzing configuration JSON documents in the Senzing datastore.
 
 To use szconfigmanager,
 the LD_LIBRARY_PATH environment variable must include a path to Senzing's libraries.
