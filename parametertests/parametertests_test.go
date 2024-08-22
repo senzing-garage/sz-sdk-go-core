@@ -46,7 +46,8 @@ func captureStdout(functionName func() error) (string, error) {
 		return "", err
 	}
 	readFile, writeFile, _ := os.Pipe()
-	err = syscall.Dup2(int(writeFile.Fd()), syscall.Stdout)
+	fileDescriptor := int(writeFile.Fd())
+	err = syscall.Dup2(fileDescriptor, syscall.Stdout)
 	if err != nil {
 		return "", err
 	}
@@ -80,7 +81,8 @@ func captureStdoutReturningInt64(functionName func() (int64, error)) (string, in
 		return "", 0, err
 	}
 	readFile, writeFile, _ := os.Pipe()
-	err = syscall.Dup2(int(writeFile.Fd()), syscall.Stdout)
+	fileDescriptor := int(writeFile.Fd())
+	err = syscall.Dup2(fileDescriptor, syscall.Stdout)
 	if err != nil {
 		return "", 0, err
 	}
@@ -114,7 +116,8 @@ func captureStdoutReturningString(functionName func() (string, error)) (string, 
 		return "", "", err
 	}
 	readFile, writeFile, _ := os.Pipe()
-	err = syscall.Dup2(int(writeFile.Fd()), syscall.Stdout)
+	fileDescriptor := int(writeFile.Fd())
+	err = syscall.Dup2(fileDescriptor, syscall.Stdout)
 	if err != nil {
 		return "", "", err
 	}
