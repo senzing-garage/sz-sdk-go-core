@@ -195,40 +195,40 @@ Prefixes:
 
 ### senzing-60014001
 
-- Call to `G2Config_addDataSource()` failed.
+- Call to `SzConfig_addDataSource()` failed.
 
 ### senzing-60014002
 
-- Call to `G2Config_close()` failed.
+- Call to `SzConfig_close()` failed.
 
 ### senzing-60014003
 
-- Call to `G2Config_create()` failed.
+- Call to `SzConfig_create()` failed.
 
 ### senzing-60014004
 
-- Call to `G2Config_deleteDataSource()` failed.
+- Call to `SzConfig_deleteDataSource()` failed.
 
 ### senzing-60014005
 
-- Call to `G2Config_getLastException()` failed.
+- Call to `SzConfig_getLastException()` failed.
 
 ### senzing-60014006
 
-- Call to `G2Config_destroy()` failed.
+- Call to `SzConfig_destroy()` failed.
 
 ### senzing-60014007
 
-- Call to `G2Config_init()` failed.
+- Call to `SzConfig_init()` failed.
 
 ### senzing-60014008
 
-- Call to `G2Config_listDataSources()` failed.
+- Call to `SzConfig_listDataSources()` failed.
 
 ### senzing-60014009
 
-- Call to `G2Config_load()` failed.
+- Call to `SzConfig_load()` failed.
 
 ### senzing-60014010
 
-- Call to `G2Config_save()` failed.
+- Call to `SzConfig_save()` failed.

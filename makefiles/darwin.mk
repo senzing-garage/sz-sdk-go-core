@@ -4,7 +4,7 @@
 # Variables
 # -----------------------------------------------------------------------------
 
-SENZING_DIR ?= /opt/senzing/g2
+SENZING_DIR ?= /opt/senzing/er
 SENZING_TOOLS_SENZING_DIRECTORY ?= $(SENZING_DIR)
 
 LD_LIBRARY_PATH ?= $(SENZING_TOOLS_SENZING_DIRECTORY)/lib:$(SENZING_TOOLS_SENZING_DIRECTORY)/lib/macos
@@ -19,6 +19,7 @@ PATH := $(MAKEFILE_DIRECTORY)/bin:/$(HOME)/go/bin:$(PATH)
 .PHONY: clean-osarch-specific
 clean-osarch-specific:
 	@rm -f  $(GOPATH)/bin/$(PROGRAM_NAME) || true
+	@rm -f  $(MAKEFILE_DIRECTORY)/.coverage || true
 	@rm -f  $(MAKEFILE_DIRECTORY)/coverage.html || true
 	@rm -f  $(MAKEFILE_DIRECTORY)/coverage.out || true
 	@rm -f  $(MAKEFILE_DIRECTORY)/cover.out || true

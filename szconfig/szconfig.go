@@ -1,17 +1,17 @@
 /*
 The [Szconfig] implementation of the [senzing.SzConfig] interface
-communicates with the Senzing native C binary, libG2.so.
+communicates with the Senzing native C binary, libSz.so.
 */
 package szconfig
 
 /*
 #include <stdlib.h>
-#include "libg2config.h"
-#include "gohelpers/golang_helpers.h"
-#cgo CFLAGS: -g -I/opt/senzing/g2/sdk/c
-#cgo windows CFLAGS: -g -I"C:/Program Files/Senzing/g2/sdk/c"
-#cgo LDFLAGS: -L/opt/senzing/g2/lib -lG2
-#cgo windows LDFLAGS: -L"C:/Program Files/Senzing/g2/lib" -lG2
+#include "libSzconfig.h"
+#include "gohelpers/Szlang_helpers.h"
+#cgo CFLAGS: -g -I/opt/senzing/er/sdk/c
+#cgo windows CFLAGS: -g -I"C:/Program Files/Senzing/er/sdk/c"
+#cgo LDFLAGS: -L/opt/senzing/er/lib -lSz
+#cgo windows LDFLAGS: -L"C:/Program Files/Senzing/er/lib" -lSz
 */
 import "C"
 
@@ -318,7 +318,7 @@ Input
   - ctx: A context to control lifecycle.
   - instanceName: A name for the auditing node, to help identify it within system logs.
   - settings: A JSON string containing configuration parameters.
-  - verboseLogging: A flag to enable deeper logging of the G2 processing. 0 for no Senzing logging; 1 for logging.
+  - verboseLogging: A flag to enable deeper logging of the Sz processing. 0 for no Senzing logging; 1 for logging.
 */
 func (client *Szconfig) Initialize(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
 	var err error
@@ -448,7 +448,7 @@ func (client *Szconfig) UnregisterObserver(ctx context.Context, observer observe
 // ----------------------------------------------------------------------------
 
 func (client *Szconfig) addDataSource(ctx context.Context, configHandle uintptr, dataSourceCode string) (string, error) {
-	// _DLEXPORT int G2Config_addDataSource(ConfigHandle configHandle, const char *inputJson, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
+	// _DLEXPORT int SzConfig_addDataSource(ConfigHandle configHandle, const char *inputJson, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
@@ -456,7 +456,7 @@ func (client *Szconfig) addDataSource(ctx context.Context, configHandle uintptr,
 	dataSourceDefinition := `{"DSRC_CODE": "` + dataSourceCode + `"}`
 	dataSourceDefinitionForC := C.CString(dataSourceDefinition)
 	defer C.free(unsafe.Pointer(dataSourceDefinitionForC))
-	result := C.G2Config_addDataSource_helper(C.uintptr_t(configHandle), dataSourceDefinitionForC)
+	result := C.SzConfig_addDataSource_helper(C.uintptr_t(configHandle), dataSourceDefinitionForC)
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4001, configHandle, dataSourceCode, result.returnCode, result)
 	}
@@ -466,11 +466,11 @@ func (client *Szconfig) addDataSource(ctx context.Context, configHandle uintptr,
 }
 
 func (client *Szconfig) close(ctx context.Context, configHandle uintptr) error {
-	// _DLEXPORT int G2Config_close(ConfigHandle configHandle);
+	// _DLEXPORT int SzConfig_close(ConfigHandle configHandle);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
-	result := C.G2Config_close_helper(C.uintptr_t(configHandle))
+	result := C.SzConfig_close_helper(C.uintptr_t(configHandle))
 	if result != noError {
 		err = client.newError(ctx, 4002, configHandle, result)
 	}
@@ -478,12 +478,12 @@ func (client *Szconfig) close(ctx context.Context, configHandle uintptr) error {
 }
 
 func (client *Szconfig) create(ctx context.Context) (uintptr, error) {
-	// _DLEXPORT int G2Config_create(ConfigHandle* configHandle);
+	// _DLEXPORT int SzConfig_create(ConfigHandle* configHandle);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultResponse uintptr
-	result := C.G2Config_create_helper()
+	result := C.SzConfig_create_helper()
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4003, result.returnCode)
 	}
@@ -492,14 +492,14 @@ func (client *Szconfig) create(ctx context.Context) (uintptr, error) {
 }
 
 func (client *Szconfig) deleteDataSource(ctx context.Context, configHandle uintptr, dataSourceCode string) error {
-	// _DLEXPORT int G2Config_deleteDataSource(ConfigHandle configHandle, const char *inputJson);
+	// _DLEXPORT int SzConfig_deleteDataSource(ConfigHandle configHandle, const char *inputJson);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
 	dataSourceDefinition := `{"DSRC_CODE": "` + dataSourceCode + `"}`
 	dataSourceDefinitionForC := C.CString(dataSourceDefinition)
 	defer C.free(unsafe.Pointer(dataSourceDefinitionForC))
-	result := C.G2Config_deleteDataSource_helper(C.uintptr_t(configHandle), dataSourceDefinitionForC)
+	result := C.SzConfig_deleteDataSource_helper(C.uintptr_t(configHandle), dataSourceDefinitionForC)
 	if result != noError {
 		err = client.newError(ctx, 4004, configHandle, dataSourceCode, result)
 	}
@@ -507,11 +507,11 @@ func (client *Szconfig) deleteDataSource(ctx context.Context, configHandle uintp
 }
 
 func (client *Szconfig) destroy(ctx context.Context) error {
-	// _DLEXPORT int G2Config_destroy();
+	// _DLEXPORT int SzConfig_destroy();
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
-	result := C.G2Config_destroy()
+	result := C.SzConfig_destroy()
 	if result != noError {
 		err = client.newError(ctx, 4005, result)
 	}
@@ -519,12 +519,12 @@ func (client *Szconfig) destroy(ctx context.Context) error {
 }
 
 func (client *Szconfig) save(ctx context.Context, configHandle uintptr) (string, error) {
-	// _DLEXPORT int G2Config_save(ConfigHandle configHandle, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize) );
+	// _DLEXPORT int SzConfig_save(ConfigHandle configHandle, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize) );
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultResponse string
-	result := C.G2Config_save_helper(C.uintptr_t(configHandle))
+	result := C.SzConfig_save_helper(C.uintptr_t(configHandle))
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4010, configHandle, result.returnCode, result)
 	}
@@ -534,12 +534,12 @@ func (client *Szconfig) save(ctx context.Context, configHandle uintptr) (string,
 }
 
 func (client *Szconfig) listDataSources(ctx context.Context, configHandle uintptr) (string, error) {
-	// _DLEXPORT int G2Config_listDataSources(ConfigHandle configHandle, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
+	// _DLEXPORT int SzConfig_listDataSources(ConfigHandle configHandle, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultResponse string
-	result := C.G2Config_listDataSources_helper(C.uintptr_t(configHandle))
+	result := C.SzConfig_listDataSources_helper(C.uintptr_t(configHandle))
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4008, configHandle, result.returnCode)
 	}
@@ -549,14 +549,14 @@ func (client *Szconfig) listDataSources(ctx context.Context, configHandle uintpt
 }
 
 func (client *Szconfig) load(ctx context.Context, configDefinition string) (uintptr, error) {
-	// _DLEXPORT int G2Config_load(const char *jsonConfig,ConfigHandle* configHandle);
+	// _DLEXPORT int SzConfig_load(const char *jsonConfig,ConfigHandle* configHandle);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultResponse uintptr
 	jsonConfigForC := C.CString(configDefinition)
 	defer C.free(unsafe.Pointer(jsonConfigForC))
-	result := C.G2Config_load_helper(jsonConfigForC)
+	result := C.SzConfig_load_helper(jsonConfigForC)
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4009, configDefinition, result.returnCode)
 	}
@@ -565,7 +565,7 @@ func (client *Szconfig) load(ctx context.Context, configDefinition string) (uint
 }
 
 func (client *Szconfig) init(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
-	// _DLEXPORT int G2Config_init(const char *moduleName, const char *iniParams, const int verboseLogging);
+	// _DLEXPORT int SzConfig_init(const char *moduleName, const char *iniParams, const int verboseLogging);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
@@ -573,7 +573,7 @@ func (client *Szconfig) init(ctx context.Context, instanceName string, settings 
 	defer C.free(unsafe.Pointer(instanceNameForC))
 	settingsForC := C.CString(settings)
 	defer C.free(unsafe.Pointer(settingsForC))
-	result := C.G2Config_init(instanceNameForC, settingsForC, C.longlong(verboseLogging))
+	result := C.SzConfig_init(instanceNameForC, settingsForC, C.longlong(verboseLogging))
 	if result != noError {
 		err = client.newError(ctx, 4007, instanceName, settings, verboseLogging, result)
 	}
@@ -650,7 +650,7 @@ Input
   - ctx: A context to control lifecycle.
 */
 func (client *Szconfig) clearLastException(ctx context.Context) error {
-	// _DLEXPORT void G2Config_clearLastException();
+	// _DLEXPORT void SzConfig_clearLastException();
 	_ = ctx
 	var err error
 	if client.isTrace {
@@ -658,7 +658,7 @@ func (client *Szconfig) clearLastException(ctx context.Context) error {
 		client.traceEntry(3)
 		defer func() { client.traceExit(4, err, time.Since(entryTime)) }()
 	}
-	C.G2Config_clearLastException()
+	C.SzConfig_clearLastException()
 	return err
 }
 
@@ -672,7 +672,7 @@ Output
   - A string containing the error received from Senzing's Szconfig.
 */
 func (client *Szconfig) getLastException(ctx context.Context) (string, error) {
-	// _DLEXPORT int G2Config_getLastException(char *buffer, const size_t bufSize);
+	// _DLEXPORT int SzConfig_getLastException(char *buffer, const size_t bufSize);
 	_ = ctx
 	var err error
 	var result string
@@ -682,7 +682,7 @@ func (client *Szconfig) getLastException(ctx context.Context) (string, error) {
 		defer func() { client.traceExit(18, result, err, time.Since(entryTime)) }()
 	}
 	stringBuffer := client.getByteArray(initialByteArraySize)
-	C.G2Config_getLastException((*C.char)(unsafe.Pointer(&stringBuffer[0])), C.size_t(len(stringBuffer)))
+	C.SzConfig_getLastException((*C.char)(unsafe.Pointer(&stringBuffer[0])), C.size_t(len(stringBuffer)))
 	result = string(bytes.Trim(stringBuffer, "\x00"))
 	return result, err
 }
@@ -694,10 +694,10 @@ Input:
   - ctx: A context to control lifecycle.
 
 Output:
-  - An int containing the error received from Senzing's G2Config.
+  - An int containing the error received from Senzing's SzConfig.
 */
 func (client *Szconfig) getLastExceptionCode(ctx context.Context) (int, error) {
-	//  _DLEXPORT int G2Config_getLastExceptionCode();
+	//  _DLEXPORT int SzConfig_getLastExceptionCode();
 	_ = ctx
 	var err error
 	var result int
@@ -706,7 +706,7 @@ func (client *Szconfig) getLastExceptionCode(ctx context.Context) (int, error) {
 		client.traceEntry(19)
 		defer func() { client.traceExit(20, result, err, time.Since(entryTime)) }()
 	}
-	result = int(C.G2Config_getLastExceptionCode())
+	result = int(C.SzConfig_getLastExceptionCode())
 	return result, err
 }
 

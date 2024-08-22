@@ -1,5 +1,5 @@
 /*
-The helper package is not intended for public use.
+Package helper is not intended for public use.
 It contains functions that are common to the
 [szconfig], [szconfigmanager], [szdiagnostic], [szengine], and  [szproduct] packages.
 

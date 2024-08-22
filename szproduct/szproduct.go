@@ -1,17 +1,17 @@
 /*
 The [Szproduct] implementation of the [senzing.SzProduct] interface
-communicates with the Senzing native C binary, libG2.so.
+communicates with the Senzing native C binary, libSz.so.
 */
 package szproduct
 
 /*
 #include <stdlib.h>
-#include "libg2product.h"
-#include "gohelpers/golang_helpers.h"
-#cgo CFLAGS: -g -I/opt/senzing/g2/sdk/c
-#cgo windows CFLAGS: -g -I"C:/Program Files/Senzing/g2/sdk/c"
-#cgo LDFLAGS: -L/opt/senzing/g2/lib -lG2
-#cgo windows LDFLAGS: -L"C:/Program Files/Senzing/g2/lib" -lG2
+#include "libSzproduct.h"
+#include "gohelpers/Szlang_helpers.h"
+#cgo CFLAGS: -g -I/opt/senzing/er/sdk/c
+#cgo windows CFLAGS: -g -I"C:/Program Files/Senzing/er/sdk/c"
+#cgo LDFLAGS: -L/opt/senzing/er/lib -lSz
+#cgo windows LDFLAGS: -L"C:/Program Files/Senzing/er/lib" -lSz
 */
 import "C"
 
@@ -60,7 +60,7 @@ const (
 // ----------------------------------------------------------------------------
 
 /*
-The Destroy method will destroy and perform cleanup for the Senzing G2Product object.
+The Destroy method will destroy and perform cleanup for the Senzing SzProduct object.
 It should be called after all other calls are complete.
 
 Input
@@ -163,7 +163,7 @@ Input
   - ctx: A context to control lifecycle.
   - instanceName: A name for the auditing node, to help identify it within system logs.
   - settings: A JSON string containing configuration parameters.
-  - verboseLogging: A flag to enable deeper logging of the G2 processing. 0 for no Senzing logging; 1 for logging.
+  - verboseLogging: A flag to enable deeper logging of the Sz processing. 0 for no Senzing logging; 1 for logging.
 */
 func (client *Szproduct) Initialize(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
 	var err error
@@ -293,11 +293,11 @@ func (client *Szproduct) UnregisterObserver(ctx context.Context, observer observ
 // ----------------------------------------------------------------------------
 
 func (client *Szproduct) destroy(ctx context.Context) error {
-	// _DLEXPORT int G2Config_destroy();
+	// _DLEXPORT int SzProduct_destroy();
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
-	result := C.G2Product_destroy()
+	result := C.SzProduct_destroy()
 	if result != noError {
 		err = client.newError(ctx, 4001, result)
 	}
@@ -305,31 +305,31 @@ func (client *Szproduct) destroy(ctx context.Context) error {
 }
 
 func (client *Szproduct) license(ctx context.Context) (string, error) {
-	// _DLEXPORT char* G2Product_license();
+	// _DLEXPORT char* SzProduct_license();
 	_ = ctx
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultResponse string
-	result := C.G2Product_license()
+	result := C.SzProduct_license()
 	resultResponse = C.GoString(result)
 	return resultResponse, err
 }
 
 func (client *Szproduct) version(ctx context.Context) (string, error) {
-	// _DLEXPORT char* G2Product_license();
+	// _DLEXPORT char* SzProduct_license();
 	_ = ctx
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
 	var resultResponse string
-	result := C.G2Product_version()
+	result := C.SzProduct_version()
 	resultResponse = C.GoString(result)
 	return resultResponse, err
 }
 
 func (client *Szproduct) init(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
-	// _DLEXPORT int G2Config_init(const char *moduleName, const char *iniParams, const int verboseLogging);
+	// _DLEXPORT int SzProduct_init(const char *moduleName, const char *iniParams, const int verboseLogging);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
@@ -337,7 +337,7 @@ func (client *Szproduct) init(ctx context.Context, instanceName string, settings
 	defer C.free(unsafe.Pointer(moduleNameForC))
 	iniParamsForC := C.CString(settings)
 	defer C.free(unsafe.Pointer(iniParamsForC))
-	result := C.G2Product_init(moduleNameForC, iniParamsForC, C.longlong(verboseLogging))
+	result := C.SzProduct_init(moduleNameForC, iniParamsForC, C.longlong(verboseLogging))
 	if result != noError {
 		err = client.newError(ctx, 4002, instanceName, settings, verboseLogging, result)
 	}
@@ -408,13 +408,13 @@ func (client *Szproduct) panicOnError(err error) {
 // --- Sz exception handling --------------------------------------------------
 
 /*
-The clearLastException method erases the last exception message held by the Senzing G2Product object.
+The clearLastException method erases the last exception message held by the Senzing SzProduct object.
 
 Input
   - ctx: A context to control lifecycle.
 */
 func (client *Szproduct) clearLastException(ctx context.Context) error {
-	// _DLEXPORT void G2Config_clearLastException();
+	// _DLEXPORT void SzProduct_clearLastException();
 	_ = ctx
 	var err error
 	if client.isTrace {
@@ -422,21 +422,21 @@ func (client *Szproduct) clearLastException(ctx context.Context) error {
 		client.traceEntry(1)
 		defer func() { client.traceExit(2, err, time.Since(entryTime)) }()
 	}
-	C.G2Product_clearLastException()
+	C.SzProduct_clearLastException()
 	return err
 }
 
 /*
-The getLastException method retrieves the last exception thrown in Senzing's G2Product.
+The getLastException method retrieves the last exception thrown in Senzing's SzProduct.
 
 Input
   - ctx: A context to control lifecycle.
 
 Output
-  - A string containing the error received from Senzing's G2Product.
+  - A string containing the error received from Senzing's SzProduct.
 */
 func (client *Szproduct) getLastException(ctx context.Context) (string, error) {
-	// _DLEXPORT int G2Config_getLastException(char *buffer, const size_t bufSize);
+	// _DLEXPORT int SzProduct_getLastException(char *buffer, const size_t bufSize);
 	_ = ctx
 	var err error
 	var result string
@@ -446,22 +446,22 @@ func (client *Szproduct) getLastException(ctx context.Context) (string, error) {
 		defer func() { client.traceExit(6, result, err, time.Since(entryTime)) }()
 	}
 	stringBuffer := client.getByteArray(initialByteArraySize)
-	C.G2Product_getLastException((*C.char)(unsafe.Pointer(&stringBuffer[0])), C.size_t(len(stringBuffer)))
+	C.SzProduct_getLastException((*C.char)(unsafe.Pointer(&stringBuffer[0])), C.size_t(len(stringBuffer)))
 	result = string(bytes.Trim(stringBuffer, "\x00"))
 	return result, err
 }
 
 /*
-The getLastExceptionCode method retrieves the code of the last exception thrown in Senzing's G2Product.
+The getLastExceptionCode method retrieves the code of the last exception thrown in Senzing's SzProduct.
 
 Input:
   - ctx: A context to control lifecycle.
 
 Output:
-  - An int containing the error received from Senzing's G2Product.
+  - An int containing the error received from Senzing's SzProduct.
 */
 func (client *Szproduct) getLastExceptionCode(ctx context.Context) (int, error) {
-	//  _DLEXPORT int G2Config_getLastExceptionCode();
+	//  _DLEXPORT int SzProduct_getLastExceptionCode();
 	_ = ctx
 	var err error
 	var result int
@@ -470,7 +470,7 @@ func (client *Szproduct) getLastExceptionCode(ctx context.Context) (int, error) 
 		client.traceEntry(7)
 		defer func() { client.traceExit(8, result, err, time.Since(entryTime)) }()
 	}
-	result = int(C.G2Product_getLastExceptionCode())
+	result = int(C.SzProduct_getLastExceptionCode())
 	return result, err
 }
 
