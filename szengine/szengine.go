@@ -7,7 +7,7 @@ package szengine
 /*
 #include <stdlib.h>
 #include "libSz.h"
-#include "gohelpers/Szlang_helpers.h"
+#include "gohelpers/SzLang_helpers.h"
 #cgo CFLAGS: -g -I/opt/senzing/er/sdk/c
 #cgo windows CFLAGS: -g -I"C:/Program Files/Senzing/er/sdk/c"
 #cgo LDFLAGS: -L/opt/senzing/er/lib -lSz
@@ -1508,7 +1508,7 @@ func (client *Szengine) addRecordWithInfo(ctx context.Context, dataSourceCode st
 		err = client.newError(ctx, 4002, dataSourceCode, recordID, recordDefinition, flags, result.returnCode)
 	}
 	resultResponse = C.GoString(result.response)
-	C.G2GoHelper_free(unsafe.Pointer(result.response))
+	C.SzHelper_free(unsafe.Pointer(result.response))
 	return resultResponse, err
 }
 
@@ -1585,7 +1585,7 @@ func (client *Szengine) deleteRecordWithInfo(ctx context.Context, dataSourceCode
 		err = client.newError(ctx, 4005, dataSourceCode, recordID, flags, result.returnCode)
 	}
 	resultResponse = C.GoString(result.response)
-	C.G2GoHelper_free(unsafe.Pointer(result.response))
+	C.SzHelper_free(unsafe.Pointer(result.response))
 	return resultResponse, err
 }
 
@@ -1642,7 +1642,7 @@ func (client *Szengine) fetchNext(ctx context.Context, exportHandle uintptr) (st
 		err = client.newError(ctx, 4009, exportHandle, result.returnCode, result)
 	}
 	resultResponse = C.GoString(result.response)
-	C.G2GoHelper_free(unsafe.Pointer(result.response))
+	C.SzHelper_free(unsafe.Pointer(result.response))
 	return resultResponse, err
 }
 
@@ -1657,7 +1657,7 @@ func (client *Szengine) findInterestingEntitiesByEntityID(ctx context.Context, e
 		err = client.newError(ctx, 4010, entityID, flags, result.returnCode)
 	}
 	resultResponse = C.GoString(result.response)
-	C.G2GoHelper_free(unsafe.Pointer(result.response))
+	C.SzHelper_free(unsafe.Pointer(result.response))
 	return resultResponse, err
 }
 
@@ -1676,7 +1676,7 @@ func (client *Szengine) findInterestingEntitiesByRecordID(ctx context.Context, d
 		err = client.newError(ctx, 4011, dataSourceCode, recordID, flags, result.returnCode)
 	}
 	resultResponse = C.GoString(result.response)
-	C.G2GoHelper_free(unsafe.Pointer(result.response))
+	C.SzHelper_free(unsafe.Pointer(result.response))
 	return resultResponse, err
 }
 
@@ -1693,7 +1693,7 @@ func (client *Szengine) findNetworkByEntityIDV2(ctx context.Context, entityIDs s
 		err = client.newError(ctx, 4013, entityIDs, maxDegrees, buildOutDegree, buildOutMaxEntities, flags, result.returnCode)
 	}
 	resultResponse = C.GoString(result.response)
-	C.G2GoHelper_free(unsafe.Pointer(result.response))
+	C.SzHelper_free(unsafe.Pointer(result.response))
 	return resultResponse, err
 }
 
@@ -1710,7 +1710,7 @@ func (client *Szengine) findNetworkByRecordIDV2(ctx context.Context, recordKeys 
 		err = client.newError(ctx, 4015, recordKeys, maxDegrees, buildOutDegree, buildOutMaxEntities, flags, result.returnCode)
 	}
 	resultResponse = C.GoString(result.response)
-	C.G2GoHelper_free(unsafe.Pointer(result.response))
+	C.SzHelper_free(unsafe.Pointer(result.response))
 	return resultResponse, err
 }
 
@@ -1740,7 +1740,7 @@ func (client *Szengine) findPathByEntityIDV2(ctx context.Context, startEntityID 
 		err = client.newError(ctx, 4017, startEntityID, endEntityID, maxDegrees, flags, result.returnCode)
 	}
 	resultResponse = C.GoString(result.response)
-	C.G2GoHelper_free(unsafe.Pointer(result.response))
+	C.SzHelper_free(unsafe.Pointer(result.response))
 	return resultResponse, err
 }
 
@@ -1781,7 +1781,7 @@ func (client *Szengine) findPathByRecordIDV2(ctx context.Context, startDataSourc
 		err = client.newError(ctx, 4019, startDataSourceCode, startRecordID, endDataSourceCode, endRecordID, maxDegrees, flags, result.returnCode)
 	}
 	resultResponse = C.GoString(result.response)
-	C.G2GoHelper_free(unsafe.Pointer(result.response))
+	C.SzHelper_free(unsafe.Pointer(result.response))
 	return resultResponse, err
 }
 
@@ -1820,7 +1820,7 @@ func (client *Szengine) findPathByEntityIDWithAvoidsV2(ctx context.Context, star
 		err = client.newError(ctx, 4021, startEntityID, endEntityID, maxDegrees, exclusions, flags, result.returnCode)
 	}
 	resultResponse = C.GoString(result.response)
-	C.G2GoHelper_free(unsafe.Pointer(result.response))
+	C.SzHelper_free(unsafe.Pointer(result.response))
 	return resultResponse, err
 }
 
@@ -1869,7 +1869,7 @@ func (client *Szengine) findPathByRecordIDWithAvoidsV2(ctx context.Context, star
 		err = client.newError(ctx, 4023, startDataSourceCode, startRecordID, endDataSourceCode, endRecordID, maxDegrees, exclusions, flags, result.returnCode)
 	}
 	resultResponse = C.GoString(result.response)
-	C.G2GoHelper_free(unsafe.Pointer(result.response))
+	C.SzHelper_free(unsafe.Pointer(result.response))
 	return resultResponse, err
 }
 
@@ -1907,7 +1907,7 @@ func (client *Szengine) findPathByEntityIDIncludingSourceV2(ctx context.Context,
 		err = client.newError(ctx, 4025, startEntityID, endEntityID, maxDegrees, exclusions, requiredDataSources, flags, result.returnCode)
 	}
 	resultResponse = C.GoString(result.response)
-	C.G2GoHelper_free(unsafe.Pointer(result.response))
+	C.SzHelper_free(unsafe.Pointer(result.response))
 	return resultResponse, err
 }
 
@@ -1955,7 +1955,7 @@ func (client *Szengine) findPathByRecordIDIncludingSourceV2(ctx context.Context,
 		err = client.newError(ctx, 4027, startDataSourceCode, startRecordID, endDataSourceCode, endRecordID, maxDegrees, exclusions, requiredDataSources, flags, result.returnCode)
 	}
 	resultResponse = C.GoString(result.response)
-	C.G2GoHelper_free(unsafe.Pointer(result.response))
+	C.SzHelper_free(unsafe.Pointer(result.response))
 	return resultResponse, err
 }
 
@@ -1984,7 +1984,7 @@ func (client *Szengine) getEntityByEntityIDV2(ctx context.Context, entityID int6
 		err = client.newError(ctx, 4030, entityID, flags, result.returnCode)
 	}
 	resultResponse = C.GoString(result.response)
-	C.G2GoHelper_free(unsafe.Pointer(result.response))
+	C.SzHelper_free(unsafe.Pointer(result.response))
 	return resultResponse, err
 }
 
@@ -2003,7 +2003,7 @@ func (client *Szengine) getEntityByRecordIDV2(ctx context.Context, dataSourceCod
 		err = client.newError(ctx, 4032, dataSourceCode, recordID, flags, result.returnCode)
 	}
 	resultResponse = C.GoString(result.response)
-	C.G2GoHelper_free(unsafe.Pointer(result.response))
+	C.SzHelper_free(unsafe.Pointer(result.response))
 	return resultResponse, err
 }
 
@@ -2022,7 +2022,7 @@ func (client *Szengine) getRecordV2(ctx context.Context, dataSourceCode string, 
 		err = client.newError(ctx, 4035, dataSourceCode, recordID, flags, result.returnCode)
 	}
 	resultResponse = C.GoString(result.response)
-	C.G2GoHelper_free(unsafe.Pointer(result.response))
+	C.SzHelper_free(unsafe.Pointer(result.response))
 	return resultResponse, err
 }
 
@@ -2037,7 +2037,7 @@ func (client *Szengine) getRedoRecord(ctx context.Context) (string, error) {
 		err = client.newError(ctx, 4036, result.returnCode, result)
 	}
 	resultResponse = C.GoString(result.response)
-	C.G2GoHelper_free(unsafe.Pointer(result.response))
+	C.SzHelper_free(unsafe.Pointer(result.response))
 	// TODO:  Perhaps return a "nil" for resultResponse if length of result is 0.
 	return resultResponse, err
 }
@@ -2053,7 +2053,7 @@ func (client *Szengine) getStats(ctx context.Context) (string, error) {
 		err = client.newError(ctx, 4054, result.returnCode)
 	}
 	resultResponse = C.GoString(result.response)
-	C.G2GoHelper_free(unsafe.Pointer(result.response))
+	C.SzHelper_free(unsafe.Pointer(result.response))
 	return resultResponse, err
 }
 
@@ -2070,7 +2070,7 @@ func (client *Szengine) getVirtualEntityByRecordIDV2(ctx context.Context, record
 		err = client.newError(ctx, 4038, recordKeys, flags, result.returnCode)
 	}
 	resultResponse = C.GoString(result.response)
-	C.G2GoHelper_free(unsafe.Pointer(result.response))
+	C.SzHelper_free(unsafe.Pointer(result.response))
 	return resultResponse, err
 }
 
@@ -2085,7 +2085,7 @@ func (client *Szengine) howEntityByEntityIDV2(ctx context.Context, entityID int6
 		err = client.newError(ctx, 4040, entityID, flags, result.returnCode)
 	}
 	resultResponse = C.GoString(result.response)
-	C.G2GoHelper_free(unsafe.Pointer(result.response))
+	C.SzHelper_free(unsafe.Pointer(result.response))
 	return resultResponse, err
 }
 
@@ -2203,7 +2203,7 @@ func (client *Szengine) processRedoRecordWithInfo(ctx context.Context, redoRecor
 		err = client.newError(ctx, 4045, redoRecord, result.returnCode)
 	}
 	resultResponse = C.GoString(result.response)
-	C.G2GoHelper_free(unsafe.Pointer(result.response))
+	C.SzHelper_free(unsafe.Pointer(result.response))
 	return resultResponse, err
 }
 
@@ -2252,7 +2252,7 @@ func (client *Szengine) reevaluateEntityWithInfo(ctx context.Context, entityID i
 		err = client.newError(ctx, 4047, entityID, flags, result.returnCode)
 	}
 	resultResponse = C.GoString(result.response)
-	C.G2GoHelper_free(unsafe.Pointer(result.response))
+	C.SzHelper_free(unsafe.Pointer(result.response))
 	return resultResponse, err
 }
 
@@ -2311,7 +2311,7 @@ func (client *Szengine) reevaluateRecordWithInfo(ctx context.Context, dataSource
 		err = client.newError(ctx, 4049, dataSourceCode, recordID, flags, result.returnCode)
 	}
 	resultResponse = C.GoString(result.response)
-	C.G2GoHelper_free(unsafe.Pointer(result.response))
+	C.SzHelper_free(unsafe.Pointer(result.response))
 	return resultResponse, err
 }
 
@@ -2352,7 +2352,7 @@ func (client *Szengine) searchByAttributesV2(ctx context.Context, attributes str
 		err = client.newError(ctx, 4052, attributes, flags, result.returnCode)
 	}
 	resultResponse = C.GoString(result.response)
-	C.G2GoHelper_free(unsafe.Pointer(result.response))
+	C.SzHelper_free(unsafe.Pointer(result.response))
 	return resultResponse, err
 }
 
@@ -2383,7 +2383,7 @@ func (client *Szengine) searchByAttributesV3(ctx context.Context, attributes str
 		err = client.newError(ctx, 4053, attributes, searchProfile, flags, result.returnCode)
 	}
 	resultResponse = C.GoString(result.response)
-	C.G2GoHelper_free(unsafe.Pointer(result.response))
+	C.SzHelper_free(unsafe.Pointer(result.response))
 	return resultResponse, err
 }
 
@@ -2414,7 +2414,7 @@ func (client *Szengine) whyEntitiesV2(ctx context.Context, entityID1 int64, enti
 		err = client.newError(ctx, 4056, entityID1, entityID2, flags, result.returnCode)
 	}
 	resultResponse = C.GoString(result.response)
-	C.G2GoHelper_free(unsafe.Pointer(result.response))
+	C.SzHelper_free(unsafe.Pointer(result.response))
 	return resultResponse, err
 }
 
@@ -2445,7 +2445,7 @@ func (client *Szengine) whyRecordInEntityV2(ctx context.Context, dataSourceCode 
 		err = client.newError(ctx, 4058, dataSourceCode, recordID, flags, result.returnCode)
 	}
 	resultResponse = C.GoString(result.response)
-	C.G2GoHelper_free(unsafe.Pointer(result.response))
+	C.SzHelper_free(unsafe.Pointer(result.response))
 	return resultResponse, err
 }
 
@@ -2483,7 +2483,7 @@ func (client *Szengine) whyRecordsV2(ctx context.Context, dataSourceCode1 string
 		err = client.newError(ctx, 4060, dataSourceCode1, recordID1, dataSourceCode2, recordID2, flags, result.returnCode)
 	}
 	resultResponse = C.GoString(result.response)
-	C.G2GoHelper_free(unsafe.Pointer(result.response))
+	C.SzHelper_free(unsafe.Pointer(result.response))
 	return resultResponse, err
 }
 

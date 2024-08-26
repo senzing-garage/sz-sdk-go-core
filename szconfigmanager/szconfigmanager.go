@@ -6,8 +6,8 @@ package szconfigmanager
 
 /*
 #include <stdlib.h>
-#include "libSzconfigmgr.h"
-#include "gohelpers/Szlang_helpers.h"
+#include "libSzConfigMgr.h"
+#include "gohelpers/SzLang_helpers.h"
 #cgo CFLAGS: -g -I/opt/senzing/er/sdk/c
 #cgo windows CFLAGS: -g -I"C:/Program Files/Senzing/er/sdk/c"
 #cgo LDFLAGS: -L/opt/senzing/er/lib -lSz
@@ -461,7 +461,7 @@ func (client *Szconfigmanager) getConfig(ctx context.Context, configID int64) (s
 		err = client.newError(ctx, 4003, configID, result.returnCode, result)
 	}
 	resultResponse = C.GoString(result.response)
-	C.G2GoHelper_free(unsafe.Pointer(result.response))
+	C.SzHelper_free(unsafe.Pointer(result.response))
 	return resultResponse, err
 }
 
@@ -476,7 +476,7 @@ func (client *Szconfigmanager) getConfigList(ctx context.Context) (string, error
 		err = client.newError(ctx, 4004, result.returnCode, result)
 	}
 	resultResponse = C.GoString(result.response)
-	C.G2GoHelper_free(unsafe.Pointer(result.response))
+	C.SzHelper_free(unsafe.Pointer(result.response))
 	return resultResponse, err
 }
 

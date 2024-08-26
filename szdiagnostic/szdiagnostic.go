@@ -6,9 +6,9 @@ package szdiagnostic
 
 /*
 #include <stdlib.h>
-#include "libSzdiagnostic.h"
+#include "libSzDiagnostic.h"
 #include "libSz.h"
-#include "gohelpers/Szlang_helpers.h"
+#include "gohelpers/SzLang_helpers.h"
 #cgo CFLAGS: -g -I/opt/senzing/er/sdk/c
 #cgo windows CFLAGS: -g -I"C:/Program Files/Senzing/er/sdk/c"
 #cgo LDFLAGS: -L/opt/senzing/er/lib -lSz
@@ -398,7 +398,7 @@ func (client *Szdiagnostic) checkDatastorePerformance(ctx context.Context, secon
 		err = client.newError(ctx, 4001, secondsToRun, result.returnCode)
 	}
 	resultResponse = C.GoString(result.response)
-	C.G2GoHelper_free(unsafe.Pointer(result.response))
+	C.SzHelper_free(unsafe.Pointer(result.response))
 	return resultResponse, err
 }
 
@@ -425,7 +425,7 @@ func (client *Szdiagnostic) getDatastoreInfo(ctx context.Context) (string, error
 		err = client.newError(ctx, 4003, result.returnCode)
 	}
 	resultResponse = C.GoString(result.response)
-	C.G2GoHelper_free(unsafe.Pointer(result.response))
+	C.SzHelper_free(unsafe.Pointer(result.response))
 	return resultResponse, err
 }
 
@@ -440,7 +440,7 @@ func (client *Szdiagnostic) getFeature(ctx context.Context, featureID int64) (st
 		err = client.newError(ctx, 4004, featureID, result)
 	}
 	resultResponse = C.GoString(result.response)
-	C.G2GoHelper_free(unsafe.Pointer(result.response))
+	C.SzHelper_free(unsafe.Pointer(result.response))
 	return resultResponse, err
 }
 

@@ -9,8 +9,12 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"syscall"
 	"testing"
 	"time"
+
+	"golang.org/x/text/language"
+	"golang.org/x/text/message"
 
 	truncator "github.com/aquilax/truncate"
 	"github.com/senzing-garage/go-helpers/fileutil"
@@ -69,6 +73,22 @@ var (
 // ----------------------------------------------------------------------------
 // Interface methods - test
 // ----------------------------------------------------------------------------
+
+func TestSzengine_Destroy_multipleEngines(test *testing.T) {
+	ctx := context.TODO()
+	sysInfo := &syscall.Sysinfo_t{}
+	printer := message.NewPrinter(language.English)
+	for i := 1; i <= 300; i++ {
+		szEngine, err := getNewSzEngine(ctx)
+		require.NoError(test, err)
+		err = szEngine.Destroy(ctx)
+		require.NoError(test, err)
+		err = syscall.Sysinfo(sysInfo)
+		require.NoError(test, err)
+		usedRAM := sysInfo.Totalram - sysInfo.Freeram
+		printer.Printf(">>> iteration: %d,  Used memory: %d\n", i, usedRAM)
+	}
+}
 
 func TestSzengine_AddRecord(test *testing.T) {
 	ctx := context.TODO()
@@ -2031,6 +2051,10 @@ func addRecords(ctx context.Context, records []record.Record) error {
 	return err
 }
 
+func bToMb(b uint64) uint64 {
+	return b / 1024 / 1024
+}
+
 func deleteRecords(ctx context.Context, records []record.Record) error {
 	var err error
 	szEngine, err := getSzEngine(ctx)
@@ -2104,6 +2128,37 @@ func getEntityIDStringForRecord(datasource string, id string) (string, error) {
 	return result, err
 }
 
+func getNewSzEngine(ctx context.Context) (*Szengine, error) {
+	var err error
+	var newSzEngine *Szengine
+
+	settings, err := getSettings()
+	if err != nil {
+		return newSzEngine, fmt.Errorf("getSettings() Error: %w", err)
+	}
+	newSzEngine = &Szengine{}
+	err = newSzEngine.SetLogLevel(ctx, logLevel)
+	if err != nil {
+		return newSzEngine, fmt.Errorf("SetLogLevel() Error: %w", err)
+	}
+	if logLevel == "TRACE" {
+		newSzEngine.SetObserverOrigin(ctx, observerOrigin)
+		err = newSzEngine.RegisterObserver(ctx, observerSingleton)
+		if err != nil {
+			return newSzEngine, fmt.Errorf("RegisterObserver() Error: %w", err)
+		}
+		err = newSzEngine.SetLogLevel(ctx, logLevel) // Duplicated for coverage testing
+		if err != nil {
+			return newSzEngine, fmt.Errorf("SetLogLevel() - 2 Error: %w", err)
+		}
+	}
+	err = newSzEngine.Initialize(ctx, instanceName, settings, getDefaultConfigID(), verboseLogging)
+	if err != nil {
+		return newSzEngine, fmt.Errorf("Initialize() Error: %w", err)
+	}
+	return newSzEngine, err
+}
+
 func getSettings() (string, error) {
 	var result string
 
@@ -2129,30 +2184,7 @@ func getSettings() (string, error) {
 func getSzEngine(ctx context.Context) (*Szengine, error) {
 	var err error
 	if szEngineSingleton == nil {
-		settings, err := getSettings()
-		if err != nil {
-			return szEngineSingleton, fmt.Errorf("getSettings() Error: %w", err)
-		}
-		szEngineSingleton = &Szengine{}
-		err = szEngineSingleton.SetLogLevel(ctx, logLevel)
-		if err != nil {
-			return szEngineSingleton, fmt.Errorf("SetLogLevel() Error: %w", err)
-		}
-		if logLevel == "TRACE" {
-			szEngineSingleton.SetObserverOrigin(ctx, observerOrigin)
-			err = szEngineSingleton.RegisterObserver(ctx, observerSingleton)
-			if err != nil {
-				return szEngineSingleton, fmt.Errorf("RegisterObserver() Error: %w", err)
-			}
-			err = szEngineSingleton.SetLogLevel(ctx, logLevel) // Duplicated for coverage testing
-			if err != nil {
-				return szEngineSingleton, fmt.Errorf("SetLogLevel() - 2 Error: %w", err)
-			}
-		}
-		err = szEngineSingleton.Initialize(ctx, instanceName, settings, getDefaultConfigID(), verboseLogging)
-		if err != nil {
-			return szEngineSingleton, fmt.Errorf("Initialize() Error: %w", err)
-		}
+		szEngineSingleton, err = getNewSzEngine(ctx)
 	}
 	return szEngineSingleton, err
 }
