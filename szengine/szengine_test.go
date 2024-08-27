@@ -2429,8 +2429,8 @@ func setupSenzingConfiguration() error {
 
 func teardown() error {
 	ctx := context.TODO()
-	_, err := getSzEngine(ctx)
-	err = teardownSzEngine(ctx)
+	_, _ = getSzEngine(ctx)
+	err := teardownSzEngine(ctx)
 	return err
 }
 
