@@ -74,20 +74,56 @@ var (
 // Interface methods - test
 // ----------------------------------------------------------------------------
 
-func TestSzengine_Destroy_multipleEngines(test *testing.T) {
+func TestSzengine_Destroy_multipleEngines_bad1(test *testing.T) {
 	ctx := context.TODO()
-	sysInfo := &syscall.Sysinfo_t{}
-	printer := message.NewPrinter(language.English)
-	for i := 1; i <= 300; i++ {
+	for i := 1; i <= 20; i++ {
 		szEngine, err := getNewSzEngine(ctx)
 		require.NoError(test, err)
 		err = szEngine.Destroy(ctx)
 		require.NoError(test, err)
-		err = syscall.Sysinfo(sysInfo)
-		require.NoError(test, err)
-		usedRAM := sysInfo.Totalram - sysInfo.Freeram
-		printer.Printf(">>> iteration: %d,  Used memory: %d\n", i, usedRAM)
+		ramCheck(test, i)
 	}
+}
+
+func TestSzengine_Destroy_multipleEngines_good1(test *testing.T) {
+	ctx := context.TODO()
+	szEnginePrimer, err := getNewSzEngine(ctx)
+	require.NoError(test, err)
+	for i := 1; i <= 20; i++ {
+		szEngine, err := getNewSzEngine(ctx)
+		require.NoError(test, err)
+		err = szEngine.Destroy(ctx)
+		require.NoError(test, err)
+		ramCheck(test, i)
+	}
+	err = szEnginePrimer.Destroy(ctx)
+	require.NoError(test, err)
+}
+
+func TestSzengine_Destroy_multipleEngines_bad2(test *testing.T) {
+	ctx := context.TODO()
+	for i := 1; i <= 20; i++ {
+		szEngine, err := getNewSzEngine(ctx)
+		require.NoError(test, err)
+		err = szEngine.Destroy(ctx)
+		require.NoError(test, err)
+		ramCheck(test, i)
+	}
+}
+
+func TestSzengine_Destroy_multipleEngines_good2(test *testing.T) {
+	ctx := context.TODO()
+	szEnginePrimer, err := getNewSzEngine(ctx)
+	require.NoError(test, err)
+	for i := 1; i <= 20; i++ {
+		szEngine, err := getNewSzEngine(ctx)
+		require.NoError(test, err)
+		err = szEngine.Destroy(ctx)
+		require.NoError(test, err)
+		ramCheck(test, i)
+	}
+	err = szEnginePrimer.Destroy(ctx)
+	require.NoError(test, err)
 }
 
 func TestSzengine_AddRecord(test *testing.T) {
@@ -2051,10 +2087,6 @@ func addRecords(ctx context.Context, records []record.Record) error {
 	return err
 }
 
-func bToMb(b uint64) uint64 {
-	return b / 1024 / 1024
-}
-
 func deleteRecords(ctx context.Context, records []record.Record) error {
 	var err error
 	szEngine, err := getSzEngine(ctx)
@@ -2226,6 +2258,15 @@ func printResult(test *testing.T, title string, result interface{}) {
 	}
 }
 
+func ramCheck(test *testing.T, iteration int) {
+	sysInfo := &syscall.Sysinfo_t{}
+	printer := message.NewPrinter(language.English)
+	err := syscall.Sysinfo(sysInfo)
+	require.NoError(test, err)
+	usedRAM := sysInfo.Totalram - sysInfo.Freeram
+	printer.Printf(">>> iteration: %d,  Used memory: %d\n", iteration, usedRAM)
+}
+
 func truncate(aString string, length int) string {
 	return truncator.Truncate(aString, length, "...", truncator.PositionEnd)
 }
@@ -2388,7 +2429,8 @@ func setupSenzingConfiguration() error {
 
 func teardown() error {
 	ctx := context.TODO()
-	err := teardownSzEngine(ctx)
+	_, err := getSzEngine(ctx)
+	err = teardownSzEngine(ctx)
 	return err
 }
 
