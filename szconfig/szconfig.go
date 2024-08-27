@@ -6,8 +6,8 @@ package szconfig
 
 /*
 #include <stdlib.h>
-#include "libSzconfig.h"
-#include "gohelpers/Szlang_helpers.h"
+#include "libSzConfig.h"
+#include "gohelpers/SzLang_helpers.h"
 #cgo CFLAGS: -g -I/opt/senzing/er/sdk/c
 #cgo windows CFLAGS: -g -I"C:/Program Files/Senzing/er/sdk/c"
 #cgo LDFLAGS: -L/opt/senzing/er/lib -lSz
@@ -461,7 +461,7 @@ func (client *Szconfig) addDataSource(ctx context.Context, configHandle uintptr,
 		err = client.newError(ctx, 4001, configHandle, dataSourceCode, result.returnCode, result)
 	}
 	resultResponse = C.GoString(result.response)
-	C.G2GoHelper_free(unsafe.Pointer(result.response))
+	C.SzHelper_free(unsafe.Pointer(result.response))
 	return resultResponse, err
 }
 
@@ -529,7 +529,7 @@ func (client *Szconfig) save(ctx context.Context, configHandle uintptr) (string,
 		err = client.newError(ctx, 4010, configHandle, result.returnCode, result)
 	}
 	resultResponse = C.GoString(result.response)
-	C.G2GoHelper_free(unsafe.Pointer(result.response))
+	C.SzHelper_free(unsafe.Pointer(result.response))
 	return resultResponse, err
 }
 
@@ -544,7 +544,7 @@ func (client *Szconfig) listDataSources(ctx context.Context, configHandle uintpt
 		err = client.newError(ctx, 4008, configHandle, result.returnCode)
 	}
 	resultResponse = C.GoString(result.response)
-	C.G2GoHelper_free(unsafe.Pointer(result.response))
+	C.SzHelper_free(unsafe.Pointer(result.response))
 	return resultResponse, err
 }
 
