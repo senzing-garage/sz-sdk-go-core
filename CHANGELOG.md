@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed in 0.8.1
 
-- Modify method calls to match update Senzing API
+- Modify method calls to match Senzing API 4.0.0-24237
 
 ## [0.8.0] - 2024-08-22
 
