@@ -6,7 +6,7 @@ require (
 	github.com/aquilax/truncate v1.0.0
 	github.com/senzing-garage/go-helpers v0.6.0
 	github.com/senzing-garage/go-logging v1.5.0
-	github.com/senzing-garage/go-messaging v1.5.1
+	github.com/senzing-garage/go-messaging v1.5.2
 	github.com/senzing-garage/go-observing v0.3.3
 	github.com/senzing-garage/sz-sdk-go v0.14.0
 	github.com/stretchr/testify v1.9.0
