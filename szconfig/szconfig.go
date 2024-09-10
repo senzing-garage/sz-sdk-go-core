@@ -448,7 +448,6 @@ func (client *Szconfig) UnregisterObserver(ctx context.Context, observer observe
 // ----------------------------------------------------------------------------
 
 func (client *Szconfig) addDataSource(ctx context.Context, configHandle uintptr, dataSourceCode string) (string, error) {
-	// _DLEXPORT int SzConfig_addDataSource(ConfigHandle configHandle, const char *inputJson, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
@@ -466,7 +465,6 @@ func (client *Szconfig) addDataSource(ctx context.Context, configHandle uintptr,
 }
 
 func (client *Szconfig) close(ctx context.Context, configHandle uintptr) error {
-	// _DLEXPORT int SzConfig_close(ConfigHandle configHandle);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
@@ -478,7 +476,6 @@ func (client *Szconfig) close(ctx context.Context, configHandle uintptr) error {
 }
 
 func (client *Szconfig) create(ctx context.Context) (uintptr, error) {
-	// _DLEXPORT int SzConfig_create(ConfigHandle* configHandle);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
@@ -492,7 +489,6 @@ func (client *Szconfig) create(ctx context.Context) (uintptr, error) {
 }
 
 func (client *Szconfig) deleteDataSource(ctx context.Context, configHandle uintptr, dataSourceCode string) error {
-	// _DLEXPORT int SzConfig_deleteDataSource(ConfigHandle configHandle, const char *inputJson);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
@@ -507,7 +503,6 @@ func (client *Szconfig) deleteDataSource(ctx context.Context, configHandle uintp
 }
 
 func (client *Szconfig) destroy(ctx context.Context) error {
-	// _DLEXPORT int SzConfig_destroy();
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
@@ -519,7 +514,6 @@ func (client *Szconfig) destroy(ctx context.Context) error {
 }
 
 func (client *Szconfig) save(ctx context.Context, configHandle uintptr) (string, error) {
-	// _DLEXPORT int SzConfig_save(ConfigHandle configHandle, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize) );
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
@@ -534,7 +528,6 @@ func (client *Szconfig) save(ctx context.Context, configHandle uintptr) (string,
 }
 
 func (client *Szconfig) listDataSources(ctx context.Context, configHandle uintptr) (string, error) {
-	// _DLEXPORT int SzConfig_listDataSources(ConfigHandle configHandle, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
@@ -549,7 +542,6 @@ func (client *Szconfig) listDataSources(ctx context.Context, configHandle uintpt
 }
 
 func (client *Szconfig) load(ctx context.Context, configDefinition string) (uintptr, error) {
-	// _DLEXPORT int SzConfig_load(const char *jsonConfig,ConfigHandle* configHandle);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
@@ -565,7 +557,6 @@ func (client *Szconfig) load(ctx context.Context, configDefinition string) (uint
 }
 
 func (client *Szconfig) init(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
-	// _DLEXPORT int SzConfig_init(const char *moduleName, const char *iniParams, const int verboseLogging);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
@@ -650,7 +641,6 @@ Input
   - ctx: A context to control lifecycle.
 */
 func (client *Szconfig) clearLastException(ctx context.Context) error {
-	// _DLEXPORT void SzConfig_clearLastException();
 	_ = ctx
 	var err error
 	if client.isTrace {
@@ -672,7 +662,6 @@ Output
   - A string containing the error received from Senzing's Szconfig.
 */
 func (client *Szconfig) getLastException(ctx context.Context) (string, error) {
-	// _DLEXPORT int SzConfig_getLastException(char *buffer, const size_t bufSize);
 	_ = ctx
 	var err error
 	var result string
@@ -697,7 +686,6 @@ Output:
   - An int containing the error received from Senzing's SzConfig.
 */
 func (client *Szconfig) getLastExceptionCode(ctx context.Context) (int, error) {
-	//  _DLEXPORT int SzConfig_getLastExceptionCode();
 	_ = ctx
 	var err error
 	var result int

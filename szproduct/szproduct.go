@@ -293,7 +293,6 @@ func (client *Szproduct) UnregisterObserver(ctx context.Context, observer observ
 // ----------------------------------------------------------------------------
 
 func (client *Szproduct) destroy(ctx context.Context) error {
-	// _DLEXPORT int SzProduct_destroy();
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
@@ -305,7 +304,6 @@ func (client *Szproduct) destroy(ctx context.Context) error {
 }
 
 func (client *Szproduct) license(ctx context.Context) (string, error) {
-	// _DLEXPORT char* SzProduct_license();
 	_ = ctx
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -317,7 +315,6 @@ func (client *Szproduct) license(ctx context.Context) (string, error) {
 }
 
 func (client *Szproduct) version(ctx context.Context) (string, error) {
-	// _DLEXPORT char* SzProduct_license();
 	_ = ctx
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -329,7 +326,6 @@ func (client *Szproduct) version(ctx context.Context) (string, error) {
 }
 
 func (client *Szproduct) init(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
-	// _DLEXPORT int SzProduct_init(const char *moduleName, const char *iniParams, const int verboseLogging);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
@@ -414,7 +410,6 @@ Input
   - ctx: A context to control lifecycle.
 */
 func (client *Szproduct) clearLastException(ctx context.Context) error {
-	// _DLEXPORT void SzProduct_clearLastException();
 	_ = ctx
 	var err error
 	if client.isTrace {
@@ -436,7 +431,6 @@ Output
   - A string containing the error received from Senzing's SzProduct.
 */
 func (client *Szproduct) getLastException(ctx context.Context) (string, error) {
-	// _DLEXPORT int SzProduct_getLastException(char *buffer, const size_t bufSize);
 	_ = ctx
 	var err error
 	var result string
@@ -461,7 +455,6 @@ Output:
   - An int containing the error received from Senzing's SzProduct.
 */
 func (client *Szproduct) getLastExceptionCode(ctx context.Context) (int, error) {
-	//  _DLEXPORT int SzProduct_getLastExceptionCode();
 	_ = ctx
 	var err error
 	var result int

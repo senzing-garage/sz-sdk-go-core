@@ -421,7 +421,6 @@ func (client *Szconfigmanager) UnregisterObserver(ctx context.Context, observer 
 // ----------------------------------------------------------------------------
 
 func (client *Szconfigmanager) addConfig(ctx context.Context, configDefinition string, configComment string) (int64, error) {
-	// _DLEXPORT int SzConfigMgr_addConfig(const char* configStr, const char* configComments, long long* configID);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
@@ -439,7 +438,6 @@ func (client *Szconfigmanager) addConfig(ctx context.Context, configDefinition s
 }
 
 func (client *Szconfigmanager) destroy(ctx context.Context) error {
-	// _DLEXPORT int SzConfigMgr_destroy();
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
@@ -451,7 +449,6 @@ func (client *Szconfigmanager) destroy(ctx context.Context) error {
 }
 
 func (client *Szconfigmanager) getConfig(ctx context.Context, configID int64) (string, error) {
-	// _DLEXPORT int SzConfigMgr_getConfig(const long long configID, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
@@ -466,7 +463,6 @@ func (client *Szconfigmanager) getConfig(ctx context.Context, configID int64) (s
 }
 
 func (client *Szconfigmanager) getConfigList(ctx context.Context) (string, error) {
-	// _DLEXPORT int SzConfigMgr_getConfigList(char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
@@ -481,7 +477,6 @@ func (client *Szconfigmanager) getConfigList(ctx context.Context) (string, error
 }
 
 func (client *Szconfigmanager) getDefaultConfigID(ctx context.Context) (int64, error) {
-	//  _DLEXPORT int SzConfigMgr_getDefaultConfigID(long long* configID);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
@@ -495,7 +490,6 @@ func (client *Szconfigmanager) getDefaultConfigID(ctx context.Context) (int64, e
 }
 
 func (client *Szconfigmanager) init(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
-	// _DLEXPORT int SzConfigMgr_init(const char *moduleName, const char *iniParams, const int verboseLogging);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
@@ -511,7 +505,6 @@ func (client *Szconfigmanager) init(ctx context.Context, instanceName string, se
 }
 
 func (client *Szconfigmanager) replaceDefaultConfigID(ctx context.Context, currentDefaultConfigID int64, newDefaultConfigID int64) error {
-	// _DLEXPORT int SzConfigMgr_replaceDefaultConfigID(const long long oldConfigID, const long long newConfigID);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
@@ -523,7 +516,6 @@ func (client *Szconfigmanager) replaceDefaultConfigID(ctx context.Context, curre
 }
 
 func (client *Szconfigmanager) setDefaultConfigID(ctx context.Context, configID int64) error {
-	// _DLEXPORT int SzConfigMgr_setDefaultConfigID(const long long configID);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
@@ -604,7 +596,6 @@ Input
   - ctx: A context to control lifecycle.
 */
 func (client *Szconfigmanager) clearLastException(ctx context.Context) error {
-	// _DLEXPORT void SzConfigMgr_clearLastException();
 	_ = ctx
 	var err error
 	if client.isTrace {
@@ -626,7 +617,6 @@ Output
   - A string containing the error received from Senzing's SzConfigMgr.
 */
 func (client *Szconfigmanager) getLastException(ctx context.Context) (string, error) {
-	// _DLEXPORT int SzConfigMgr_getLastException(char *buffer, const size_t bufSize);
 	_ = ctx
 	var err error
 	var result string
@@ -651,7 +641,6 @@ Output:
   - An int containing the error received from Senzing's SzConfigMgr.
 */
 func (client *Szconfigmanager) getLastExceptionCode(ctx context.Context) (int, error) {
-	//  _DLEXPORT int SzConfigMgr_getLastExceptionCode();
 	_ = ctx
 	var err error
 	var result int

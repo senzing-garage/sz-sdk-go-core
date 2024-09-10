@@ -144,6 +144,7 @@ func (client *Szdiagnostic) GetDatastoreInfo(ctx context.Context) (string, error
 
 /*
 Method GetFeature is an experimental method that returns diagnostic information of a feature.
+Not recommended for use.
 
 Input
   - ctx: A context to control lifecycle.
@@ -388,7 +389,6 @@ func (client *Szdiagnostic) UnregisterObserver(ctx context.Context, observer obs
 // ----------------------------------------------------------------------------
 
 func (client *Szdiagnostic) checkDatastorePerformance(ctx context.Context, secondsToRun int) (string, error) {
-	// _DLEXPORT int SzDiagnostic_checkDBPerf(int secondsToRun, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize) );
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
@@ -403,7 +403,6 @@ func (client *Szdiagnostic) checkDatastorePerformance(ctx context.Context, secon
 }
 
 func (client *Szdiagnostic) destroy(ctx context.Context) error {
-	//  _DLEXPORT int SzDiagnostic_destroy();
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
@@ -415,7 +414,6 @@ func (client *Szdiagnostic) destroy(ctx context.Context) error {
 }
 
 func (client *Szdiagnostic) getDatastoreInfo(ctx context.Context) (string, error) {
-	// _DLEXPORT struct SzDiagnostic_getDatastoreInfo_result SzDiagnostic_getDatastoreInfo_helper();
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
@@ -430,7 +428,6 @@ func (client *Szdiagnostic) getDatastoreInfo(ctx context.Context) (string, error
 }
 
 func (client *Szdiagnostic) getFeature(ctx context.Context, featureID int64) (string, error) {
-	//  _DLEXPORT int SzDiagnostic_getFeature(const long long libFeatID);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
@@ -455,7 +452,6 @@ Input
   - verboseLogging: A flag to enable deeper logging of the Sz processing. 0 for no Senzing logging; 1 for logging.
 */
 func (client *Szdiagnostic) init(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
-	// _DLEXPORT int SzDiagnostic_init(const char *moduleName, const char *iniParams, const int verboseLogging);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
@@ -482,7 +478,6 @@ Input
   - verboseLogging: A flag to enable deeper logging of the Sz processing. 0 for no Senzing logging; 1 for logging.
 */
 func (client *Szdiagnostic) initWithConfigID(ctx context.Context, instanceName string, settings string, configID int64, verboseLogging int64) error {
-	//  _DLEXPORT int SzDiagnostic_initWithConfigID(const char *moduleName, const char *iniParams, const long long initConfigID, const int verboseLogging);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
@@ -498,7 +493,6 @@ func (client *Szdiagnostic) initWithConfigID(ctx context.Context, instanceName s
 }
 
 func (client *Szdiagnostic) purgeRepository(ctx context.Context) error {
-	//  _DLEXPORT int SzDiagnostic_purgeRepository();
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
@@ -510,7 +504,6 @@ func (client *Szdiagnostic) purgeRepository(ctx context.Context) error {
 }
 
 func (client *Szdiagnostic) reinit(ctx context.Context, configID int64) error {
-	//  _DLEXPORT int SzDiagnostic_reinit(const long long initConfigID);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
@@ -591,7 +584,6 @@ Input
   - ctx: A context to control lifecycle.
 */
 func (client *Szdiagnostic) clearLastException(ctx context.Context) error {
-	// _DLEXPORT void SzDiagnostic_clearLastException();
 	_ = ctx
 	var err error
 	if client.isTrace {
@@ -613,7 +605,6 @@ Output
   - A string containing the error received from Senzing's SzDiagnostic.
 */
 func (client *Szdiagnostic) getLastException(ctx context.Context) (string, error) {
-	// _DLEXPORT int SzDiagnostic_getLastException(char *buffer, const size_t bufSize);
 	_ = ctx
 	var err error
 	var result string
@@ -638,7 +629,6 @@ Output:
   - An int containing the error received from Senzing's SzDiagnostic.
 */
 func (client *Szdiagnostic) getLastExceptionCode(ctx context.Context) (int, error) {
-	//  _DLEXPORT int SzDiagnostic_getLastExceptionCode();
 	_ = ctx
 	var err error
 	var result int
