@@ -1162,11 +1162,7 @@ func (client *Szengine) SearchByAttributes(ctx context.Context, attributes strin
 		client.traceEntry(69, attributes, searchProfile, flags)
 		defer func() { client.traceExit(70, attributes, searchProfile, flags, result, err, time.Since(entryTime)) }()
 	}
-	if len(searchProfile) > 0 {
-		result, err = client.searchByAttributesV3(ctx, attributes, searchProfile, flags)
-	} else {
-		result, err = client.searchByAttributesV2(ctx, attributes, flags)
-	}
+	result, err = client.searchByAttributesV3(ctx, attributes, searchProfile, flags)
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
