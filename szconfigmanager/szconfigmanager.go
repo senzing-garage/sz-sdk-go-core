@@ -37,8 +37,8 @@ import (
 )
 
 /*
-The Szconfigmanager implementation of the [senzing.SzConfigManager] interface
-communicates with the Senzing C binaries.
+Type Szconfigmanager struct implements the [senzing.SzConfigManager] interface
+for communicating with the Senzing C binaries.
 */
 type Szconfigmanager struct {
 	isTrace        bool
@@ -60,7 +60,7 @@ const (
 // ----------------------------------------------------------------------------
 
 /*
-The AddConfig method adds a Senzing configuration JSON document to the Senzing datastore.
+Method AddConfig adds a Senzing configuration JSON document to the Senzing datastore.
 
 Input
   - ctx: A context to control lifecycle.
@@ -93,7 +93,7 @@ func (client *Szconfigmanager) AddConfig(ctx context.Context, configDefinition s
 }
 
 /*
-The Destroy method will destroy and perform cleanup for the Senzing SzConfigMgr object.
+Method Destroy will destroy and perform cleanup for the Senzing SzConfigMgr object.
 It should be called after all other calls are complete.
 
 Input
@@ -117,7 +117,7 @@ func (client *Szconfigmanager) Destroy(ctx context.Context) error {
 }
 
 /*
-The GetConfig method retrieves a specific Senzing configuration JSON document from the Senzing datastore.
+Method GetConfig retrieves a specific Senzing configuration JSON document from the Senzing datastore.
 
 Input
   - ctx: A context to control lifecycle.
@@ -145,7 +145,7 @@ func (client *Szconfigmanager) GetConfig(ctx context.Context, configID int64) (s
 }
 
 /*
-The GetConfigs method retrieves a list of Senzing configuration JSON documents from the Senzing datastore.
+Method GetConfigs retrieves a list of Senzing configuration JSON documents from the Senzing datastore.
 
 Input
   - ctx: A context to control lifecycle.
@@ -172,7 +172,7 @@ func (client *Szconfigmanager) GetConfigs(ctx context.Context) (string, error) {
 }
 
 /*
-The GetDefaultConfigID method retrieves the default Senzing configuration JSON document identifier from the Senzing datastore.
+Method GetDefaultConfigID retrieves the default Senzing configuration JSON document identifier from the Senzing datastore.
 Note: this may not be the currently active in-memory configuration.
 See [Szconfigmanager.SetDefaultConfigID] and [Szconfigmanager.ReplaceDefaultConfigID] for more details.
 
@@ -202,7 +202,7 @@ func (client *Szconfigmanager) GetDefaultConfigID(ctx context.Context) (int64, e
 
 /*
 Similar to the [Szconfigmanager.SetDefaultConfigID] method,
-the ReplaceDefaultConfigID method sets which Senzing configuration JSON document is used when initializing or reinitializing the system.
+method ReplaceDefaultConfigID sets which Senzing configuration JSON document is used when initializing or reinitializing the system.
 The difference is that ReplaceDefaultConfigID only succeeds when the old Senzing configuration JSON document identifier
 is the existing default when the new identifier is applied.
 In other words, if currentDefaultConfigID is no longer the "old" identifier, the operation will fail.
@@ -235,7 +235,7 @@ func (client *Szconfigmanager) ReplaceDefaultConfigID(ctx context.Context, curre
 }
 
 /*
-The SetDefaultConfigID method sets which Senzing configuration JSON document identifier
+Method SetDefaultConfigID sets which Senzing configuration JSON document identifier
 is used when initializing or reinitializing the system.
 Note that calling the SetDefaultConfigID method does not affect the currently
 running in-memory configuration.
@@ -270,7 +270,7 @@ func (client *Szconfigmanager) SetDefaultConfigID(ctx context.Context, configID 
 // ----------------------------------------------------------------------------
 
 /*
-The GetObserverOrigin method returns the "origin" value of past Observer messages.
+Method GetObserverOrigin returns the "origin" value of past Observer messages.
 
 Input
   - ctx: A context to control lifecycle.
@@ -284,7 +284,7 @@ func (client *Szconfigmanager) GetObserverOrigin(ctx context.Context) string {
 }
 
 /*
-The Initialize method initializes the Senzing SzConfigMgr object.
+Method Initialize initializes the Senzing SzConfigMgr object.
 It must be called prior to any other calls.
 
 Input
@@ -315,7 +315,7 @@ func (client *Szconfigmanager) Initialize(ctx context.Context, instanceName stri
 }
 
 /*
-The RegisterObserver method adds the observer to the list of observers notified.
+Method RegisterObserver adds the observer to the list of observers notified.
 
 Input
   - ctx: A context to control lifecycle.
@@ -344,7 +344,7 @@ func (client *Szconfigmanager) RegisterObserver(ctx context.Context, observer ob
 }
 
 /*
-The SetLogLevel method sets the level of logging.
+Method SetLogLevel sets the level of logging.
 
 Input
   - ctx: A context to control lifecycle.
@@ -374,7 +374,7 @@ func (client *Szconfigmanager) SetLogLevel(ctx context.Context, logLevelName str
 }
 
 /*
-The SetObserverOrigin method sets the "origin" value in future Observer messages.
+Method SetObserverOrigin sets the "origin" value in future Observer messages.
 
 Input
   - ctx: A context to control lifecycle.
@@ -386,7 +386,7 @@ func (client *Szconfigmanager) SetObserverOrigin(ctx context.Context, origin str
 }
 
 /*
-The UnregisterObserver method removes the observer to the list of observers notified.
+Method UnregisterObserver removes the observer to the list of observers notified.
 
 Input
   - ctx: A context to control lifecycle.
@@ -584,7 +584,7 @@ func (client *Szconfigmanager) newError(ctx context.Context, errorNumber int, de
 }
 
 /*
-The panicOnError method calls panic() when an error is not nil.
+Method panicOnError calls panic() when an error is not nil.
 
 Input:
   - err: nil or an actual error
@@ -598,7 +598,7 @@ func (client *Szconfigmanager) panicOnError(err error) {
 // --- Sz exception handling --------------------------------------------------
 
 /*
-The clearLastException method erases the last exception message held by the Senzing SzConfigMgr object.
+Method clearLastException erases the last exception message held by the Senzing SzConfigMgr object.
 
 Input
   - ctx: A context to control lifecycle.
@@ -617,7 +617,7 @@ func (client *Szconfigmanager) clearLastException(ctx context.Context) error {
 }
 
 /*
-The getLastException method retrieves the last exception thrown in Senzing's SzConfigMgr.
+Method getLastException retrieves the last exception thrown in Senzing's SzConfigMgr.
 
 Input
   - ctx: A context to control lifecycle.
@@ -642,7 +642,7 @@ func (client *Szconfigmanager) getLastException(ctx context.Context) (string, er
 }
 
 /*
-The getLastExceptionCode method retrieves the code of the last exception thrown in Senzing's SzConfigMgr.
+Method getLastExceptionCode retrieves the code of the last exception thrown in Senzing's SzConfigMgr.
 
 Input:
   - ctx: A context to control lifecycle.

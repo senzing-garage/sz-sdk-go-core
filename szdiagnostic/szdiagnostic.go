@@ -38,8 +38,8 @@ import (
 )
 
 /*
-The Szdiagnostic implementation of the [senzing.SzDiagnostic] interface
-communicates with the Senzing C binaries.
+Type Szdiagnostic struct implements the [senzing.SzDiagnostic] interface
+for communicating with the Senzing C binaries.
 */
 type Szdiagnostic struct {
 	isTrace        bool
@@ -61,7 +61,7 @@ const (
 // ----------------------------------------------------------------------------
 
 /*
-The CheckDatastorePerformance method runs performance tests on the Senzing datastore.
+Method CheckDatastorePerformance runs performance tests on the Senzing datastore.
 
 Input
   - ctx: A context to control lifecycle.
@@ -91,7 +91,7 @@ func (client *Szdiagnostic) CheckDatastorePerformance(ctx context.Context, secon
 }
 
 /*
-The Destroy method will destroy and perform cleanup for the Senzing SzDiagnostic object.
+Method Destroy will destroy and perform cleanup for the Senzing SzDiagnostic object.
 It should be called after all other calls are complete.
 
 Input
@@ -115,7 +115,7 @@ func (client *Szdiagnostic) Destroy(ctx context.Context) error {
 }
 
 /*
-The GetDatastoreInfo method returns information about the Senzing datastore.
+Method GetDatastoreInfo returns information about the Senzing datastore.
 
 Input
   - ctx: A context to control lifecycle.
@@ -143,7 +143,7 @@ func (client *Szdiagnostic) GetDatastoreInfo(ctx context.Context) (string, error
 }
 
 /*
-The GetFeature method is an experimental method that returns diagnostic information of a feature.
+Method GetFeature is an experimental method that returns diagnostic information of a feature.
 
 Input
   - ctx: A context to control lifecycle.
@@ -174,7 +174,7 @@ func (client *Szdiagnostic) GetFeature(ctx context.Context, featureID int64) (st
 }
 
 /*
-WARNING: The PurgeRepository method removes every record in the Senzing datastore.
+WARNING: Method PurgeRepository removes every record in the Senzing datastore.
 This is a destructive method that cannot be undone.
 Before calling purgeRepository(), all programs using Senzing MUST be terminated.
 
@@ -199,7 +199,7 @@ func (client *Szdiagnostic) PurgeRepository(ctx context.Context) error {
 }
 
 /*
-The Reinitialize method re-initializes the Senzing SzDiagnostic object.
+Method Reinitialize re-initializes the Senzing SzDiagnostic object.
 
 Input
   - ctx: A context to control lifecycle.
@@ -229,7 +229,7 @@ func (client *Szdiagnostic) Reinitialize(ctx context.Context, configID int64) er
 // ----------------------------------------------------------------------------
 
 /*
-The GetObserverOrigin method returns the "origin" value of past Observer messages.
+Method GetObserverOrigin returns the "origin" value of past Observer messages.
 
 Input
   - ctx: A context to control lifecycle.
@@ -243,7 +243,7 @@ func (client *Szdiagnostic) GetObserverOrigin(ctx context.Context) string {
 }
 
 /*
-The Initialize method initializes the SzDiagnostic object.
+Method Initialize initializes the SzDiagnostic object.
 It must be called prior to any other calls.
 
 Input
@@ -282,7 +282,7 @@ func (client *Szdiagnostic) Initialize(ctx context.Context, instanceName string,
 }
 
 /*
-The RegisterObserver method adds the observer to the list of observers notified.
+Method RegisterObserver adds the observer to the list of observers notified.
 
 Input
   - ctx: A context to control lifecycle.
@@ -311,7 +311,7 @@ func (client *Szdiagnostic) RegisterObserver(ctx context.Context, observer obser
 }
 
 /*
-The SetLogLevel method sets the level of logging.
+Method SetLogLevel sets the level of logging.
 
 Input
   - ctx: A context to control lifecycle.
@@ -341,7 +341,7 @@ func (client *Szdiagnostic) SetLogLevel(ctx context.Context, logLevelName string
 }
 
 /*
-The SetObserverOrigin method sets the "origin" value in future Observer messages.
+Method SetObserverOrigin sets the "origin" value in future Observer messages.
 
 Input
   - ctx: A context to control lifecycle.
@@ -353,7 +353,7 @@ func (client *Szdiagnostic) SetObserverOrigin(ctx context.Context, origin string
 }
 
 /*
-The UnregisterObserver method removes the observer to the list of observers notified.
+Method UnregisterObserver removes the observer to the list of observers notified.
 
 Input
   - ctx: A context to control lifecycle.
@@ -445,7 +445,7 @@ func (client *Szdiagnostic) getFeature(ctx context.Context, featureID int64) (st
 }
 
 /*
-The init method initializes the Senzing SzDiagnostic object.
+Method init method the Senzing SzDiagnostic object.
 It must be called prior to any other calls.
 
 Input
@@ -471,7 +471,7 @@ func (client *Szdiagnostic) init(ctx context.Context, instanceName string, setti
 }
 
 /*
-The initWithConfigID method initializes the Senzing SzDiagnostic object with a non-default configuration ID.
+Method initWithConfigID initializes the Senzing SzDiagnostic object with a non-default configuration ID.
 It must be called prior to any other calls.
 
 Input
@@ -571,7 +571,7 @@ func (client *Szdiagnostic) newError(ctx context.Context, errorNumber int, detai
 }
 
 /*
-The panicOnError method calls panic() when an error is not nil.
+Method panicOnError calls panic() when an error is not nil.
 
 Input:
   - err: nil or an actual error
@@ -585,7 +585,7 @@ func (client *Szdiagnostic) panicOnError(err error) {
 // --- Sz exception handling --------------------------------------------------
 
 /*
-The clearLastException method erases the last exception message held by the Senzing SzDiagnostic object.
+Method clearLastException erases the last exception message held by the Senzing SzDiagnostic object.
 
 Input
   - ctx: A context to control lifecycle.
@@ -604,7 +604,7 @@ func (client *Szdiagnostic) clearLastException(ctx context.Context) error {
 }
 
 /*
-The getLastException method retrieves the last exception thrown in Senzing's SzDiagnostic.
+Method getLastException retrieves the last exception thrown in Senzing's SzDiagnostic.
 
 Input
   - ctx: A context to control lifecycle.
@@ -629,7 +629,7 @@ func (client *Szdiagnostic) getLastException(ctx context.Context) (string, error
 }
 
 /*
-The getLastExceptionCode method retrieves the code of the last exception thrown in Senzing's SzDiagnostic.
+Method getLastExceptionCode retrieves the code of the last exception thrown in Senzing's SzDiagnostic.
 
 Input:
   - ctx: A context to control lifecycle.

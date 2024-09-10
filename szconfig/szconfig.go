@@ -37,8 +37,8 @@ import (
 )
 
 /*
-The Szconfig implementation of the [senzing.SzConfig] interface
-communicates with the Senzing C binaries.
+Type Szconfig struct implements the [senzing.SzConfig] interface
+for communicating with the Senzing C binaries.
 */
 type Szconfig struct {
 	isTrace        bool
@@ -60,7 +60,7 @@ const (
 // ----------------------------------------------------------------------------
 
 /*
-The AddDataSource method adds a new data source to an existing in-memory configuration.
+Method AddDataSource adds a new data source to an existing in-memory configuration.
 
 Input
   - ctx: A context to control lifecycle.
@@ -95,7 +95,7 @@ func (client *Szconfig) AddDataSource(ctx context.Context, configHandle uintptr,
 }
 
 /*
-The CloseConfig method terminates an in-memory configuration and cleans up system resources.
+Method CloseConfig terminates an in-memory configuration and cleans up system resources.
 After calling CloseConfig, the configuration handle can no longer be used and is invalid.
 
 Input
@@ -121,8 +121,8 @@ func (client *Szconfig) CloseConfig(ctx context.Context, configHandle uintptr) e
 }
 
 /*
-The CreateConfig method creates an in-memory configuration using the default template.
-The default template is the Senzing configuration JSON document file, `g2config.json`, located in the PIPELINE.RESOURCEPATH path.
+Method CreateConfig creates an in-memory configuration using the default template.
+The default template is the Senzing configuration JSON document file, g2config.json, located in the PIPELINE.RESOURCEPATH path.
 The returned configHandle is used by the [Szconfig.AddDataSource], [Szconfig.DeleteDataSource],
 [Szconfig.ExportConfig], and [Szconfig.GetDataSources] methods.
 The configHandle is terminated by the [Szconfig.CloseConfig] method.
@@ -152,7 +152,7 @@ func (client *Szconfig) CreateConfig(ctx context.Context) (uintptr, error) {
 }
 
 /*
-The DeleteDataSource method removes a data source from an in-memory configuration.
+Method DeleteDataSource removes a data source from an in-memory configuration.
 
 Input
   - ctx: A context to control lifecycle.
@@ -180,7 +180,7 @@ func (client *Szconfig) DeleteDataSource(ctx context.Context, configHandle uintp
 }
 
 /*
-The Destroy method will destroy and perform cleanup for the Senzing Szconfig object.
+Method Destroy will destroy and perform cleanup for the Senzing Szconfig object.
 It should be called after all other calls are complete.
 
 Input
@@ -204,7 +204,7 @@ func (client *Szconfig) Destroy(ctx context.Context) error {
 }
 
 /*
-The ExportConfig method creates a Senzing configuration JSON document representation of an in-memory configuration.
+Method ExportConfig creates a Senzing configuration JSON document representation of an in-memory configuration.
 
 Input
   - ctx: A context to control lifecycle.
@@ -233,7 +233,7 @@ func (client *Szconfig) ExportConfig(ctx context.Context, configHandle uintptr) 
 }
 
 /*
-The GetDataSources method returns a JSON document containing data sources defined in an in-memory configuration.
+Method GetDataSources returns a JSON document containing data sources defined in an in-memory configuration.
 
 Input
   - ctx: A context to control lifecycle.
@@ -262,7 +262,7 @@ func (client *Szconfig) GetDataSources(ctx context.Context, configHandle uintptr
 }
 
 /*
-The ImportConfig method creates a new in-memory configuration from a JSON document.
+Method ImportConfig creates a new in-memory configuration from a JSON document.
 The returned configHandle is used by the [Szconfig.AddDataSource], [Szconfig.DeleteDataSource],
 [Szconfig.ExportConfig], and [Szconfig.GetDataSources] methods.
 The configHandle is terminated by the [Szconfig.CloseConfig] method.
@@ -297,7 +297,7 @@ func (client *Szconfig) ImportConfig(ctx context.Context, configDefinition strin
 // ----------------------------------------------------------------------------
 
 /*
-The GetObserverOrigin method returns the "origin" value of past Observer messages.
+Method GetObserverOrigin returns the "origin" value of past Observer messages.
 
 Input
   - ctx: A context to control lifecycle.
@@ -311,7 +311,7 @@ func (client *Szconfig) GetObserverOrigin(ctx context.Context) string {
 }
 
 /*
-The Initialize method initializes the Senzing Szconfig object.
+Method Initialize initializes the Senzing Szconfig object.
 It must be called prior to any other calls.
 
 Input
@@ -342,7 +342,7 @@ func (client *Szconfig) Initialize(ctx context.Context, instanceName string, set
 }
 
 /*
-The RegisterObserver method adds the observer to the list of observers notified.
+Method RegisterObserver adds the observer to the list of observers notified.
 
 Input
   - ctx: A context to control lifecycle.
@@ -371,7 +371,7 @@ func (client *Szconfig) RegisterObserver(ctx context.Context, observer observer.
 }
 
 /*
-The SetLogLevel method sets the level of logging.
+Method SetLogLevel sets the level of logging.
 
 Input
   - ctx: A context to control lifecycle.
@@ -401,7 +401,7 @@ func (client *Szconfig) SetLogLevel(ctx context.Context, logLevelName string) er
 }
 
 /*
-The SetObserverOrigin method sets the "origin" value in future Observer messages.
+Method SetObserverOrigin sets the "origin" value in future Observer messages.
 
 Input
   - ctx: A context to control lifecycle.
@@ -413,7 +413,7 @@ func (client *Szconfig) SetObserverOrigin(ctx context.Context, origin string) {
 }
 
 /*
-The UnregisterObserver method removes the observer to the list of observers notified.
+Method UnregisterObserver removes the observer to the list of observers notified.
 
 Input
   - ctx: A context to control lifecycle.
@@ -630,7 +630,7 @@ func (client *Szconfig) newError(ctx context.Context, errorNumber int, details .
 }
 
 /*
-The panicOnError method calls panic() when an error is not nil.
+Method panicOnError calls panic() when an error is not nil.
 
 Input:
   - err: nil or an actual error
@@ -644,7 +644,7 @@ func (client *Szconfig) panicOnError(err error) {
 // --- Sz exception handling --------------------------------------------------
 
 /*
-The clearLastException method erases the last exception message held by the Senzing Szconfig object.
+Method clearLastException erases the last exception message held by the Senzing Szconfig object.
 
 Input
   - ctx: A context to control lifecycle.
@@ -663,7 +663,7 @@ func (client *Szconfig) clearLastException(ctx context.Context) error {
 }
 
 /*
-The getLastException method retrieves the last exception thrown in Senzing's Szconfig.
+Method getLastException retrieves the last exception thrown in Senzing's Szconfig.
 
 Input
   - ctx: A context to control lifecycle.
@@ -688,7 +688,7 @@ func (client *Szconfig) getLastException(ctx context.Context) (string, error) {
 }
 
 /*
-The getLastExceptionCode method retrieves the code of the last exception thrown in Senzing's Szconfig.
+Method getLastExceptionCode retrieves the code of the last exception thrown in Senzing's Szconfig.
 
 Input:
   - ctx: A context to control lifecycle.

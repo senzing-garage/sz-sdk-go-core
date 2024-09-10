@@ -6,7 +6,7 @@ package szconfig
 
 /*
 ComponentID is the identifier of the szconfig package.
-szconfig package messages will have the format "SZSDK6001eeee" where "eeee" is the error identifier.
+Package szconfig messages will have the format "SZSDK6001eeee" where "eeee" is the error identifier.
 
 ExceptionCodeTemplate is a template for the error code returned by the Senzing C binary.
 */
