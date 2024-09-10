@@ -46,7 +46,7 @@ interface include:
 
 ## Use
 
-(TODO:)
+See [main.go] for an example of use.
 
 ## References
 
@@ -75,6 +75,7 @@ interface include:
 [gRPC]: https://github.com/senzing-garage/knowledge-base/blob/main/WHATIS/grpc.md
 [License Badge]: https://img.shields.io/badge/License-Apache2-brightgreen.svg
 [License]: https://github.com/senzing-garage/sz-sdk-go-core/blob/main/LICENSE
+[main.go]: main.go
 [Package reference]: https://pkg.go.dev/github.com/senzing-garage/sz-sdk-go-core
 [Senzing Garage]: https://github.com/senzing-garage
 [Senzing Quick Start guides]: https://docs.senzing.com/quickstart/

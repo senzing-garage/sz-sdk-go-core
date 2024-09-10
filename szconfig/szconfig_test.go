@@ -100,7 +100,7 @@ func TestSzconfig_CloseConfig_badConfigHandle(test *testing.T) {
 	ctx := context.TODO()
 	szConfig := getTestObject(ctx, test)
 	err := szConfig.CloseConfig(ctx, badConfigHandle)
-	require.ErrorIs(test, err, szerror.ErrSzBase) // TODO: Update to correct error once sz-sdk-go/szerror/ is updated.
+	require.ErrorIs(test, err, szerror.ErrSz) // TODO: Update to correct error once sz-sdk-go/szerror/ is updated.
 }
 
 // TODO: Implement TestSzconfig_CloseConfig_error
@@ -175,7 +175,7 @@ func TestSzconfig_DeleteDataSource_badConfigHandle(test *testing.T) {
 	szConfig := getTestObject(ctx, test)
 	dataSourceCode := "GO_TEST"
 	err := szConfig.DeleteDataSource(ctx, badConfigHandle, dataSourceCode)
-	require.ErrorIs(test, err, szerror.ErrSzBase)
+	require.ErrorIs(test, err, szerror.ErrSz)
 }
 
 func TestSzconfig_DeleteDataSource_badDataSourceCode(test *testing.T) {
@@ -202,7 +202,7 @@ func TestSzconfig_ExportConfig_badConfigHandle(test *testing.T) {
 	szConfig := getTestObject(ctx, test)
 	actual, err := szConfig.ExportConfig(ctx, badConfigHandle)
 	assert.Equal(test, "", actual)
-	require.ErrorIs(test, err, szerror.ErrSzBase)
+	require.ErrorIs(test, err, szerror.ErrSz)
 }
 
 func TestSzconfig_GetDataSources(test *testing.T) {
@@ -222,7 +222,7 @@ func TestSzconfig_GetDataSources_badConfigHandle(test *testing.T) {
 	szConfig := getTestObject(ctx, test)
 	actual, err := szConfig.GetDataSources(ctx, badConfigHandle)
 	assert.Equal(test, "", actual)
-	require.ErrorIs(test, err, szerror.ErrSzBase)
+	require.ErrorIs(test, err, szerror.ErrSz)
 }
 
 func TestSzconfig_ImportConfig(test *testing.T) {

@@ -32,8 +32,14 @@ coverage-osarch-specific:
 	@xdg-open $(MAKEFILE_DIRECTORY)/coverage.html
 
 
+.PHONY: dependencies-for-development-osarch-specific
+dependencies-for-development-osarch-specific:
+	@curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(shell go env GOPATH)/bin latest
+
+
 .PHONY: documentation-osarch-specific
 documentation-osarch-specific:
+	@pkill godoc || true
 	@godoc &
 	@xdg-open http://localhost:6060
 
@@ -57,9 +63,7 @@ setup-osarch-specific:
 
 .PHONY: test-osarch-specific
 test-osarch-specific:
-	@go test -v -p 1 ./szengine -run TestSzengine_Destroy_multipleEngines
 	@go test -json -v -p 1 ./... 2>&1 | tee /tmp/gotest.log | gotestfmt
-
 
 # -----------------------------------------------------------------------------
 # Makefile targets supported only by this platform.

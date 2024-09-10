@@ -253,10 +253,10 @@ func ExampleSzengine_FindNetworkByEntityID() {
 	}
 	entityList := `{"ENTITIES": [{"ENTITY_ID": ` + entityID1 + `}, {"ENTITY_ID": ` + entityID2 + `}]}`
 	maxDegrees := int64(2)
-	buildOutDegree := int64(1)
+	buildOutDegrees := int64(1)
 	maxEntities := int64(10)
 	flags := senzing.SzNoFlags
-	result, err := szEngine.FindNetworkByEntityID(ctx, entityList, maxDegrees, buildOutDegree, maxEntities, flags)
+	result, err := szEngine.FindNetworkByEntityID(ctx, entityList, maxDegrees, buildOutDegrees, maxEntities, flags)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -270,10 +270,10 @@ func ExampleSzengine_FindNetworkByRecordID() {
 	szEngine := getSzEngineExample(ctx)
 	recordList := `{"RECORDS": [{"DATA_SOURCE": "CUSTOMERS", "RECORD_ID": "1001"}, {"DATA_SOURCE": "CUSTOMERS", "RECORD_ID": "1002"}]}`
 	maxDegrees := int64(1)
-	buildOutDegree := int64(2)
+	buildOutDegrees := int64(2)
 	maxEntities := int64(10)
 	flags := senzing.SzNoFlags
-	result, err := szEngine.FindNetworkByRecordID(ctx, recordList, maxDegrees, buildOutDegree, maxEntities, flags)
+	result, err := szEngine.FindNetworkByRecordID(ctx, recordList, maxDegrees, buildOutDegrees, maxEntities, flags)
 	if err != nil {
 		fmt.Println(err)
 	}

@@ -540,7 +540,7 @@ Input
   - entityIDs: A JSON document listing entities.
     Example: `{"ENTITIES": [{"ENTITY_ID": 1}, {"ENTITY_ID": 2}, {"ENTITY_ID": 3}]}`
   - maxDegrees: The maximum number of degrees in paths between entityIDs.
-  - buildOutDegree: The number of degrees of relationships to show around each search entity. Zero (0) prevents buildout.
+  - buildOutDegrees: The number of degrees of relationships to show around each search entity. Zero (0) prevents buildout.
   - buildOutMaxEntities: The maximum number of entities to build out in the returned network.
   - flags: Flags used to control information returned.
 
@@ -549,17 +549,17 @@ Output
     TODO: Make example output a twistie example.
     Example: `{"ENTITY_PATHS":[{"START_ENTITY_ID":1,"END_ENTITY_ID":2,"ENTITIES":[1,2]}],"ENTITIES":[{"RESOLVED_ENTITY":{"ENTITY_ID":1,"ENTITY_NAME":"SEAMAN","RECORD_SUMMARY":[{"DATA_SOURCE":"TEST","RECORD_COUNT":2,"FIRST_SEEN_DT":"2022-11-29 22:25:18.997","LAST_SEEN_DT":"2022-11-29 22:25:19.005"}],"LAST_SEEN_DT":"2022-11-29 22:25:19.005"},"RELATED_ENTITIES":[{"ENTITY_ID":2,"MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED","MATCH_KEY":"+PHONE+ACCT_NUM-DOB-SSN","ERRULE_CODE":"SF1","IS_DISCLOSED":0,"IS_AMBIGUOUS":0}]},{"RESOLVED_ENTITY":{"ENTITY_ID":2,"ENTITY_NAME":"Smith","RECORD_SUMMARY":[{"DATA_SOURCE":"TEST","RECORD_COUNT":1,"FIRST_SEEN_DT":"2022-11-29 22:25:19.009","LAST_SEEN_DT":"2022-11-29 22:25:19.009"}],"LAST_SEEN_DT":"2022-11-29 22:25:19.009"},"RELATED_ENTITIES":[{"ENTITY_ID":1,"MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED","MATCH_KEY":"+PHONE+ACCT_NUM-DOB-SSN","ERRULE_CODE":"SF1","IS_DISCLOSED":0,"IS_AMBIGUOUS":0}]}]}`
 */
-func (client *Szengine) FindNetworkByEntityID(ctx context.Context, entityIDs string, maxDegrees int64, buildOutDegree int64, buildOutMaxEntities int64, flags int64) (string, error) {
+func (client *Szengine) FindNetworkByEntityID(ctx context.Context, entityIDs string, maxDegrees int64, buildOutDegrees int64, buildOutMaxEntities int64, flags int64) (string, error) {
 	var err error
 	var result string
 	if client.isTrace {
 		entryTime := time.Now()
-		client.traceEntry(27, entityIDs, maxDegrees, buildOutDegree, buildOutMaxEntities, flags)
+		client.traceEntry(27, entityIDs, maxDegrees, buildOutDegrees, buildOutMaxEntities, flags)
 		defer func() {
-			client.traceExit(28, entityIDs, maxDegrees, buildOutDegree, buildOutMaxEntities, flags, result, err, time.Since(entryTime))
+			client.traceExit(28, entityIDs, maxDegrees, buildOutDegrees, buildOutMaxEntities, flags, result, err, time.Since(entryTime))
 		}()
 	}
-	result, err = client.findNetworkByEntityIDV2(ctx, entityIDs, maxDegrees, buildOutDegree, buildOutMaxEntities, flags)
+	result, err = client.findNetworkByEntityIDV2(ctx, entityIDs, maxDegrees, buildOutDegrees, buildOutMaxEntities, flags)
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -581,7 +581,7 @@ Input
   - recordKeys: A JSON document listing records.
     Example: `{"RECORDS": [{"DATA_SOURCE": "CUSTOMERS", "RECORD_ID": "1001"}]}`
   - maxDegrees: The maximum number of degrees in paths between entities identified by the recordKeys.
-  - buildOutDegree: The number of degrees of relationships to show around each search entity. Zero (0) prevents buildout.
+  - buildOutDegrees: The number of degrees of relationships to show around each search entity. Zero (0) prevents buildout.
   - buildOutMaxEntities: The maximum number of entities to build out in the returned network.
   - flags: Flags used to control information returned.
 
@@ -590,17 +590,17 @@ Output
     TODO: Make example output a twistie example.
     Example: `{"ENTITY_PATHS":[{"START_ENTITY_ID":1,"END_ENTITY_ID":2,"ENTITIES":[1,2]}],"ENTITIES":[{"RESOLVED_ENTITY":{"ENTITY_ID":1,"ENTITY_NAME":"JOHNSON","RECORD_SUMMARY":[{"DATA_SOURCE":"TEST","RECORD_COUNT":2,"FIRST_SEEN_DT":"2022-12-06 14:40:34.285","LAST_SEEN_DT":"2022-12-06 14:40:34.420"}],"LAST_SEEN_DT":"2022-12-06 14:40:34.420"},"RELATED_ENTITIES":[{"ENTITY_ID":2,"MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED","MATCH_KEY":"+PHONE+ACCT_NUM-SSN","ERRULE_CODE":"SF1","IS_DISCLOSED":0,"IS_AMBIGUOUS":0},{"ENTITY_ID":3,"MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED","MATCH_KEY":"+PHONE+ACCT_NUM-DOB-SSN","ERRULE_CODE":"SF1","IS_DISCLOSED":0,"IS_AMBIGUOUS":0}]},{"RESOLVED_ENTITY":{"ENTITY_ID":2,"ENTITY_NAME":"OCEANGUY","RECORD_SUMMARY":[{"DATA_SOURCE":"TEST","RECORD_COUNT":1,"FIRST_SEEN_DT":"2022-12-06 14:40:34.359","LAST_SEEN_DT":"2022-12-06 14:40:34.359"}],"LAST_SEEN_DT":"2022-12-06 14:40:34.359"},"RELATED_ENTITIES":[{"ENTITY_ID":1,"MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED","MATCH_KEY":"+PHONE+ACCT_NUM-SSN","ERRULE_CODE":"SF1","IS_DISCLOSED":0,"IS_AMBIGUOUS":0},{"ENTITY_ID":3,"MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED","MATCH_KEY":"+ADDRESS+PHONE+ACCT_NUM-DOB-SSN","ERRULE_CODE":"SF1","IS_DISCLOSED":0,"IS_AMBIGUOUS":0}]},{"RESOLVED_ENTITY":{"ENTITY_ID":3,"ENTITY_NAME":"Smith","RECORD_SUMMARY":[{"DATA_SOURCE":"TEST","RECORD_COUNT":1,"FIRST_SEEN_DT":"2022-12-06 14:40:34.424","LAST_SEEN_DT":"2022-12-06 14:40:34.424"}],"LAST_SEEN_DT":"2022-12-06 14:40:34.424"},"RELATED_ENTITIES":[{"ENTITY_ID":1,"MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED","MATCH_KEY":"+PHONE+ACCT_NUM-DOB-SSN","ERRULE_CODE":"SF1","IS_DISCLOSED":0,"IS_AMBIGUOUS":0},{"ENTITY_ID":2,"MATCH_LEVEL":3,"MATCH_LEVEL_CODE":"POSSIBLY_RELATED","MATCH_KEY":"+ADDRESS+PHONE+ACCT_NUM-DOB-SSN","ERRULE_CODE":"SF1","IS_DISCLOSED":0,"IS_AMBIGUOUS":0}]}]}`
 */
-func (client *Szengine) FindNetworkByRecordID(ctx context.Context, recordKeys string, maxDegrees int64, buildOutDegree int64, buildOutMaxEntities int64, flags int64) (string, error) {
+func (client *Szengine) FindNetworkByRecordID(ctx context.Context, recordKeys string, maxDegrees int64, buildOutDegrees int64, buildOutMaxEntities int64, flags int64) (string, error) {
 	var err error
 	var result string
 	if client.isTrace {
 		entryTime := time.Now()
-		client.traceEntry(39, recordKeys, maxDegrees, buildOutDegree, buildOutMaxEntities, flags)
+		client.traceEntry(39, recordKeys, maxDegrees, buildOutDegrees, buildOutMaxEntities, flags)
 		defer func() {
-			client.traceExit(40, recordKeys, maxDegrees, buildOutDegree, buildOutMaxEntities, flags, result, err, time.Since(entryTime))
+			client.traceExit(40, recordKeys, maxDegrees, buildOutDegrees, buildOutMaxEntities, flags, result, err, time.Since(entryTime))
 		}()
 	}
-	result, err = client.findNetworkByRecordIDV2(ctx, recordKeys, maxDegrees, buildOutDegree, buildOutMaxEntities, flags)
+	result, err = client.findNetworkByRecordIDV2(ctx, recordKeys, maxDegrees, buildOutDegrees, buildOutMaxEntities, flags)
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -1680,7 +1680,7 @@ func (client *Szengine) findInterestingEntitiesByRecordID(ctx context.Context, d
 	return resultResponse, err
 }
 
-func (client *Szengine) findNetworkByEntityIDV2(ctx context.Context, entityIDs string, maxDegrees int64, buildOutDegree int64, buildOutMaxEntities int64, flags int64) (string, error) {
+func (client *Szengine) findNetworkByEntityIDV2(ctx context.Context, entityIDs string, maxDegrees int64, buildOutDegrees int64, buildOutMaxEntities int64, flags int64) (string, error) {
 	//  _DLEXPORT int Sz_findNetworkByEntityID_V2(const char* entityList, const int maxDegree, const int buildOutDegree, const int maxEntities, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -1688,16 +1688,16 @@ func (client *Szengine) findNetworkByEntityIDV2(ctx context.Context, entityIDs s
 	var resultResponse string
 	entityListForC := C.CString(entityIDs)
 	defer C.free(unsafe.Pointer(entityListForC))
-	result := C.Sz_findNetworkByEntityID_V2_helper(entityListForC, C.longlong(maxDegrees), C.longlong(buildOutDegree), C.longlong(buildOutMaxEntities), C.longlong(flags))
+	result := C.Sz_findNetworkByEntityID_V2_helper(entityListForC, C.longlong(maxDegrees), C.longlong(buildOutDegrees), C.longlong(buildOutMaxEntities), C.longlong(flags))
 	if result.returnCode != noError {
-		err = client.newError(ctx, 4013, entityIDs, maxDegrees, buildOutDegree, buildOutMaxEntities, flags, result.returnCode)
+		err = client.newError(ctx, 4013, entityIDs, maxDegrees, buildOutDegrees, buildOutMaxEntities, flags, result.returnCode)
 	}
 	resultResponse = C.GoString(result.response)
 	C.SzHelper_free(unsafe.Pointer(result.response))
 	return resultResponse, err
 }
 
-func (client *Szengine) findNetworkByRecordIDV2(ctx context.Context, recordKeys string, maxDegrees int64, buildOutDegree int64, buildOutMaxEntities int64, flags int64) (string, error) {
+func (client *Szengine) findNetworkByRecordIDV2(ctx context.Context, recordKeys string, maxDegrees int64, buildOutDegrees int64, buildOutMaxEntities int64, flags int64) (string, error) {
 	//  _DLEXPORT int Sz_findNetworkByRecordID_V2(const char* recordList, const int maxDegree, const int buildOutDegree, const int maxEntities, const long long flags, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize));
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -1705,9 +1705,9 @@ func (client *Szengine) findNetworkByRecordIDV2(ctx context.Context, recordKeys 
 	var resultResponse string
 	recordListForC := C.CString(recordKeys)
 	defer C.free(unsafe.Pointer(recordListForC))
-	result := C.Sz_findNetworkByRecordID_V2_helper(recordListForC, C.longlong(maxDegrees), C.longlong(buildOutDegree), C.longlong(buildOutMaxEntities), C.longlong(flags))
+	result := C.Sz_findNetworkByRecordID_V2_helper(recordListForC, C.longlong(maxDegrees), C.longlong(buildOutDegrees), C.longlong(buildOutMaxEntities), C.longlong(flags))
 	if result.returnCode != noError {
-		err = client.newError(ctx, 4015, recordKeys, maxDegrees, buildOutDegree, buildOutMaxEntities, flags, result.returnCode)
+		err = client.newError(ctx, 4015, recordKeys, maxDegrees, buildOutDegrees, buildOutMaxEntities, flags, result.returnCode)
 	}
 	resultResponse = C.GoString(result.response)
 	C.SzHelper_free(unsafe.Pointer(result.response))

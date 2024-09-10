@@ -34,7 +34,7 @@ import (
 
 const (
 	badAttributes          = "}{"
-	badBuildOutDegree      = int64(-1)
+	badBuildOutDegrees     = int64(-1)
 	badBuildOutMaxEntities = int64(-1)
 	badCsvColumnList       = "BAD, CSV, COLUMN, LIST"
 	badDataSourceCode      = "BadDataSourceCode"
@@ -353,7 +353,7 @@ func TestSzengine_ExportCsvEntityReport_badCsvColumnList(test *testing.T) {
 	exportHandle, err := szEngine.ExportCsvEntityReport(ctx, badCsvColumnList, flags)
 	defer func() {
 		err := szEngine.CloseExport(ctx, exportHandle)
-		require.ErrorIs(test, err, szerror.ErrSzBase)
+		require.ErrorIs(test, err, szerror.ErrSz)
 	}()
 	require.ErrorIs(test, err, szerror.ErrSzBadInput)
 
@@ -524,7 +524,7 @@ func TestSzengine_FetchNext_badExportHandle(test *testing.T) {
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
 	actual, err := szEngine.FetchNext(ctx, badExportHandle)
-	require.ErrorIs(test, err, szerror.ErrSzBase)
+	require.ErrorIs(test, err, szerror.ErrSz)
 	printActual(test, actual)
 }
 
@@ -630,10 +630,10 @@ func TestSzengine_FindNetworkByEntityID(test *testing.T) {
 	require.NoError(test, err)
 	entityIDs := `{"ENTITIES": [{"ENTITY_ID": ` + entityID1 + `}, {"ENTITY_ID": ` + entityID2 + `}]}`
 	maxDegrees := int64(2)
-	buildOutDegree := int64(1)
+	buildOutDegrees := int64(1)
 	buildOutMaxEntities := int64(10)
 	flags := senzing.SzFindNetworkDefaultFlags
-	actual, err := szEngine.FindNetworkByEntityID(ctx, entityIDs, maxDegrees, buildOutDegree, buildOutMaxEntities, flags)
+	actual, err := szEngine.FindNetworkByEntityID(ctx, entityIDs, maxDegrees, buildOutDegrees, buildOutMaxEntities, flags)
 	require.NoError(test, err)
 	printActual(test, actual)
 }
@@ -645,10 +645,10 @@ func TestSzengine_FindNetworkByEntityID_badEntityIDs(test *testing.T) {
 	badEntityID2 := 1
 	entityIDs := `{"ENTITIES": [{"ENTITY_ID": ` + strconv.Itoa(badEntityID1) + `}, {"ENTITY_ID": ` + strconv.Itoa(badEntityID2) + `}]}`
 	maxDegrees := int64(2)
-	buildOutDegree := int64(1)
+	buildOutDegrees := int64(1)
 	buildOutMaxEntities := int64(10)
 	flags := senzing.SzFindNetworkDefaultFlags
-	actual, err := szEngine.FindNetworkByEntityID(ctx, entityIDs, maxDegrees, buildOutDegree, buildOutMaxEntities, flags)
+	actual, err := szEngine.FindNetworkByEntityID(ctx, entityIDs, maxDegrees, buildOutDegrees, buildOutMaxEntities, flags)
 	require.ErrorIs(test, err, szerror.ErrSzNotFound)
 	printActual(test, actual)
 }
@@ -670,15 +670,15 @@ func TestSzengine_FindNetworkByEntityID_badMaxDegrees(test *testing.T) {
 	entityID2, err := getEntityIDString(record2)
 	require.NoError(test, err)
 	entityIDs := `{"ENTITIES": [{"ENTITY_ID": ` + entityID1 + `}, {"ENTITY_ID": ` + entityID2 + `}]}`
-	buildOutDegree := int64(1)
+	buildOutDegrees := int64(1)
 	buildOutMaxEntities := int64(10)
 	flags := senzing.SzFindNetworkDefaultFlags
-	actual, err := szEngine.FindNetworkByEntityID(ctx, entityIDs, badMaxDegrees, buildOutDegree, buildOutMaxEntities, flags)
-	require.ErrorIs(test, err, szerror.ErrSzBase)
+	actual, err := szEngine.FindNetworkByEntityID(ctx, entityIDs, badMaxDegrees, buildOutDegrees, buildOutMaxEntities, flags)
+	require.ErrorIs(test, err, szerror.ErrSz)
 	printActual(test, actual)
 }
 
-func TestSzengine_FindNetworkByEntityID_badBuildOutDegree(test *testing.T) {
+func TestSzengine_FindNetworkByEntityID_badBuildOutDegrees(test *testing.T) {
 	ctx := context.TODO()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
@@ -698,8 +698,8 @@ func TestSzengine_FindNetworkByEntityID_badBuildOutDegree(test *testing.T) {
 	maxDegrees := int64(2)
 	buildOutMaxEntities := int64(10)
 	flags := senzing.SzFindNetworkDefaultFlags
-	actual, err := szEngine.FindNetworkByEntityID(ctx, entityIDs, maxDegrees, badBuildOutDegree, buildOutMaxEntities, flags)
-	require.ErrorIs(test, err, szerror.ErrSzBase)
+	actual, err := szEngine.FindNetworkByEntityID(ctx, entityIDs, maxDegrees, badBuildOutDegrees, buildOutMaxEntities, flags)
+	require.ErrorIs(test, err, szerror.ErrSz)
 	printActual(test, actual)
 }
 
@@ -721,10 +721,10 @@ func TestSzengine_FindNetworkByEntityID_badBuildOutMaxEntities(test *testing.T) 
 	require.NoError(test, err)
 	entityIDs := `{"ENTITIES": [{"ENTITY_ID": ` + entityID1 + `}, {"ENTITY_ID": ` + entityID2 + `}]}`
 	maxDegrees := int64(2)
-	buildOutDegree := int64(1)
+	buildOutDegrees := int64(1)
 	flags := senzing.SzFindNetworkDefaultFlags
-	actual, err := szEngine.FindNetworkByEntityID(ctx, entityIDs, maxDegrees, buildOutDegree, badBuildOutMaxEntities, flags)
-	require.ErrorIs(test, err, szerror.ErrSzBase)
+	actual, err := szEngine.FindNetworkByEntityID(ctx, entityIDs, maxDegrees, buildOutDegrees, badBuildOutMaxEntities, flags)
+	require.ErrorIs(test, err, szerror.ErrSz)
 	printActual(test, actual)
 }
 
@@ -744,10 +744,10 @@ func TestSzengine_FindNetworkByRecordID(test *testing.T) {
 	record3 := truthset.CustomerRecords["1003"]
 	recordKeys := `{"RECORDS": [{"DATA_SOURCE": "` + record1.DataSource + `", "RECORD_ID": "` + record1.ID + `"}, {"DATA_SOURCE": "` + record2.DataSource + `", "RECORD_ID": "` + record2.ID + `"}, {"DATA_SOURCE": "` + record3.DataSource + `", "RECORD_ID": "` + record3.ID + `"}]}`
 	maxDegrees := int64(1)
-	buildOutDegree := int64(2)
+	buildOutDegrees := int64(2)
 	buildOutMaxEntities := int64(10)
 	flags := senzing.SzFindNetworkDefaultFlags
-	actual, err := szEngine.FindNetworkByRecordID(ctx, recordKeys, maxDegrees, buildOutDegree, buildOutMaxEntities, flags)
+	actual, err := szEngine.FindNetworkByRecordID(ctx, recordKeys, maxDegrees, buildOutDegrees, buildOutMaxEntities, flags)
 	require.NoError(test, err)
 	printActual(test, actual)
 }
@@ -768,10 +768,10 @@ func TestSzengine_FindNetworkByRecordID_badDataSourceCode(test *testing.T) {
 	record3 := truthset.CustomerRecords["1003"]
 	recordKeys := `{"RECORDS": [{"DATA_SOURCE": "` + badDataSourceCode + `", "RECORD_ID": "` + record1.ID + `"}, {"DATA_SOURCE": "` + record2.DataSource + `", "RECORD_ID": "` + record2.ID + `"}, {"DATA_SOURCE": "` + record3.DataSource + `", "RECORD_ID": "` + record3.ID + `"}]}`
 	maxDegrees := int64(1)
-	buildOutDegree := int64(2)
+	buildOutDegrees := int64(2)
 	buildOutMaxEntities := int64(10)
 	flags := senzing.SzFindNetworkDefaultFlags
-	actual, err := szEngine.FindNetworkByRecordID(ctx, recordKeys, maxDegrees, buildOutDegree, buildOutMaxEntities, flags)
+	actual, err := szEngine.FindNetworkByRecordID(ctx, recordKeys, maxDegrees, buildOutDegrees, buildOutMaxEntities, flags)
 	require.ErrorIs(test, err, szerror.ErrSzUnknownDataSource)
 	printActual(test, actual)
 }
@@ -792,10 +792,10 @@ func TestSzengine_FindNetworkByRecordID_badRecordID(test *testing.T) {
 	record3 := truthset.CustomerRecords["1003"]
 	recordKeys := `{"RECORDS": [{"DATA_SOURCE": "` + record1.DataSource + `", "RECORD_ID": "` + badRecordID + `"}, {"DATA_SOURCE": "` + record2.DataSource + `", "RECORD_ID": "` + record2.ID + `"}, {"DATA_SOURCE": "` + record3.DataSource + `", "RECORD_ID": "` + record3.ID + `"}]}`
 	maxDegrees := int64(1)
-	buildOutDegree := int64(2)
+	buildOutDegrees := int64(2)
 	buildOutMaxEntities := int64(10)
 	flags := senzing.SzFindNetworkDefaultFlags
-	actual, err := szEngine.FindNetworkByRecordID(ctx, recordKeys, maxDegrees, buildOutDegree, buildOutMaxEntities, flags)
+	actual, err := szEngine.FindNetworkByRecordID(ctx, recordKeys, maxDegrees, buildOutDegrees, buildOutMaxEntities, flags)
 	require.ErrorIs(test, err, szerror.ErrSzNotFound)
 	printActual(test, actual)
 }
@@ -815,7 +815,7 @@ func TestSzengine_FindPathByEntityID(test *testing.T) {
 	endEntityID, err := getEntityID(truthset.CustomerRecords["1002"])
 	require.NoError(test, err)
 	maxDegrees := int64(1)
-	exclusions := senzing.SzNoExclusions
+	exclusions := senzing.SzNoAvoidance
 	requiredDataSources := senzing.SzNoRequiredDatasources
 	flags := senzing.SzNoFlags
 	actual, err := szEngine.FindPathByEntityID(ctx, startEntityID, endEntityID, maxDegrees, exclusions, requiredDataSources, flags)
@@ -837,7 +837,7 @@ func TestSzengine_FindPathByEntityID_badStartEntityID(test *testing.T) {
 	endEntityID, err := getEntityID(truthset.CustomerRecords["1002"])
 	require.NoError(test, err)
 	maxDegrees := int64(1)
-	exclusions := senzing.SzNoExclusions
+	exclusions := senzing.SzNoAvoidance
 	requiredDataSources := senzing.SzNoRequiredDatasources
 	flags := senzing.SzNoFlags
 	actual, err := szEngine.FindPathByEntityID(ctx, badStartEntityID, endEntityID, maxDegrees, exclusions, requiredDataSources, flags)
@@ -859,7 +859,7 @@ func TestSzengine_FindPathByEntityID_badEndEntityID(test *testing.T) {
 	require.NoError(test, err)
 	badEndEntityID := badEntityID
 	maxDegrees := int64(1)
-	exclusions := senzing.SzNoExclusions
+	exclusions := senzing.SzNoAvoidance
 	requiredDataSources := senzing.SzNoRequiredDatasources
 	flags := senzing.SzNoFlags
 	actual, err := szEngine.FindPathByEntityID(ctx, startEntityID, badEndEntityID, maxDegrees, exclusions, requiredDataSources, flags)
@@ -881,11 +881,11 @@ func TestSzengine_FindPathByEntityID_badMaxDegrees(test *testing.T) {
 	require.NoError(test, err)
 	endEntityID, err := getEntityID(truthset.CustomerRecords["1002"])
 	require.NoError(test, err)
-	exclusions := senzing.SzNoExclusions
+	exclusions := senzing.SzNoAvoidance
 	requiredDataSources := senzing.SzNoRequiredDatasources
 	flags := senzing.SzNoFlags
 	actual, err := szEngine.FindPathByEntityID(ctx, startEntityID, endEntityID, badMaxDegrees, exclusions, requiredDataSources, flags)
-	require.ErrorIs(test, err, szerror.ErrSzBase)
+	require.ErrorIs(test, err, szerror.ErrSz)
 	printActual(test, actual)
 }
 
@@ -926,7 +926,7 @@ func TestSzengine_FindPathByEntityID_badRequiredDataSource(test *testing.T) {
 	endEntityID, err := getEntityID(truthset.CustomerRecords["1002"])
 	require.NoError(test, err)
 	maxDegrees := int64(1)
-	exclusions := senzing.SzNoExclusions
+	exclusions := senzing.SzNoAvoidance
 	flags := senzing.SzNoFlags
 	actual, err := szEngine.FindPathByEntityID(ctx, startEntityID, endEntityID, maxDegrees, exclusions, badRequiredDataSources, flags)
 	require.ErrorIs(test, err, szerror.ErrSzBadInput)
@@ -1026,7 +1026,7 @@ func TestSzengine_FindPathByEntityID_including(test *testing.T) {
 	endEntityID, err := getEntityID(truthset.CustomerRecords["1002"])
 	require.NoError(test, err)
 	maxDegrees := int64(1)
-	exclusions := senzing.SzNoExclusions
+	exclusions := senzing.SzNoAvoidance
 	requiredDataSources := `{"DATA_SOURCES": ["` + startRecord.DataSource + `"]}`
 	flags := senzing.SzNoFlags
 	actual, err := szEngine.FindPathByEntityID(ctx, startEntityID, endEntityID, maxDegrees, exclusions, requiredDataSources, flags)
@@ -1049,7 +1049,7 @@ func TestSzengine_FindPathByEntityID_including_badStartEntityID(test *testing.T)
 	endEntityID, err := getEntityID(truthset.CustomerRecords["1002"])
 	require.NoError(test, err)
 	maxDegrees := int64(1)
-	exclusions := senzing.SzNoExclusions
+	exclusions := senzing.SzNoAvoidance
 	requiredDataSources := `{"DATA_SOURCES": ["` + startRecord.DataSource + `"]}`
 	flags := senzing.SzNoFlags
 	actual, err := szEngine.FindPathByEntityID(ctx, badStartEntityID, endEntityID, maxDegrees, exclusions, requiredDataSources, flags)
@@ -1070,7 +1070,7 @@ func TestSzengine_FindPathByRecordID(test *testing.T) {
 	record1 := truthset.CustomerRecords["1001"]
 	record2 := truthset.CustomerRecords["1002"]
 	maxDegree := int64(1)
-	exclusions := senzing.SzNoExclusions
+	exclusions := senzing.SzNoAvoidance
 	requiredDataSources := senzing.SzNoRequiredDatasources
 	flags := senzing.SzNoFlags
 	actual, err := szEngine.FindPathByRecordID(ctx, record1.DataSource, record1.ID, record2.DataSource, record2.ID, maxDegree, exclusions, requiredDataSources, flags)
@@ -1091,7 +1091,7 @@ func TestSzengine_FindPathByRecordID_badDataSourceCode(test *testing.T) {
 	record1 := truthset.CustomerRecords["1001"]
 	record2 := truthset.CustomerRecords["1002"]
 	maxDegree := int64(1)
-	exclusions := senzing.SzNoExclusions
+	exclusions := senzing.SzNoAvoidance
 	requiredDataSources := senzing.SzNoRequiredDatasources
 	flags := senzing.SzNoFlags
 	actual, err := szEngine.FindPathByRecordID(ctx, badDataSourceCode, record1.ID, record2.DataSource, record2.ID, maxDegree, exclusions, requiredDataSources, flags)
@@ -1112,7 +1112,7 @@ func TestSzengine_FindPathByRecordID_badRecordID(test *testing.T) {
 	record1 := truthset.CustomerRecords["1001"]
 	record2 := truthset.CustomerRecords["1002"]
 	maxDegree := int64(1)
-	exclusions := senzing.SzNoExclusions
+	exclusions := senzing.SzNoAvoidance
 	requiredDataSources := senzing.SzNoRequiredDatasources
 	flags := senzing.SzNoFlags
 	actual, err := szEngine.FindPathByRecordID(ctx, record1.DataSource, badRecordID, record2.DataSource, record2.ID, maxDegree, exclusions, requiredDataSources, flags)
@@ -1726,7 +1726,7 @@ func TestSzengine_SearchByAttributes_badAttributes(test *testing.T) {
 	searchProfile := senzing.SzNoSearchProfile
 	flags := senzing.SzNoFlags
 	actual, err := szEngine.SearchByAttributes(ctx, badAttributes, searchProfile, flags)
-	require.ErrorIs(test, err, szerror.ErrSzBase)
+	require.ErrorIs(test, err, szerror.ErrSz)
 	printActual(test, actual)
 }
 

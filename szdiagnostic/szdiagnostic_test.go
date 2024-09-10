@@ -107,7 +107,7 @@ func TestSzdiagnostic_GetFeature_badFeatureID(test *testing.T) {
 	require.NoError(test, err)
 	szDiagnostic := getTestObject(ctx, test)
 	actual, err := szDiagnostic.GetFeature(ctx, badFeatureID)
-	require.ErrorIs(test, err, szerror.ErrSzBase)
+	require.ErrorIs(test, err, szerror.ErrSz)
 	printActual(test, actual)
 }
 
