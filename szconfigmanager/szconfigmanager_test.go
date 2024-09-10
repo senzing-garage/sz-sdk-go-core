@@ -23,15 +23,31 @@ import (
 )
 
 const (
+	defaultTruncation = 76
+	instanceName      = "SzConfigManager Test"
+	observerOrigin    = "SzConfigManager observer"
+	printResults      = false
+	verboseLogging    = senzing.SzNoLogging
+)
+
+// Bad parameters
+
+const (
 	badConfigDefinition       = "\n\t"
 	badConfigID               = int64(0)
 	badCurrentDefaultConfigID = int64(0)
 	badLogLevelName           = "BadLogLevelName"
-	defaultTruncation         = 76
-	instanceName              = "SzConfigManager Test"
-	observerOrigin            = "SzConfigManager observer"
-	printResults              = false
-	verboseLogging            = senzing.SzNoLogging
+	badNewDefaultConfigID     = int64(0)
+)
+
+// Nil/empty parameters
+
+var (
+	nilConfigComment          string
+	nilConfigDefinition       string
+	nilConfigID               int64
+	nilCurrentDefaultConfigID int64
+	nilNewDefaultConfigID     int64
 )
 
 var (
@@ -76,8 +92,32 @@ func TestSzconfigmanager_AddConfig_badConfigDefinition(test *testing.T) {
 	require.ErrorIs(test, err, szerror.ErrSzConfiguration)
 }
 
-// TODO: Implement TestSzconfigmanager_AddConfig_error
-// func TestSzconfigmanager_AddConfig_error(test *testing.T) {}
+func TestSzconfigmanager_AddConfig_nilConfigDefinition(test *testing.T) {
+	ctx := context.TODO()
+	szConfigManager := getTestObject(ctx, test)
+	now := time.Now()
+	configComment := fmt.Sprintf("szconfigmanager_test at %s", now.UTC())
+	_, err := szConfigManager.AddConfig(ctx, nilConfigDefinition, configComment)
+	require.ErrorIs(test, err, szerror.ErrSzConfiguration)
+}
+
+func TestSzconfigmanager_AddConfig_nilConfigComment(test *testing.T) {
+	ctx := context.TODO()
+	szConfigManager := getTestObject(ctx, test)
+	now := time.Now()
+	szConfig, err := getSzConfig(ctx)
+	require.NoError(test, err)
+	configHandle, err := szConfig.CreateConfig(ctx)
+	require.NoError(test, err)
+	dataSourceCode := "GO_TEST_" + strconv.FormatInt(now.Unix(), baseTen)
+	_, err = szConfig.AddDataSource(ctx, configHandle, dataSourceCode)
+	require.NoError(test, err)
+	configDefinition, err := szConfig.ExportConfig(ctx, configHandle)
+	require.NoError(test, err)
+	actual, err := szConfigManager.AddConfig(ctx, configDefinition, nilConfigComment)
+	require.NoError(test, err)
+	printActual(test, actual)
+}
 
 func TestSzconfigmanager_GetConfig(test *testing.T) {
 	ctx := context.TODO()
@@ -100,6 +140,14 @@ func TestSzconfigmanager_GetConfig_badConfigID(test *testing.T) {
 	require.ErrorIs(test, err, szerror.ErrSzConfiguration)
 }
 
+func TestSzconfigmanager_GetConfig_nilConfigID(test *testing.T) {
+	ctx := context.TODO()
+	szConfigManager := getTestObject(ctx, test)
+	actual, err := szConfigManager.GetConfig(ctx, nilConfigID)
+	assert.Equal(test, "", actual)
+	require.ErrorIs(test, err, szerror.ErrSzConfiguration)
+}
+
 func TestSzconfigmanager_GetConfigs(test *testing.T) {
 	ctx := context.TODO()
 	szConfigManager := getTestObject(ctx, test)
@@ -108,9 +156,6 @@ func TestSzconfigmanager_GetConfigs(test *testing.T) {
 	printActual(test, actual)
 }
 
-// TODO: Implement TestSzconfigmanager_GetConfigs_error
-// func TestSzconfigmanager_GetConfigs_error(test *testing.T) {}
-
 func TestSzconfigmanager_GetDefaultConfigID(test *testing.T) {
 	ctx := context.TODO()
 	szConfigManager := getTestObject(ctx, test)
@@ -118,9 +163,6 @@ func TestSzconfigmanager_GetDefaultConfigID(test *testing.T) {
 	require.NoError(test, err)
 	printActual(test, actual)
 }
-
-// TODO: Implement TestSzconfigmanager_GetDefaultConfigID_error
-// func TestSzconfigmanager_GetDefaultConfigID_error(test *testing.T) {}
 
 func TestSzconfigmanager_ReplaceDefaultConfigID(test *testing.T) {
 	ctx := context.TODO()
@@ -149,7 +191,7 @@ func TestSzconfigmanager_ReplaceDefaultConfigID_badCurrentDefaultConfigID(test *
 	newDefaultConfigID, err2 := szConfigManager.GetDefaultConfigID(ctx)
 	if err2 != nil {
 		test.Log("Error:", err2.Error())
-		assert.FailNow(test, "szConfigManager.GetDefaultConfigID()-2")
+		assert.FailNow(test, "szConfigManager.GetDefaultConfigID()")
 	}
 	err := szConfigManager.ReplaceDefaultConfigID(ctx, badCurrentDefaultConfigID, newDefaultConfigID)
 	require.ErrorIs(test, err, szerror.ErrSzReplaceConflict)
@@ -163,8 +205,31 @@ func TestSzconfigmanager_ReplaceDefaultConfigID_badNewDefaultConfigID(test *test
 		test.Log("Error:", err1.Error())
 		assert.FailNow(test, "szConfigManager.GetDefaultConfigID()")
 	}
-	newDefaultConfigID := int64(0)
-	err := szConfigManager.ReplaceDefaultConfigID(ctx, currentDefaultConfigID, newDefaultConfigID)
+	err := szConfigManager.ReplaceDefaultConfigID(ctx, currentDefaultConfigID, badNewDefaultConfigID)
+	require.ErrorIs(test, err, szerror.ErrSzConfiguration)
+}
+
+func TestSzconfigmanager_ReplaceDefaultConfigID_nilCurrentDefaultConfigID(test *testing.T) {
+	ctx := context.TODO()
+	szConfigManager := getTestObject(ctx, test)
+	newDefaultConfigID, err2 := szConfigManager.GetDefaultConfigID(ctx)
+	if err2 != nil {
+		test.Log("Error:", err2.Error())
+		assert.FailNow(test, "szConfigManager.GetDefaultConfigID()")
+	}
+	err := szConfigManager.ReplaceDefaultConfigID(ctx, nilCurrentDefaultConfigID, newDefaultConfigID)
+	require.ErrorIs(test, err, szerror.ErrSzReplaceConflict)
+}
+
+func TestSzconfigmanager_ReplaceDefaultConfigID_nilNewDefaultConfigID(test *testing.T) {
+	ctx := context.TODO()
+	szConfigManager := getTestObject(ctx, test)
+	currentDefaultConfigID, err1 := szConfigManager.GetDefaultConfigID(ctx)
+	if err1 != nil {
+		test.Log("Error:", err1.Error())
+		assert.FailNow(test, "szConfigManager.GetDefaultConfigID()")
+	}
+	err := szConfigManager.ReplaceDefaultConfigID(ctx, currentDefaultConfigID, nilNewDefaultConfigID)
 	require.ErrorIs(test, err, szerror.ErrSzConfiguration)
 }
 
@@ -184,6 +249,13 @@ func TestSzconfigmanager_SetDefaultConfigID_badConfigID(test *testing.T) {
 	ctx := context.TODO()
 	szConfigManager := getTestObject(ctx, test)
 	err := szConfigManager.SetDefaultConfigID(ctx, badConfigID)
+	require.ErrorIs(test, err, szerror.ErrSzConfiguration)
+}
+
+func TestSzconfigmanager_SetDefaultConfigID_nilConfigID(test *testing.T) {
+	ctx := context.TODO()
+	szConfigManager := getTestObject(ctx, test)
+	err := szConfigManager.SetDefaultConfigID(ctx, nilConfigID)
 	require.ErrorIs(test, err, szerror.ErrSzConfiguration)
 }
 

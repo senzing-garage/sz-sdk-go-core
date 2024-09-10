@@ -20,16 +20,30 @@ import (
 )
 
 const (
+	dataSourceCode    = "GO_TEST"
+	defaultTruncation = 76
+	instanceName      = "SzConfig Test"
+	observerOrigin    = "SzConfig observer"
+	printResults      = false
+	verboseLogging    = senzing.SzNoLogging
+)
+
+// Bad parameters
+
+const (
 	badConfigDefinition = "}{"
 	badConfigHandle     = uintptr(0)
 	badDataSourceCode   = "\n\tGO_TEST"
 	badLogLevelName     = "BadLogLevelName"
 	badSettings         = "{]"
-	defaultTruncation   = 76
-	instanceName        = "SzConfig Test"
-	observerOrigin      = "SzConfig observer"
-	printResults        = false
-	verboseLogging      = senzing.SzNoLogging
+)
+
+// Nil/empty parameters
+
+var (
+	nilConfigDefinition string
+	nilConfigHandle     uintptr
+	nilDataSourceCode   string
 )
 
 var (
@@ -50,7 +64,6 @@ func TestSzconfig_AddDataSource(test *testing.T) {
 	szConfig := getTestObject(ctx, test)
 	configHandle, err := szConfig.CreateConfig(ctx)
 	require.NoError(test, err)
-	dataSourceCode := "GO_TEST"
 	actual, err := szConfig.AddDataSource(ctx, configHandle, dataSourceCode)
 	require.NoError(test, err)
 	printActual(test, actual)
@@ -69,7 +82,6 @@ func TestSzconfig_AddDataSource_withLoad(test *testing.T) {
 	require.NoError(test, err)
 	configHandle2, err := szConfig.ImportConfig(ctx, configDefinition)
 	require.NoError(test, err)
-	dataSourceCode := "GO_TEST"
 	actual, err := szConfig.AddDataSource(ctx, configHandle2, dataSourceCode)
 	require.NoError(test, err)
 	printActual(test, actual)
@@ -87,6 +99,24 @@ func TestSzconfig_AddDataSource_badDataSourceCode(test *testing.T) {
 	printActual(test, actual)
 }
 
+func TestSzconfig_AddDataSource_nilDataSourceCode(test *testing.T) {
+	ctx := context.TODO()
+	szConfig := getTestObject(ctx, test)
+	configHandle, err := szConfig.CreateConfig(ctx)
+	require.NoError(test, err)
+	actual, err := szConfig.AddDataSource(ctx, configHandle, nilDataSourceCode)
+	require.ErrorIs(test, err, szerror.ErrSzBadInput)
+	printActual(test, actual)
+}
+
+func TestSzconfig_AddDataSource_nilConfigHandle(test *testing.T) {
+	ctx := context.TODO()
+	szConfig := getTestObject(ctx, test)
+	actual, err := szConfig.AddDataSource(ctx, nilConfigHandle, dataSourceCode)
+	require.ErrorIs(test, err, szerror.ErrSz)
+	printActual(test, actual)
+}
+
 func TestSzconfig_CloseConfig(test *testing.T) {
 	ctx := context.TODO()
 	szConfig := getTestObject(ctx, test)
@@ -100,11 +130,15 @@ func TestSzconfig_CloseConfig_badConfigHandle(test *testing.T) {
 	ctx := context.TODO()
 	szConfig := getTestObject(ctx, test)
 	err := szConfig.CloseConfig(ctx, badConfigHandle)
-	require.ErrorIs(test, err, szerror.ErrSz) // TODO: Update to correct error once sz-sdk-go/szerror/ is updated.
+	require.ErrorIs(test, err, szerror.ErrSz)
 }
 
-// TODO: Implement TestSzconfig_CloseConfig_error
-// func TestSzconfig_CloseConfig_error(test *testing.T) {}
+func TestSzconfig_CloseConfig_nilConfigHandle(test *testing.T) {
+	ctx := context.TODO()
+	szConfig := getTestObject(ctx, test)
+	err := szConfig.CloseConfig(ctx, nilConfigHandle)
+	require.ErrorIs(test, err, szerror.ErrSz)
+}
 
 func TestSzconfig_CreateConfig(test *testing.T) {
 	ctx := context.TODO()
@@ -113,9 +147,6 @@ func TestSzconfig_CreateConfig(test *testing.T) {
 	require.NoError(test, err)
 	printActual(test, actual)
 }
-
-// TODO: Implement TestSzconfig_CreateConfig_error
-// func TestSzconfig_CreateConfig_error(test *testing.T) {}
 
 func TestSzconfig_DeleteDataSource(test *testing.T) {
 	ctx := context.TODO()
@@ -126,7 +157,6 @@ func TestSzconfig_DeleteDataSource(test *testing.T) {
 	actual, err := szConfig.GetDataSources(ctx, configHandle)
 	require.NoError(test, err)
 	printResult(test, "Original", actual)
-	dataSourceCode := "GO_TEST"
 	_, err = szConfig.AddDataSource(ctx, configHandle, dataSourceCode)
 	require.NoError(test, err)
 	actual, err = szConfig.GetDataSources(ctx, configHandle)
@@ -149,7 +179,6 @@ func TestSzconfig_DeleteDataSource_withLoad(test *testing.T) {
 	actual, err := szConfig.GetDataSources(ctx, configHandle)
 	require.NoError(test, err)
 	printResult(test, "Original", actual)
-	dataSourceCode := "GO_TEST"
 	_, err = szConfig.AddDataSource(ctx, configHandle, dataSourceCode)
 	require.NoError(test, err)
 	actual, err = szConfig.GetDataSources(ctx, configHandle)
@@ -173,7 +202,6 @@ func TestSzconfig_DeleteDataSource_withLoad(test *testing.T) {
 func TestSzconfig_DeleteDataSource_badConfigHandle(test *testing.T) {
 	ctx := context.TODO()
 	szConfig := getTestObject(ctx, test)
-	dataSourceCode := "GO_TEST"
 	err := szConfig.DeleteDataSource(ctx, badConfigHandle, dataSourceCode)
 	require.ErrorIs(test, err, szerror.ErrSz)
 }
@@ -185,6 +213,22 @@ func TestSzconfig_DeleteDataSource_badDataSourceCode(test *testing.T) {
 	require.NoError(test, err)
 	err = szConfig.DeleteDataSource(ctx, configHandle, badDataSourceCode)
 	require.ErrorIs(test, err, szerror.ErrSzBadInput)
+}
+
+func TestSzconfig_DeleteDataSource_nilConfigHandle(test *testing.T) {
+	ctx := context.TODO()
+	szConfig := getTestObject(ctx, test)
+	err := szConfig.DeleteDataSource(ctx, nilConfigHandle, dataSourceCode)
+	require.ErrorIs(test, err, szerror.ErrSz)
+}
+
+func TestSzconfig_DeleteDataSource_nilDataSourceCode(test *testing.T) {
+	ctx := context.TODO()
+	szConfig := getTestObject(ctx, test)
+	configHandle, err := szConfig.CreateConfig(ctx)
+	require.NoError(test, err)
+	err = szConfig.DeleteDataSource(ctx, configHandle, nilDataSourceCode)
+	require.NoError(test, err)
 }
 
 func TestSzconfig_ExportConfig(test *testing.T) {
@@ -201,6 +245,14 @@ func TestSzconfig_ExportConfig_badConfigHandle(test *testing.T) {
 	ctx := context.TODO()
 	szConfig := getTestObject(ctx, test)
 	actual, err := szConfig.ExportConfig(ctx, badConfigHandle)
+	assert.Equal(test, "", actual)
+	require.ErrorIs(test, err, szerror.ErrSz)
+}
+
+func TestSzconfig_ExportConfig_nilConfigHandle(test *testing.T) {
+	ctx := context.TODO()
+	szConfig := getTestObject(ctx, test)
+	actual, err := szConfig.ExportConfig(ctx, nilConfigHandle)
 	assert.Equal(test, "", actual)
 	require.ErrorIs(test, err, szerror.ErrSz)
 }
@@ -225,6 +277,14 @@ func TestSzconfig_GetDataSources_badConfigHandle(test *testing.T) {
 	require.ErrorIs(test, err, szerror.ErrSz)
 }
 
+func TestSzconfig_GetDataSources_nilConfigHandle(test *testing.T) {
+	ctx := context.TODO()
+	szConfig := getTestObject(ctx, test)
+	actual, err := szConfig.GetDataSources(ctx, nilConfigHandle)
+	assert.Equal(test, "", actual)
+	require.ErrorIs(test, err, szerror.ErrSz)
+}
+
 func TestSzconfig_ImportConfig(test *testing.T) {
 	ctx := context.TODO()
 	szConfig := getTestObject(ctx, test)
@@ -241,6 +301,13 @@ func TestSzconfig_ImportConfig_badConfigDefinition(test *testing.T) {
 	ctx := context.TODO()
 	szConfig := getTestObject(ctx, test)
 	_, err := szConfig.ImportConfig(ctx, badConfigDefinition)
+	require.ErrorIs(test, err, szerror.ErrSzBadInput)
+}
+
+func TestSzconfig_ImportConfig_nilConfigDefinition(test *testing.T) {
+	ctx := context.TODO()
+	szConfig := getTestObject(ctx, test)
+	_, err := szConfig.ImportConfig(ctx, nilConfigDefinition)
 	require.ErrorIs(test, err, szerror.ErrSzBadInput)
 }
 
