@@ -44,11 +44,8 @@ const (
 // Nil/empty parameters
 
 var (
-	nilSecondsToRun     int
-	nilFeatureID        int64
-	nilConfigDefinition string
-	nilConfigHandle     uintptr
-	nilDataSourceCode   string
+	nilSecondsToRun int
+	nilFeatureID    int64
 )
 
 var (
