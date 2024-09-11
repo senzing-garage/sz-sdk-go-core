@@ -253,10 +253,10 @@ func ExampleSzengine_FindNetworkByEntityID() {
 	}
 	entityList := `{"ENTITIES": [{"ENTITY_ID": ` + entityID1 + `}, {"ENTITY_ID": ` + entityID2 + `}]}`
 	maxDegrees := int64(2)
-	buildOutDegree := int64(1)
+	buildOutDegrees := int64(1)
 	maxEntities := int64(10)
 	flags := senzing.SzNoFlags
-	result, err := szEngine.FindNetworkByEntityID(ctx, entityList, maxDegrees, buildOutDegree, maxEntities, flags)
+	result, err := szEngine.FindNetworkByEntityID(ctx, entityList, maxDegrees, buildOutDegrees, maxEntities, flags)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -270,10 +270,10 @@ func ExampleSzengine_FindNetworkByRecordID() {
 	szEngine := getSzEngineExample(ctx)
 	recordList := `{"RECORDS": [{"DATA_SOURCE": "CUSTOMERS", "RECORD_ID": "1001"}, {"DATA_SOURCE": "CUSTOMERS", "RECORD_ID": "1002"}]}`
 	maxDegrees := int64(1)
-	buildOutDegree := int64(2)
+	buildOutDegrees := int64(2)
 	maxEntities := int64(10)
 	flags := senzing.SzNoFlags
-	result, err := szEngine.FindNetworkByRecordID(ctx, recordList, maxDegrees, buildOutDegree, maxEntities, flags)
+	result, err := szEngine.FindNetworkByRecordID(ctx, recordList, maxDegrees, buildOutDegrees, maxEntities, flags)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -294,10 +294,10 @@ func ExampleSzengine_FindPathByEntityID() {
 		fmt.Println(err)
 	}
 	maxDegrees := int64(1)
-	exclusions := ""
+	avoidEntityIDs := ""
 	requiredDataSources := ""
 	flags := senzing.SzNoFlags
-	result, err := szEngine.FindPathByEntityID(ctx, startEntityID, endEntityID, maxDegrees, exclusions, requiredDataSources, flags)
+	result, err := szEngine.FindPathByEntityID(ctx, startEntityID, endEntityID, maxDegrees, avoidEntityIDs, requiredDataSources, flags)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -305,18 +305,18 @@ func ExampleSzengine_FindPathByEntityID() {
 	// Output: {"ENTITY_PATHS":[{"START_ENTITY_ID":100001,"END_ENTITY_ID":100001,"ENTITIES":[100001]}],"ENTITIES":[{"RE...
 }
 
-func ExampleSzengine_FindPathByEntityID_excluding() {
-	// TODO: Implement ExampleSzEngine_FindPathByEntityID_excluding
+func ExampleSzengine_FindPathByEntityID_avoiding() {
+	// TODO: Implement ExampleSzEngine_FindPathByEntityID_avoiding
 	// // For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	// ctx := context.TODO()
 	// szEngine := getSzEngineExample(ctx)
 	// startEntityID := getEntityIDForRecord("CUSTOMERS", "1001")
 	// endEntityID := getEntityIDForRecord("CUSTOMERS", "1002")
 	// maxDegrees := int64(1)
-	// exclusions := `{"ENTITIES": [{"ENTITY_ID": ` + getEntityIDStringForRecord("CUSTOMERS", "1003") + `}]}`
+	// avoidEntityIDs := `{"ENTITIES": [{"ENTITY_ID": ` + getEntityIDStringForRecord("CUSTOMERS", "1003") + `}]}`
 	// requiredDataSources := ""
 	// flags := senzing.SzNoFlags
-	// result, err := szEngine.FindPathByEntityID(ctx, startEntityID, endEntityID, maxDegrees, exclusions, requiredDataSources, flags)
+	// result, err := szEngine.FindPathByEntityID(ctx, startEntityID, endEntityID, maxDegrees, avoidEntityIDs, requiredDataSources, flags)
 	// if err != nil {
 	// 	fmt.Println(err)
 	// }
@@ -324,8 +324,8 @@ func ExampleSzengine_FindPathByEntityID_excluding() {
 	// // Output: {"ENTITY_PATHS":[{"START_ENTITY_ID":1,"END_ENTITY_ID":1,"ENTITIES":[1]}],"ENTITIES":[{"RESOLVED_ENTITY":...
 }
 
-func ExampleSzEngine_FindPathByEntityID_excludingAndIncluding() {
-	// TODO: Implement ExampleSzEngine_FindPathByEntityID_excludingAndIncluding
+func ExampleSzEngine_FindPathByEntityID_avoidingAndIncluding() {
+	// TODO: Implement ExampleSzEngine_FindPathByEntityID_avoidingAndIncluding
 }
 
 func ExampleSzengine_FindPathByEntityID_including() {
@@ -336,10 +336,10 @@ func ExampleSzengine_FindPathByEntityID_including() {
 	// startEntityID := getEntityIDForRecord("CUSTOMERS", "1001")
 	// endEntityID := getEntityIDForRecord("CUSTOMERS", "1002")
 	// maxDegree := int64(1)
-	// exclusions := `{"ENTITIES": [{"ENTITY_ID": ` + getEntityIDStringForRecord("CUSTOMERS", "1003") + `}]}`
+	// avoidEntityIDs := `{"ENTITIES": [{"ENTITY_ID": ` + getEntityIDStringForRecord("CUSTOMERS", "1003") + `}]}`
 	// requiredDataSources := `{"DATA_SOURCES": ["CUSTOMERS"]}`
 	// flags := senzing.SzNoFlags
-	// result, err := szEngine.FindPathByEntityID(ctx, startEntityID, endEntityID, maxDegree, exclusions, requiredDataSources, flags)
+	// result, err := szEngine.FindPathByEntityID(ctx, startEntityID, endEntityID, maxDegree, avoidEntityIDs, requiredDataSources, flags)
 	// if err != nil {
 	// 	fmt.Println(err)
 	// }
@@ -356,10 +356,10 @@ func ExampleSzengine_FindPathByRecordID() {
 	endDataSourceCode := "CUSTOMERS"
 	endRecordID := "1002"
 	maxDegrees := int64(1)
-	exclusions := ""
+	avoidRecordKeys := ""
 	requiredDataSources := ""
 	flags := senzing.SzNoFlags
-	result, err := szEngine.FindPathByRecordID(ctx, startDataSourceCode, startRecordID, endDataSourceCode, endRecordID, maxDegrees, exclusions, requiredDataSources, flags)
+	result, err := szEngine.FindPathByRecordID(ctx, startDataSourceCode, startRecordID, endDataSourceCode, endRecordID, maxDegrees, avoidRecordKeys, requiredDataSources, flags)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -367,8 +367,8 @@ func ExampleSzengine_FindPathByRecordID() {
 	// Output: {"ENTITY_PATHS":[{"START_ENTITY_ID":100001,"END_ENTITY_ID":100001,"ENTITIES":[100001...
 }
 
-func ExampleSzengine_FindPathByRecordID_excluding() {
-	// TODO: Implement ExampleSzEngine_FindPathByRecordID_excluding
+func ExampleSzengine_FindPathByRecordID_avoiding() {
+	// TODO: Implement ExampleSzEngine_FindPathByRecordID_avoiding
 	// // For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	// ctx := context.TODO()
 	// szEngine := getSzEngineExample(ctx)
@@ -377,10 +377,10 @@ func ExampleSzengine_FindPathByRecordID_excluding() {
 	// endDataSourceCode := "CUSTOMERS"
 	// endRecordID := "1002"
 	// maxDegree := int64(1)
-	// exclusions := `{"RECORDS": [{ "DATA_SOURCE": "CUSTOMERS", "RECORD_ID": "1003"}]}`
+	// avoidRecordKeys := `{"RECORDS": [{ "DATA_SOURCE": "CUSTOMERS", "RECORD_ID": "1003"}]}`
 	// requiredDataSources := ""
 	// flags := senzing.SzNoFlags
-	// result, err := szEngine.FindPathByRecordID(ctx, startDataSourceCode, startRecordID, endDataSourceCode, endRecordID, maxDegree, exclusions, requiredDataSources, flags)
+	// result, err := szEngine.FindPathByRecordID(ctx, startDataSourceCode, startRecordID, endDataSourceCode, endRecordID, maxDegree, avoidRecordKeys, requiredDataSources, flags)
 	// if err != nil {
 	// 	fmt.Println(err)
 	// }
@@ -388,8 +388,8 @@ func ExampleSzengine_FindPathByRecordID_excluding() {
 	// // Output: {"ENTITY_PATHS":[{"START_ENTITY_ID":1,"END_ENTITY_ID":1,"ENTITIES":[1]}],"ENTITIES":[{"RESOLVED_ENTITY":...
 }
 
-func ExampleSzEngine_FindPathByRecordID_excludingAndIncluding() {
-	// TODO: Implement ExampleSzEngine_FindPathByRecordID_excludingAndIncluding
+func ExampleSzEngine_FindPathByRecordID_avoidingAndIncluding() {
+	// TODO: Implement ExampleSzEngine_FindPathByRecordID_avoidingAndIncluding
 }
 
 func ExampleSzengine_FindPathByRecordID_including() {
@@ -402,10 +402,10 @@ func ExampleSzengine_FindPathByRecordID_including() {
 	// endDataSourceCode := "CUSTOMERS"
 	// endRecordID := "1002"
 	// maxDegrees := int64(1)
-	// exclusions := `{"ENTITIES": [{"ENTITY_ID": ` + getEntityIDStringForRecord("CUSTOMERS", "1003") + `}]}`
+	// avoidRecordKeys := `{"ENTITIES": [{"ENTITY_ID": ` + getEntityIDStringForRecord("CUSTOMERS", "1003") + `}]}`
 	// requiredDataSources := `{"DATA_SOURCES": ["CUSTOMERS"]}`
 	// flags := senzing.SzNoFlags
-	// result, err := szEngine.FindPathByRecordID(ctx, startDataSourceCode, startRecordID, endDataSourceCode, endRecordID, maxDegrees, exclusions, requiredDataSources, flags)
+	// result, err := szEngine.FindPathByRecordID(ctx, startDataSourceCode, startRecordID, endDataSourceCode, endRecordID, maxDegrees, avoidRecordKeys, requiredDataSources, flags)
 	// if err != nil {
 	// 	fmt.Println(err)
 	// }

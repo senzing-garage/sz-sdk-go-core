@@ -13,7 +13,7 @@ import (
 // Interface methods - Examples for godoc documentation
 // ----------------------------------------------------------------------------
 
-func ExampleSzAbstractFactory_CreateSzConfig() {
+func ExampleSzabstractfactory_CreateSzConfig() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szabstractfactory/szabstractfactory_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := getSzAbstractFactoryExample(ctx)
@@ -25,7 +25,7 @@ func ExampleSzAbstractFactory_CreateSzConfig() {
 	// Output:
 }
 
-func ExampleSzAbstractFactory_CreateSzConfigManager() {
+func ExampleSzabstractfactory_CreateSzConfigManager() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szabstractfactory/szabstractfactory_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := getSzAbstractFactoryExample(ctx)
@@ -37,7 +37,7 @@ func ExampleSzAbstractFactory_CreateSzConfigManager() {
 	// Output:
 }
 
-func ExampleSzAbstractFactory_CreateSzDiagnostic() {
+func ExampleSzabstractfactory_CreateSzDiagnostic() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szabstractfactory/szabstractfactory_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := getSzAbstractFactoryExample(ctx)
@@ -49,7 +49,7 @@ func ExampleSzAbstractFactory_CreateSzDiagnostic() {
 	// Output:
 }
 
-func ExampleSzAbstractFactory_CreateSzEngine() {
+func ExampleSzabstractfactory_CreateSzEngine() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szabstractfactory/szabstractfactory_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := getSzAbstractFactoryExample(ctx)
@@ -61,7 +61,7 @@ func ExampleSzAbstractFactory_CreateSzEngine() {
 	// Output:
 }
 
-func ExampleSzAbstractFactory_CreateSzProduct() {
+func ExampleSzabstractfactory_CreateSzProduct() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szabstractfactory/szabstractfactory_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := getSzAbstractFactoryExample(ctx)

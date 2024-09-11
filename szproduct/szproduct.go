@@ -37,8 +37,8 @@ import (
 )
 
 /*
-The Szproduct implementation of the [senzing.SzProduct] interface
-communicates with the Senzing C binaries.
+Type Szproduct struct implements the [senzing.SzProduct] interface
+for communicating with the Senzing C binaries.
 */
 type Szproduct struct {
 	isTrace        bool
@@ -60,7 +60,7 @@ const (
 // ----------------------------------------------------------------------------
 
 /*
-The Destroy method will destroy and perform cleanup for the Senzing SzProduct object.
+Method Destroy will destroy and perform cleanup for the Senzing SzProduct object.
 It should be called after all other calls are complete.
 
 Input
@@ -84,7 +84,7 @@ func (client *Szproduct) Destroy(ctx context.Context) error {
 }
 
 /*
-The GetLicense method retrieves information about the license used by the Senzing API.
+Method GetLicense retrieves information about the license used by the Senzing API.
 
 Input
   - ctx: A context to control lifecycle.
@@ -111,7 +111,7 @@ func (client *Szproduct) GetLicense(ctx context.Context) (string, error) {
 }
 
 /*
-The GetVersion method returns the Senzing API version information.
+Method GetVersion returns the Senzing API version information.
 
 Input
   - ctx: A context to control lifecycle.
@@ -142,7 +142,7 @@ func (client *Szproduct) GetVersion(ctx context.Context) (string, error) {
 // ----------------------------------------------------------------------------
 
 /*
-The GetObserverOrigin method returns the "origin" value of past Observer messages.
+Method GetObserverOrigin returns the "origin" value of past Observer messages.
 
 Input
   - ctx: A context to control lifecycle.
@@ -156,7 +156,7 @@ func (client *Szproduct) GetObserverOrigin(ctx context.Context) string {
 }
 
 /*
-The Initialize method initializes the Senzing SzProduct object.
+Method Initialize initializes the Senzing SzProduct object.
 It must be called prior to any other calls.
 
 Input
@@ -187,7 +187,7 @@ func (client *Szproduct) Initialize(ctx context.Context, instanceName string, se
 }
 
 /*
-The RegisterObserver method adds the observer to the list of observers notified.
+Method RegisterObserver adds the observer to the list of observers notified.
 
 Input
   - ctx: A context to control lifecycle.
@@ -216,7 +216,7 @@ func (client *Szproduct) RegisterObserver(ctx context.Context, observer observer
 }
 
 /*
-The SetLogLevel method sets the level of logging.
+Method SetLogLevel sets the level of logging.
 
 Input
   - ctx: A context to control lifecycle.
@@ -246,7 +246,7 @@ func (client *Szproduct) SetLogLevel(ctx context.Context, logLevelName string) e
 }
 
 /*
-The SetObserverOrigin method sets the "origin" value in future Observer messages.
+Method SetObserverOrigin sets the "origin" value in future Observer messages.
 
 Input
   - ctx: A context to control lifecycle.
@@ -258,7 +258,7 @@ func (client *Szproduct) SetObserverOrigin(ctx context.Context, origin string) {
 }
 
 /*
-The UnregisterObserver method removes the observer to the list of observers notified.
+Method UnregisterObserver removes the observer to the list of observers notified.
 
 Input
   - ctx: A context to control lifecycle.
@@ -293,7 +293,6 @@ func (client *Szproduct) UnregisterObserver(ctx context.Context, observer observ
 // ----------------------------------------------------------------------------
 
 func (client *Szproduct) destroy(ctx context.Context) error {
-	// _DLEXPORT int SzProduct_destroy();
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
@@ -305,7 +304,6 @@ func (client *Szproduct) destroy(ctx context.Context) error {
 }
 
 func (client *Szproduct) license(ctx context.Context) (string, error) {
-	// _DLEXPORT char* SzProduct_license();
 	_ = ctx
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -317,7 +315,6 @@ func (client *Szproduct) license(ctx context.Context) (string, error) {
 }
 
 func (client *Szproduct) version(ctx context.Context) (string, error) {
-	// _DLEXPORT char* SzProduct_license();
 	_ = ctx
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -329,7 +326,6 @@ func (client *Szproduct) version(ctx context.Context) (string, error) {
 }
 
 func (client *Szproduct) init(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
-	// _DLEXPORT int SzProduct_init(const char *moduleName, const char *iniParams, const int verboseLogging);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
@@ -394,7 +390,7 @@ func (client *Szproduct) newError(ctx context.Context, errorNumber int, details 
 }
 
 /*
-The panicOnError method calls panic() when an error is not nil.
+Method panicOnError calls panic() when an error is not nil.
 
 Input:
   - err: nil or an actual error
@@ -414,7 +410,6 @@ Input
   - ctx: A context to control lifecycle.
 */
 func (client *Szproduct) clearLastException(ctx context.Context) error {
-	// _DLEXPORT void SzProduct_clearLastException();
 	_ = ctx
 	var err error
 	if client.isTrace {
@@ -436,7 +431,6 @@ Output
   - A string containing the error received from Senzing's SzProduct.
 */
 func (client *Szproduct) getLastException(ctx context.Context) (string, error) {
-	// _DLEXPORT int SzProduct_getLastException(char *buffer, const size_t bufSize);
 	_ = ctx
 	var err error
 	var result string
@@ -461,7 +455,6 @@ Output:
   - An int containing the error received from Senzing's SzProduct.
 */
 func (client *Szproduct) getLastExceptionCode(ctx context.Context) (int, error) {
-	//  _DLEXPORT int SzProduct_getLastExceptionCode();
 	_ = ctx
 	var err error
 	var result int

@@ -38,8 +38,8 @@ import (
 )
 
 /*
-The Szdiagnostic implementation of the [senzing.SzDiagnostic] interface
-communicates with the Senzing C binaries.
+Type Szdiagnostic struct implements the [senzing.SzDiagnostic] interface
+for communicating with the Senzing C binaries.
 */
 type Szdiagnostic struct {
 	isTrace        bool
@@ -61,7 +61,7 @@ const (
 // ----------------------------------------------------------------------------
 
 /*
-The CheckDatastorePerformance method runs performance tests on the Senzing datastore.
+Method CheckDatastorePerformance runs performance tests on the Senzing datastore.
 
 Input
   - ctx: A context to control lifecycle.
@@ -91,7 +91,7 @@ func (client *Szdiagnostic) CheckDatastorePerformance(ctx context.Context, secon
 }
 
 /*
-The Destroy method will destroy and perform cleanup for the Senzing SzDiagnostic object.
+Method Destroy will destroy and perform cleanup for the Senzing SzDiagnostic object.
 It should be called after all other calls are complete.
 
 Input
@@ -115,7 +115,7 @@ func (client *Szdiagnostic) Destroy(ctx context.Context) error {
 }
 
 /*
-The GetDatastoreInfo method returns information about the Senzing datastore.
+Method GetDatastoreInfo returns information about the Senzing datastore.
 
 Input
   - ctx: A context to control lifecycle.
@@ -143,7 +143,8 @@ func (client *Szdiagnostic) GetDatastoreInfo(ctx context.Context) (string, error
 }
 
 /*
-The GetFeature method is an experimental method that returns diagnostic information of a feature.
+Method GetFeature is an experimental method that returns diagnostic information of a feature.
+Not recommended for use.
 
 Input
   - ctx: A context to control lifecycle.
@@ -174,7 +175,7 @@ func (client *Szdiagnostic) GetFeature(ctx context.Context, featureID int64) (st
 }
 
 /*
-WARNING: The PurgeRepository method removes every record in the Senzing datastore.
+WARNING: Method PurgeRepository removes every record in the Senzing datastore.
 This is a destructive method that cannot be undone.
 Before calling purgeRepository(), all programs using Senzing MUST be terminated.
 
@@ -199,7 +200,7 @@ func (client *Szdiagnostic) PurgeRepository(ctx context.Context) error {
 }
 
 /*
-The Reinitialize method re-initializes the Senzing SzDiagnostic object.
+Method Reinitialize re-initializes the Senzing SzDiagnostic object.
 
 Input
   - ctx: A context to control lifecycle.
@@ -229,7 +230,7 @@ func (client *Szdiagnostic) Reinitialize(ctx context.Context, configID int64) er
 // ----------------------------------------------------------------------------
 
 /*
-The GetObserverOrigin method returns the "origin" value of past Observer messages.
+Method GetObserverOrigin returns the "origin" value of past Observer messages.
 
 Input
   - ctx: A context to control lifecycle.
@@ -243,7 +244,7 @@ func (client *Szdiagnostic) GetObserverOrigin(ctx context.Context) string {
 }
 
 /*
-The Initialize method initializes the SzDiagnostic object.
+Method Initialize initializes the SzDiagnostic object.
 It must be called prior to any other calls.
 
 Input
@@ -282,7 +283,7 @@ func (client *Szdiagnostic) Initialize(ctx context.Context, instanceName string,
 }
 
 /*
-The RegisterObserver method adds the observer to the list of observers notified.
+Method RegisterObserver adds the observer to the list of observers notified.
 
 Input
   - ctx: A context to control lifecycle.
@@ -311,7 +312,7 @@ func (client *Szdiagnostic) RegisterObserver(ctx context.Context, observer obser
 }
 
 /*
-The SetLogLevel method sets the level of logging.
+Method SetLogLevel sets the level of logging.
 
 Input
   - ctx: A context to control lifecycle.
@@ -341,7 +342,7 @@ func (client *Szdiagnostic) SetLogLevel(ctx context.Context, logLevelName string
 }
 
 /*
-The SetObserverOrigin method sets the "origin" value in future Observer messages.
+Method SetObserverOrigin sets the "origin" value in future Observer messages.
 
 Input
   - ctx: A context to control lifecycle.
@@ -353,7 +354,7 @@ func (client *Szdiagnostic) SetObserverOrigin(ctx context.Context, origin string
 }
 
 /*
-The UnregisterObserver method removes the observer to the list of observers notified.
+Method UnregisterObserver removes the observer to the list of observers notified.
 
 Input
   - ctx: A context to control lifecycle.
@@ -388,7 +389,6 @@ func (client *Szdiagnostic) UnregisterObserver(ctx context.Context, observer obs
 // ----------------------------------------------------------------------------
 
 func (client *Szdiagnostic) checkDatastorePerformance(ctx context.Context, secondsToRun int) (string, error) {
-	// _DLEXPORT int SzDiagnostic_checkDBPerf(int secondsToRun, char **responseBuf, size_t *bufSize, void *(*resizeFunc)(void *ptr, size_t newSize) );
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
@@ -403,7 +403,6 @@ func (client *Szdiagnostic) checkDatastorePerformance(ctx context.Context, secon
 }
 
 func (client *Szdiagnostic) destroy(ctx context.Context) error {
-	//  _DLEXPORT int SzDiagnostic_destroy();
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
@@ -415,7 +414,6 @@ func (client *Szdiagnostic) destroy(ctx context.Context) error {
 }
 
 func (client *Szdiagnostic) getDatastoreInfo(ctx context.Context) (string, error) {
-	// _DLEXPORT struct SzDiagnostic_getDatastoreInfo_result SzDiagnostic_getDatastoreInfo_helper();
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
@@ -430,7 +428,6 @@ func (client *Szdiagnostic) getDatastoreInfo(ctx context.Context) (string, error
 }
 
 func (client *Szdiagnostic) getFeature(ctx context.Context, featureID int64) (string, error) {
-	//  _DLEXPORT int SzDiagnostic_getFeature(const long long libFeatID);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
@@ -445,7 +442,7 @@ func (client *Szdiagnostic) getFeature(ctx context.Context, featureID int64) (st
 }
 
 /*
-The init method initializes the Senzing SzDiagnostic object.
+Method init method the Senzing SzDiagnostic object.
 It must be called prior to any other calls.
 
 Input
@@ -455,7 +452,6 @@ Input
   - verboseLogging: A flag to enable deeper logging of the Sz processing. 0 for no Senzing logging; 1 for logging.
 */
 func (client *Szdiagnostic) init(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
-	// _DLEXPORT int SzDiagnostic_init(const char *moduleName, const char *iniParams, const int verboseLogging);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
@@ -471,7 +467,7 @@ func (client *Szdiagnostic) init(ctx context.Context, instanceName string, setti
 }
 
 /*
-The initWithConfigID method initializes the Senzing SzDiagnostic object with a non-default configuration ID.
+Method initWithConfigID initializes the Senzing SzDiagnostic object with a non-default configuration ID.
 It must be called prior to any other calls.
 
 Input
@@ -482,7 +478,6 @@ Input
   - verboseLogging: A flag to enable deeper logging of the Sz processing. 0 for no Senzing logging; 1 for logging.
 */
 func (client *Szdiagnostic) initWithConfigID(ctx context.Context, instanceName string, settings string, configID int64, verboseLogging int64) error {
-	//  _DLEXPORT int SzDiagnostic_initWithConfigID(const char *moduleName, const char *iniParams, const long long initConfigID, const int verboseLogging);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
@@ -498,7 +493,6 @@ func (client *Szdiagnostic) initWithConfigID(ctx context.Context, instanceName s
 }
 
 func (client *Szdiagnostic) purgeRepository(ctx context.Context) error {
-	//  _DLEXPORT int SzDiagnostic_purgeRepository();
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
@@ -510,7 +504,6 @@ func (client *Szdiagnostic) purgeRepository(ctx context.Context) error {
 }
 
 func (client *Szdiagnostic) reinit(ctx context.Context, configID int64) error {
-	//  _DLEXPORT int SzDiagnostic_reinit(const long long initConfigID);
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	var err error
@@ -571,7 +564,7 @@ func (client *Szdiagnostic) newError(ctx context.Context, errorNumber int, detai
 }
 
 /*
-The panicOnError method calls panic() when an error is not nil.
+Method panicOnError calls panic() when an error is not nil.
 
 Input:
   - err: nil or an actual error
@@ -585,13 +578,12 @@ func (client *Szdiagnostic) panicOnError(err error) {
 // --- Sz exception handling --------------------------------------------------
 
 /*
-The clearLastException method erases the last exception message held by the Senzing SzDiagnostic object.
+Method clearLastException erases the last exception message held by the Senzing SzDiagnostic object.
 
 Input
   - ctx: A context to control lifecycle.
 */
 func (client *Szdiagnostic) clearLastException(ctx context.Context) error {
-	// _DLEXPORT void SzDiagnostic_clearLastException();
 	_ = ctx
 	var err error
 	if client.isTrace {
@@ -604,7 +596,7 @@ func (client *Szdiagnostic) clearLastException(ctx context.Context) error {
 }
 
 /*
-The getLastException method retrieves the last exception thrown in Senzing's SzDiagnostic.
+Method getLastException retrieves the last exception thrown in Senzing's SzDiagnostic.
 
 Input
   - ctx: A context to control lifecycle.
@@ -613,7 +605,6 @@ Output
   - A string containing the error received from Senzing's SzDiagnostic.
 */
 func (client *Szdiagnostic) getLastException(ctx context.Context) (string, error) {
-	// _DLEXPORT int SzDiagnostic_getLastException(char *buffer, const size_t bufSize);
 	_ = ctx
 	var err error
 	var result string
@@ -629,7 +620,7 @@ func (client *Szdiagnostic) getLastException(ctx context.Context) (string, error
 }
 
 /*
-The getLastExceptionCode method retrieves the code of the last exception thrown in Senzing's SzDiagnostic.
+Method getLastExceptionCode retrieves the code of the last exception thrown in Senzing's SzDiagnostic.
 
 Input:
   - ctx: A context to control lifecycle.
@@ -638,7 +629,6 @@ Output:
   - An int containing the error received from Senzing's SzDiagnostic.
 */
 func (client *Szdiagnostic) getLastExceptionCode(ctx context.Context) (int, error) {
-	//  _DLEXPORT int SzDiagnostic_getLastExceptionCode();
 	_ = ctx
 	var err error
 	var result int
