@@ -1771,12 +1771,12 @@ func (client *Szengine) findPathByRecordIDV2(ctx context.Context, startDataSourc
 /*
 Method findPathByEntityIDWithAvoidsV2 finds single relationship paths between two entities.
 Paths are found using known relationships with other entities.
-In addition, it will find paths that exclude certain entities from being on the path.
+In addition, it will find paths that avoid certain entities from being on the path.
 
-When excluding entities, the user may choose to either strictly exclude the entities,
-or prefer to exclude the entities but still include them if no other path is found.
-By default, entities will be strictly excluded.
-A "preferred exclude" may be done by specifying the Sz_FIND_PATH_PREFER_EXCLUDE control flag.
+When avoiding entities, the user may choose to either strictly exclude the entities,
+or prefer to avoid the entities but still include them if no other path is found.
+By default, entities will be strictly avoided.
+A "preferred avoidance" may be done by specifying the SzFindPathStrictAvoid control flag.
 
 Input
   - ctx: A context to control lifecycle.
@@ -1808,13 +1808,13 @@ func (client *Szengine) findPathByEntityIDWithAvoidsV2(ctx context.Context, star
 /*
 Method findPathByRecordIDWithAvoidsV2 finds single relationship paths between two entities.
 Paths are found using known relationships with other entities.
-In addition, it will find paths that exclude certain entities from being on the path.
+In addition, it will find paths that avoid certain entities from being on the path.
 It extends FindPathExcludingByRecordID() by adding output control flags.
 
-When excluding entities, the user may choose to either strictly exclude the entities,
-or prefer to exclude the entities but still include them if no other path is found.
-By default, entities will be strictly excluded.
-A "preferred exclude" may be done by specifying the Sz_FIND_PATH_PREFER_EXCLUDE control flag.
+When avoiding entities, the user may choose to either strictly exclude the entities,
+or prefer to avoid the entities but still include them if no other path is found.
+By default, entities will be strictly avoided.
+A "preferred avoidance" may be done by specifying the SzFindPathStrictAvoid control flag.
 
 Input
   - ctx: A context to control lifecycle.
