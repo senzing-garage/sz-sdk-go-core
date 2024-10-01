@@ -1947,6 +1947,30 @@ func TestSzengine_HowEntityByEntityID_nilEntityID(test *testing.T) {
 	printActual(test, actual)
 }
 
+func TestSzengine_PreprocessRecord(test *testing.T) {
+	ctx := context.TODO()
+	szEngine := getTestObject(ctx, test)
+	flags := senzing.SzWithoutInfo
+	records := []record.Record{
+		truthset.CustomerRecords["1001"],
+		truthset.CustomerRecords["1002"],
+	}
+	for _, record := range records {
+		actual, err := szEngine.PreprocessRecord(ctx, record.JSON, flags)
+		require.NoError(test, err)
+		printActual(test, actual)
+	}
+}
+
+func TestSzengine_PreprocessRecord_badRecordDefinition(test *testing.T) {
+	ctx := context.TODO()
+	szEngine := getTestObject(ctx, test)
+	flags := senzing.SzWithoutInfo
+	actual, err := szEngine.PreprocessRecord(ctx, badRecordDefinition, flags)
+	require.NoError(test, err)
+	printActual(test, actual)
+}
+
 func TestSzengine_PrimeEngine(test *testing.T) {
 	ctx := context.TODO()
 	szEngine := getTestObject(ctx, test)
