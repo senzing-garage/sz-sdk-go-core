@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning].
 ### Changed in 0.8.3
 
 - Update dependencies
+- Add `PreprocessRecord()`
 
 ## [0.8.2] - 2024-09-11
 
