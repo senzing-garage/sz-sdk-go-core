@@ -982,6 +982,37 @@ func (client *Szengine) HowEntityByEntityID(ctx context.Context, entityID int64,
 }
 
 /*
+Method PreprocessRecord tests adding a record into the Senzing datastore.
+
+Input
+  - ctx: A context to control lifecycle.
+  - recordDefinition: A JSON document containing the record to be tested against the Senzing datastore.
+  - flags: Flags used to control information returned.
+
+Output
+  - A JSON document containing metadata as specified by the flags.
+*/
+func (client *Szengine) PreprocessRecord(ctx context.Context, recordDefinition string, flags int64) (string, error) {
+	var err error
+	var result string
+	if client.isTrace {
+		entryTime := time.Now()
+		client.traceEntry(77, recordDefinition, flags)
+		defer func() {
+			client.traceExit(78, recordDefinition, flags, result, err, time.Since(entryTime))
+		}()
+	}
+	result, err = client.preprocessRecord(ctx, recordDefinition, flags)
+	if client.observers != nil {
+		go func() {
+			details := map[string]string{}
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8035, err, details)
+		}()
+	}
+	return result, err
+}
+
+/*
 Method PrimeEngine pre-initializes some of the heavier weight internal resources of the Senzing engine.
 
 Input
@@ -2119,6 +2150,33 @@ func (client *Szengine) primeEngine(ctx context.Context) error {
 		err = client.newError(ctx, 4043, result)
 	}
 	return err
+}
+
+/*
+Method preprocessRecord tests adding a record into the Senzing datastore and returns information on the affected entities.
+
+Input
+  - ctx: A context to control lifecycle.
+  - recordDefinition: A JSON document containing the record to be added to the Senzing datastore.
+  - flags: Flags used to control information returned.
+
+Output
+  - A JSON document.
+*/
+func (client *Szengine) preprocessRecord(ctx context.Context, recordDefinition string, flags int64) (string, error) {
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	var err error
+	var resultResponse string
+	recordDefinitionForC := C.CString(recordDefinition)
+	defer C.free(unsafe.Pointer(recordDefinitionForC))
+	result := C.Sz_preprocessRecord_helper(recordDefinitionForC, C.longlong(flags))
+	if result.returnCode != noError {
+		err = client.newError(ctx, 4061, recordDefinition, flags, result.returnCode)
+	}
+	resultResponse = C.GoString(result.response)
+	C.SzHelper_free(unsafe.Pointer(result.response))
+	return resultResponse, err
 }
 
 /*
