@@ -41,7 +41,8 @@ jobs:
           senzingapi-version: ${{ matrix.senzingapi-version }}
 
       - name: XXX install dependencies
-        run: choco install -y dependencies
+        run: |
+          choco install -y dependencies
 
       # - name: XXX see dependencies
       #   run: refreshenv
@@ -50,6 +51,10 @@ jobs:
         shell: pwsh
         run: |
           "C:\Program Files\senzing\er\redis\vc_redist.x64.exe /q /norestart"
+
+      - name: XXX view dependencies
+        run: |
+          dependencies.exe -modules "C:\Program Files\senzing\er\lib\Sz.dll"
 
       - name: Add to "Path" environment variable
         run: printf "C:\Program Files\senzing\er\lib" | Out-File -FilePath "$env:GITHUB_PATH" -Encoding utf8 -Append
