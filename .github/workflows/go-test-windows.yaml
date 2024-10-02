@@ -40,11 +40,11 @@ jobs:
         with:
           senzingapi-version: ${{ matrix.senzingapi-version }}
 
-      # - name: XXX install dependencies
-      #   run: choco install -y dependencies
+      - name: XXX install dependencies
+        run: choco install -y dependencies
 
-      # - name: XXX see dependencies
-      #   run: refreshenv
+      - name: XXX see dependencies
+        run: refreshenv
 
       - name: XXX Run redist
         shell: pwsh
