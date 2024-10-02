@@ -61,7 +61,7 @@ jobs:
 
       - name: Add to "Path" environment variable
         run: |
-          echo "$Env:PATH=$Env:PATH;C:\Program Files\senzing\er\lib\" >> $env:GITHUB_ENV
+          echo "$Env:PATH=$Env:PATH;C:\Program Files\senzing\er\lib\;" >> $env:GITHUB_ENV
           # printf "C:\Program Files\senzing\er\lib" | Out-File -FilePath "$env:GITHUB_PATH" -Encoding utf8 -Append
 
       - name: XXX Check path
@@ -76,6 +76,7 @@ jobs:
 
       - name: Run go test
         run: |
+          $env:Path += “;C:\Program Files\senzing\er\lib”
           go test -json -v -p 1 -coverprofile=cover -covermode=atomic -coverpkg=./... ./... 2>&1 | tee "C:\Temp\gotest.log" | gotestfmt
           cp cover cover.out
 
