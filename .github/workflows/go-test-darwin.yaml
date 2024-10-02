@@ -3,11 +3,11 @@ name: Go test darwin
 on: [pull_request, workflow_dispatch]
 
 env:
+  CGO_LDFLAGS: "-Wl,-no_warn_duplicate_libraries"
   DYLD_LIBRARY_PATH: /opt/senzing/er/lib:/opt/senzing/er/lib/macos
   LD_LIBRARY_PATH: /opt/senzing/er/lib:/opt/senzing/er/lib/macos
   SENZING_LOG_LEVEL: TRACE
   SENZING_TOOLS_DATABASE_URL: sqlite3://na:na@nowhere/tmp/sqlite/G2C.db
-  CGO_LDFLAGS: "-Wl,-no_warn_duplicate_libraries"
 
 permissions:
   contents: read
