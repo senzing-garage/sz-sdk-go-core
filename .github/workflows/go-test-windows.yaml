@@ -40,11 +40,21 @@ jobs:
         with:
           senzingapi-version: ${{ matrix.senzingapi-version }}
 
+      - name: XXX install dependencies
+        run: choco -y install dependencies
+
+      - name: XXX see dependencies
+        run: refreshenv
+
+      - name: XXX see dependencies
+        shell: pwsh
+        run: "C:\Program Files\senzing\er\redis\vc_redist.x64.exe"
+
       - name: Add to "Path" environment variable
-        run: printf "C:\Program Files\Senzing\er\lib" | Out-File -FilePath "$env:GITHUB_PATH" -Encoding utf8 -Append
+        run: printf "C:\Program Files\senzing\er\lib" | Out-File -FilePath "$env:GITHUB_PATH" -Encoding utf8 -Append
 
       - name: Copy /etc files
-        run: copy testdata/senzing-license/g2.lic "C:\Program Files\Senzing\er\etc\g2.lic"
+        run: copy testdata/senzing-license/g2.lic "C:\Program Files\senzing\er\etc\g2.lic"
 
       - name: Copy test database files
         run: mkdir "C:\Temp\sqlite" && copy testdata/sqlite/G2C.db "C:\Temp\sqlite\G2C.db"
