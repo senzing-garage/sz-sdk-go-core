@@ -61,12 +61,12 @@ jobs:
 
       - name: Add to "Path" environment variable
         run: |
-          echo "C:\Program Files\senzing\er\lib" >> $env:GITHUB_PATH
+          echo "$Env:PATH=$Env:PATH;C:\Program Files\senzing\er\lib" >> $env:GITHUB_PATH
           # printf "C:\Program Files\senzing\er\lib" | Out-File -FilePath "$env:GITHUB_PATH" -Encoding utf8 -Append
 
       - name: XXX Check path
         run: |
-          gc $env:GITHUB_PATH | write-output
+          $env:Path
 
       - name: Copy /etc files
         run: copy testdata/senzing-license/g2.lic "C:\Program Files\senzing\er\etc\g2.lic"
@@ -77,7 +77,7 @@ jobs:
       - name: Run go test
         run: |
           # $env:Path += “;C:\Program Files\senzing\er\lib”
-          gc $env:GITHUB_PATH | write-output
+          $env:Path
           go test -json -v -p 1 -coverprofile=cover -covermode=atomic -coverpkg=./... ./... 2>&1 | tee "C:\Temp\gotest.log" | gotestfmt
           cp cover cover.out
 
