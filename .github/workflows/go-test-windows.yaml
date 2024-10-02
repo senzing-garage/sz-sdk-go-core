@@ -40,13 +40,13 @@ jobs:
         with:
           senzingapi-version: ${{ matrix.senzingapi-version }}
 
-      - name: XXX install dependencies
-        run: choco -y install dependencies
+      # - name: XXX install dependencies
+      #   run: choco -y install dependencies
 
-      - name: XXX see dependencies
-        run: refreshenv
+      # - name: XXX see dependencies
+      #   run: refreshenv
 
-      - name: XXX see dependencies
+      - name: XXX Run redist
         shell: pwsh
         run: C:\Program Files\senzing\er\redis\vc_redist.x64.exe /q /norestart
 
