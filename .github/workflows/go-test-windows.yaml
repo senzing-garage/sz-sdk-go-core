@@ -53,8 +53,16 @@ jobs:
           "C:\Program Files\senzing\er\redis\vc_redist.x64.exe /q /norestart"
 
       - name: XXX view dependencies
+        shell: pwsh
         run: |
+          $env:Path
+          ls "C:\Program Files\senzing\er\lib\"
           dependencies.exe -modules "C:\Program Files\senzing\er\lib\Sz.dll"
+
+      - name: XXX view dependencies chain
+        shell: pwsh
+        run: |
+          dependencies.exe -chain "C:\Program Files\senzing\er\lib\Sz.dll"
 
       - name: Add to "Path" environment variable
         run: printf "C:\Program Files\senzing\er\lib" | Out-File -FilePath "$env:GITHUB_PATH" -Encoding utf8 -Append
