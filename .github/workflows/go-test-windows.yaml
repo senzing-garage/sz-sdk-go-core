@@ -48,7 +48,7 @@ jobs:
 
       - name: XXX see dependencies
         shell: pwsh
-        run: "C:\Program Files\senzing\er\redis\vc_redist.x64.exe"
+        run: "C:\Program Files\senzing\er\redis\vc_redist.x64.exe /q /norestart"
 
       - name: Add to "Path" environment variable
         run: printf "C:\Program Files\senzing\er\lib" | Out-File -FilePath "$env:GITHUB_PATH" -Encoding utf8 -Append
