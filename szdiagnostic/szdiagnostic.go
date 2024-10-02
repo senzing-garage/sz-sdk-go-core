@@ -10,9 +10,9 @@ package szdiagnostic
 #include "libSz.h"
 #include "gohelpers/SzLang_helpers.h"
 #cgo CFLAGS: -g -I/opt/senzing/er/sdk/c
-#cgo windows CFLAGS: -g -I"C:/Program Files/senzing/er/sdk/c"
+#cgo windows CFLAGS: -g -I"C:/Program Files/Senzing/er/sdk/c"
 #cgo LDFLAGS: -L/opt/senzing/er/lib -lSz
-#cgo windows LDFLAGS: -L"C:/Program Files/senzing/er/lib" -lSz
+#cgo windows LDFLAGS: -L"C:/Program Files/Senzing/er/lib" -lSz
 */
 import "C"
 
