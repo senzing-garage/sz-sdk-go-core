@@ -794,29 +794,6 @@ func ExampleSzengine_Initialize_withConfigID() {
 	// TODO: Implement ExampleSzEngine_Initialize_withConfigID
 }
 
-func ExampleSzengine_Reinitialize() {
-	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
-	ctx := context.TODO()
-	szEngine := getSzEngineExample(ctx)
-	configID, _ := szEngine.GetActiveConfigID(ctx)
-	err := szEngine.Reinitialize(ctx, configID)
-	if err != nil {
-		fmt.Println(err)
-	}
-	// Output:
-}
-
-func ExampleSzengine_Destroy() {
-	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
-	ctx := context.TODO()
-	szEngine := getSzEngineExample(ctx)
-	err := szEngine.Destroy(ctx)
-	if err != nil {
-		fmt.Println(err)
-	}
-	// Output:
-}
-
 // ----------------------------------------------------------------------------
 // Helper functions
 // ----------------------------------------------------------------------------

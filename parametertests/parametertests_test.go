@@ -27,7 +27,7 @@ const (
 )
 
 var (
-	szEngineSingleton senzing.SzEngine
+	szEngineSingleton *szengine.Szengine
 )
 
 // ----------------------------------------------------------------------------
@@ -206,7 +206,7 @@ func getTestDirectoryPath() string {
 	return filepath.FromSlash("../target/test/szengine")
 }
 
-func getSzEngine(ctx context.Context) (senzing.SzEngine, error) {
+func getSzEngine(ctx context.Context) (*szengine.Szengine, error) {
 	var err error
 	_ = ctx
 	if szEngineSingleton == nil {
@@ -221,7 +221,7 @@ func getSzEngine(ctx context.Context) (senzing.SzEngine, error) {
 		if err != nil {
 			fmt.Println(err)
 		}
-		szEngineSingleton = szEngine
+		szEngineSingleton = &szengine.Szengine{}
 	}
 	return szEngineSingleton, err
 }

@@ -188,17 +188,6 @@ func ExampleSzconfigmanager_Initialize() {
 	// Output:
 }
 
-func ExampleSzconfigmanager_Destroy() {
-	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfigmanager/szconfigmanager_examples_test.go
-	ctx := context.TODO()
-	szConfigManager := getSzConfigManagerExample(ctx)
-	err := szConfigManager.Destroy(ctx)
-	if err != nil {
-		fmt.Println(err)
-	}
-	// Output:
-}
-
 // ----------------------------------------------------------------------------
 // Helper functions
 // ----------------------------------------------------------------------------
