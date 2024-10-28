@@ -7,7 +7,7 @@ package szproduct
 /*
 #include <stdlib.h>
 #include "libSzProduct.h"
-#include "gohelpers/SzLang_helpers.h"
+#include "szhelpers/SzLang_helpers.h"
 #cgo CFLAGS: -g -I/opt/senzing/er/sdk/c
 #cgo windows CFLAGS: -g -I"C:/Program Files/Senzing/er/sdk/c"
 #cgo LDFLAGS: -L/opt/senzing/er/lib -lSz
