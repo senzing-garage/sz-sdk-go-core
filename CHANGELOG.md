@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning].
 
 -
 
+## [0.8.4] - 2024-10-28
+
+### Changed in 0.8.4
+
+- Migrate from `gohelpers` to `szhelpers`
+
 ## [0.8.3] - 2024-10-01
 
 ### Changed in 0.8.3
