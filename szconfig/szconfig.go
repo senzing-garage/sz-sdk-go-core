@@ -180,30 +180,6 @@ func (client *Szconfig) DeleteDataSource(ctx context.Context, configHandle uintp
 }
 
 /*
-Method Destroy will destroy and perform cleanup for the Senzing Szconfig object.
-It should be called after all other calls are complete.
-
-Input
-  - ctx: A context to control lifecycle.
-*/
-func (client *Szconfig) Destroy(ctx context.Context) error {
-	var err error
-	if client.isTrace {
-		entryTime := time.Now()
-		client.traceEntry(11)
-		defer func() { client.traceExit(12, err, time.Since(entryTime)) }()
-	}
-	err = client.destroy(ctx)
-	if client.observers != nil {
-		go func() {
-			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8005, err, details)
-		}()
-	}
-	return err
-}
-
-/*
 Method ExportConfig creates a Senzing configuration JSON document representation of an in-memory configuration.
 
 Input
@@ -295,6 +271,30 @@ func (client *Szconfig) ImportConfig(ctx context.Context, configDefinition strin
 // ----------------------------------------------------------------------------
 // Public non-interface methods
 // ----------------------------------------------------------------------------
+
+/*
+Method Destroy will destroy and perform cleanup for the Senzing Szconfig object.
+It should be called after all other calls are complete.
+
+Input
+  - ctx: A context to control lifecycle.
+*/
+func (client *Szconfig) Destroy(ctx context.Context) error {
+	var err error
+	if client.isTrace {
+		entryTime := time.Now()
+		client.traceEntry(11)
+		defer func() { client.traceExit(12, err, time.Since(entryTime)) }()
+	}
+	err = client.destroy(ctx)
+	if client.observers != nil {
+		go func() {
+			details := map[string]string{}
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8005, err, details)
+		}()
+	}
+	return err
+}
 
 /*
 Method GetObserverOrigin returns the "origin" value of past Observer messages.

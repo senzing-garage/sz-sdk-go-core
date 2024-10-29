@@ -90,6 +90,24 @@ func TestSzAbstractFactory_CreateSzProduct(test *testing.T) {
 	printActual(test, version)
 }
 
+func TestSzAbstractFactory_Destroy(test *testing.T) {
+	ctx := context.TODO()
+	szAbstractFactory := getTestObject(ctx, test)
+	defer func() { handleError(szAbstractFactory.Destroy(ctx)) }()
+}
+
+func TestSzAbstractFactory_Reinitialize(test *testing.T) {
+	ctx := context.TODO()
+	szAbstractFactory := getTestObject(ctx, test)
+	defer func() { handleError(szAbstractFactory.Destroy(ctx)) }()
+	szConfigManager, err := szAbstractFactory.CreateSzConfigManager(ctx)
+	require.NoError(test, err)
+	configID, err := szConfigManager.GetDefaultConfigID(ctx)
+	require.NoError(test, err)
+	err = szAbstractFactory.Reinitialize(ctx, configID)
+	require.NoError(test, err)
+}
+
 // ----------------------------------------------------------------------------
 // Internal functions
 // ----------------------------------------------------------------------------

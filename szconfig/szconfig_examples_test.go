@@ -171,27 +171,6 @@ func ExampleSzconfig_GetObserverOrigin() {
 }
 
 // ----------------------------------------------------------------------------
-// Object creation / destruction
-// ----------------------------------------------------------------------------
-
-func ExampleSzconfig_Initialize() {
-	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig_examples_test.go
-	ctx := context.TODO()
-	szConfig := &Szconfig{}
-	instanceName := "Test name"
-	settings, err := getSettings()
-	if err != nil {
-		fmt.Println(err)
-	}
-	verboseLogging := senzing.SzNoLogging
-	err = szConfig.Initialize(ctx, instanceName, settings, verboseLogging)
-	if err != nil {
-		fmt.Println(err)
-	}
-	// Output:
-}
-
-// ----------------------------------------------------------------------------
 // Helper functions
 // ----------------------------------------------------------------------------
 
