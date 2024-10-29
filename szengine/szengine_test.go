@@ -103,58 +103,6 @@ type GetEntityByRecordIDResponse struct {
 // Interface methods - test
 // ----------------------------------------------------------------------------
 
-// func TestSzengine_Destroy_multipleEngines_bad1(test *testing.T) {
-// 	ctx := context.TODO()
-// 	for i := 1; i <= 20; i++ {
-// 		szEngine, err := getNewSzEngine(ctx)
-// 		require.NoError(test, err)
-// 		err = szEngine.Destroy(ctx)
-// 		require.NoError(test, err)
-// 		ramCheck(test, i)
-// 	}
-// }
-
-// func TestSzengine_Destroy_multipleEngines_good1(test *testing.T) {
-// 	ctx := context.TODO()
-// 	szEnginePrimer, err := getNewSzEngine(ctx)
-// 	require.NoError(test, err)
-// 	for i := 1; i <= 20; i++ {
-// 		szEngine, err := getNewSzEngine(ctx)
-// 		require.NoError(test, err)
-// 		err = szEngine.Destroy(ctx)
-// 		require.NoError(test, err)
-// 		ramCheck(test, i)
-// 	}
-// 	err = szEnginePrimer.Destroy(ctx)
-// 	require.NoError(test, err)
-// }
-
-// func TestSzengine_Destroy_multipleEngines_bad2(test *testing.T) {
-// 	ctx := context.TODO()
-// 	for i := 1; i <= 20; i++ {
-// 		szEngine, err := getNewSzEngine(ctx)
-// 		require.NoError(test, err)
-// 		err = szEngine.Destroy(ctx)
-// 		require.NoError(test, err)
-// 		ramCheck(test, i)
-// 	}
-// }
-
-// func TestSzengine_Destroy_multipleEngines_good2(test *testing.T) {
-// 	ctx := context.TODO()
-// 	szEnginePrimer, err := getNewSzEngine(ctx)
-// 	require.NoError(test, err)
-// 	for i := 1; i <= 20; i++ {
-// 		szEngine, err := getNewSzEngine(ctx)
-// 		require.NoError(test, err)
-// 		err = szEngine.Destroy(ctx)
-// 		require.NoError(test, err)
-// 		ramCheck(test, i)
-// 	}
-// 	err = szEnginePrimer.Destroy(ctx)
-// 	require.NoError(test, err)
-// }
-
 func TestSzengine_AddRecord(test *testing.T) {
 	ctx := context.TODO()
 	szEngine := getTestObject(ctx, test)
@@ -411,16 +359,6 @@ func TestSzengine_ExportCsvEntityReport(test *testing.T) {
 		require.NoError(test, err)
 	}()
 	require.NoError(test, err)
-
-	// for {
-	// 	csvEntityReportFragment, err := szEngine.FetchNext(ctx, exportHandle)
-	// 	require.NoError(test, err)
-	// 	if len(csvEntityReportFragment) == 0 {
-	// 		break
-	// 	}
-	// 	fmt.Printf(">>>>>>>> CSV fragment: %s\n", csvEntityReportFragment)
-	// }
-
 	actualCount := 0
 	for actual := range szEngine.ExportCsvEntityReportIterator(ctx, csvColumnList, flags) {
 		assert.Equal(test, expected[actualCount], strings.TrimSpace(actual.Value))
@@ -1840,8 +1778,6 @@ func TestSzengine_GetStats(test *testing.T) {
 	require.NoError(test, err)
 	printActual(test, actual)
 }
-
-// TODO: start here
 
 func TestSzengine_GetVirtualEntityByRecordID(test *testing.T) {
 	ctx := context.TODO()

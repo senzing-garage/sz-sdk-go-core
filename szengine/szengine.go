@@ -1109,7 +1109,7 @@ If inconsistent, ReevaluateRecord() adjusts the entity definition, splits entiti
 Usually, the ReevaluateRecord method is called after a Senzing configuration change to impact
 the record immediately.
 
-Input“
+Input
   - ctx: A context to control lifecycle.
   - dataSourceCode: Identifies the provenance of the data.
   - recordID: The unique identifier within the records of the same data source.
