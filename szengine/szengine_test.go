@@ -103,58 +103,6 @@ type GetEntityByRecordIDResponse struct {
 // Interface methods - test
 // ----------------------------------------------------------------------------
 
-// func TestSzengine_Destroy_multipleEngines_bad1(test *testing.T) {
-// 	ctx := context.TODO()
-// 	for i := 1; i <= 20; i++ {
-// 		szEngine, err := getNewSzEngine(ctx)
-// 		require.NoError(test, err)
-// 		err = szEngine.Destroy(ctx)
-// 		require.NoError(test, err)
-// 		ramCheck(test, i)
-// 	}
-// }
-
-// func TestSzengine_Destroy_multipleEngines_good1(test *testing.T) {
-// 	ctx := context.TODO()
-// 	szEnginePrimer, err := getNewSzEngine(ctx)
-// 	require.NoError(test, err)
-// 	for i := 1; i <= 20; i++ {
-// 		szEngine, err := getNewSzEngine(ctx)
-// 		require.NoError(test, err)
-// 		err = szEngine.Destroy(ctx)
-// 		require.NoError(test, err)
-// 		ramCheck(test, i)
-// 	}
-// 	err = szEnginePrimer.Destroy(ctx)
-// 	require.NoError(test, err)
-// }
-
-// func TestSzengine_Destroy_multipleEngines_bad2(test *testing.T) {
-// 	ctx := context.TODO()
-// 	for i := 1; i <= 20; i++ {
-// 		szEngine, err := getNewSzEngine(ctx)
-// 		require.NoError(test, err)
-// 		err = szEngine.Destroy(ctx)
-// 		require.NoError(test, err)
-// 		ramCheck(test, i)
-// 	}
-// }
-
-// func TestSzengine_Destroy_multipleEngines_good2(test *testing.T) {
-// 	ctx := context.TODO()
-// 	szEnginePrimer, err := getNewSzEngine(ctx)
-// 	require.NoError(test, err)
-// 	for i := 1; i <= 20; i++ {
-// 		szEngine, err := getNewSzEngine(ctx)
-// 		require.NoError(test, err)
-// 		err = szEngine.Destroy(ctx)
-// 		require.NoError(test, err)
-// 		ramCheck(test, i)
-// 	}
-// 	err = szEnginePrimer.Destroy(ctx)
-// 	require.NoError(test, err)
-// }
-
 func TestSzengine_AddRecord(test *testing.T) {
 	ctx := context.TODO()
 	szEngine := getTestObject(ctx, test)
@@ -173,6 +121,19 @@ func TestSzengine_AddRecord(test *testing.T) {
 		require.NoError(test, err)
 		printActual(test, actual)
 	}
+}
+
+func TestG2engine_AddRecord_badDataSourceCodeInJSON(test *testing.T) {
+	ctx := context.TODO()
+	szEngine := getTestObject(ctx, test)
+	flags := senzing.SzWithoutInfo
+	record1 := truthset.CustomerRecords["1001"]
+	record2 := truthset.CustomerRecords["1002"]
+	record2Json := `{"DATA_SOURCE": "BOB", "RECORD_ID": "1002", "RECORD_TYPE": "PERSON", "PRIMARY_NAME_LAST": "Smith", "PRIMARY_NAME_FIRST": "Bob", "DATE_OF_BIRTH": "11/12/1978", "ADDR_TYPE": "HOME", "ADDR_LINE1": "1515 Adela Lane", "ADDR_CITY": "Las Vegas", "ADDR_STATE": "NV", "ADDR_POSTAL_CODE": "89111", "PHONE_TYPE": "MOBILE", "PHONE_NUMBER": "702-919-1300", "DATE": "3/10/17", "STATUS": "Inactive", "AMOUNT": "200"}`
+	_, err := szEngine.AddRecord(ctx, record1.DataSource, record1.ID, record1.JSON, flags)
+	require.NoError(test, err)
+	_, err = szEngine.AddRecord(ctx, record2.DataSource, record2.ID, record2Json, flags)
+	require.ErrorIs(test, err, szerror.ErrSzBadInput)
 }
 
 func TestSzengine_AddRecord_badDataSourceCode(test *testing.T) {
@@ -411,16 +372,6 @@ func TestSzengine_ExportCsvEntityReport(test *testing.T) {
 		require.NoError(test, err)
 	}()
 	require.NoError(test, err)
-
-	// for {
-	// 	csvEntityReportFragment, err := szEngine.FetchNext(ctx, exportHandle)
-	// 	require.NoError(test, err)
-	// 	if len(csvEntityReportFragment) == 0 {
-	// 		break
-	// 	}
-	// 	fmt.Printf(">>>>>>>> CSV fragment: %s\n", csvEntityReportFragment)
-	// }
-
 	actualCount := 0
 	for actual := range szEngine.ExportCsvEntityReportIterator(ctx, csvColumnList, flags) {
 		assert.Equal(test, expected[actualCount], strings.TrimSpace(actual.Value))
@@ -1840,8 +1791,6 @@ func TestSzengine_GetStats(test *testing.T) {
 	require.NoError(test, err)
 	printActual(test, actual)
 }
-
-// TODO: start here
 
 func TestSzengine_GetVirtualEntityByRecordID(test *testing.T) {
 	ctx := context.TODO()

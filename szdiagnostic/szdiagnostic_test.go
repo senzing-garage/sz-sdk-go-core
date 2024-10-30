@@ -360,6 +360,14 @@ func getSzDiagnostic(ctx context.Context) (*Szdiagnostic, error) {
 	return szDiagnosticSingleton, err
 }
 
+func getSzDiagnosticAsInterface(ctx context.Context) senzing.SzDiagnostic {
+	result, err := getSzDiagnostic(ctx)
+	if err != nil {
+		panic(err)
+	}
+	return result
+}
+
 func getSzEngine(ctx context.Context) (senzing.SzEngine, error) {
 	var err error
 	if szEngineSingleton == nil {
@@ -389,14 +397,6 @@ func getSzEngine(ctx context.Context) (senzing.SzEngine, error) {
 		}
 	}
 	return szEngineSingleton, err
-}
-
-func getSzDiagnosticAsInterface(ctx context.Context) senzing.SzDiagnostic {
-	result, err := getSzDiagnostic(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return result
 }
 
 func getTestDirectoryPath() string {

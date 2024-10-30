@@ -80,6 +80,9 @@ func main() {
 	err = demonstrateSenzingFunctions(ctx, szAbstractFactory)
 	failOnError(5007, err)
 
+	err = szAbstractFactory.Destroy(ctx)
+	failOnError(5008, err)
+
 	fmt.Printf("\n-------------------------------------------------------------------------------\n\n")
 }
 
@@ -111,11 +114,9 @@ func demonstrateConfigFunctions(ctx context.Context, szAbstractFactory senzing.S
 
 	szConfig, err := szAbstractFactory.CreateSzConfig(ctx)
 	failOnError(5101, err)
-	defer func() { handleError(szConfig.Destroy(ctx)) }()
 
 	szConfigManager, err := szAbstractFactory.CreateSzConfigManager(ctx)
 	failOnError(5102, err)
-	defer func() { handleError(szConfigManager.Destroy(ctx)) }()
 
 	// Using SzConfig: Create a default configuration in memory.
 
@@ -154,15 +155,12 @@ func demonstrateSenzingFunctions(ctx context.Context, szAbstractFactory senzing.
 
 	szDiagnostic, err := szAbstractFactory.CreateSzDiagnostic(ctx)
 	failOnError(5201, err)
-	defer func() { handleError(szDiagnostic.Destroy(ctx)) }()
 
 	szEngine, err := szAbstractFactory.CreateSzEngine(ctx)
 	failOnError(5202, err)
-	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	szProduct, err := szAbstractFactory.CreateSzProduct(ctx)
 	failOnError(5203, err)
-	defer func() { handleError(szProduct.Destroy(ctx)) }()
 
 	// Clean the repository.
 
@@ -246,12 +244,6 @@ func getSettings(databaseURL string) (string, error) {
 
 func getTestDirectoryPath() string {
 	return filepath.FromSlash("target/test/main")
-}
-
-func handleError(err error) {
-	if err != nil {
-		panic(err)
-	}
 }
 
 func setupDatabase() (string, error) {

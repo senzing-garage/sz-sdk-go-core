@@ -108,51 +108,6 @@ func ExampleSzdiagnostic_GetObserverOrigin() {
 }
 
 // ----------------------------------------------------------------------------
-// Object creation / destruction
-// ----------------------------------------------------------------------------
-
-func ExampleSzdiagnostic_Initialize() {
-	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
-	ctx := context.TODO()
-	szDiagnostic := &Szdiagnostic{}
-	instanceName := "Test name"
-	settings, err := getSettings()
-	if err != nil {
-		fmt.Println(err)
-	}
-	configID := senzing.SzInitializeWithDefaultConfiguration
-	verboseLogging := senzing.SzNoLogging
-	err = szDiagnostic.Initialize(ctx, instanceName, settings, configID, verboseLogging)
-	if err != nil {
-		fmt.Println(err)
-	}
-	// Output:
-}
-
-func ExampleSzdiagnostic_Reinitialize() {
-	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
-	ctx := context.TODO()
-	szDiagnostic := getSzDiagnosticExample(ctx)
-	configID := getDefaultConfigID()
-	err := szDiagnostic.Reinitialize(ctx, configID)
-	if err != nil {
-		fmt.Println(err)
-	}
-	// Output:
-}
-
-func ExampleSzdiagnostic_Destroy() {
-	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
-	ctx := context.TODO()
-	szDiagnostic := getSzDiagnosticExample(ctx)
-	err := szDiagnostic.Destroy(ctx)
-	if err != nil {
-		fmt.Println(err)
-	}
-	// Output:
-}
-
-// ----------------------------------------------------------------------------
 // Helper functions
 // ----------------------------------------------------------------------------
 

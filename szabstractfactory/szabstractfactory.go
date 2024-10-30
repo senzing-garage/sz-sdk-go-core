@@ -17,10 +17,15 @@ Szabstractfactory is an implementation of the [senzing.SzAbstractFactory] interf
 [senzing.SzAbstractFactory]: https://pkg.go.dev/github.com/senzing-garage/sz-sdk-go/senzing#SzAbstractFactory
 */
 type Szabstractfactory struct {
-	ConfigID       int64
-	InstanceName   string
-	Settings       string
-	VerboseLogging int64
+	ConfigID                     int64
+	InstanceName                 string
+	Settings                     string
+	VerboseLogging               int64
+	isSzconfigInitialized        bool
+	isSzconfigmanagerInitialized bool
+	isSzdiagnosticInitialized    bool
+	isSzengineInitialized        bool
+	isSzproductInitialized       bool
 }
 
 // ----------------------------------------------------------------------------
@@ -38,8 +43,14 @@ Output
   - An SzConfig object.
 */
 func (factory *Szabstractfactory) CreateSzConfig(ctx context.Context) (senzing.SzConfig, error) {
+	var err error
 	result := &szconfig.Szconfig{}
-	err := result.Initialize(ctx, factory.InstanceName, factory.Settings, factory.VerboseLogging)
+	if !factory.isSzconfigInitialized {
+		err = result.Initialize(ctx, factory.InstanceName, factory.Settings, factory.VerboseLogging)
+		if err == nil {
+			factory.isSzconfigInitialized = true
+		}
+	}
 	return result, err
 }
 
@@ -54,8 +65,14 @@ Output
   - An SzConfigManager object.
 */
 func (factory *Szabstractfactory) CreateSzConfigManager(ctx context.Context) (senzing.SzConfigManager, error) {
+	var err error
 	result := &szconfigmanager.Szconfigmanager{}
-	err := result.Initialize(ctx, factory.InstanceName, factory.Settings, factory.VerboseLogging)
+	if !factory.isSzconfigmanagerInitialized {
+		err = result.Initialize(ctx, factory.InstanceName, factory.Settings, factory.VerboseLogging)
+		if err == nil {
+			factory.isSzconfigmanagerInitialized = true
+		}
+	}
 	return result, err
 }
 
@@ -70,8 +87,14 @@ Output
   - An SzDiagnostic object.
 */
 func (factory *Szabstractfactory) CreateSzDiagnostic(ctx context.Context) (senzing.SzDiagnostic, error) {
+	var err error
 	result := &szdiagnostic.Szdiagnostic{}
-	err := result.Initialize(ctx, factory.InstanceName, factory.Settings, factory.ConfigID, factory.VerboseLogging)
+	if !factory.isSzdiagnosticInitialized {
+		err = result.Initialize(ctx, factory.InstanceName, factory.Settings, factory.ConfigID, factory.VerboseLogging)
+		if err == nil {
+			factory.isSzdiagnosticInitialized = true
+		}
+	}
 	return result, err
 }
 
@@ -86,8 +109,14 @@ Output
   - An SzEngine object.
 */
 func (factory *Szabstractfactory) CreateSzEngine(ctx context.Context) (senzing.SzEngine, error) {
+	var err error
 	result := &szengine.Szengine{}
-	err := result.Initialize(ctx, factory.InstanceName, factory.Settings, factory.ConfigID, factory.VerboseLogging)
+	if !factory.isSzengineInitialized {
+		err := result.Initialize(ctx, factory.InstanceName, factory.Settings, factory.ConfigID, factory.VerboseLogging)
+		if err == nil {
+			factory.isSzengineInitialized = true
+		}
+	}
 	return result, err
 }
 
@@ -102,7 +131,92 @@ Output
   - An SzProduct object.
 */
 func (factory *Szabstractfactory) CreateSzProduct(ctx context.Context) (senzing.SzProduct, error) {
+	var err error
 	result := &szproduct.Szproduct{}
-	err := result.Initialize(ctx, factory.InstanceName, factory.Settings, factory.VerboseLogging)
+	if !factory.isSzproductInitialized {
+		err = result.Initialize(ctx, factory.InstanceName, factory.Settings, factory.VerboseLogging)
+		if err == nil {
+			factory.isSzproductInitialized = true
+		}
+	}
 	return result, err
+}
+
+/*
+Method Destroy will destroy and perform cleanup for the Senzing objects created by the AbstractFactory.
+It should be called after all other calls are complete.
+
+Input
+  - ctx: A context to control lifecycle.
+*/
+func (factory *Szabstractfactory) Destroy(ctx context.Context) error {
+	var err error
+	if factory.isSzconfigInitialized {
+		szConfig := &szconfig.Szconfig{}
+		err = szConfig.Destroy(ctx)
+		if err != nil {
+			return err
+		}
+		factory.isSzconfigInitialized = false
+	}
+	if factory.isSzconfigmanagerInitialized {
+		szConfigmanager := &szconfigmanager.Szconfigmanager{}
+		err = szConfigmanager.Destroy(ctx)
+		if err != nil {
+			return err
+		}
+		factory.isSzconfigmanagerInitialized = false
+	}
+	if factory.isSzdiagnosticInitialized {
+		szDiagnostic := &szdiagnostic.Szdiagnostic{}
+		err = szDiagnostic.Destroy(ctx)
+		if err != nil {
+			return err
+		}
+		factory.isSzdiagnosticInitialized = false
+	}
+	if factory.isSzengineInitialized {
+		szEngine := &szengine.Szengine{}
+		err = szEngine.Destroy(ctx)
+		if err != nil {
+			return err
+		}
+		factory.isSzengineInitialized = false
+	}
+	if factory.isSzproductInitialized {
+		szProduct := &szproduct.Szproduct{}
+		err = szProduct.Destroy(ctx)
+		if err != nil {
+			return err
+		}
+		factory.isSzproductInitialized = false
+	}
+	return err
+}
+
+/*
+Method Reinitialize re-initializes the Senzing objects created by the AbstractFactory with a specific Senzing configuration JSON document identifier.
+
+Input
+  - ctx: A context to control lifecycle.
+  - configID: The Senzing configuration JSON document identifier used for the initialization.
+*/
+func (factory *Szabstractfactory) Reinitialize(ctx context.Context, configID int64) error {
+	var err error
+	factory.ConfigID = configID
+	if factory.isSzdiagnosticInitialized {
+		szDiagnostic := &szdiagnostic.Szdiagnostic{}
+		err = szDiagnostic.Reinitialize(ctx, configID)
+		if err != nil {
+			return err
+		}
+	}
+	if factory.isSzengineInitialized {
+		szEngine := &szengine.Szengine{}
+		err = szEngine.Reinitialize(ctx, configID)
+		if err != nil {
+			return err
+		}
+	}
+	return err
 }

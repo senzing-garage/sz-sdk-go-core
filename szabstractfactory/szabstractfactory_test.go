@@ -36,9 +36,9 @@ var (
 func TestSzAbstractFactory_CreateSzConfig(test *testing.T) {
 	ctx := context.TODO()
 	szAbstractFactory := getTestObject(ctx, test)
+	defer func() { handleError(szAbstractFactory.Destroy(ctx)) }()
 	szConfig, err := szAbstractFactory.CreateSzConfig(ctx)
 	require.NoError(test, err)
-	defer func() { handleError(szConfig.Destroy(ctx)) }()
 	configHandle, err := szConfig.CreateConfig(ctx)
 	require.NoError(test, err)
 	dataSources, err := szConfig.GetDataSources(ctx, configHandle)
@@ -49,9 +49,9 @@ func TestSzAbstractFactory_CreateSzConfig(test *testing.T) {
 func TestSzAbstractFactory_CreateSzConfigManager(test *testing.T) {
 	ctx := context.TODO()
 	szAbstractFactory := getTestObject(ctx, test)
+	defer func() { handleError(szAbstractFactory.Destroy(ctx)) }()
 	szConfigManager, err := szAbstractFactory.CreateSzConfigManager(ctx)
 	require.NoError(test, err)
-	defer func() { handleError(szConfigManager.Destroy(ctx)) }()
 	configList, err := szConfigManager.GetConfigs(ctx)
 	require.NoError(test, err)
 	printActual(test, configList)
@@ -60,9 +60,9 @@ func TestSzAbstractFactory_CreateSzConfigManager(test *testing.T) {
 func TestSzAbstractFactory_CreateSzDiagnostic(test *testing.T) {
 	ctx := context.TODO()
 	szAbstractFactory := getTestObject(ctx, test)
+	defer func() { handleError(szAbstractFactory.Destroy(ctx)) }()
 	szDiagnostic, err := szAbstractFactory.CreateSzDiagnostic(ctx)
 	require.NoError(test, err)
-	defer func() { handleError(szDiagnostic.Destroy(ctx)) }()
 	result, err := szDiagnostic.CheckDatastorePerformance(ctx, 1)
 	require.NoError(test, err)
 	printActual(test, result)
@@ -71,9 +71,9 @@ func TestSzAbstractFactory_CreateSzDiagnostic(test *testing.T) {
 func TestSzAbstractFactory_CreateSzEngine(test *testing.T) {
 	ctx := context.TODO()
 	szAbstractFactory := getTestObject(ctx, test)
+	defer func() { handleError(szAbstractFactory.Destroy(ctx)) }()
 	szEngine, err := szAbstractFactory.CreateSzEngine(ctx)
 	require.NoError(test, err)
-	defer func() { handleError(szEngine.Destroy(ctx)) }()
 	stats, err := szEngine.GetStats(ctx)
 	require.NoError(test, err)
 	printActual(test, stats)
@@ -82,12 +82,34 @@ func TestSzAbstractFactory_CreateSzEngine(test *testing.T) {
 func TestSzAbstractFactory_CreateSzProduct(test *testing.T) {
 	ctx := context.TODO()
 	szAbstractFactory := getTestObject(ctx, test)
+	defer func() { handleError(szAbstractFactory.Destroy(ctx)) }()
 	szProduct, err := szAbstractFactory.CreateSzProduct(ctx)
 	require.NoError(test, err)
-	defer func() { handleError(szProduct.Destroy(ctx)) }()
 	version, err := szProduct.GetVersion(ctx)
 	require.NoError(test, err)
 	printActual(test, version)
+}
+
+func TestSzAbstractFactory_Destroy(test *testing.T) {
+	ctx := context.TODO()
+	szAbstractFactory := getTestObject(ctx, test)
+	defer func() { handleError(szAbstractFactory.Destroy(ctx)) }()
+}
+
+func TestSzAbstractFactory_Reinitialize(test *testing.T) {
+	ctx := context.TODO()
+	szAbstractFactory := getTestObject(ctx, test)
+	defer func() { handleError(szAbstractFactory.Destroy(ctx)) }()
+	_, err := szAbstractFactory.CreateSzDiagnostic(ctx)
+	require.NoError(test, err)
+	_, err = szAbstractFactory.CreateSzEngine(ctx)
+	require.NoError(test, err)
+	szConfigManager, err := szAbstractFactory.CreateSzConfigManager(ctx)
+	require.NoError(test, err)
+	configID, err := szConfigManager.GetDefaultConfigID(ctx)
+	require.NoError(test, err)
+	err = szAbstractFactory.Reinitialize(ctx, configID)
+	require.NoError(test, err)
 }
 
 // ----------------------------------------------------------------------------

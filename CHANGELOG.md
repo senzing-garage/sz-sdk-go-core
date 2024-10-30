@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning].
 
 -
 
-## [0.8.4] - 2024-10-28
+## [0.8.4] - 2024-10-30
 
 ### Changed in 0.8.4
 
