@@ -357,13 +357,13 @@ func TestSzengine_ExportCsvEntityReport(test *testing.T) {
 	defer func() { handleError(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	expected := []string{
-		`RESOLVED_ENTITY_ID,RELATED_ENTITY_ID,MATCH_LEVEL_CODE,MATCH_KEY,DATA_SOURCE,RECORD_ID`,
-		`3,0,"","","CUSTOMERS","1001"`,
-		`3,0,"RESOLVED","+NAME+DOB+PHONE","CUSTOMERS","1002"`,
-		`3,0,"RESOLVED","+NAME+DOB+EMAIL","CUSTOMERS","1003"`,
-	}
-	expected = []string{} // TODO: Remove
+	// expected := []string{
+	// 	`RESOLVED_ENTITY_ID,RELATED_ENTITY_ID,MATCH_LEVEL_CODE,MATCH_KEY,DATA_SOURCE,RECORD_ID`,
+	// 	`3,0,"","","CUSTOMERS","1001"`,
+	// 	`3,0,"RESOLVED","+NAME+DOB+PHONE","CUSTOMERS","1002"`,
+	// 	`3,0,"RESOLVED","+NAME+DOB+EMAIL","CUSTOMERS","1003"`,
+	// }
+	expected := []string{} // TODO: Remove
 	szEngine := getTestObject(ctx, test)
 	csvColumnList := ""
 	flags := senzing.SzExportIncludeAllEntities
@@ -427,13 +427,13 @@ func TestSzengine_ExportCsvEntityReportIterator(test *testing.T) {
 	defer func() { handleError(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	expected := []string{
-		`RESOLVED_ENTITY_ID,RELATED_ENTITY_ID,MATCH_LEVEL_CODE,MATCH_KEY,DATA_SOURCE,RECORD_ID`,
-		`13,0,"","","CUSTOMERS","1001"`,
-		`13,0,"RESOLVED","+NAME+DOB+PHONE","CUSTOMERS","1002"`,
-		`13,0,"RESOLVED","+NAME+DOB+EMAIL","CUSTOMERS","1003"`,
-	}
-	expected = []string{} // TODO: Remove
+	// expected := []string{
+	// 	`RESOLVED_ENTITY_ID,RELATED_ENTITY_ID,MATCH_LEVEL_CODE,MATCH_KEY,DATA_SOURCE,RECORD_ID`,
+	// 	`13,0,"","","CUSTOMERS","1001"`,
+	// 	`13,0,"RESOLVED","+NAME+DOB+PHONE","CUSTOMERS","1002"`,
+	// 	`13,0,"RESOLVED","+NAME+DOB+EMAIL","CUSTOMERS","1003"`,
+	// }
+	expected := []string{} // TODO: Remove
 	szEngine := getTestObject(ctx, test)
 	csvColumnList := ""
 	flags := senzing.SzExportIncludeAllEntities
@@ -480,13 +480,13 @@ func TestSzengine_ExportCsvEntityReportIterator_nilCsvColumnList(test *testing.T
 	defer func() { handleError(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	expected := []string{
-		`RESOLVED_ENTITY_ID,RELATED_ENTITY_ID,MATCH_LEVEL_CODE,MATCH_KEY,DATA_SOURCE,RECORD_ID`,
-		`19,0,"","","CUSTOMERS","1001"`,
-		`19,0,"RESOLVED","+NAME+DOB+PHONE","CUSTOMERS","1002"`,
-		`19,0,"RESOLVED","+NAME+DOB+EMAIL","CUSTOMERS","1003"`,
-	}
-	expected = []string{} // TODO: Remove
+	// expected := []string{
+	// 	`RESOLVED_ENTITY_ID,RELATED_ENTITY_ID,MATCH_LEVEL_CODE,MATCH_KEY,DATA_SOURCE,RECORD_ID`,
+	// 	`19,0,"","","CUSTOMERS","1001"`,
+	// 	`19,0,"RESOLVED","+NAME+DOB+PHONE","CUSTOMERS","1002"`,
+	// 	`19,0,"RESOLVED","+NAME+DOB+EMAIL","CUSTOMERS","1003"`,
+	// }
+	expected := []string{} // TODO: Remove
 	szEngine := getTestObject(ctx, test)
 	flags := senzing.SzExportIncludeAllEntities
 	actualCount := 0
