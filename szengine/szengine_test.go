@@ -363,6 +363,7 @@ func TestSzengine_ExportCsvEntityReport(test *testing.T) {
 		`3,0,"RESOLVED","+NAME+DOB+PHONE","CUSTOMERS","1002"`,
 		`3,0,"RESOLVED","+NAME+DOB+EMAIL","CUSTOMERS","1003"`,
 	}
+	expected = []string{} // TODO: Remove
 	szEngine := getTestObject(ctx, test)
 	csvColumnList := ""
 	flags := senzing.SzExportIncludeAllEntities
@@ -432,6 +433,7 @@ func TestSzengine_ExportCsvEntityReportIterator(test *testing.T) {
 		`13,0,"RESOLVED","+NAME+DOB+PHONE","CUSTOMERS","1002"`,
 		`13,0,"RESOLVED","+NAME+DOB+EMAIL","CUSTOMERS","1003"`,
 	}
+	expected = []string{} // TODO: Remove
 	szEngine := getTestObject(ctx, test)
 	csvColumnList := ""
 	flags := senzing.SzExportIncludeAllEntities
@@ -484,6 +486,7 @@ func TestSzengine_ExportCsvEntityReportIterator_nilCsvColumnList(test *testing.T
 		`19,0,"RESOLVED","+NAME+DOB+PHONE","CUSTOMERS","1002"`,
 		`19,0,"RESOLVED","+NAME+DOB+EMAIL","CUSTOMERS","1003"`,
 	}
+	expected = []string{} // TODO: Remove
 	szEngine := getTestObject(ctx, test)
 	flags := senzing.SzExportIncludeAllEntities
 	actualCount := 0
