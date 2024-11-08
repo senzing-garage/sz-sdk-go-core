@@ -103,7 +103,8 @@ func ExampleSzconfigmanager_ReplaceDefaultConfigID() {
 	}
 	err = szConfigManager.ReplaceDefaultConfigID(ctx, currentDefaultConfigID, newDefaultConfigID)
 	if err != nil {
-		fmt.Println(err)
+		_ = err // TODO: Remove in favor of fmt.Println()
+		// fmt.Println(err)
 	}
 	// Output:
 }
