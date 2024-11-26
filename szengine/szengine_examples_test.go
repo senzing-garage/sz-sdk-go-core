@@ -481,7 +481,7 @@ func ExampleSzengine_GetRedoRecord() {
 		fmt.Println(err)
 	}
 	fmt.Println(result)
-	// Output: {"REASON":"deferred delete","DATA_SOURCE":"CUSTOMERS","RECORD_ID":"1003","DSRC_ACTION":"X"}
+	// Output: {"REASON":"deferred delete","DATA_SOURCE":"CUSTOMERS","RECORD_ID":"1003","REEVAL_ITERATION":1,"DSRC_ACTION":"X"}
 }
 
 func ExampleSzengine_GetStats() {
