@@ -33,7 +33,7 @@ type Szabstractfactory struct {
 // ----------------------------------------------------------------------------
 
 /*
-Method CreateSzConfig returns an SzConfig object
+Method CreateConfig returns an SzConfig object
 implemented to use the Senzing native C binary, libSz.so.
 
 Input
@@ -42,7 +42,7 @@ Input
 Output
   - An SzConfig object.
 */
-func (factory *Szabstractfactory) CreateSzConfig(ctx context.Context) (senzing.SzConfig, error) {
+func (factory *Szabstractfactory) CreateConfig(ctx context.Context) (senzing.SzConfig, error) {
 	var err error
 	result := &szconfig.Szconfig{}
 	if !factory.isSzconfigInitialized {
@@ -55,7 +55,7 @@ func (factory *Szabstractfactory) CreateSzConfig(ctx context.Context) (senzing.S
 }
 
 /*
-Method CreateSzConfigManager returns an SzConfigManager object
+Method CreateConfigManager returns an SzConfigManager object
 implemented to use the Senzing native C binary, libSz.so.
 
 Input
@@ -64,7 +64,7 @@ Input
 Output
   - An SzConfigManager object.
 */
-func (factory *Szabstractfactory) CreateSzConfigManager(ctx context.Context) (senzing.SzConfigManager, error) {
+func (factory *Szabstractfactory) CreateConfigManager(ctx context.Context) (senzing.SzConfigManager, error) {
 	var err error
 	result := &szconfigmanager.Szconfigmanager{}
 	if !factory.isSzconfigmanagerInitialized {
@@ -77,7 +77,7 @@ func (factory *Szabstractfactory) CreateSzConfigManager(ctx context.Context) (se
 }
 
 /*
-Method CreateSzDiagnostic returns an SzDiagnostic object
+Method CreateDiagnostic returns an SzDiagnostic object
 implemented to use the Senzing native C binary, libSz.so.
 
 Input
@@ -86,7 +86,7 @@ Input
 Output
   - An SzDiagnostic object.
 */
-func (factory *Szabstractfactory) CreateSzDiagnostic(ctx context.Context) (senzing.SzDiagnostic, error) {
+func (factory *Szabstractfactory) CreateDiagnostic(ctx context.Context) (senzing.SzDiagnostic, error) {
 	var err error
 	result := &szdiagnostic.Szdiagnostic{}
 	if !factory.isSzdiagnosticInitialized {
@@ -99,7 +99,7 @@ func (factory *Szabstractfactory) CreateSzDiagnostic(ctx context.Context) (senzi
 }
 
 /*
-Method CreateSzEngine returns an SzEngine object
+Method CreateEngine returns an SzEngine object
 implemented to use the Senzing native C binary, libSz.so.
 
 Input
@@ -108,7 +108,7 @@ Input
 Output
   - An SzEngine object.
 */
-func (factory *Szabstractfactory) CreateSzEngine(ctx context.Context) (senzing.SzEngine, error) {
+func (factory *Szabstractfactory) CreateEngine(ctx context.Context) (senzing.SzEngine, error) {
 	var err error
 	result := &szengine.Szengine{}
 	if !factory.isSzengineInitialized {
@@ -121,7 +121,7 @@ func (factory *Szabstractfactory) CreateSzEngine(ctx context.Context) (senzing.S
 }
 
 /*
-Method CreateSzProduct returns an SzProduct object
+Method CreateProduct returns an SzProduct object
 implemented to use the Senzing native C binary, libSz.so.
 
 Input
@@ -130,7 +130,7 @@ Input
 Output
   - An SzProduct object.
 */
-func (factory *Szabstractfactory) CreateSzProduct(ctx context.Context) (senzing.SzProduct, error) {
+func (factory *Szabstractfactory) CreateProduct(ctx context.Context) (senzing.SzProduct, error) {
 	var err error
 	result := &szproduct.Szproduct{}
 	if !factory.isSzproductInitialized {

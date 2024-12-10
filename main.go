@@ -112,10 +112,10 @@ func demonstrateConfigFunctions(ctx context.Context, szAbstractFactory senzing.S
 
 	// Create Senzing objects.
 
-	szConfig, err := szAbstractFactory.CreateSzConfig(ctx)
+	szConfig, err := szAbstractFactory.CreateConfig(ctx)
 	failOnError(5101, err)
 
-	szConfigManager, err := szAbstractFactory.CreateSzConfigManager(ctx)
+	szConfigManager, err := szAbstractFactory.CreateConfigManager(ctx)
 	failOnError(5102, err)
 
 	// Using SzConfig: Create a default configuration in memory.
@@ -153,13 +153,13 @@ func demonstrateSenzingFunctions(ctx context.Context, szAbstractFactory senzing.
 
 	// Create Senzing objects.
 
-	szDiagnostic, err := szAbstractFactory.CreateSzDiagnostic(ctx)
+	szDiagnostic, err := szAbstractFactory.CreateDiagnostic(ctx)
 	failOnError(5201, err)
 
-	szEngine, err := szAbstractFactory.CreateSzEngine(ctx)
+	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	failOnError(5202, err)
 
-	szProduct, err := szAbstractFactory.CreateSzProduct(ctx)
+	szProduct, err := szAbstractFactory.CreateProduct(ctx)
 	failOnError(5203, err)
 
 	// Clean the repository.
