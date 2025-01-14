@@ -24,7 +24,7 @@ jobs:
           fetch-depth: 0
 
       - name: Install Senzing SDK
-        uses: senzing-factory/github-action-install-senzing-sdk@v1
+        uses: senzing-factory/github-action-install-senzing-sdk@v2
         with:
           senzingsdk-version: staging-v4
 
