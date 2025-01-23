@@ -53,6 +53,7 @@ const (
 	baseTen              = 10
 	initialByteArraySize = 65535
 	noError              = 0
+	withoutInfo          = ""
 )
 
 // ----------------------------------------------------------------------------
@@ -1501,7 +1502,7 @@ func (client *Szengine) addRecord(ctx context.Context, dataSourceCode string, re
 	if result != noError {
 		err = client.newError(ctx, 4001, dataSourceCode, recordID, recordDefinition, result)
 	}
-	return "{}", err
+	return withoutInfo, err
 }
 
 /*
@@ -1580,7 +1581,7 @@ func (client *Szengine) deleteRecord(ctx context.Context, dataSourceCode string,
 	if result != noError {
 		err = client.newError(ctx, 4004, dataSourceCode, recordID, result)
 	}
-	return "{}", err
+	return withoutInfo, err
 }
 
 /*
@@ -2200,7 +2201,7 @@ func (client *Szengine) processRedoRecord(ctx context.Context, redoRecord string
 	if result != noError {
 		err = client.newError(ctx, 4044, redoRecord, result)
 	}
-	return "{}", err
+	return withoutInfo, err
 }
 
 /*
@@ -2247,7 +2248,7 @@ func (client *Szengine) reevaluateEntity(ctx context.Context, entityID int64, fl
 	if result != noError {
 		err = client.newError(ctx, 4046, entityID, flags, result)
 	}
-	return "{}", err
+	return withoutInfo, err
 }
 
 /*
@@ -2299,7 +2300,7 @@ func (client *Szengine) reevaluateRecord(ctx context.Context, dataSourceCode str
 	if result != noError {
 		err = client.newError(ctx, 4048, dataSourceCode, recordID, flags, result)
 	}
-	return "{}", err
+	return withoutInfo, err
 }
 
 /*
