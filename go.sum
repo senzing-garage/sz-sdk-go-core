@@ -15,8 +15,8 @@ github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 h1:Jamvg5psRI
 github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/rogpeppe/go-internal v1.10.0 h1:TMyTOH3F/DB16zRVcYyreMH6GnZZrwQVAoYjRBZyWFQ=
 github.com/rogpeppe/go-internal v1.10.0/go.mod h1:UQnix2H7Ngw/k4C5ijL5+65zddjncjaFoBhdsK/akog=
-github.com/senzing-garage/go-helpers v0.6.3 h1:iZ0cPGgGkRfuh+DGlcVQeKLnCRgW92qaHDXZnw1xgs4=
-github.com/senzing-garage/go-helpers v0.6.3/go.mod h1:YerS7RDFiZMc/2kp9RpAPO8HrsPVy+kMQ2wyGjiAn6U=
+github.com/senzing-garage/go-helpers v0.6.4 h1:dIloW8l7JyCmHEK2xZ+6fmRo07h8Uni+bKmQApDFsgg=
+github.com/senzing-garage/go-helpers v0.6.4/go.mod h1:SWMj1ri67PO4hYzD1NxIEIlfYGviGlv4iIp3CPQ1Bpk=
 github.com/senzing-garage/go-logging v1.5.1 h1:3nqw75gN5x+6PQRop34/49+3kag1aE9dlFne7pILQAg=
 github.com/senzing-garage/go-logging v1.5.1/go.mod h1:ki4sQ46iI1Kjl1kkknYFQC2DY+zJj6Pod61wohGUs4E=
 github.com/senzing-garage/go-messaging v1.5.2 h1:lU9W2HV3zKQsDU9Vs7lwe/C/LbHVCMng9kQOL/r8pOI=
@@ -27,8 +27,8 @@ github.com/senzing-garage/sz-sdk-go v0.14.4 h1:sw4GokZhuIvkoBf/QYyjolD/Uz5IxCQ+P
 github.com/senzing-garage/sz-sdk-go v0.14.4/go.mod h1:4VXZYdA6Fg4GkTFsd2HsPxxd3dMRadLD4An4BbhcvWk=
 github.com/stretchr/testify v1.10.0 h1:Xv5erBjTwe/5IxqUQTdXv5kgmIvbHo3QQyRwhJsOfJA=
 github.com/stretchr/testify v1.10.0/go.mod h1:r2ic/lqez/lEtzL7wO/rwa5dbSLXVDPFyf8C91i36aY=
-golang.org/x/exp v0.0.0-20241210194714-1829a127f884 h1:Y/Mj/94zIQQGHVSv1tTtQBDaQaJe62U9bkDZKKyhPCU=
-golang.org/x/exp v0.0.0-20241210194714-1829a127f884/go.mod h1:qj5a5QZpwLU2NLQudwIN5koi3beDhSAlJwa67PuM98c=
+golang.org/x/exp v0.0.0-20250106191152-7588d65b2ba8 h1:yqrTHse8TCMW1M1ZCP+VAR/l0kKxwaAIqN/il7x4voA=
+golang.org/x/exp v0.0.0-20250106191152-7588d65b2ba8/go.mod h1:tujkw807nyEEAamNbDrEGzRav+ilXA7PCRAd6xsmwiU=
 golang.org/x/net v0.33.0 h1:74SYHlV8BIgHIFC/LrYkOGIwL19eTYXQ5wc6TBuO36I=
 golang.org/x/net v0.33.0/go.mod h1:HXLR5J+9DxmrqMwG9qjGCxZ+zKXxBru04zlTvWlWuN4=
 golang.org/x/sys v0.28.0 h1:Fksou7UEQUWlKvIdsqzJmUmCX3cZuD2+P3XyyzwMhlA=
