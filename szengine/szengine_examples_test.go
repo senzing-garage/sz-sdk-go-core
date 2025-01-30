@@ -667,6 +667,7 @@ func ExampleSzengine_PreprocessRecord() {
 	if err != nil {
 		handleError(err)
 	}
+
 	fmt.Println(result)
 	// Output: {}
 }
