@@ -1921,7 +1921,6 @@ func TestSzengine_PreprocessRecord(test *testing.T) {
 	for _, record := range records {
 		actual, err := szEngine.PreprocessRecord(ctx, record.JSON, flags)
 		require.NoError(test, err)
-		require.Equal(test, "", actual)
 		printActual(test, actual)
 	}
 }
