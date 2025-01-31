@@ -1913,7 +1913,7 @@ func TestSzengine_HowEntityByEntityID_nilEntityID(test *testing.T) {
 func TestSzengine_PreprocessRecord(test *testing.T) {
 	ctx := context.TODO()
 	szEngine := getTestObject(ctx, test)
-	flags := senzing.SzWithoutInfo
+	flags := senzing.SzNoFlags
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -1928,7 +1928,7 @@ func TestSzengine_PreprocessRecord(test *testing.T) {
 func TestSzengine_PreprocessRecord_badRecordDefinition(test *testing.T) {
 	ctx := context.TODO()
 	szEngine := getTestObject(ctx, test)
-	flags := senzing.SzWithoutInfo
+	flags := senzing.SzNoFlags
 	actual, err := szEngine.PreprocessRecord(ctx, badRecordDefinition, flags)
 	require.ErrorIs(test, err, szerror.ErrSzBadInput)
 	require.Equal(test, "", actual)
@@ -1948,7 +1948,7 @@ func TestSzengine_ProcessRedoRecord(test *testing.T) {
 	redoRecord, err := szEngine.GetRedoRecord(ctx)
 	require.NoError(test, err)
 	if len(redoRecord) > 0 {
-		flags := senzing.SzWithoutInfo
+		flags := senzing.SzNoFlags
 		actual, err := szEngine.ProcessRedoRecord(ctx, redoRecord, flags)
 		require.NoError(test, err)
 		require.Equal(test, "", actual)
@@ -1959,7 +1959,7 @@ func TestSzengine_ProcessRedoRecord(test *testing.T) {
 func TestSzengine_ProcessRedoRecord_badRedoRecord(test *testing.T) {
 	ctx := context.TODO()
 	szEngine := getTestObject(ctx, test)
-	flags := senzing.SzWithoutInfo
+	flags := senzing.SzNoFlags
 	actual, err := szEngine.ProcessRedoRecord(ctx, badRedoRecord, flags)
 	require.ErrorIs(test, err, szerror.ErrSzConfiguration)
 	require.Equal(test, "", actual)
@@ -1969,7 +1969,7 @@ func TestSzengine_ProcessRedoRecord_badRedoRecord(test *testing.T) {
 func TestSzengine_ProcessRedoRecord_nilRedoRecord(test *testing.T) {
 	ctx := context.TODO()
 	szEngine := getTestObject(ctx, test)
-	flags := senzing.SzWithoutInfo
+	flags := senzing.SzNoFlags
 	actual, err := szEngine.ProcessRedoRecord(ctx, nilRedoRecord, flags)
 	require.ErrorIs(test, err, szerror.ErrSzBadInput)
 	require.Equal(test, "", actual)
