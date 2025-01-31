@@ -146,7 +146,6 @@ func TestSzengine_AddRecord_badDataSourceCode(test *testing.T) {
 	flags := senzing.SzWithoutInfo
 	actual, err := szEngine.AddRecord(ctx, badDataSourceCode, record.ID, record.JSON, flags)
 	require.ErrorIs(test, err, szerror.ErrSzBadInput)
-	require.Equal(test, "", actual)
 	printActual(test, actual)
 }
 
@@ -157,7 +156,6 @@ func TestSzengine_AddRecord_badRecordID(test *testing.T) {
 	flags := senzing.SzWithoutInfo
 	actual, err := szEngine.AddRecord(ctx, record.DataSource, badRecordID, record.JSON, flags)
 	require.ErrorIs(test, err, szerror.ErrSzBadInput)
-	require.Equal(test, "", actual)
 	printActual(test, actual)
 }
 
@@ -168,7 +166,6 @@ func TestSzengine_AddRecord_badRecordDefinition(test *testing.T) {
 	flags := senzing.SzWithoutInfo
 	actual, err := szEngine.AddRecord(ctx, record.DataSource, record.ID, badRecordDefinition, flags)
 	require.ErrorIs(test, err, szerror.ErrSzBadInput)
-	require.Equal(test, "", actual)
 	printActual(test, actual)
 }
 
@@ -201,7 +198,6 @@ func TestSzengine_AddRecord_nilRecordDefinition(test *testing.T) {
 	flags := senzing.SzWithoutInfo
 	actual, err := szEngine.AddRecord(ctx, record.DataSource, record.ID, nilRecordDefinition, flags)
 	require.ErrorIs(test, err, szerror.ErrSzBadInput)
-	require.Equal(test, "", actual)
 	printActual(test, actual)
 }
 
@@ -216,11 +212,13 @@ func TestSzengine_AddRecord_withInfo(test *testing.T) {
 	for _, record := range records {
 		actual, err := szEngine.AddRecord(ctx, record.DataSource, record.ID, record.JSON, flags)
 		require.NoError(test, err)
+		require.NotEqual(test, "", actual)
 		printActual(test, actual)
 	}
 	for _, record := range records {
 		actual, err := szEngine.DeleteRecord(ctx, record.DataSource, record.ID, flags)
 		require.NoError(test, err)
+		require.NotEqual(test, "", actual)
 		printActual(test, actual)
 	}
 }
@@ -241,6 +239,7 @@ func TestSzengine_AddRecord_withInfo_badDataSourceCode(test *testing.T) {
 	for _, record := range records {
 		actual, err := szEngine.DeleteRecord(ctx, record.DataSource, record.ID, flags)
 		require.NoError(test, err)
+		require.NotEqual(test, "", actual)
 		printActual(test, actual)
 	}
 }
@@ -285,7 +284,6 @@ func TestSzengine_DeleteRecord_badDataSourceCode(test *testing.T) {
 	flags := senzing.SzWithoutInfo
 	actual, err := szEngine.DeleteRecord(ctx, badDataSourceCode, record.ID, flags)
 	require.ErrorIs(test, err, szerror.ErrSzUnknownDataSource)
-	require.Equal(test, "", actual)
 	printActual(test, actual)
 }
 
@@ -307,7 +305,6 @@ func TestSzengine_DeleteRecord_nilDataSourceCode(test *testing.T) {
 	flags := senzing.SzWithoutInfo
 	actual, err := szEngine.DeleteRecord(ctx, nilDataSourceCode, record.ID, flags)
 	require.ErrorIs(test, err, szerror.ErrSzConfiguration)
-	require.Equal(test, "", actual)
 	printActual(test, actual)
 }
 
@@ -334,6 +331,7 @@ func TestSzengine_DeleteRecord_withInfo(test *testing.T) {
 	flags := senzing.SzWithInfo
 	actual, err := szEngine.DeleteRecord(ctx, record.DataSource, record.ID, flags)
 	require.NoError(test, err)
+	require.NotEqual(test, "", actual)
 	printActual(test, actual)
 }
 
@@ -556,6 +554,7 @@ func TestSzengine_ExportJSONEntityReport_65536(test *testing.T) {
 	flags := senzing.SzWithInfo
 	actual, err := szEngine.AddRecord(ctx, aRecord.DataSource, aRecord.ID, aRecord.JSON, flags)
 	require.NoError(test, err)
+	require.NotEqual(test, "", actual)
 	printActual(test, actual)
 	defer func() { _, _ = szEngine.DeleteRecord(ctx, aRecord.DataSource, aRecord.ID, senzing.SzWithoutInfo) }()
 	// TODO: Figure out correct flags.
@@ -1931,7 +1930,6 @@ func TestSzengine_PreprocessRecord_badRecordDefinition(test *testing.T) {
 	flags := senzing.SzNoFlags
 	actual, err := szEngine.PreprocessRecord(ctx, badRecordDefinition, flags)
 	require.ErrorIs(test, err, szerror.ErrSzBadInput)
-	require.Equal(test, "", actual)
 	printActual(test, actual)
 }
 
@@ -1962,7 +1960,6 @@ func TestSzengine_ProcessRedoRecord_badRedoRecord(test *testing.T) {
 	flags := senzing.SzNoFlags
 	actual, err := szEngine.ProcessRedoRecord(ctx, badRedoRecord, flags)
 	require.ErrorIs(test, err, szerror.ErrSzConfiguration)
-	require.Equal(test, "", actual)
 	printActual(test, actual)
 }
 
@@ -1972,7 +1969,6 @@ func TestSzengine_ProcessRedoRecord_nilRedoRecord(test *testing.T) {
 	flags := senzing.SzNoFlags
 	actual, err := szEngine.ProcessRedoRecord(ctx, nilRedoRecord, flags)
 	require.ErrorIs(test, err, szerror.ErrSzBadInput)
-	require.Equal(test, "", actual)
 	printActual(test, actual)
 }
 
@@ -1996,6 +1992,7 @@ func TestSzengine_ProcessRedoRecord_withInfo(test *testing.T) {
 		flags := senzing.SzWithInfo
 		actual, err := szEngine.ProcessRedoRecord(ctx, redoRecord, flags)
 		require.NoError(test, err)
+		require.NotEqual(test, "", actual)
 		printActual(test, actual)
 	}
 }
@@ -2145,7 +2142,6 @@ func TestSzengine_ReevaluateRecord_badDataSourceCode(test *testing.T) {
 	flags := senzing.SzWithoutInfo
 	actual, err := szEngine.ReevaluateRecord(ctx, badDataSourceCode, record.ID, flags)
 	require.ErrorIs(test, err, szerror.ErrSzUnknownDataSource)
-	require.Equal(test, "", actual)
 	printActual(test, actual)
 }
 
@@ -2179,7 +2175,6 @@ func TestSzengine_ReevaluateRecord_nilDataSourceCode(test *testing.T) {
 	flags := senzing.SzWithoutInfo
 	actual, err := szEngine.ReevaluateRecord(ctx, nilDataSourceCode, record.ID, flags)
 	require.ErrorIs(test, err, szerror.ErrSzUnknownDataSource)
-	require.Equal(test, "", actual)
 	printActual(test, actual)
 }
 

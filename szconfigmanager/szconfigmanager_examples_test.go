@@ -117,7 +117,6 @@ func ExampleSzconfigmanager_ReplaceDefaultConfigID() {
 	if err != nil {
 		handleError(err)
 	}
-
 	currentDefaultConfigID, err := szConfigManager.GetDefaultConfigID(ctx)
 	if err != nil {
 		handleError(err)
