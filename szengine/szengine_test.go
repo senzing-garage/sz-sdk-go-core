@@ -1946,7 +1946,7 @@ func TestSzengine_ProcessRedoRecord(test *testing.T) {
 	redoRecord, err := szEngine.GetRedoRecord(ctx)
 	require.NoError(test, err)
 	if len(redoRecord) > 0 {
-		flags := senzing.SzNoFlags
+		flags := senzing.SzWithoutInfo
 		actual, err := szEngine.ProcessRedoRecord(ctx, redoRecord, flags)
 		require.NoError(test, err)
 		require.Equal(test, "", actual)
@@ -1957,7 +1957,7 @@ func TestSzengine_ProcessRedoRecord(test *testing.T) {
 func TestSzengine_ProcessRedoRecord_badRedoRecord(test *testing.T) {
 	ctx := context.TODO()
 	szEngine := getTestObject(ctx, test)
-	flags := senzing.SzNoFlags
+	flags := senzing.SzWithoutInfo
 	actual, err := szEngine.ProcessRedoRecord(ctx, badRedoRecord, flags)
 	require.ErrorIs(test, err, szerror.ErrSzConfiguration)
 	printActual(test, actual)
@@ -1966,7 +1966,7 @@ func TestSzengine_ProcessRedoRecord_badRedoRecord(test *testing.T) {
 func TestSzengine_ProcessRedoRecord_nilRedoRecord(test *testing.T) {
 	ctx := context.TODO()
 	szEngine := getTestObject(ctx, test)
-	flags := senzing.SzNoFlags
+	flags := senzing.SzWithoutInfo
 	actual, err := szEngine.ProcessRedoRecord(ctx, nilRedoRecord, flags)
 	require.ErrorIs(test, err, szerror.ErrSzBadInput)
 	printActual(test, actual)
