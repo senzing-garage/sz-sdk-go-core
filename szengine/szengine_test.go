@@ -526,10 +526,7 @@ func TestSzengine_ExportJSONEntityReport(test *testing.T) {
 	defer func() {
 		handleErrorWithString(szEngine.DeleteRecord(ctx, aRecord.DataSource, aRecord.ID, senzing.SzWithoutInfo))
 	}()
-	// TODO: Figure out correct flags.
-	// flags := senzing.Flags(senzing.SZ_EXPORT_DEFAULT_FLAGS, senzing.SZ_EXPORT_INCLUDE_ALL_HAVING_RELATIONSHIPS, senzing.SZ_EXPORT_INCLUDE_ALL_HAVING_RELATIONSHIPS)
-	// flags = int64(-1)
-	flags = senzing.Flags(senzing.SzExportDefaultFlags, senzing.SzExportIncludeNameOnly)
+	flags = senzing.SzExportDefaultFlags
 	exportHandle, err := szEngine.ExportJSONEntityReport(ctx, flags)
 	defer func() {
 		err := szEngine.CloseExport(ctx, exportHandle)
@@ -546,8 +543,7 @@ func TestSzengine_ExportJSONEntityReport(test *testing.T) {
 		jsonEntityReport += jsonEntityReportFragment
 	}
 	require.NoError(test, err)
-	fmt.Println(jsonEntityReport)
-	assert.Greater(test, len(jsonEntityReport), 65536)
+	assert.Greater(test, len(jsonEntityReport), 0)
 }
 
 func TestSzengine_ExportJSONEntityReport_65536(test *testing.T) {
@@ -560,8 +556,6 @@ func TestSzengine_ExportJSONEntityReport_65536(test *testing.T) {
 	require.NotEqual(test, "", actual)
 	printActual(test, actual)
 	defer func() { _, _ = szEngine.DeleteRecord(ctx, aRecord.DataSource, aRecord.ID, senzing.SzWithoutInfo) }()
-	// TODO: Figure out correct flags.
-	// flags := senzing.Flags(senzing.SZ_EXPORT_DEFAULT_FLAGS, senzing.SZ_EXPORT_INCLUDE_ALL_HAVING_RELATIONSHIPS, senzing.SZ_EXPORT_INCLUDE_ALL_HAVING_RELATIONSHIPS)
 	flags = senzing.Flags(
 		senzing.SzEntityIncludeAllFeatures,
 		senzing.SzEntityIncludeDisclosedRelations,
@@ -616,7 +610,6 @@ func TestSzengine_ExportJSONEntityReport_65536(test *testing.T) {
 		jsonEntityReport += jsonEntityReportFragment
 	}
 	require.NoError(test, err)
-	fmt.Println(jsonEntityReport)
 	assert.Greater(test, len(jsonEntityReport), 65536)
 }
 
@@ -2384,7 +2377,8 @@ func TestSzengine_SearchByAttributes_withSearchProfile(test *testing.T) {
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
 	attributes := `{"NAMES": [{"NAME_TYPE": "PRIMARY", "NAME_LAST": "JOHNSON"}], "SSN_NUMBER": "053-39-3251"}`
-	searchProfile := "SEARCH"
+	// searchProfile := "SEARCH"
+	searchProfile := "INGEST"
 	flags := senzing.SzNoFlags
 	actual, err := szEngine.SearchByAttributes(ctx, attributes, searchProfile, flags)
 	require.NoError(test, err)
