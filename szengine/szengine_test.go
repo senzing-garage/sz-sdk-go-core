@@ -543,7 +543,7 @@ func TestSzengine_ExportJSONEntityReport(test *testing.T) {
 		jsonEntityReport += jsonEntityReportFragment
 	}
 	require.NoError(test, err)
-	assert.Greater(test, len(jsonEntityReport), 0)
+	assert.NotEmpty(test, jsonEntityReport)
 }
 
 func TestSzengine_ExportJSONEntityReport_65536(test *testing.T) {

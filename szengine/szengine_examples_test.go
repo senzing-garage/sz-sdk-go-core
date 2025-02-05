@@ -26,7 +26,8 @@ type GetEntityByRecordIDResponse struct {
 }
 
 const (
-	baseTen = 10
+	baseTen         = 10
+	jsonIndentation = "    "
 )
 
 const (
@@ -477,6 +478,30 @@ func ExampleSzengine_FindPathByEntityID_including() {
 	}
 	fmt.Println(result)
 	// Output: {"ENTITY_PATHS":[{"START_ENTITY_ID":100001,"END_ENTITY_ID":100001,"ENTITIES":[]}],"ENTITIES":[{"RESOLVED_ENTITY":{"ENTITY_ID":100001}}]}
+}
+
+func ExampleSzengine_FindPathByEntityID_exampleOutput() {
+	exampleOutput := `{"ENTITY_PATHS":[{"START_ENTITY_ID":100001,"END_ENTITY_ID":100001,"ENTITIES":[100001]}],"ENTITIES":[{"RESOLVED_ENTITY":{"ENTITY_ID":100001}}]}`
+	fmt.Println(jsonutil.PrettyPrint(exampleOutput, jsonIndentation))
+	// Output:
+	//{
+	//     "ENTITY_PATHS": [
+	//         {
+	//             "START_ENTITY_ID": 100001,
+	//             "END_ENTITY_ID": 100001,
+	//             "ENTITIES": [
+	//                 100001
+	//             ]
+	//         }
+	//     ],
+	//     "ENTITIES": [
+	//         {
+	//             "RESOLVED_ENTITY": {
+	//                 "ENTITY_ID": 100001
+	//             }
+	//         }
+	//     ]
+	//}
 }
 
 func ExampleSzengine_FindPathByRecordID() {
