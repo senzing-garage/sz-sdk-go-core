@@ -2385,12 +2385,6 @@ func TestSzengine_SearchByAttributes_withSearchProfile(test *testing.T) {
 	printActual(test, actual)
 }
 
-// TODO: Implement TestSzengine_StreamExportCsvEntityReport
-// func TestSzengine_StreamExportCsvEntityReport(test *testing.T) {}
-
-// TODO: Implement TestSzengine_StreamExportJSONEntityReport
-// func TestSzengine_StreamExportJSONEntityReport(test *testing.T) {}
-
 func TestSzengine_SearchByAttributes_searchProfile(test *testing.T) {
 	ctx := context.TODO()
 	szEngine := getTestObject(ctx, test)
