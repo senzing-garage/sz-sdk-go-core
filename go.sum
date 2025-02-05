@@ -21,10 +21,8 @@ github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 h1:Jamvg5psRI
 github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/rogpeppe/go-internal v1.10.0 h1:TMyTOH3F/DB16zRVcYyreMH6GnZZrwQVAoYjRBZyWFQ=
 github.com/rogpeppe/go-internal v1.10.0/go.mod h1:UQnix2H7Ngw/k4C5ijL5+65zddjncjaFoBhdsK/akog=
-github.com/senzing-garage/go-helpers v0.6.4 h1:dIloW8l7JyCmHEK2xZ+6fmRo07h8Uni+bKmQApDFsgg=
-github.com/senzing-garage/go-helpers v0.6.4/go.mod h1:SWMj1ri67PO4hYzD1NxIEIlfYGviGlv4iIp3CPQ1Bpk=
-github.com/senzing-garage/go-helpers v0.6.5-0.20250205175456-24ab6e33f46f h1:bCvJ940O1HzgwIbWkmloNVizJwmZ46puGUvO2ucSt2o=
-github.com/senzing-garage/go-helpers v0.6.5-0.20250205175456-24ab6e33f46f/go.mod h1:A6kPasBp/3Lf7FjMCC5fZ0jS5CmnvJXDfNb3YYW097g=
+github.com/senzing-garage/go-helpers v0.6.5 h1:J95+EN/PmSsDG+Cbk0uFOiIZ9GA/J7nO1VAF0wJUL/M=
+github.com/senzing-garage/go-helpers v0.6.5/go.mod h1:A6kPasBp/3Lf7FjMCC5fZ0jS5CmnvJXDfNb3YYW097g=
 github.com/senzing-garage/go-logging v1.5.1 h1:3nqw75gN5x+6PQRop34/49+3kag1aE9dlFne7pILQAg=
 github.com/senzing-garage/go-logging v1.5.1/go.mod h1:ki4sQ46iI1Kjl1kkknYFQC2DY+zJj6Pod61wohGUs4E=
 github.com/senzing-garage/go-messaging v1.5.2 h1:lU9W2HV3zKQsDU9Vs7lwe/C/LbHVCMng9kQOL/r8pOI=
