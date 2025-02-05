@@ -2222,8 +2222,7 @@ func (client *Szengine) processRedoRecordWithInfo(ctx context.Context, redoRecor
 }
 
 /*
-TODO: Document reevaluateEntity
-Method reevaluateEntity...
+Method reevaluateEntity reevaluates the specified entity.
 
 Input
   - ctx: A context to control lifecycle.
@@ -2242,8 +2241,7 @@ func (client *Szengine) reevaluateEntity(ctx context.Context, entityID int64, fl
 }
 
 /*
-TODO: Document reevaluateEntityWithInfo
-Method reevaluateEntityWithInfo...
+Method reevaluateEntityWithInfo reevaluates the specified entity and returns information.
 
 Input
   - ctx: A context to control lifecycle.
@@ -2269,8 +2267,7 @@ func (client *Szengine) reevaluateEntityWithInfo(ctx context.Context, entityID i
 }
 
 /*
-TODO: Document reevaluateRecord
-Method reevaluateRecord...
+Method reevaluateRecord reevaluates a specific record.
 
 Input
   - ctx: A context to control lifecycle.
@@ -2294,8 +2291,7 @@ func (client *Szengine) reevaluateRecord(ctx context.Context, dataSourceCode str
 }
 
 /*
-TODO: Document reevaluateRecordWithInfo
-Method reevaluateRecordWithInfo...
+Method reevaluateRecordWithInfo reevaluates a specific record and returns information.
 
 Input
   - ctx: A context to control lifecycle.
@@ -2365,8 +2361,8 @@ func (client *Szengine) searchByAttributesV2(ctx context.Context, attributes str
 }
 
 /*
-TODO: DocumentsearchByAttributes_V3
-Method searchByAttributesV3...
+Method SearchByAttributes_V3 retrieves entity data based on a user-specified set of entity attributes.
+It extends searchByAttributesV2() by adding a search profile parameter.
 
 Input
   - ctx: A context to control lifecycle.
@@ -2425,8 +2421,7 @@ func (client *Szengine) whyEntitiesV2(ctx context.Context, entityID1 int64, enti
 }
 
 /*
-TODO: Document whyRecordInEntityV2
-Method whyRecordInEntityV2...
+Method whyRecordInEntityV2 explains why a record belongs to its resolved entitiy.
 
 Input
   - ctx: A context to control lifecycle.
