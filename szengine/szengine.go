@@ -546,7 +546,6 @@ Input
   - flags: Flags used to control information returned.
 
 Output
-
   - A JSON document.
 */
 func (client *Szengine) FindNetworkByEntityID(ctx context.Context, entityIDs string, maxDegrees int64, buildOutDegrees int64, buildOutMaxEntities int64, flags int64) (string, error) {
@@ -586,7 +585,6 @@ Input
   - flags: Flags used to control information returned.
 
 Output
-
   - A JSON document.
 */
 func (client *Szengine) FindNetworkByRecordID(ctx context.Context, recordKeys string, maxDegrees int64, buildOutDegrees int64, buildOutMaxEntities int64, flags int64) (string, error) {
@@ -630,7 +628,6 @@ Input
   - flags: Flags used to control information returned.
 
 Output
-
   - A JSON document.
 */
 func (client *Szengine) FindPathByEntityID(ctx context.Context, startEntityID int64, endEntityID int64, maxDegrees int64, avoidEntityIDs string, requiredDataSources string, flags int64) (string, error) {
@@ -686,11 +683,9 @@ Input
   - flags: Flags used to control information returned.
 
 Output
-
   - A JSON document.
 */
 func (client *Szengine) FindPathByRecordID(ctx context.Context, startDataSourceCode string, startRecordID string, endDataSourceCode string, endRecordID string, maxDegrees int64, avoidRecordKeys string, requiredDataSources string, flags int64) (string, error) {
-	// BOB WAS HERE
 	var err error
 	var result string
 	if client.isTrace {
@@ -793,7 +788,6 @@ Input
   - flags: Flags used to control information returned.
 
 Output
-
   - A JSON document.
 */
 func (client *Szengine) GetEntityByRecordID(ctx context.Context, dataSourceCode string, recordID string, flags int64) (string, error) {
@@ -890,7 +884,6 @@ Input
   - ctx: A context to control lifecycle.
 
 Output
-
   - A JSON document.
 */
 func (client *Szengine) GetStats(ctx context.Context) (string, error) {
@@ -921,7 +914,6 @@ Input
   - flags: Flags used to control information returned.
 
 Output
-
   - A JSON document.
 */
 func (client *Szengine) GetVirtualEntityByRecordID(ctx context.Context, recordKeys string, flags int64) (string, error) {
@@ -1174,7 +1166,6 @@ Input
   - flags: Flags used to control information returned.
 
 Output
-
   - A JSON document.
 */
 func (client *Szengine) SearchByAttributes(ctx context.Context, attributes string, searchProfile string, flags int64) (string, error) {
@@ -1208,7 +1199,6 @@ Input
   - flags: Flags used to control information returned.
 
 Output
-
   - A JSON document.
 */
 func (client *Szengine) WhyEntities(ctx context.Context, entityID1 int64, entityID2 int64, flags int64) (string, error) {
@@ -1277,7 +1267,6 @@ Input
   - flags: Flags used to control information returned.
 
 Output
-
   - A JSON document.
 */
 func (client *Szengine) WhyRecords(ctx context.Context, dataSourceCode1 string, recordID1 string, dataSourceCode2 string, recordID2 string, flags int64) (string, error) {
