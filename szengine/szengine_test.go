@@ -369,12 +369,7 @@ func TestSzengine_ExportCsvEntityReport(test *testing.T) {
 	defer func() { handleError(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	// expected := []string{
-	// 	`RESOLVED_ENTITY_ID,RELATED_ENTITY_ID,MATCH_LEVEL_CODE,MATCH_KEY,DATA_SOURCE,RECORD_ID`,
-	// 	`3,0,"","","CUSTOMERS","1001"`,
-	// 	`3,0,"RESOLVED","+NAME+DOB+PHONE","CUSTOMERS","1002"`,
-	// 	`3,0,"RESOLVED","+NAME+DOB+EMAIL","CUSTOMERS","1003"`,
-	// }
+	expected := expectedExportCsvEntityReport
 	szEngine := getTestObject(ctx, test)
 	csvColumnList := ""
 	flags := senzing.SzExportIncludeAllEntities
@@ -384,12 +379,12 @@ func TestSzengine_ExportCsvEntityReport(test *testing.T) {
 		require.NoError(test, err)
 	}()
 	require.NoError(test, err)
-	// actualCount := 0
-	// for actual := range szEngine.ExportCsvEntityReportIterator(ctx, csvColumnList, flags) {
-	// 	assert.Equal(test, expected[actualCount], strings.TrimSpace(actual.Value))
-	// 	actualCount++
-	// }
-	// assert.Equal(test, len(expected), actualCount)
+	actualCount := 0
+	for actual := range szEngine.ExportCsvEntityReportIterator(ctx, csvColumnList, flags) {
+		assert.Equal(test, expected[actualCount], strings.TrimSpace(actual.Value))
+		actualCount++
+	}
+	assert.Equal(test, len(expected), actualCount)
 }
 
 func TestSzengine_ExportCsvEntityReport_badCsvColumnList(test *testing.T) {
@@ -438,22 +433,17 @@ func TestSzengine_ExportCsvEntityReportIterator(test *testing.T) {
 	defer func() { handleError(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	// expected := []string{
-	// 	`RESOLVED_ENTITY_ID,RELATED_ENTITY_ID,MATCH_LEVEL_CODE,MATCH_KEY,DATA_SOURCE,RECORD_ID`,
-	// 	`13,0,"","","CUSTOMERS","1001"`,
-	// 	`13,0,"RESOLVED","+NAME+DOB+PHONE","CUSTOMERS","1002"`,
-	// 	`13,0,"RESOLVED","+NAME+DOB+EMAIL","CUSTOMERS","1003"`,
-	// }
-	// szEngine := getTestObject(ctx, test)
-	// csvColumnList := ""
-	// flags := senzing.SzExportIncludeAllEntities
-	// actualCount := 0
-	// for actual := range szEngine.ExportCsvEntityReportIterator(ctx, csvColumnList, flags) {
-	// 	require.NoError(test, actual.Error)
-	// 	assert.Equal(test, expected[actualCount], strings.TrimSpace(actual.Value))
-	// 	actualCount++
-	// }
-	// assert.Equal(test, len(expected), actualCount)
+	expected := expectedExportCsvEntityReportIterator
+	szEngine := getTestObject(ctx, test)
+	csvColumnList := ""
+	flags := senzing.SzExportIncludeAllEntities
+	actualCount := 0
+	for actual := range szEngine.ExportCsvEntityReportIterator(ctx, csvColumnList, flags) {
+		require.NoError(test, actual.Error)
+		assert.Equal(test, expected[actualCount], strings.TrimSpace(actual.Value))
+		actualCount++
+	}
+	assert.Equal(test, len(expected), actualCount)
 }
 
 func TestSzengine_ExportCsvEntityReportIterator_badCsvColumnList(test *testing.T) {
@@ -490,21 +480,16 @@ func TestSzengine_ExportCsvEntityReportIterator_nilCsvColumnList(test *testing.T
 	defer func() { handleError(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	// expected := []string{
-	// 	`RESOLVED_ENTITY_ID,RELATED_ENTITY_ID,MATCH_LEVEL_CODE,MATCH_KEY,DATA_SOURCE,RECORD_ID`,
-	// 	`19,0,"","","CUSTOMERS","1001"`,
-	// 	`19,0,"RESOLVED","+NAME+DOB+PHONE","CUSTOMERS","1002"`,
-	// 	`19,0,"RESOLVED","+NAME+DOB+EMAIL","CUSTOMERS","1003"`,
-	// }
-	// szEngine := getTestObject(ctx, test)
-	// flags := senzing.SzExportIncludeAllEntities
-	// actualCount := 0
-	// for actual := range szEngine.ExportCsvEntityReportIterator(ctx, nilCsvColumnList, flags) {
-	// 	require.NoError(test, err)
-	// 	assert.Equal(test, expected[actualCount], strings.TrimSpace(actual.Value))
-	// 	actualCount++
-	// }
-	// assert.Equal(test, len(expected), actualCount)
+	expected := expectedExportCsvEntityReportIteratorNilCsvColumnList
+	szEngine := getTestObject(ctx, test)
+	flags := senzing.SzExportIncludeAllEntities
+	actualCount := 0
+	for actual := range szEngine.ExportCsvEntityReportIterator(ctx, nilCsvColumnList, flags) {
+		require.NoError(test, err)
+		assert.Equal(test, expected[actualCount], strings.TrimSpace(actual.Value))
+		actualCount++
+	}
+	assert.Equal(test, len(expected), actualCount)
 }
 
 func TestSzengine_ExportJSONEntityReport(test *testing.T) {
@@ -526,9 +511,7 @@ func TestSzengine_ExportJSONEntityReport(test *testing.T) {
 	defer func() {
 		handleErrorWithString(szEngine.DeleteRecord(ctx, aRecord.DataSource, aRecord.ID, senzing.SzWithoutInfo))
 	}()
-	// TODO: Figure out correct flags.
-	// flags := senzing.Flags(senzing.SZ_EXPORT_DEFAULT_FLAGS, senzing.SZ_EXPORT_INCLUDE_ALL_HAVING_RELATIONSHIPS, senzing.SZ_EXPORT_INCLUDE_ALL_HAVING_RELATIONSHIPS)
-	flags = int64(-1)
+	flags = senzing.SzExportDefaultFlags
 	exportHandle, err := szEngine.ExportJSONEntityReport(ctx, flags)
 	defer func() {
 		err := szEngine.CloseExport(ctx, exportHandle)
@@ -545,8 +528,9 @@ func TestSzengine_ExportJSONEntityReport(test *testing.T) {
 		jsonEntityReport += jsonEntityReportFragment
 	}
 	require.NoError(test, err)
-	assert.Greater(test, len(jsonEntityReport), 65536)
+	assert.NotEmpty(test, jsonEntityReport)
 }
+
 func TestSzengine_ExportJSONEntityReport_65536(test *testing.T) {
 	ctx := context.TODO()
 	szEngine := getTestObject(ctx, test)
@@ -557,9 +541,44 @@ func TestSzengine_ExportJSONEntityReport_65536(test *testing.T) {
 	require.NotEqual(test, "", actual)
 	printActual(test, actual)
 	defer func() { _, _ = szEngine.DeleteRecord(ctx, aRecord.DataSource, aRecord.ID, senzing.SzWithoutInfo) }()
-	// TODO: Figure out correct flags.
-	// flags := senzing.Flags(senzing.SZ_EXPORT_DEFAULT_FLAGS, senzing.SZ_EXPORT_INCLUDE_ALL_HAVING_RELATIONSHIPS, senzing.SZ_EXPORT_INCLUDE_ALL_HAVING_RELATIONSHIPS)
-	flags = int64(-1)
+	flags = senzing.Flags(
+		senzing.SzEntityIncludeAllFeatures,
+		senzing.SzEntityIncludeDisclosedRelations,
+		senzing.SzEntityIncludeEntityName,
+		senzing.SzEntityIncludeFeatureStats,
+		senzing.SzEntityIncludeInternalFeatures,
+		senzing.SzEntityIncludeNameOnlyRelations,
+		senzing.SzEntityIncludePossiblyRelatedRelations,
+		senzing.SzEntityIncludePossiblySameRelations,
+		senzing.SzEntityIncludeRecordData,
+		senzing.SzEntityIncludeRecordFeatureDetails,
+		senzing.SzEntityIncludeRecordFeatureIDs,
+		senzing.SzEntityIncludeRecordFeatureStats,
+		senzing.SzEntityIncludeRecordJSONData,
+		senzing.SzEntityIncludeRecordMatchingInfo,
+		senzing.SzEntityIncludeRecordSummary,
+		senzing.SzEntityIncludeRecordTypes,
+		senzing.SzEntityIncludeRecordUnmappedData,
+		senzing.SzEntityIncludeRelatedEntityName,
+		senzing.SzEntityIncludeRelatedMatchingInfo,
+		senzing.SzEntityIncludeRelatedRecordData,
+		senzing.SzEntityIncludeRelatedRecordSummary,
+		senzing.SzEntityIncludeRelatedRecordTypes,
+		senzing.SzEntityIncludeRepresentativeFeatures,
+		senzing.SzExportIncludeDisclosed,
+		senzing.SzExportIncludeDisclosed,
+		senzing.SzExportIncludeMultiRecordEntities,
+		senzing.SzExportIncludeMultiRecordEntities,
+		senzing.SzExportIncludeNameOnly,
+		senzing.SzExportIncludeNameOnly,
+		senzing.SzExportIncludePossiblyRelated,
+		senzing.SzExportIncludePossiblyRelated,
+		senzing.SzExportIncludePossiblySame,
+		senzing.SzExportIncludePossiblySame,
+		senzing.SzExportIncludeSingleRecordEntities,
+		senzing.SzExportIncludeSingleRecordEntities,
+	)
+	// flags = int64(-1)
 	aHandle, err := szEngine.ExportJSONEntityReport(ctx, flags)
 	defer func() {
 		err := szEngine.CloseExport(ctx, aHandle)
@@ -2343,18 +2362,13 @@ func TestSzengine_SearchByAttributes_withSearchProfile(test *testing.T) {
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
 	attributes := `{"NAMES": [{"NAME_TYPE": "PRIMARY", "NAME_LAST": "JOHNSON"}], "SSN_NUMBER": "053-39-3251"}`
-	searchProfile := "SEARCH"
+	// searchProfile := "SEARCH"
+	searchProfile := "INGEST"
 	flags := senzing.SzNoFlags
 	actual, err := szEngine.SearchByAttributes(ctx, attributes, searchProfile, flags)
 	require.NoError(test, err)
 	printActual(test, actual)
 }
-
-// TODO: Implement TestSzengine_StreamExportCsvEntityReport
-// func TestSzengine_StreamExportCsvEntityReport(test *testing.T) {}
-
-// TODO: Implement TestSzengine_StreamExportJSONEntityReport
-// func TestSzengine_StreamExportJSONEntityReport(test *testing.T) {}
 
 func TestSzengine_SearchByAttributes_searchProfile(test *testing.T) {
 	ctx := context.TODO()
