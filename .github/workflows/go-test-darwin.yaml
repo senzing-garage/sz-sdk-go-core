@@ -49,8 +49,8 @@ jobs:
 
       - name: Run go test
         run: |
-          DYLD_LIBRARY_PATH="$HOME"/senzing/er/lib:/opt/senzing/er/lib/macos
-          LD_LIBRARY_PATH="$HOME"/senzing/er/lib:/opt/senzing/er/lib/macos
+          DYLD_LIBRARY_PATH="$HOME"/senzing/er/lib:"$HOME"/senzing/er/lib/macos
+          LD_LIBRARY_PATH="$HOME"/senzing/er/lib:"$HOME"/senzing/er/lib/macos
           go test -exec "$GITHUB_WORKSPACE"/bin/macos_exec_dyld.sh -json -v -p 1 -coverprofile=./cover.out -covermode=atomic -coverpkg=./... ./...  2>&1 | tee /tmp/gotest.log | gotestfmt
 
       - name: Store coverage file
