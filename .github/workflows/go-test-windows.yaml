@@ -53,6 +53,7 @@ jobs:
 
       - name: Run go test
         run: |
+          SENZING_PATH="${HOME}/senzing"
           go test -json -v -p 1 -coverprofile=cover -covermode=atomic -coverpkg=./... ./... 2>&1 | tee "C:\Temp\gotest.log" | gotestfmt
           cp cover cover.out
 
