@@ -14,6 +14,10 @@ jobs:
   go-test-darwin:
     name: "Go test with Senzing: ${{ matrix.senzingsdk-version }}; OS: ${{ matrix.os }}; Go: ${{ matrix.go }}"
     runs-on: ${{ matrix.os }}
+    env:
+      SENZING_PATH: "${HOME}/senzing"
+      DYLD_LIBRARY_PATH: "${SENZING_PATH}/er/lib:${SENZING_PATH}/er/lib/macos"
+      LD_LIBRARY_PATH: "${SENZING_PATH}/er/lib:${SENZING_PATH}/er/lib/macos"
     strategy:
       matrix:
         go: ["1.21"]
@@ -42,16 +46,13 @@ jobs:
           senzingsdk-repository-path: ${{ secrets.SENZING_OSX_BETA_REPOSITORY }}
 
       - name: Copy /etc files
-        run: sudo mkdir -p "${HOME}/senzing/er/etc" && sudo cp testdata/senzing-license/g2.lic "${HOME}/senzing/er/etc/g2.lic"
+        run: sudo mkdir -p "${SENZING_PATH}/er/etc" && sudo cp testdata/senzing-license/g2.lic "${SENZING_PATH}/er/etc/g2.lic"
 
       - name: Copy test database files
         run: mkdir -p /tmp/sqlite && cp testdata/sqlite/G2C.db /tmp/sqlite/
 
       - name: Run go test
         run: |
-          # shellcheck disable=SC2034
-          DYLD_LIBRARY_PATH="${HOME}/senzing/er/lib":"${HOME}/senzing/er/lib/macos"
-          LD_LIBRARY_PATH="${HOME}/senzing/er/lib":"${HOME}/senzing/er/lib/macos"
           go test -exec "${GITHUB_WORKSPACE}/bin/macos_exec_dyld.sh" -json -v -p 1 -coverprofile=./cover.out -covermode=atomic -coverpkg=./... ./...  2>&1 | tee /tmp/gotest.log | gotestfmt
 
       - name: Store coverage file

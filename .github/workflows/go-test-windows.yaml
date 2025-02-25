@@ -13,6 +13,8 @@ jobs:
   go-test-windows:
     name: "Go test with Senzing: ${{ matrix.senzingsdk-version }}; OS: ${{ matrix.os }}; Go: ${{ matrix.go }}"
     runs-on: ${{ matrix.os }}
+    env:
+      SENZING_PATH: "$Env:USERPROFILE\\Senzing"
     strategy:
       matrix:
         go: ["1.21"]
@@ -43,17 +45,16 @@ jobs:
       - name: Add to "Path" environment variable
         run: |
           # shellcheck disable=SC2028
-          echo "$Env:USERPROFILE\Senzing\er\lib" >> "$env:GITHUB_PATH"
+          echo "${SENZING_PATH}\er\lib" >> "$env:GITHUB_PATH"
 
       - name: Copy /etc files
-        run: copy testdata/senzing-license/g2.lic "$Env:USERPROFILE\Senzing\er\etc\g2.lic"
+        run: copy testdata/senzing-license/g2.lic "${SENZING_PATH}\er\etc\g2.lic"
 
       - name: Copy test database files
         run: mkdir "C:\Temp\sqlite" && copy testdata/sqlite/G2C.db "C:\Temp\sqlite\G2C.db"
 
       - name: Run go test
         run: |
-          SENZING_PATH="${HOME}/senzing"
           go test -json -v -p 1 -coverprofile=cover -covermode=atomic -coverpkg=./... ./... 2>&1 | tee "C:\Temp\gotest.log" | gotestfmt
           cp cover cover.out
 
