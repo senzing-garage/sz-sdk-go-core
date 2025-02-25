@@ -14,7 +14,7 @@ jobs:
     name: "Go test with Senzing: ${{ matrix.senzingsdk-version }}; OS: ${{ matrix.os }}; Go: ${{ matrix.go }}"
     runs-on: ${{ matrix.os }}
     env:
-      SENZING_PATH: "$Env:USERPROFILE\\Senzing"
+      SENZING_PATH: $Env:USERPROFILE\Senzing
     strategy:
       matrix:
         go: ["1.21"]
@@ -52,6 +52,12 @@ jobs:
 
       - name: Copy test database files
         run: mkdir "C:\Temp\sqlite" && copy testdata/sqlite/G2C.db "C:\Temp\sqlite\G2C.db"
+
+      - name: Echo environment variables
+        run: |
+          echo "SENZING_PATH ${SENZING_PATH}"
+          echo "DYLD_LIBRARY_PATH ${DYLD_LIBRARY_PATH}"
+          echo "LD_LIBRARY_PATH ${LD_LIBRARY_PATH}"
 
       - name: Run go test
         run: |
