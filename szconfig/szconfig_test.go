@@ -471,7 +471,7 @@ func getSzConfig(ctx context.Context) (*Szconfig, error) {
 		if err != nil {
 			return szConfigSingleton, fmt.Errorf("SetLogLevel() Error: %w", err)
 		}
-        if logLevel == "TRACE" {
+		if logLevel == "TRACE" {
 			szConfigSingleton.SetObserverOrigin(ctx, observerOrigin)
 			err = szConfigSingleton.RegisterObserver(ctx, observerSingleton)
 			if err != nil {
