@@ -52,7 +52,7 @@ jobs:
         run: |
           $Env:SENZING_PATH = "$Env:USERPROFILE\Senzing"
           $Env:CGO_CFLAGS = "-g -I$Env:SENZING_PATH\er\sdk\c"
-          $Env:CGO_LDFLAGS = "-L$Env:SENZING_PATH\er\lib -lSz -Wl,-no_warn_duplicate_libraries"
+          $Env:CGO_LDFLAGS = "-L$Env:SENZING_PATH\er\lib -lSz"
           go test -json -v -p 1 -coverprofile=cover -covermode=atomic -coverpkg=./... ./... 2>&1 | tee "C:\Temp\gotest.log" | gotestfmt
           cp cover cover.out
 

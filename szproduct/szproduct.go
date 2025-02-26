@@ -8,8 +8,8 @@ package szproduct
 #include <stdlib.h>
 #include "libSzProduct.h"
 #include "szhelpers/SzLang_helpers.h"
-#cgo CFLAGS: -g -I/opt/senzing/er/sdk/c
-#cgo LDFLAGS: -L/opt/senzing/er/lib -lSz
+#cgo linux CFLAGS: -g -I/opt/senzing/er/sdk/c
+#cgo linux LDFLAGS: -L/opt/senzing/er/lib -lSz
 */
 import "C"
 
