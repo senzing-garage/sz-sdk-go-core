@@ -9,12 +9,8 @@ package szdiagnostic
 #include "libSzDiagnostic.h"
 #include "libSz.h"
 #include "szhelpers/SzLang_helpers.h"
-#cgo darwin CFLAGS: -g -I$SENZING_PATH/er/sdk/c
-#cgo darwin LDFLAGS: -L$SENZING_PATH/er/lib -lSz
-#cgo linux CFLAGS: -g -I/opt/senzing/er/sdk/c
-#cgo linux LDFLAGS: -L/opt/senzing/er/lib -lSz
-#cgo windows CFLAGS: -g -I$SENZING_PATH/er/sdk/c
-#cgo windows LDFLAGS: -L$SENZING_PATH/er/lib -lSz
+#cgo CFLAGS: -g -I/opt/senzing/er/sdk/c
+#cgo LDFLAGS: -L/opt/senzing/er/lib -lSz
 */
 import "C"
 
