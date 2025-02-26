@@ -42,7 +42,7 @@ jobs:
 
       - name: configure environment
         run: |
-          # shellcheck disable=SC2086
+          # shellcheck disable=SC2028
           echo "SENZING_PATH=$env:USERPROFILE\Senzing\er" | Out-File -FilePath $env:GITHUB_ENV -Append
 
       - name: Add to "Path" environment variable
