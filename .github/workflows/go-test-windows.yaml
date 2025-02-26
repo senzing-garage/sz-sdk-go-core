@@ -53,7 +53,7 @@ jobs:
         run: |
           # shellcheck disable=SC2086
           echo "SENZING_PATH=$env:USERPROFILE\Senzing" | Out-File -FilePath $env:GITHUB_ENV -Append
-          go test -json -v -p 1 -coverprofile=cover -covermode=atomic -coverpkg=./... ./... 2>&1 | tee "C:\Temp\gotest.log" | gotestfmt
+          CGO_CFLAGS="-g -I${SENZING_PATH}/er/sdk/c" CGO_LDFLAGS="-L"${SENZING_PATH}/er/lib" -lSz" go test -json -v -p 1 -coverprofile=cover -covermode=atomic -coverpkg=./... ./... 2>&1 | tee "C:\Temp\gotest.log" | gotestfmt
           cp cover cover.out
 
       - name: Store coverage file
