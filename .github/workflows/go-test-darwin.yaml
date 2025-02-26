@@ -41,17 +41,24 @@ jobs:
         with:
           senzingsdk-repository-path: ${{ secrets.SENZING_OSX_BETA_REPOSITORY }}
 
+      - name: configure environment
+        run: |
+          SENZING_PATH="${HOME}/senzing/er"
+          {
+            echo "SENZING_PATH=${SENZING_PATH}"
+            echo "DYLD_LIBRARY_PATH=${SENZING_PATH}/lib:${SENZING_PATH}/lib/macos"
+            echo "LD_LIBRARY_PATH=${SENZING_PATH}/lib:${SENZING_PATH}/lib/macos"
+            echo "SENZING_DATA_DIR=${SENZING_PATH}/data"
+          } >> "$GITHUB_ENV"
+
       - name: Copy /etc files
-        run: sudo mkdir -p "${HOME}/senzing/er/etc" && sudo cp testdata/senzing-license/g2.lic "${HOME}/senzing/er/etc/g2.lic"
+        run: sudo mkdir -p "${SENZING_PATH}/etc" && sudo cp testdata/senzing-license/g2.lic "${SENZING_PATH}/etc/g2.lic"
 
       - name: Copy test database files
         run: mkdir -p /tmp/sqlite && cp testdata/sqlite/G2C.db /tmp/sqlite/
 
       - name: Run go test
         run: |
-          export SENZING_PATH="${HOME}/senzing"
-          export DYLD_LIBRARY_PATH="${SENZING_PATH}/er/lib:${SENZING_PATH}/er/lib/macos"
-          export LD_LIBRARY_PATH="${SENZING_PATH}/er/lib:${SENZING_PATH}/er/lib/macos"
           go test -exec "${GITHUB_WORKSPACE}/bin/macos_exec_dyld.sh" -json -v -p 1 -coverprofile=./cover.out -covermode=atomic -coverpkg=./... ./...  2>&1 | tee /tmp/gotest.log | gotestfmt
 
       - name: Store coverage file
