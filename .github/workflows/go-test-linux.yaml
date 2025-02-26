@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   go-test-linux:
-    name: "Go test with OS: ${{ matrix.os }}; Go: ${{ matrix.go }}"
+    name: "Go test with Senzing: ${{ matrix.senzingsdk-version }}; OS: ${{ matrix.os }}; Go: ${{ matrix.go }}"
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -47,11 +47,13 @@ jobs:
       - name: Copy test database files
         run: mkdir -p /tmp/sqlite && cp testdata/sqlite/G2C.db /tmp/sqlite/
 
-      - name: Run go test
+      - name: Set environment variables
         run: |
           export SENZING_PATH="/opt/senzing"
           export LD_LIBRARY_PATH="${SENZING_PATH}/er/lib:${SENZING_PATH}/er/lib/macos"
-          go test -json -v -p 1 -coverprofile=./cover.out -covermode=atomic -coverpkg=./... ./...  2>&1 | tee /tmp/gotest.log | gotestfmt
+
+      - name: Run go test
+        run: go test -json -v -p 1 -coverprofile=./cover.out -covermode=atomic -coverpkg=./... ./...  2>&1 | tee /tmp/gotest.log | gotestfmt
 
       - name: Store coverage file
         uses: actions/upload-artifact@v4
