@@ -8,8 +8,12 @@ package szconfigmanager
 #include <stdlib.h>
 #include "libSzConfigMgr.h"
 #include "szhelpers/SzLang_helpers.h"
-#cgo CFLAGS: -g -I${SENZING_PATH}/er/sdk/c
-#cgo LDFLAGS: -L${SENZING_PATH}/er/lib -lSz
+#cgo darwin CFLAGS: -g -I$SENZING_PATH/er/sdk/c
+#cgo darwin LDFLAGS: -L$SENZING_PATH/er/lib -lSz
+#cgo linux CFLAGS: -g -I/opt/senzing/er/sdk/c
+#cgo linux LDFLAGS: -L/opt/senzing/er/lib -lSz
+#cgo windows CFLAGS: -g -I$SENZING_PATH/er/sdk/c
+#cgo windows LDFLAGS: -L$SENZING_PATH/er/lib -lSz
 */
 import "C"
 

@@ -40,22 +40,19 @@ jobs:
         with:
           senzingsdk-repository-path: ${{ secrets.SENZING_WIN_BETA_REPOSITORY }}
 
-      - name: configure environment
-        run: |
-          # shellcheck disable=SC2028
-          echo "SENZING_PATH=$env:USERPROFILE\Senzing\er" | Out-File -FilePath $env:GITHUB_ENV -Append
-
       - name: Add to "Path" environment variable
-        run: Add-Content "$env:GITHUB_PATH" "$Env:SENZING_PATH\lib"
+        run: Add-Content "$env:GITHUB_PATH" "$Env:USERPROFILE\Senzing\er\lib"
 
       - name: Copy /etc files
-        run: copy testdata/senzing-license/g2.lic "$Env:SENZING_PATH\etc\g2.lic"
+        run: copy testdata/senzing-license/g2.lic "$Env:USERPROFILE\Senzing\er\etc\g2.lic"
 
       - name: Copy test database files
         run: mkdir "C:\Temp\sqlite" && copy testdata/sqlite/G2C.db "C:\Temp\sqlite\G2C.db"
 
       - name: Run go test
         run: |
+          # shellcheck disable=SC2086
+          echo "SENZING_PATH=$env:USERPROFILE\Senzing" | Out-File -FilePath $env:GITHUB_ENV -Append
           go test -json -v -p 1 -coverprofile=cover -covermode=atomic -coverpkg=./... ./... 2>&1 | tee "C:\Temp\gotest.log" | gotestfmt
           cp cover cover.out
 

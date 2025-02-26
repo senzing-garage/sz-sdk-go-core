@@ -41,15 +41,6 @@ jobs:
           senzingsdk-repository-package: ${{ secrets.SENZING_APT_BETA_STAGING_REPOSITORY_PACKAGE }}
           senzingsdk-repository-path: ${{ secrets.SENZING_APT_BETA_STAGING_REPOSITORY_URL }}
 
-      - name: configure environment
-        run: |
-          SENZING_PATH="/opt/senzing"
-          {
-            echo "SENZING_PATH=${SENZING_PATH}"
-            echo "LD_LIBRARY_PATH=${SENZING_PATH}/er/lib"
-            echo "SENZING_DATA_DIR=${SENZING_PATH}/../data"
-          } >> "$GITHUB_ENV"
-
       - name: Copy /etc files
         run: sudo mkdir -p /etc/opt/senzing && sudo cp testdata/senzing-license/g2.lic /etc/opt/senzing/g2.lic
 
@@ -58,6 +49,8 @@ jobs:
 
       - name: Run go test
         run: |
+          export SENZING_PATH="/opt/senzing"
+          export LD_LIBRARY_PATH="${SENZING_PATH}/er/lib:${SENZING_PATH}/er/lib/macos"
           go test -json -v -p 1 -coverprofile=./cover.out -covermode=atomic -coverpkg=./... ./...  2>&1 | tee /tmp/gotest.log | gotestfmt
 
       - name: Store coverage file
