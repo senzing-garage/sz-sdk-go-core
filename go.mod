@@ -6,7 +6,7 @@ toolchain go1.23.2
 
 require (
 	github.com/aquilax/truncate v1.0.1
-	github.com/senzing-garage/go-helpers v0.6.6-0.20250227142101-6a50b7d42884
+	github.com/senzing-garage/go-helpers v0.6.6
 	github.com/senzing-garage/go-logging v1.5.1
 	github.com/senzing-garage/go-messaging v1.5.2
 	github.com/senzing-garage/go-observing v0.3.3
