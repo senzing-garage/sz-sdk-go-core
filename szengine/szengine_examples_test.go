@@ -98,7 +98,7 @@ func ExampleSzengine_AddRecord_withInfo() {
 		handleError(err)
 	}
 	fmt.Println(result)
-	// Output: {"DATA_SOURCE":"CUSTOMERS","RECORD_ID":"1003","AFFECTED_ENTITIES":[{"ENTITY_ID":100001}],"INTERESTING_ENTITIES":{"ENTITIES":[]}}
+	// Output: {"DATA_SOURCE":"CUSTOMERS","RECORD_ID":"1003","AFFECTED_ENTITIES":[{"ENTITY_ID":100001}]}
 }
 
 func ExampleSzengine_CloseExport() {
@@ -172,7 +172,7 @@ func ExampleSzengine_DeleteRecord_withInfo() {
 		handleError(err)
 	}
 	fmt.Println(result)
-	// Output: {"DATA_SOURCE":"CUSTOMERS","RECORD_ID":"1003","AFFECTED_ENTITIES":[],"INTERESTING_ENTITIES":{"ENTITIES":[]}}
+	// Output: {"DATA_SOURCE":"CUSTOMERS","RECORD_ID":"1003","AFFECTED_ENTITIES":[]}
 }
 
 func ExampleSzengine_ExportCsvEntityReport() {
@@ -2673,7 +2673,7 @@ func ExampleSzEngine_ProcessRedoRecord_withInfo() {
 		handleError(err)
 	}
 	fmt.Println(result)
-	// Output: {"DATA_SOURCE":"CUSTOMERS","RECORD_ID":"1001","AFFECTED_ENTITIES":[{"ENTITY_ID":100001}],"INTERESTING_ENTITIES":{"ENTITIES":[]}}
+	// Output: {"DATA_SOURCE":"CUSTOMERS","RECORD_ID":"1001","AFFECTED_ENTITIES":[{"ENTITY_ID":100001}]}
 }
 
 func ExampleSzengine_ReevaluateEntity() {
@@ -2753,7 +2753,7 @@ func ExampleSzengine_ReevaluateRecord_withInfo() {
 		handleError(err)
 	}
 	fmt.Println(result)
-	// Output: {"DATA_SOURCE":"CUSTOMERS","RECORD_ID":"1001","AFFECTED_ENTITIES":[{"ENTITY_ID":100001}],"INTERESTING_ENTITIES":{"ENTITIES":[]}}
+	// Output: {"DATA_SOURCE":"CUSTOMERS","RECORD_ID":"1001","AFFECTED_ENTITIES":[{"ENTITY_ID":100001}]}
 }
 
 func ExampleSzengine_SearchByAttributes() {
