@@ -52,7 +52,7 @@ jobs:
           } >> "$GITHUB_ENV"
 
       - name: Copy /etc files
-        run: sudo mkdir -p "${SENZING_PATH}/etc" && sudo cp testdata/senzing-license/g2.lic "${SENZING_PATH}/etc/g2.lic"
+        run: sudo mkdir -p "${SENZING_PATH}/etc" && sudo cp testdata/senzing-license/g2.lic "${SENZING_PATH}/er/etc/g2.lic"
 
       - name: Copy test database files
         run: mkdir -p /tmp/sqlite && cp testdata/sqlite/G2C.db /tmp/sqlite/
