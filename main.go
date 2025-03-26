@@ -100,7 +100,7 @@ func demonstrateAddRecord(ctx context.Context, szEngine senzing.SzEngine) (strin
 		`{"SOCIAL_HANDLE": "flavorh", "DATE_OF_BIRTH": "4/8/1983", "ADDR_STATE": "LA", "ADDR_POSTAL_CODE": "71232", "SSN_NUMBER": "053-39-3251", "ENTITY_TYPE": "TEST", "GENDER": "F", "srccode": "MDMPER", "CC_ACCOUNT_NUMBER": "5534202208773608", "RECORD_ID": "`,
 		recordID,
 		`", "DSRC_ACTION": "A", "ADDR_CITY": "Delhi", "DRIVERS_LICENSE_STATE": "DE", "PHONE_NUMBER": "225-671-0796", "NAME_LAST": "SEAMAN", "entityid": "284430058", "ADDR_LINE1": "772 Armstrong RD"}`)
-	var flags int64 = senzing.SzWithInfo
+	var flags = senzing.SzWithInfo
 
 	// Using SzEngine: Add record and return "withInfo".
 
