@@ -1,4 +1,4 @@
-package szengine
+package szengine_test
 
 import (
 	"context"
@@ -22,6 +22,7 @@ import (
 	"github.com/senzing-garage/sz-sdk-go-core/helper"
 	"github.com/senzing-garage/sz-sdk-go-core/szconfig"
 	"github.com/senzing-garage/sz-sdk-go-core/szconfigmanager"
+	"github.com/senzing-garage/sz-sdk-go-core/szengine"
 	"github.com/senzing-garage/sz-sdk-go/senzing"
 	"github.com/senzing-garage/sz-sdk-go/szerror"
 	"github.com/stretchr/testify/assert"
@@ -90,7 +91,7 @@ var (
 		ID:       "Observer 1",
 		IsSilent: true,
 	}
-	szEngineSingleton *Szengine
+	szEngineSingleton *szengine.Szengine
 )
 
 type GetEntityByRecordIDResponse struct {
@@ -356,7 +357,7 @@ func TestSzengine_DeleteRecord_withInfo_badDataSourceCode_fix(test *testing.T) {
 	records := []record.Record{
 		truthset.CustomerRecords["1009"],
 	}
-	handleError(deleteRecords(ctx, records))
+	handleErrorWithPanic(deleteRecords(ctx, records))
 }
 
 func TestSzengine_ExportCsvEntityReport(test *testing.T) {
@@ -366,7 +367,7 @@ func TestSzengine_ExportCsvEntityReport(test *testing.T) {
 		truthset.CustomerRecords["1002"],
 		truthset.CustomerRecords["1003"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	expected := expectedExportCsvEntityReport
@@ -392,7 +393,7 @@ func TestSzengine_ExportCsvEntityReport_badCsvColumnList(test *testing.T) {
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -410,7 +411,7 @@ func TestSzengine_ExportCsvEntityReport_nilCsvColumnList(test *testing.T) {
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -430,7 +431,7 @@ func TestSzengine_ExportCsvEntityReportIterator(test *testing.T) {
 		truthset.CustomerRecords["1002"],
 		truthset.CustomerRecords["1003"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	expected := expectedExportCsvEntityReportIterator
@@ -453,7 +454,7 @@ func TestSzengine_ExportCsvEntityReportIterator_badCsvColumnList(test *testing.T
 		truthset.CustomerRecords["1002"],
 		truthset.CustomerRecords["1003"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	expected := []string{
@@ -477,7 +478,7 @@ func TestSzengine_ExportCsvEntityReportIterator_nilCsvColumnList(test *testing.T
 		truthset.CustomerRecords["1002"],
 		truthset.CustomerRecords["1003"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	expected := expectedExportCsvEntityReportIteratorNilCsvColumnList
@@ -499,7 +500,7 @@ func TestSzengine_ExportJSONEntityReport(test *testing.T) {
 		truthset.CustomerRecords["1002"],
 		truthset.CustomerRecords["1003"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -608,7 +609,7 @@ func TestSzengine_ExportJSONEntityReportIterator(test *testing.T) {
 		truthset.CustomerRecords["1002"],
 		truthset.CustomerRecords["1003"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
@@ -635,7 +636,7 @@ func TestSzengine_FetchNext_badExportHandle(test *testing.T) {
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -649,7 +650,7 @@ func TestSzengine_FetchNext_nilExportHandle(test *testing.T) {
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -665,7 +666,7 @@ func TestSzengine_FindInterestingEntitiesByEntityID(test *testing.T) {
 		truthset.CustomerRecords["1002"],
 		truthset.CustomerRecords["1003"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -684,7 +685,7 @@ func TestSzengine_FindInterestingEntitiesByEntityID_badEntityID(test *testing.T)
 		truthset.CustomerRecords["1002"],
 		truthset.CustomerRecords["1003"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -701,7 +702,7 @@ func TestSzengine_FindInterestingEntitiesByEntityID_nilEntityID(test *testing.T)
 		truthset.CustomerRecords["1002"],
 		truthset.CustomerRecords["1003"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -716,7 +717,7 @@ func TestSzengine_FindInterestingEntitiesByRecordID(test *testing.T) {
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -732,7 +733,7 @@ func TestSzengine_FindInterestingEntitiesByRecordID_badDataSourceCode(test *test
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -748,7 +749,7 @@ func TestSzengine_FindInterestingEntitiesByRecordID_badRecordID(test *testing.T)
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -764,7 +765,7 @@ func TestSzengine_FindInterestingEntitiesByRecordID_nilDataSourceCode(test *test
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -780,7 +781,7 @@ func TestSzengine_FindInterestingEntitiesByRecordID_nilRecordID(test *testing.T)
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -797,7 +798,7 @@ func TestSzengine_FindNetworkByEntityID(test *testing.T) {
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -832,7 +833,7 @@ func TestSzengine_FindNetworkByEntityID_badMaxDegrees(test *testing.T) {
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -855,7 +856,7 @@ func TestSzengine_FindNetworkByEntityID_badBuildOutDegrees(test *testing.T) {
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -878,7 +879,7 @@ func TestSzengine_FindNetworkByEntityID_badBuildOutMaxEntities(test *testing.T) 
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -901,7 +902,7 @@ func TestSzengine_FindNetworkByEntityID_nilMaxDegrees(test *testing.T) {
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -924,7 +925,7 @@ func TestSzengine_FindNetworkByEntityID_nilBuildOutDegrees(test *testing.T) {
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -947,7 +948,7 @@ func TestSzengine_FindNetworkByEntityID_nilBuildOutMaxEntities(test *testing.T) 
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -971,7 +972,7 @@ func TestSzengine_FindNetworkByRecordID(test *testing.T) {
 		truthset.CustomerRecords["1002"],
 		truthset.CustomerRecords["1003"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -992,7 +993,7 @@ func TestSzengine_FindNetworkByRecordID_badDataSourceCode(test *testing.T) {
 		truthset.CustomerRecords["1002"],
 		truthset.CustomerRecords["1003"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -1013,7 +1014,7 @@ func TestSzengine_FindNetworkByRecordID_badRecordID(test *testing.T) {
 		truthset.CustomerRecords["1002"],
 		truthset.CustomerRecords["1003"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -1034,7 +1035,7 @@ func TestSzengine_FindNetworkByRecordID_nilMaxDegrees(test *testing.T) {
 		truthset.CustomerRecords["1002"],
 		truthset.CustomerRecords["1003"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -1055,7 +1056,7 @@ func TestSzengine_FindNetworkByRecordID_nilBuildOutDegrees(test *testing.T) {
 		truthset.CustomerRecords["1002"],
 		truthset.CustomerRecords["1003"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -1076,7 +1077,7 @@ func TestSzengine_FindNetworkByRecordID_nilBuildOutMaxEntities(test *testing.T) 
 		truthset.CustomerRecords["1002"],
 		truthset.CustomerRecords["1003"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -1096,7 +1097,7 @@ func TestSzengine_FindPathByEntityID(test *testing.T) {
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -1116,7 +1117,7 @@ func TestSzengine_FindPathByEntityID_badStartEntityID(test *testing.T) {
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -1135,7 +1136,7 @@ func TestSzengine_FindPathByEntityID_badEndEntityID(test *testing.T) {
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -1154,7 +1155,7 @@ func TestSzengine_FindPathByEntityID_badMaxDegrees(test *testing.T) {
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -1174,7 +1175,7 @@ func TestSzengine_FindPathByEntityID_badAvoidEntityIDs(test *testing.T) {
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -1194,7 +1195,7 @@ func TestSzengine_FindPathByEntityID_badRequiredDataSource(test *testing.T) {
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -1214,7 +1215,7 @@ func TestSzengine_FindPathByEntityID_nilMaxDegrees(test *testing.T) {
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -1234,7 +1235,7 @@ func TestSzengine_FindPathByEntityID_nilAvoidEntityIDs(test *testing.T) {
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -1254,7 +1255,7 @@ func TestSzengine_FindPathByEntityID_nilRequiredDataSource(test *testing.T) {
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -1274,7 +1275,7 @@ func TestSzengine_FindPathByEntityID_avoiding(test *testing.T) {
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -1298,7 +1299,7 @@ func TestSzengine_FindPathByEntityID_avoiding_badStartEntityID(test *testing.T) 
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -1321,7 +1322,7 @@ func TestSzengine_FindPathByEntityID_avoidingAndIncluding(test *testing.T) {
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -1346,7 +1347,7 @@ func TestSzengine_FindPathByEntityID_including(test *testing.T) {
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -1368,7 +1369,7 @@ func TestSzengine_FindPathByEntityID_including_badStartEntityID(test *testing.T)
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -1389,7 +1390,7 @@ func TestSzengine_FindPathByRecordID(test *testing.T) {
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -1407,7 +1408,7 @@ func TestSzengine_FindPathByRecordID_badDataSourceCode(test *testing.T) {
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -1425,7 +1426,7 @@ func TestSzengine_FindPathByRecordID_badRecordID(test *testing.T) {
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -1443,7 +1444,7 @@ func TestSzengine_FindPathByRecordID_badMaxDegrees(test *testing.T) {
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -1461,7 +1462,7 @@ func TestSzengine_FindPathByRecordID_badAvoidRecordKeys(test *testing.T) {
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -1479,7 +1480,7 @@ func TestSzengine_FindPathByRecordID_badRequiredDataSources(test *testing.T) {
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -1497,7 +1498,7 @@ func TestSzengine_FindPathByRecordID_avoiding(test *testing.T) {
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -1516,7 +1517,7 @@ func TestSzengine_FindPathByRecordID_avoiding_badStartDataSourceCode(test *testi
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -1535,7 +1536,7 @@ func TestSzengine_FindPathByRecordID_avoidingAndIncluding(test *testing.T) {
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -1555,7 +1556,7 @@ func TestSzengine_FindPathByRecordID_including(test *testing.T) {
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -1577,7 +1578,7 @@ func TestSzengine_FindPathByRecordID_including_badDataSourceCode(test *testing.T
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -1606,7 +1607,7 @@ func TestSzengine_GetEntityByEntityID(test *testing.T) {
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -1623,7 +1624,7 @@ func TestSzengine_GetEntityByEntityID_badEntityID(test *testing.T) {
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -1638,7 +1639,7 @@ func TestSzengine_GetEntityByEntityID_nilEntityID(test *testing.T) {
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -1653,7 +1654,7 @@ func TestSzengine_GetEntityByRecordID(test *testing.T) {
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -1669,7 +1670,7 @@ func TestSzengine_GetEntityByRecordID_badDataSourceCode(test *testing.T) {
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -1685,7 +1686,7 @@ func TestSzengine_GetEntityByRecordID_badRecordID(test *testing.T) {
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -1701,7 +1702,7 @@ func TestSzengine_GetEntityByRecordID_nilDataSourceCode(test *testing.T) {
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -1717,7 +1718,7 @@ func TestSzengine_GetEntityByRecordID_nilRecordID(test *testing.T) {
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -1733,7 +1734,7 @@ func TestSzengine_GetRecord(test *testing.T) {
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -1749,7 +1750,7 @@ func TestSzengine_GetRecord_badDataSourceCode(test *testing.T) {
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -1765,7 +1766,7 @@ func TestSzengine_GetRecord_badRecordID(test *testing.T) {
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -1781,7 +1782,7 @@ func TestSzengine_GetRecord_nilDataSourceCode(test *testing.T) {
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -1797,7 +1798,7 @@ func TestSzengine_GetRecord_nilRecordID(test *testing.T) {
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -1830,7 +1831,7 @@ func TestSzengine_GetVirtualEntityByRecordID(test *testing.T) {
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -1849,7 +1850,7 @@ func TestSzengine_GetVirtualEntityByRecordID_badDataSourceCode(test *testing.T) 
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -1868,7 +1869,7 @@ func TestSzengine_GetVirtualEntityByRecordID_badRecordID(test *testing.T) {
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -1886,7 +1887,7 @@ func TestSzengine_HowEntityByEntityID(test *testing.T) {
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -1903,7 +1904,7 @@ func TestSzengine_HowEntityByEntityID_badEntityID(test *testing.T) {
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -1918,7 +1919,7 @@ func TestSzengine_HowEntityByEntityID_nilEntityID(test *testing.T) {
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -2001,7 +2002,7 @@ func TestSzengine_ProcessRedoRecord_withInfo(test *testing.T) {
 		truthset.CustomerRecords["1005"],
 		truthset.CustomerRecords["1009"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -2039,7 +2040,7 @@ func TestSzengine_ReevaluateEntity(test *testing.T) {
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -2057,7 +2058,7 @@ func TestSzengine_ReevaluateEntity_badEntityID(test *testing.T) {
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -2073,7 +2074,7 @@ func TestSzengine_ReevaluateEntity_nilEntityID(test *testing.T) {
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -2089,7 +2090,7 @@ func TestSzengine_ReevaluateEntity_withInfo(test *testing.T) {
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -2106,7 +2107,7 @@ func TestSzengine_ReevaluateEntity_withInfo_badEntityID(test *testing.T) {
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -2121,7 +2122,7 @@ func TestSzengine_ReevaluateEntity_withInfo_nilEntityID(test *testing.T) {
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -2136,7 +2137,7 @@ func TestSzengine_ReevaluateRecord(test *testing.T) {
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -2153,7 +2154,7 @@ func TestSzengine_ReevaluateRecord_badDataSourceCode(test *testing.T) {
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -2169,7 +2170,7 @@ func TestSzengine_ReevaluateRecord_badRecordID(test *testing.T) {
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -2186,7 +2187,7 @@ func TestSzengine_ReevaluateRecord_nilDataSourceCode(test *testing.T) {
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -2202,7 +2203,7 @@ func TestSzengine_ReevaluateRecord_nilRecordID(test *testing.T) {
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -2219,7 +2220,7 @@ func TestSzengine_ReevaluateRecord_withInfo(test *testing.T) {
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -2235,7 +2236,7 @@ func TestSzengine_ReevaluateRecord_withInfo_badDataSourceCode(test *testing.T) {
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -2251,7 +2252,7 @@ func TestSzengine_ReevaluateRecord_withInfo_nilDataSourceCode(test *testing.T) {
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -2269,7 +2270,7 @@ func TestSzengine_SearchByAttributes(test *testing.T) {
 		truthset.CustomerRecords["1002"],
 		truthset.CustomerRecords["1003"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -2287,7 +2288,7 @@ func TestSzengine_SearchByAttributes_badAttributes(test *testing.T) {
 		truthset.CustomerRecords["1002"],
 		truthset.CustomerRecords["1003"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -2304,7 +2305,7 @@ func TestSzengine_SearchByAttributes_badSearchProfile(test *testing.T) {
 		truthset.CustomerRecords["1002"],
 		truthset.CustomerRecords["1003"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -2322,7 +2323,7 @@ func TestSzengine_SearchByAttributes_nilAttributes(test *testing.T) {
 		truthset.CustomerRecords["1002"],
 		truthset.CustomerRecords["1003"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -2339,7 +2340,7 @@ func TestSzengine_SearchByAttributes_nilSearchProfile(test *testing.T) {
 		truthset.CustomerRecords["1002"],
 		truthset.CustomerRecords["1003"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -2357,7 +2358,7 @@ func TestSzengine_SearchByAttributes_withSearchProfile(test *testing.T) {
 		truthset.CustomerRecords["1002"],
 		truthset.CustomerRecords["1003"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -2386,7 +2387,7 @@ func TestSzengine_WhyEntities(test *testing.T) {
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -2406,7 +2407,7 @@ func TestSzengine_WhyEntities_badEnitity1(test *testing.T) {
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -2424,7 +2425,7 @@ func TestSzengine_WhyEntities_badEnitity2(test *testing.T) {
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -2442,7 +2443,7 @@ func TestSzengine_WhyEntities_nilEnitity1(test *testing.T) {
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -2460,7 +2461,7 @@ func TestSzengine_WhyEntities_nilEnitity2(test *testing.T) {
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -2477,7 +2478,7 @@ func TestSzengine_WhyRecordInEntity(test *testing.T) {
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -2493,7 +2494,7 @@ func TestSzengine_WhyRecordInEntity_badDataSourceCode(test *testing.T) {
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -2509,7 +2510,7 @@ func TestSzengine_WhyRecordInEntity_badRecordID(test *testing.T) {
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -2525,7 +2526,7 @@ func TestSzengine_WhyRecordInEntity_nilDataSourceCode(test *testing.T) {
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -2541,7 +2542,7 @@ func TestSzengine_WhyRecordInEntity_nilRecordID(test *testing.T) {
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -2558,7 +2559,7 @@ func TestSzengine_WhyRecords(test *testing.T) {
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -2576,7 +2577,7 @@ func TestSzengine_WhyRecords_badDataSourceCode(test *testing.T) {
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -2594,7 +2595,7 @@ func TestSzengine_WhyRecords_badRecordID(test *testing.T) {
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -2612,7 +2613,7 @@ func TestSzengine_WhyRecords_nilDataSourceCode(test *testing.T) {
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -2630,7 +2631,7 @@ func TestSzengine_WhyRecords_nilRecordID(test *testing.T) {
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
 	}
-	defer func() { handleError(deleteRecords(ctx, records)) }()
+	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szEngine := getTestObject(ctx, test)
@@ -2640,23 +2641,6 @@ func TestSzengine_WhyRecords_nilRecordID(test *testing.T) {
 	actual, err := szEngine.WhyRecords(ctx, record1.DataSource, record1.ID, record2.DataSource, nilRecordID, flags)
 	require.ErrorIs(test, err, szerror.ErrSzNotFound)
 	printActual(test, actual)
-}
-
-// ----------------------------------------------------------------------------
-// Private methods
-// ----------------------------------------------------------------------------
-
-func TestSzengine_getByteArray(test *testing.T) {
-	ctx := context.TODO()
-	szProduct := getTestObject(ctx, test)
-	szProduct.getByteArray(10)
-}
-
-func TestSzengine_newError(test *testing.T) {
-	ctx := context.TODO()
-	szProduct := getTestObject(ctx, test)
-	err := szProduct.newError(ctx, 1)
-	require.Error(test, err)
 }
 
 // ----------------------------------------------------------------------------
@@ -2770,10 +2754,7 @@ func TestSzengine_Destroy_withObserver(test *testing.T) {
 
 func addRecords(ctx context.Context, records []record.Record) error {
 	var err error
-	szEngine, err := getSzEngine(ctx)
-	if err != nil {
-		return err
-	}
+	szEngine := getSzEngine(ctx)
 	flags := senzing.SzWithoutInfo
 	for _, record := range records {
 		_, err = szEngine.AddRecord(ctx, record.DataSource, record.ID, record.JSON, flags)
@@ -2786,10 +2767,7 @@ func addRecords(ctx context.Context, records []record.Record) error {
 
 func deleteRecords(ctx context.Context, records []record.Record) error {
 	var err error
-	szEngine, err := getSzEngine(ctx)
-	if err != nil {
-		return err
-	}
+	szEngine := getSzEngine(ctx)
 	flags := senzing.SzWithoutInfo
 	for _, record := range records {
 		_, err = szEngine.DeleteRecord(ctx, record.DataSource, record.ID, flags)
@@ -2816,11 +2794,7 @@ func getEntityIDForRecord(datasource string, id string) (int64, error) {
 	var result int64
 	var err error
 	ctx := context.TODO()
-	// var result int64
-	szEngine, err := getSzEngine(ctx)
-	if err != nil {
-		return result, err
-	}
+	szEngine := getSzEngine(ctx)
 	response, err := szEngine.GetEntityByRecordID(ctx, datasource, id, senzing.SzWithoutInfo)
 	if err != nil {
 		return result, err
@@ -2857,15 +2831,15 @@ func getEntityIDStringForRecord(datasource string, id string) (string, error) {
 	return result, err
 }
 
-func getNewSzEngine(ctx context.Context) (*Szengine, error) {
+func getNewSzEngine(ctx context.Context) (*szengine.Szengine, error) {
 	var err error
-	var newSzEngine *Szengine
+	var newSzEngine *szengine.Szengine
 
 	settings, err := getSettings()
 	if err != nil {
 		return newSzEngine, fmt.Errorf("getSettings() Error: %w", err)
 	}
-	newSzEngine = &Szengine{}
+	newSzEngine = &szengine.Szengine{}
 	err = newSzEngine.SetLogLevel(ctx, logLevel)
 	if err != nil {
 		return newSzEngine, fmt.Errorf("SetLogLevel() Error: %w", err)
@@ -2910,31 +2884,37 @@ func getSettings() (string, error) {
 	return result, err
 }
 
-func getSzEngine(ctx context.Context) (*Szengine, error) {
+func getSzEngine(ctx context.Context) *szengine.Szengine {
 	var err error
 	if szEngineSingleton == nil {
 		szEngineSingleton, err = getNewSzEngine(ctx)
+		if err != nil {
+			handleErrorWithPanic(fmt.Errorf("Getting new Engine: %w", err))
+		}
 	}
-	return szEngineSingleton, err
+	return szEngineSingleton
 }
 
 func getSzEngineAsInterface(ctx context.Context) senzing.SzEngine {
-	result, err := getSzEngine(ctx)
-	handleError(err)
-	return result
+	return getSzEngine(ctx)
 }
 
 func getTestDirectoryPath() string {
 	return filepath.FromSlash("../target/test/szengine")
 }
 
-func getTestObject(ctx context.Context, test *testing.T) *Szengine {
-	result, err := getSzEngine(ctx)
-	require.NoError(test, err)
-	return result
+func getTestObject(ctx context.Context, test *testing.T) *szengine.Szengine {
+	_ = test
+	return getSzEngine(ctx)
 }
 
 func handleError(err error) {
+	if err != nil {
+		fmt.Println("Error:", err)
+	}
+}
+
+func handleErrorWithPanic(err error) {
 	if err != nil {
 		panic(err)
 	}
@@ -2999,15 +2979,15 @@ func setup() error {
 	var err error
 	err = setupDirectories()
 	if err != nil {
-		return fmt.Errorf("Failed to set up directories. Error: %w", err)
+		return fmt.Errorf("failed to set up directories. Error: %w", err)
 	}
 	err = setupDatabase()
 	if err != nil {
-		return fmt.Errorf("Failed to set up database. Error: %w", err)
+		return fmt.Errorf("failed to set up database. Error: %w", err)
 	}
 	err = setupSenzingConfiguration()
 	if err != nil {
-		return fmt.Errorf("Failed to set up Senzing configuration. Error: %w", err)
+		return fmt.Errorf("failed to set up Senzing configuration. Error: %w", err)
 	}
 	return err
 }
@@ -3020,21 +3000,18 @@ func setupDatabase() error {
 	testDirectoryPath := getTestDirectoryPath()
 	dbTargetPath, err := filepath.Abs(filepath.Join(testDirectoryPath, "G2C.db"))
 	if err != nil {
-		return fmt.Errorf("failed to make target database path (%s) absolute. Error: %w",
-			dbTargetPath, err)
+		return fmt.Errorf("failed to make target database path (%s) absolute. Error: %w", dbTargetPath, err)
 	}
 	databaseTemplatePath, err := filepath.Abs(getDatabaseTemplatePath())
 	if err != nil {
-		return fmt.Errorf("failed to obtain absolute path to database file (%s): %s",
-			databaseTemplatePath, err.Error())
+		return fmt.Errorf("failed to obtain absolute path to database file (%s). Error: %w", databaseTemplatePath, err)
 	}
 
 	// Copy template file to test directory.
 
 	_, _, err = fileutil.CopyFile(databaseTemplatePath, testDirectoryPath, true) // Copy the SQLite database file.
 	if err != nil {
-		return fmt.Errorf("setup failed to copy template database (%v) to target path (%v): %w",
-			databaseTemplatePath, testDirectoryPath, err)
+		return fmt.Errorf("setup failed to copy template database (%v) to target path (%v). Error: %w", databaseTemplatePath, testDirectoryPath, err)
 	}
 	return err
 }
@@ -3044,11 +3021,11 @@ func setupDirectories() error {
 	testDirectoryPath := getTestDirectoryPath()
 	err = os.RemoveAll(filepath.Clean(testDirectoryPath)) // cleanup any previous test run
 	if err != nil {
-		return fmt.Errorf("failed to remove target test directory (%v): %w", testDirectoryPath, err)
+		return fmt.Errorf("failed to remove target test directory (%v). Error: %w", testDirectoryPath, err)
 	}
 	err = os.MkdirAll(filepath.Clean(testDirectoryPath), 0750) // recreate the test target directory
 	if err != nil {
-		return fmt.Errorf("failed to recreate target test directory (%v): %w", testDirectoryPath, err)
+		return fmt.Errorf("failed to recreate target test directory (%v). Error: %w", testDirectoryPath, err)
 	}
 	return err
 }
@@ -3057,76 +3034,65 @@ func setupSenzingConfiguration() error {
 	ctx := context.TODO()
 	now := time.Now()
 
-	// Create sz objects.
-
 	settings, err := getSettings()
 	if err != nil {
 		return fmt.Errorf("failed to get settings. Error: %w", err)
 	}
+
+	// Create sz objects.
+
 	szConfig := &szconfig.Szconfig{}
 	err = szConfig.Initialize(ctx, instanceName, settings, verboseLogging)
 	if err != nil {
 		return fmt.Errorf("failed to szConfig.Initialize(). Error: %w", err)
 	}
-	defer func() { handleError(szConfig.Destroy(ctx)) }()
+	defer func() { handleErrorWithPanic(szConfig.Destroy(ctx)) }()
 
 	szConfigManager := &szconfigmanager.Szconfigmanager{}
 	err = szConfigManager.Initialize(ctx, instanceName, settings, verboseLogging)
 	if err != nil {
 		return fmt.Errorf("failed to szConfigManager.Initialize(). Error: %w", err)
 	}
-	defer func() { handleError(szConfigManager.Destroy(ctx)) }()
+	defer func() { handleErrorWithPanic(szConfigManager.Destroy(ctx)) }()
 
-	// Create an in memory Senzing configuration.
+	// Create a Senzing configuration.
 
-	configHandle, err := szConfig.CreateConfig(ctx)
+	err = szConfig.ImportTemplate(ctx)
 	if err != nil {
 		return fmt.Errorf("failed to szConfig.CreateConfig(). Error: %w", err)
 	}
 
-	// Add data sources to in-memory Senzing configuration.
+	// Add data sources to template Senzing configuration.
 
 	dataSourceCodes := []string{"CUSTOMERS", "REFERENCE", "WATCHLIST"}
 	for _, dataSourceCode := range dataSourceCodes {
-		_, err := szConfig.AddDataSource(ctx, configHandle, dataSourceCode)
+		_, err := szConfig.AddDataSource(ctx, dataSourceCode)
 		if err != nil {
 			return fmt.Errorf("failed to szConfig.AddDataSource(). Error: %w", err)
 		}
 	}
 
-	// Create a string representation of the in-memory configuration.
+	// Create a string representation of the Senzing configuration.
 
-	configDefinition, err := szConfig.ExportConfig(ctx, configHandle)
+	configDefinition, err := szConfig.Export(ctx)
 	if err != nil {
 		return fmt.Errorf("failed to szConfig.ExportConfig(). Error: %w", err)
-	}
-
-	// Close szConfig in-memory object.
-
-	err = szConfig.CloseConfig(ctx, configHandle)
-	if err != nil {
-		return fmt.Errorf("failed to szConfig.CloseConfig(). Error: %w", err)
 	}
 
 	// Persist the Senzing configuration to the Senzing repository as default.
 
 	configComment := fmt.Sprintf("Created by szengine_test at %s", now.UTC())
-	configID, err := szConfigManager.AddConfig(ctx, configDefinition, configComment)
+	defaultConfigID, err = szConfigManager.SetDefaultConfig(ctx, configDefinition, configComment)
 	if err != nil {
 		return fmt.Errorf("failed to szConfigManager.AddConfig(). Error: %w", err)
 	}
 
-	err = szConfigManager.SetDefaultConfigID(ctx, configID)
-	if err != nil {
-		return fmt.Errorf("failed to szConfigManager.SetDefaultConfigID(). Error: %w", err)
-	}
-	defaultConfigID = configID
 	return err
 }
 
 func teardown() error {
 	ctx := context.TODO()
-	_, _ = getSzEngine(ctx)
+	_ = getSzEngine(ctx)
 	err := teardownSzEngine(ctx)
 	return err
 }

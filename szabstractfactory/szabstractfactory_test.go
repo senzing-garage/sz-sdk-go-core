@@ -1,4 +1,4 @@
-package szabstractfactory
+package szabstractfactory_test
 
 import (
 	"context"
@@ -11,6 +11,7 @@ import (
 	truncator "github.com/aquilax/truncate"
 	"github.com/senzing-garage/go-helpers/fileutil"
 	"github.com/senzing-garage/go-helpers/settings"
+	"github.com/senzing-garage/sz-sdk-go-core/szabstractfactory"
 	"github.com/senzing-garage/sz-sdk-go-core/szconfig"
 	"github.com/senzing-garage/sz-sdk-go-core/szconfigmanager"
 	"github.com/senzing-garage/sz-sdk-go/senzing"
@@ -25,31 +26,14 @@ const (
 	verboseLogging    = senzing.SzNoLogging
 )
 
-var (
-	defaultConfigID int64
-)
-
 // ----------------------------------------------------------------------------
 // Interface methods - test
 // ----------------------------------------------------------------------------
 
-func TestSzAbstractFactory_CreateConfig(test *testing.T) {
-	ctx := context.TODO()
-	szAbstractFactory := getTestObject(ctx, test)
-	defer func() { handleError(szAbstractFactory.Destroy(ctx)) }()
-	szConfig, err := szAbstractFactory.CreateConfig(ctx)
-	require.NoError(test, err)
-	configHandle, err := szConfig.CreateConfig(ctx)
-	require.NoError(test, err)
-	dataSources, err := szConfig.GetDataSources(ctx, configHandle)
-	require.NoError(test, err)
-	printActual(test, dataSources)
-}
-
 func TestSzAbstractFactory_CreateConfigManager(test *testing.T) {
 	ctx := context.TODO()
 	szAbstractFactory := getTestObject(ctx, test)
-	defer func() { handleError(szAbstractFactory.Destroy(ctx)) }()
+	defer func() { handleErrorWithPanic(szAbstractFactory.Destroy(ctx)) }()
 	szConfigManager, err := szAbstractFactory.CreateConfigManager(ctx)
 	require.NoError(test, err)
 	configList, err := szConfigManager.GetConfigs(ctx)
@@ -60,7 +44,7 @@ func TestSzAbstractFactory_CreateConfigManager(test *testing.T) {
 func TestSzAbstractFactory_CreateDiagnostic(test *testing.T) {
 	ctx := context.TODO()
 	szAbstractFactory := getTestObject(ctx, test)
-	defer func() { handleError(szAbstractFactory.Destroy(ctx)) }()
+	defer func() { handleErrorWithPanic(szAbstractFactory.Destroy(ctx)) }()
 	szDiagnostic, err := szAbstractFactory.CreateDiagnostic(ctx)
 	require.NoError(test, err)
 	result, err := szDiagnostic.CheckDatastorePerformance(ctx, 1)
@@ -71,7 +55,7 @@ func TestSzAbstractFactory_CreateDiagnostic(test *testing.T) {
 func TestSzAbstractFactory_CreateEngine(test *testing.T) {
 	ctx := context.TODO()
 	szAbstractFactory := getTestObject(ctx, test)
-	defer func() { handleError(szAbstractFactory.Destroy(ctx)) }()
+	defer func() { handleErrorWithPanic(szAbstractFactory.Destroy(ctx)) }()
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	require.NoError(test, err)
 	stats, err := szEngine.GetStats(ctx)
@@ -82,7 +66,7 @@ func TestSzAbstractFactory_CreateEngine(test *testing.T) {
 func TestSzAbstractFactory_CreateProduct(test *testing.T) {
 	ctx := context.TODO()
 	szAbstractFactory := getTestObject(ctx, test)
-	defer func() { handleError(szAbstractFactory.Destroy(ctx)) }()
+	defer func() { handleErrorWithPanic(szAbstractFactory.Destroy(ctx)) }()
 	szProduct, err := szAbstractFactory.CreateProduct(ctx)
 	require.NoError(test, err)
 	version, err := szProduct.GetVersion(ctx)
@@ -93,13 +77,13 @@ func TestSzAbstractFactory_CreateProduct(test *testing.T) {
 func TestSzAbstractFactory_Destroy(test *testing.T) {
 	ctx := context.TODO()
 	szAbstractFactory := getTestObject(ctx, test)
-	defer func() { handleError(szAbstractFactory.Destroy(ctx)) }()
+	defer func() { handleErrorWithPanic(szAbstractFactory.Destroy(ctx)) }()
 }
 
 func TestSzAbstractFactory_Reinitialize(test *testing.T) {
 	ctx := context.TODO()
 	szAbstractFactory := getTestObject(ctx, test)
-	defer func() { handleError(szAbstractFactory.Destroy(ctx)) }()
+	defer func() { handleErrorWithPanic(szAbstractFactory.Destroy(ctx)) }()
 	_, err := szAbstractFactory.CreateDiagnostic(ctx)
 	require.NoError(test, err)
 	_, err = szAbstractFactory.CreateEngine(ctx)
@@ -127,41 +111,29 @@ func getSettings() (string, error) {
 
 	testDirectoryPath := getTestDirectoryPath()
 	dbTargetPath, err := filepath.Abs(filepath.Join(testDirectoryPath, "G2C.db"))
-	if err != nil {
-		return result, fmt.Errorf("failed to make target database path (%s) absolute. Error: %w", dbTargetPath, err)
-	}
+	handleErrorWithPanic(err)
 	databaseURL := fmt.Sprintf("sqlite3://na:na@nowhere/%s", dbTargetPath)
 
 	// Create Senzing engine configuration JSON.
 
 	configAttrMap := map[string]string{"databaseUrl": databaseURL}
 	result, err = settings.BuildSimpleSettingsUsingMap(configAttrMap)
-	if err != nil {
-		return result, fmt.Errorf("failed to BuildSimpleSettingsUsingMap(%s) Error: %w", configAttrMap, err)
-	}
+	handleErrorWithPanic(err)
 	return result, err
 }
 
-func getSzAbstractFactory(ctx context.Context) (senzing.SzAbstractFactory, error) {
+func getSzAbstractFactory(ctx context.Context) senzing.SzAbstractFactory {
 	var err error
 	var result senzing.SzAbstractFactory
 	_ = ctx
 	settings, err := getSettings()
-	if err != nil {
-		return result, err
-	}
-	result = &Szabstractfactory{
+	handleErrorWithPanic(err)
+	result = &szabstractfactory.Szabstractfactory{
 		ConfigID:       senzing.SzInitializeWithDefaultConfiguration,
 		InstanceName:   instanceName,
 		Settings:       settings,
 		VerboseLogging: verboseLogging,
 	}
-	return result, err
-}
-
-func getTestObject(ctx context.Context, test *testing.T) senzing.SzAbstractFactory {
-	result, err := getSzAbstractFactory(ctx)
-	require.NoError(test, err)
 	return result
 }
 
@@ -169,7 +141,18 @@ func getTestDirectoryPath() string {
 	return filepath.FromSlash("../target/test/szconfig")
 }
 
+func getTestObject(ctx context.Context, test *testing.T) senzing.SzAbstractFactory {
+	_ = test
+	return getSzAbstractFactory(ctx)
+}
+
 func handleError(err error) {
+	if err != nil {
+		fmt.Println("Error:", err)
+	}
+}
+
+func handleErrorWithPanic(err error) {
 	if err != nil {
 		panic(err)
 	}
@@ -210,17 +193,11 @@ func TestMain(m *testing.M) {
 func setup() error {
 	var err error
 	err = setupDirectories()
-	if err != nil {
-		return fmt.Errorf("failed to set up directories. Error: %w", err)
-	}
+	handleErrorWithPanic(err)
 	err = setupDatabase()
-	if err != nil {
-		return fmt.Errorf("failed to set up database. Error: %w", err)
-	}
+	handleErrorWithPanic(err)
 	err = setupSenzingConfiguration()
-	if err != nil {
-		return fmt.Errorf("failed to set up Senzing configuration. Error: %w", err)
-	}
+	handleErrorWithPanic(err)
 	return err
 }
 
@@ -230,21 +207,15 @@ func setupDatabase() error {
 	// Locate source and target paths.
 
 	testDirectoryPath := getTestDirectoryPath()
-	dbTargetPath, err := filepath.Abs(filepath.Join(testDirectoryPath, "G2C.db"))
-	if err != nil {
-		return fmt.Errorf("failed to make target database path (%s) absolute. Error: %w", dbTargetPath, err)
-	}
+	_, err = filepath.Abs(filepath.Join(testDirectoryPath, "G2C.db"))
+	handleErrorWithPanic(err)
 	databaseTemplatePath, err := filepath.Abs(getDatabaseTemplatePath())
-	if err != nil {
-		return fmt.Errorf("failed to obtain absolute path to database file (%s). Error: %w", databaseTemplatePath, err)
-	}
+	handleErrorWithPanic(err)
 
 	// Copy template file to test directory.
 
 	_, _, err = fileutil.CopyFile(databaseTemplatePath, testDirectoryPath, true) // Copy the SQLite database file.
-	if err != nil {
-		return fmt.Errorf("setup failed to copy template database (%v) to target path (%v). Error: %w", databaseTemplatePath, testDirectoryPath, err)
-	}
+	handleErrorWithPanic(err)
 	return err
 }
 
@@ -252,13 +223,9 @@ func setupDirectories() error {
 	var err error
 	testDirectoryPath := getTestDirectoryPath()
 	err = os.RemoveAll(filepath.Clean(testDirectoryPath)) // cleanup any previous test run
-	if err != nil {
-		return fmt.Errorf("failed to remove target test directory (%v). Error: %w", testDirectoryPath, err)
-	}
+	handleErrorWithPanic(err)
 	err = os.MkdirAll(filepath.Clean(testDirectoryPath), 0750) // recreate the test target directory
-	if err != nil {
-		return fmt.Errorf("failed to recreate target test directory (%v). Error: %w", testDirectoryPath, err)
-	}
+	handleErrorWithPanic(err)
 	return err
 }
 
@@ -266,69 +233,45 @@ func setupSenzingConfiguration() error {
 	ctx := context.TODO()
 	now := time.Now()
 
+	settings, err := getSettings()
+	handleErrorWithPanic(err)
+
 	// Create sz objects.
 
-	settings, err := getSettings()
-	if err != nil {
-		return fmt.Errorf("failed to get settings. Error: %w", err)
-	}
 	szConfig := &szconfig.Szconfig{}
 	err = szConfig.Initialize(ctx, instanceName, settings, verboseLogging)
-	if err != nil {
-		return fmt.Errorf("failed to szConfig.Initialize(). Error: %w", err)
-	}
-	defer func() { handleError(szConfig.Destroy(ctx)) }()
+	handleErrorWithPanic(err)
+	defer func() { handleErrorWithPanic(szConfig.Destroy(ctx)) }()
 
 	szConfigManager := &szconfigmanager.Szconfigmanager{}
 	err = szConfigManager.Initialize(ctx, instanceName, settings, verboseLogging)
-	if err != nil {
-		return fmt.Errorf("failed to szConfigManager.Initialize(). Error: %w", err)
-	}
-	defer func() { handleError(szConfigManager.Destroy(ctx)) }()
+	handleErrorWithPanic(err)
+	defer func() { handleErrorWithPanic(szConfigManager.Destroy(ctx)) }()
 
-	// Create an in memory Senzing configuration.
+	// Create a Senzing configuration.
 
-	configHandle, err := szConfig.CreateConfig(ctx)
-	if err != nil {
-		return fmt.Errorf("failed to szConfig.CreateConfig(). Error: %w", err)
-	}
+	err = szConfig.ImportTemplate(ctx)
+	handleErrorWithPanic(err)
 
-	// Add data sources to in-memory Senzing configuration.
+	// Add data sources to template Senzing configuration.
 
 	dataSourceCodes := []string{"CUSTOMERS", "REFERENCE", "WATCHLIST"}
 	for _, dataSourceCode := range dataSourceCodes {
-		_, err := szConfig.AddDataSource(ctx, configHandle, dataSourceCode)
-		if err != nil {
-			return fmt.Errorf("failed to szConfig.AddDataSource(). Error: %w", err)
-		}
+		_, err := szConfig.AddDataSource(ctx, dataSourceCode)
+		handleErrorWithPanic(err)
 	}
 
-	// Create a string representation of the in-memory configuration.
+	// Create a string representation of the Senzing configuration.
 
-	configDefinition, err := szConfig.ExportConfig(ctx, configHandle)
-	if err != nil {
-		return fmt.Errorf("failed to szConfig.ExportConfig(). Error: %w", err)
-	}
-
-	// Close szConfig in-memory object.
-
-	err = szConfig.CloseConfig(ctx, configHandle)
-	if err != nil {
-		return fmt.Errorf("failed to szConfig.CloseConfig(). Error: %w", err)
-	}
+	configDefinition, err := szConfig.Export(ctx)
+	handleErrorWithPanic(err)
 
 	// Persist the Senzing configuration to the Senzing repository as default.
 
 	configComment := fmt.Sprintf("Created by szdiagnostic_test at %s", now.UTC())
-	configID, err := szConfigManager.AddConfig(ctx, configDefinition, configComment)
-	if err != nil {
-		return fmt.Errorf("failed to szConfigManager.AddConfig(). Error: %w", err)
-	}
-	err = szConfigManager.SetDefaultConfigID(ctx, configID)
-	if err != nil {
-		return fmt.Errorf("failed to szConfigManager.SetDefaultConfigID(). Error: %w", err)
-	}
-	defaultConfigID = configID
+	_, err = szConfigManager.SetDefaultConfig(ctx, configDefinition, configComment)
+	handleErrorWithPanic(err)
+
 	return err
 }
 

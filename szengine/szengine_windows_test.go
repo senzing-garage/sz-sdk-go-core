@@ -1,6 +1,6 @@
 //go:build windows
 
-package szengine
+package szengine_test
 
 var expectedExportCsvEntityReport = []string{
 	`RESOLVED_ENTITY_ID,RELATED_ENTITY_ID,MATCH_LEVEL_CODE,MATCH_KEY,DATA_SOURCE,RECORD_ID`,

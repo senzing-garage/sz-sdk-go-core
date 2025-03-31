@@ -112,39 +112,29 @@ func demonstrateConfigFunctions(ctx context.Context, szAbstractFactory senzing.S
 
 	// Create Senzing objects.
 
-	szConfig, err := szAbstractFactory.CreateConfig(ctx)
+	szConfigManager, err := szAbstractFactory.CreateConfigManager(ctx)
 	failOnError(5101, err)
 
-	szConfigManager, err := szAbstractFactory.CreateConfigManager(ctx)
+	szConfig, err := szConfigManager.CreateConfigFromTemplate(ctx)
 	failOnError(5102, err)
-
-	// Using SzConfig: Create a default configuration in memory.
-
-	configHandle, err := szConfig.CreateConfig(ctx)
-	failOnError(5103, err)
 
 	// Using SzConfig: Add data source to in-memory configuration.
 
 	for testDataSourceCode := range truthset.TruthsetDataSources {
-		_, err := szConfig.AddDataSource(ctx, configHandle, testDataSourceCode)
+		_, err := szConfig.AddDataSource(ctx, testDataSourceCode)
 		failOnError(5104, err)
 	}
 
 	// Using SzConfig: Persist configuration to a string.
 
-	configStr, err := szConfig.ExportConfig(ctx, configHandle)
+	configStr, err := szConfig.Export(ctx)
 	failOnError(5105, err)
 
 	// Using SzConfigManager: Persist configuration string to database.
 
 	configComment := fmt.Sprintf("Created by main.go at %s", now.UTC())
-	configID, err := szConfigManager.AddConfig(ctx, configStr, configComment)
+	_, err = szConfigManager.SetDefaultConfig(ctx, configStr, configComment)
 	failOnError(5106, err)
-
-	// Using SzConfigManager: Set new configuration as the default.
-
-	err = szConfigManager.SetDefaultConfigID(ctx, configID)
-	failOnError(5107, err)
 
 	return nil
 }

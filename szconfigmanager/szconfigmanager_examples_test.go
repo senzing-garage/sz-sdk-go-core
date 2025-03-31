@@ -5,55 +5,18 @@ package szconfigmanager_test
 import (
 	"context"
 	"fmt"
-	"path/filepath"
 
 	"github.com/senzing-garage/go-helpers/jsonutil"
-	"github.com/senzing-garage/go-helpers/settings"
 	"github.com/senzing-garage/go-logging/logging"
 	"github.com/senzing-garage/sz-sdk-go-core/szabstractfactory"
-	"github.com/senzing-garage/sz-sdk-go-core/szconfigmanager"
 	"github.com/senzing-garage/sz-sdk-go/senzing"
-)
-
-const (
-	instanceName   = "SzConfigManager Test"
-	verboseLogging = senzing.SzNoLogging
 )
 
 // ----------------------------------------------------------------------------
 // Interface methods - Examples for godoc documentation
 // ----------------------------------------------------------------------------
 
-func ExampleSzconfigmanager_AddConfig() {
-	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfigmanager/szconfigmanager_examples_test.go
-	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
-	szConfig, err := szAbstractFactory.CreateConfig(ctx)
-	if err != nil {
-		handleError(err)
-	}
-	configHandle, err := szConfig.CreateConfig(ctx)
-	if err != nil {
-		handleError(err)
-	}
-	configDefinition, err := szConfig.ExportConfig(ctx, configHandle)
-	if err != nil {
-		handleError(err)
-	}
-	szConfigManager, err := szAbstractFactory.CreateConfigManager(ctx)
-	if err != nil {
-		handleError(err)
-	}
-	configComment := "Example configuration"
-	configID, err := szConfigManager.AddConfig(ctx, configDefinition, configComment)
-	if err != nil {
-		handleError(err)
-	}
-	fmt.Println(configID > 0) // Dummy output.
-	// Output: true
-}
-
-func ExampleSzconfigmanager_GetConfig() {
+func ExampleSzconfigmanager_CreateConfigFromConfigID() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfigmanager/szconfigmanager_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := getSzAbstractFactory(ctx)
@@ -65,7 +28,11 @@ func ExampleSzconfigmanager_GetConfig() {
 	if err != nil {
 		handleError(err)
 	}
-	configDefinition, err := szConfigManager.GetConfig(ctx, configID)
+	szConfig, err := szConfigManager.CreateConfigFromConfigID(ctx, configID)
+	if err != nil {
+		handleError(err)
+	}
+	configDefinition, err := szConfig.Export(ctx)
 	if err != nil {
 		handleError(err)
 	}
@@ -105,14 +72,35 @@ func ExampleSzconfigmanager_GetDefaultConfigID() {
 	// Output: true
 }
 
+func ExampleSzconfigmanager_RegisterConfig() {
+	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfigmanager/szconfigmanager_examples_test.go
+	ctx := context.TODO()
+	szAbstractFactory := getSzAbstractFactory(ctx)
+	szConfigManager, err := szAbstractFactory.CreateConfigManager(ctx)
+	if err != nil {
+		handleError(err)
+	}
+	szConfig, err := szConfigManager.CreateConfigFromTemplate(ctx)
+	if err != nil {
+		handleError(err)
+	}
+	configDefinition, err := szConfig.Export(ctx)
+	if err != nil {
+		handleError(err)
+	}
+	configComment := "Example configuration"
+	configID, err := szConfigManager.RegisterConfig(ctx, configDefinition, configComment)
+	if err != nil {
+		handleError(err)
+	}
+	fmt.Println(configID > 0) // Dummy output.
+	// Output: true
+}
+
 func ExampleSzconfigmanager_ReplaceDefaultConfigID() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfigmanager/szconfigmanager_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := getSzAbstractFactory(ctx)
-	szConfig, err := szAbstractFactory.CreateConfig(ctx)
-	if err != nil {
-		handleError(err)
-	}
 	szConfigManager, err := szAbstractFactory.CreateConfigManager(ctx)
 	if err != nil {
 		handleError(err)
@@ -121,27 +109,20 @@ func ExampleSzconfigmanager_ReplaceDefaultConfigID() {
 	if err != nil {
 		handleError(err)
 	}
-	configDefinition, err := szConfigManager.GetConfig(ctx, currentDefaultConfigID)
+	szConfig, err := szConfigManager.CreateConfigFromTemplate(ctx)
 	if err != nil {
 		handleError(err)
 	}
-	configHandle, err := szConfig.ImportConfig(ctx, configDefinition)
+	_, err = szConfig.AddDataSource(ctx, "TEST_DATASOURCE")
 	if err != nil {
 		handleError(err)
 	}
-	_, err = szConfig.AddDataSource(ctx, configHandle, "XXX")
+	configDefinition, err := szConfig.Export(ctx)
 	if err != nil {
 		handleError(err)
 	}
-	newConfigDefinition, err := szConfig.ExportConfig(ctx, configHandle)
-	if err != nil {
-		handleError(err)
-	}
-	err = szConfig.CloseConfig(ctx, configHandle)
-	if err != nil {
-		handleError(err)
-	}
-	newConfigID, err := szConfigManager.AddConfig(ctx, newConfigDefinition, "Command")
+	configComment := "Configuration with TEST_DATASOURCE"
+	newConfigID, err := szConfigManager.RegisterConfig(ctx, configDefinition, configComment)
 	if err != nil {
 		handleError(err)
 	}
@@ -210,28 +191,6 @@ func ExampleSzconfigmanager_GetObserverOrigin() {
 // Helper functions
 // ----------------------------------------------------------------------------
 
-func getSettings() (string, error) {
-	var result string
-
-	// Determine Database URL.
-
-	testDirectoryPath := getTestDirectoryPath()
-	dbTargetPath, err := filepath.Abs(filepath.Join(testDirectoryPath, "G2C.db"))
-	if err != nil {
-		return result, fmt.Errorf("failed to make target database path (%s) absolute. Error: %w", dbTargetPath, err)
-	}
-	databaseURL := fmt.Sprintf("sqlite3://na:na@nowhere/%s", dbTargetPath)
-
-	// Create Senzing engine configuration JSON.
-
-	configAttrMap := map[string]string{"databaseUrl": databaseURL}
-	result, err = settings.BuildSimpleSettingsUsingMap(configAttrMap)
-	if err != nil {
-		return result, fmt.Errorf("failed to BuildSimpleSettingsUsingMap(%s) Error: %w", configAttrMap, err)
-	}
-	return result, err
-}
-
 func getSzAbstractFactory(ctx context.Context) senzing.SzAbstractFactory {
 	var err error
 	var result senzing.SzAbstractFactory
@@ -247,28 +206,4 @@ func getSzAbstractFactory(ctx context.Context) senzing.SzAbstractFactory {
 		VerboseLogging: verboseLogging,
 	}
 	return result
-}
-
-func getSzConfigManager(ctx context.Context) *szconfigmanager.Szconfigmanager {
-	_ = ctx
-	settings, err := getSettings()
-	if err != nil {
-		panic(err)
-	}
-	result := &szconfigmanager.Szconfigmanager{}
-	err = result.Initialize(ctx, instanceName, settings, verboseLogging)
-	if err != nil {
-		panic(err)
-	}
-	return result
-}
-
-func getTestDirectoryPath() string {
-	return filepath.FromSlash("../target/test/szconfig")
-}
-
-func handleError(err error) {
-	if err != nil {
-		fmt.Println("Error:", err)
-	}
 }

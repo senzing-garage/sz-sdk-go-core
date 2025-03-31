@@ -1,4 +1,4 @@
-package szproduct
+package szproduct_test
 
 import (
 	"context"
@@ -13,6 +13,7 @@ import (
 	"github.com/senzing-garage/go-helpers/settings"
 	"github.com/senzing-garage/go-observing/observer"
 	"github.com/senzing-garage/sz-sdk-go-core/helper"
+	"github.com/senzing-garage/sz-sdk-go-core/szproduct"
 	"github.com/senzing-garage/sz-sdk-go/senzing"
 	"github.com/senzing-garage/sz-sdk-go/szerror"
 	"github.com/stretchr/testify/assert"
@@ -39,7 +40,7 @@ var (
 		ID:       "Observer 1",
 		IsSilent: true,
 	}
-	szProductSingleton *Szproduct
+	szProductSingleton *szproduct.Szproduct
 )
 
 // ----------------------------------------------------------------------------
@@ -60,29 +61,6 @@ func TestSzproduct_GetVersion(test *testing.T) {
 	actual, err := szProduct.GetVersion(ctx)
 	require.NoError(test, err)
 	printActual(test, actual)
-}
-
-// ----------------------------------------------------------------------------
-// Private methods
-// ----------------------------------------------------------------------------
-
-func TestSzproduct_getByteArray(test *testing.T) {
-	ctx := context.TODO()
-	szProduct := getTestObject(ctx, test)
-	szProduct.getByteArray(10)
-}
-
-func TestSzproduct_getByteArrayC(test *testing.T) {
-	ctx := context.TODO()
-	szProduct := getTestObject(ctx, test)
-	szProduct.getByteArrayC(10)
-}
-
-func TestSzproduct_newError(test *testing.T) {
-	ctx := context.TODO()
-	szProduct := getTestObject(ctx, test)
-	err := szProduct.newError(ctx, 1)
-	require.Error(test, err)
 }
 
 // ----------------------------------------------------------------------------
@@ -132,7 +110,7 @@ func TestSzproduct_AsInterface(test *testing.T) {
 
 func TestSzproduct_Initialize(test *testing.T) {
 	ctx := context.TODO()
-	szProduct := &Szproduct{}
+	szProduct := &szproduct.Szproduct{}
 	settings, err := getSettings()
 	require.NoError(test, err)
 	err = szProduct.Initialize(ctx, instanceName, settings, verboseLogging)
@@ -175,68 +153,60 @@ func getSettings() (string, error) {
 
 	testDirectoryPath := getTestDirectoryPath()
 	dbTargetPath, err := filepath.Abs(filepath.Join(testDirectoryPath, "G2C.db"))
-	if err != nil {
-		return result, fmt.Errorf("failed to make target database path (%s) absolute. Error: %w", dbTargetPath, err)
-	}
+	handleErrorWithPanic(err)
 	databaseURL := fmt.Sprintf("sqlite3://na:na@nowhere/%s", dbTargetPath)
 
 	// Create Senzing engine configuration JSON.
 
 	configAttrMap := map[string]string{"databaseUrl": databaseURL}
 	result, err = settings.BuildSimpleSettingsUsingMap(configAttrMap)
-	if err != nil {
-		return result, fmt.Errorf("failed to BuildSimpleSettingsUsingMap(%s) Error: %w", configAttrMap, err)
-	}
+	handleErrorWithPanic(err)
 	return result, err
 }
 
-func getSzProduct(ctx context.Context) (*Szproduct, error) {
-	var err error
+func getSzProduct(ctx context.Context) *szproduct.Szproduct {
 	if szProductSingleton == nil {
 		settings, err := getSettings()
-		if err != nil {
-			return szProductSingleton, fmt.Errorf("getSettings() Error: %w", err)
-		}
-		szProductSingleton = &Szproduct{}
+		handleErrorWithPanic(err)
+		szProductSingleton = &szproduct.Szproduct{}
 		err = szProductSingleton.SetLogLevel(ctx, logLevel)
-		if err != nil {
-			return szProductSingleton, fmt.Errorf("SetLogLevel() Error: %w", err)
-		}
+		handleErrorWithPanic(err)
 		if logLevel == "TRACE" {
 			szProductSingleton.SetObserverOrigin(ctx, observerOrigin)
 			err = szProductSingleton.RegisterObserver(ctx, observerSingleton)
-			if err != nil {
-				return szProductSingleton, fmt.Errorf("RegisterObserver() Error: %w", err)
-			}
+			handleErrorWithPanic(err)
 			err = szProductSingleton.SetLogLevel(ctx, logLevel) // Duplicated for coverage testing
-			if err != nil {
-				return szProductSingleton, fmt.Errorf("SetLogLevel() - 2 Error: %w", err)
-			}
+			handleErrorWithPanic(err)
 		}
 		err = szProductSingleton.Initialize(ctx, instanceName, settings, verboseLogging)
-		if err != nil {
-			return szProductSingleton, fmt.Errorf("Initialize() Error: %w", err)
-		}
+		handleErrorWithPanic(err)
 	}
-	return szProductSingleton, err
+	return szProductSingleton
 }
 
 func getSzProductAsInterface(ctx context.Context) senzing.SzProduct {
-	result, err := getSzProduct(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return result
+	return getSzProduct(ctx)
 }
 
 func getTestDirectoryPath() string {
 	return filepath.FromSlash("../target/test/szproduct")
 }
 
-func getTestObject(ctx context.Context, test *testing.T) *Szproduct {
-	result, err := getSzProduct(ctx)
-	require.NoError(test, err)
-	return result
+func getTestObject(ctx context.Context, test *testing.T) *szproduct.Szproduct {
+	_ = test
+	return getSzProduct(ctx)
+}
+
+func handleError(err error) {
+	if err != nil {
+		fmt.Println("Error:", err)
+	}
+}
+
+func handleErrorWithPanic(err error) {
+	if err != nil {
+		panic(err)
+	}
 }
 
 func printActual(test *testing.T, actual interface{}) {
@@ -283,13 +253,9 @@ func TestMain(m *testing.M) {
 func setup() error {
 	var err error
 	err = setupDirectories()
-	if err != nil {
-		return fmt.Errorf("Failed to set up directories. Error: %w", err)
-	}
+	handleErrorWithPanic(err)
 	err = setupDatabase()
-	if err != nil {
-		return fmt.Errorf("Failed to set up database. Error: %w", err)
-	}
+	handleErrorWithPanic(err)
 	return err
 }
 
@@ -299,24 +265,15 @@ func setupDatabase() error {
 	// Locate source and target paths.
 
 	testDirectoryPath := getTestDirectoryPath()
-	dbTargetPath, err := filepath.Abs(filepath.Join(testDirectoryPath, "G2C.db"))
-	if err != nil {
-		return fmt.Errorf("failed to make target database path (%s) absolute. Error: %w",
-			dbTargetPath, err)
-	}
+	_, err = filepath.Abs(filepath.Join(testDirectoryPath, "G2C.db"))
+	handleErrorWithPanic(err)
 	databaseTemplatePath, err := filepath.Abs(getDatabaseTemplatePath())
-	if err != nil {
-		return fmt.Errorf("failed to obtain absolute path to database file (%s): %s",
-			databaseTemplatePath, err.Error())
-	}
+	handleErrorWithPanic(err)
 
 	// Copy template file to test directory.
 
 	_, _, err = fileutil.CopyFile(databaseTemplatePath, testDirectoryPath, true) // Copy the SQLite database file.
-	if err != nil {
-		return fmt.Errorf("setup failed to copy template database (%v) to target path (%v): %w",
-			databaseTemplatePath, testDirectoryPath, err)
-	}
+	handleErrorWithPanic(err)
 	return err
 }
 
@@ -324,13 +281,9 @@ func setupDirectories() error {
 	var err error
 	testDirectoryPath := getTestDirectoryPath()
 	err = os.RemoveAll(filepath.Clean(testDirectoryPath)) // cleanup any previous test run
-	if err != nil {
-		return fmt.Errorf("failed to remove target test directory (%v): %w", testDirectoryPath, err)
-	}
+	handleErrorWithPanic(err)
 	err = os.MkdirAll(filepath.Clean(testDirectoryPath), 0750) // recreate the test target directory
-	if err != nil {
-		return fmt.Errorf("failed to recreate target test directory (%v): %w", testDirectoryPath, err)
-	}
+	handleErrorWithPanic(err)
 	return err
 }
 
@@ -342,13 +295,9 @@ func teardown() error {
 
 func teardownSzProduct(ctx context.Context) error {
 	err := szProductSingleton.UnregisterObserver(ctx, observerSingleton)
-	if err != nil {
-		return err
-	}
+	handleErrorWithPanic(err)
 	err = szProductSingleton.Destroy(ctx)
-	if err != nil {
-		return err
-	}
+	handleErrorWithPanic(err)
 	szProductSingleton = nil
 	return nil
 }

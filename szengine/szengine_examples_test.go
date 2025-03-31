@@ -4,35 +4,18 @@ package szengine_test
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
-	"path/filepath"
-	"strconv"
 
 	"github.com/senzing-garage/go-helpers/jsonutil"
-	"github.com/senzing-garage/go-helpers/record"
-	"github.com/senzing-garage/go-helpers/settings"
 	"github.com/senzing-garage/go-helpers/truthset"
 	"github.com/senzing-garage/go-logging/logging"
 	"github.com/senzing-garage/sz-sdk-go-core/szabstractfactory"
-	"github.com/senzing-garage/sz-sdk-go-core/szengine"
 	"github.com/senzing-garage/sz-sdk-go/senzing"
 )
-
-type GetEntityByRecordIDResponse struct {
-	ResolvedEntity struct {
-		EntityID int64 `json:"ENTITY_ID"`
-	} `json:"RESOLVED_ENTITY"`
-}
 
 const (
 	baseTen         = 10
 	jsonIndentation = "    "
-)
-
-const (
-	instanceName   = "SzEngine Test"
-	verboseLogging = senzing.SzNoLogging
 )
 
 // ----------------------------------------------------------------------------
@@ -6486,63 +6469,6 @@ func ExampleSzengine_GetObserverOrigin() {
 // Helper functions
 // ----------------------------------------------------------------------------
 
-func getEntityID(record record.Record) (int64, error) {
-	return getEntityIDForRecord(record.DataSource, record.ID)
-}
-
-func getEntityIDForRecord(datasource string, id string) (int64, error) {
-	var result int64
-	var err error
-	ctx := context.TODO()
-	// var result int64
-	szEngine := getSzEngine(ctx)
-	response, err := szEngine.GetEntityByRecordID(ctx, datasource, id, senzing.SzWithoutInfo)
-	if err != nil {
-		return result, err
-	}
-	getEntityByRecordIDResponse := &GetEntityByRecordIDResponse{}
-	err = json.Unmarshal([]byte(response), &getEntityByRecordIDResponse)
-	if err != nil {
-		return result, err
-	}
-
-	result = getEntityByRecordIDResponse.ResolvedEntity.EntityID
-	return result, err
-}
-
-func getEntityIDStringForRecord(datasource string, id string) (string, error) {
-	var result string
-	var err error
-	entityID, err := getEntityIDForRecord(datasource, id)
-	if err != nil {
-		return result, err
-	}
-	result = strconv.FormatInt(entityID, baseTen)
-	return result, err
-}
-
-func getSettings() (string, error) {
-	var result string
-
-	// Determine Database URL.
-
-	testDirectoryPath := getTestDirectoryPath()
-	dbTargetPath, err := filepath.Abs(filepath.Join(testDirectoryPath, "G2C.db"))
-	if err != nil {
-		return result, fmt.Errorf("failed to make target database path (%s) absolute. Error: %w", dbTargetPath, err)
-	}
-	databaseURL := fmt.Sprintf("sqlite3://na:na@nowhere/%s", dbTargetPath)
-
-	// Create Senzing engine configuration JSON.
-
-	configAttrMap := map[string]string{"databaseUrl": databaseURL}
-	result, err = settings.BuildSimpleSettingsUsingMap(configAttrMap)
-	if err != nil {
-		return result, fmt.Errorf("failed to BuildSimpleSettingsUsingMap(%s) Error: %w", configAttrMap, err)
-	}
-	return result, err
-}
-
 func getSzAbstractFactory(ctx context.Context) senzing.SzAbstractFactory {
 	var err error
 	var result senzing.SzAbstractFactory
@@ -6558,28 +6484,4 @@ func getSzAbstractFactory(ctx context.Context) senzing.SzAbstractFactory {
 		VerboseLogging: verboseLogging,
 	}
 	return result
-}
-
-func getSzEngine(ctx context.Context) *szengine.Szengine {
-	_ = ctx
-	settings, err := getSettings()
-	if err != nil {
-		panic(err)
-	}
-	result := &szengine.Szengine{}
-	err = result.Initialize(ctx, instanceName, settings, 0, verboseLogging)
-	if err != nil {
-		panic(err)
-	}
-	return result
-}
-
-func getTestDirectoryPath() string {
-	return filepath.FromSlash("../target/test/szconfig")
-}
-
-func handleError(err error) {
-	if err != nil {
-		fmt.Println("Error:", err)
-	}
 }

@@ -5,20 +5,11 @@ package szproduct_test
 import (
 	"context"
 	"fmt"
-	"path/filepath"
 
-	truncator "github.com/aquilax/truncate"
 	"github.com/senzing-garage/go-helpers/jsonutil"
-	"github.com/senzing-garage/go-helpers/settings"
 	"github.com/senzing-garage/go-logging/logging"
 	"github.com/senzing-garage/sz-sdk-go-core/szabstractfactory"
-	"github.com/senzing-garage/sz-sdk-go-core/szproduct"
 	"github.com/senzing-garage/sz-sdk-go/senzing"
-)
-
-const (
-	instanceName   = "SzProduct Test"
-	verboseLogging = senzing.SzNoLogging
 )
 
 // ----------------------------------------------------------------------------
@@ -96,28 +87,6 @@ func ExampleSzproduct_GetObserverOrigin() {
 // Helper functions
 // ----------------------------------------------------------------------------
 
-func getSettings() (string, error) {
-	var result string
-
-	// Determine Database URL.
-
-	testDirectoryPath := getTestDirectoryPath()
-	dbTargetPath, err := filepath.Abs(filepath.Join(testDirectoryPath, "G2C.db"))
-	if err != nil {
-		return result, fmt.Errorf("failed to make target database path (%s) absolute. Error: %w", dbTargetPath, err)
-	}
-	databaseURL := fmt.Sprintf("sqlite3://na:na@nowhere/%s", dbTargetPath)
-
-	// Create Senzing engine configuration JSON.
-
-	configAttrMap := map[string]string{"databaseUrl": databaseURL}
-	result, err = settings.BuildSimpleSettingsUsingMap(configAttrMap)
-	if err != nil {
-		return result, fmt.Errorf("failed to BuildSimpleSettingsUsingMap(%s) Error: %w", configAttrMap, err)
-	}
-	return result, err
-}
-
 func getSzAbstractFactory(ctx context.Context) senzing.SzAbstractFactory {
 	var err error
 	var result senzing.SzAbstractFactory
@@ -133,32 +102,4 @@ func getSzAbstractFactory(ctx context.Context) senzing.SzAbstractFactory {
 		VerboseLogging: verboseLogging,
 	}
 	return result
-}
-
-func getSzProduct(ctx context.Context) *szproduct.Szproduct {
-	_ = ctx
-	settings, err := getSettings()
-	if err != nil {
-		panic(err)
-	}
-	result := &szproduct.Szproduct{}
-	err = result.Initialize(ctx, instanceName, settings, verboseLogging)
-	if err != nil {
-		panic(err)
-	}
-	return result
-}
-
-func getTestDirectoryPath() string {
-	return filepath.FromSlash("../target/test/szconfig")
-}
-
-func handleError(err error) {
-	if err != nil {
-		fmt.Println("Error:", err)
-	}
-}
-
-func truncate(aString string, length int) string {
-	return truncator.Truncate(aString, length, "...", truncator.PositionEnd)
 }

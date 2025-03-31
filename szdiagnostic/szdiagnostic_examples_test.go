@@ -5,19 +5,11 @@ package szdiagnostic_test
 import (
 	"context"
 	"fmt"
-	"path/filepath"
 
 	"github.com/senzing-garage/go-helpers/jsonutil"
-	"github.com/senzing-garage/go-helpers/settings"
 	"github.com/senzing-garage/go-logging/logging"
 	"github.com/senzing-garage/sz-sdk-go-core/szabstractfactory"
-	"github.com/senzing-garage/sz-sdk-go-core/szdiagnostic"
 	"github.com/senzing-garage/sz-sdk-go/senzing"
-)
-
-const (
-	instanceName   = "SzDiagnostic Test"
-	verboseLogging = senzing.SzNoLogging
 )
 
 // ----------------------------------------------------------------------------
@@ -128,28 +120,6 @@ func ExampleSzdiagnostic_GetObserverOrigin() {
 // Helper functions
 // ----------------------------------------------------------------------------
 
-func getSettings() (string, error) {
-	var result string
-
-	// Determine Database URL.
-
-	testDirectoryPath := getTestDirectoryPath()
-	dbTargetPath, err := filepath.Abs(filepath.Join(testDirectoryPath, "G2C.db"))
-	if err != nil {
-		return result, fmt.Errorf("failed to make target database path (%s) absolute. Error: %w", dbTargetPath, err)
-	}
-	databaseURL := fmt.Sprintf("sqlite3://na:na@nowhere/%s", dbTargetPath)
-
-	// Create Senzing engine configuration JSON.
-
-	configAttrMap := map[string]string{"databaseUrl": databaseURL}
-	result, err = settings.BuildSimpleSettingsUsingMap(configAttrMap)
-	if err != nil {
-		return result, fmt.Errorf("failed to BuildSimpleSettingsUsingMap(%s) Error: %w", configAttrMap, err)
-	}
-	return result, err
-}
-
 func getSzAbstractFactory(ctx context.Context) senzing.SzAbstractFactory {
 	var err error
 	var result senzing.SzAbstractFactory
@@ -165,28 +135,4 @@ func getSzAbstractFactory(ctx context.Context) senzing.SzAbstractFactory {
 		VerboseLogging: verboseLogging,
 	}
 	return result
-}
-
-func getSzDiagnostic(ctx context.Context) *szdiagnostic.Szdiagnostic {
-	_ = ctx
-	settings, err := getSettings()
-	if err != nil {
-		panic(err)
-	}
-	result := &szdiagnostic.Szdiagnostic{}
-	err = result.Initialize(ctx, instanceName, settings, 0, verboseLogging)
-	if err != nil {
-		panic(err)
-	}
-	return result
-}
-
-func getTestDirectoryPath() string {
-	return filepath.FromSlash("../target/test/szconfig")
-}
-
-func handleError(err error) {
-	if err != nil {
-		fmt.Println("Error:", err)
-	}
 }

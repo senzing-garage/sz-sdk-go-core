@@ -33,28 +33,6 @@ type Szabstractfactory struct {
 // ----------------------------------------------------------------------------
 
 /*
-Method CreateConfig returns an SzConfig object
-implemented to use the Senzing native C binary, libSz.so.
-
-Input
-  - ctx: A context to control lifecycle.
-
-Output
-  - An SzConfig object.
-*/
-func (factory *Szabstractfactory) CreateConfig(ctx context.Context) (senzing.SzConfig, error) {
-	var err error
-	result := &szconfig.Szconfig{}
-	if !factory.isSzconfigInitialized {
-		err = result.Initialize(ctx, factory.InstanceName, factory.Settings, factory.VerboseLogging)
-		if err == nil {
-			factory.isSzconfigInitialized = true
-		}
-	}
-	return result, err
-}
-
-/*
 Method CreateConfigManager returns an SzConfigManager object
 implemented to use the Senzing native C binary, libSz.so.
 

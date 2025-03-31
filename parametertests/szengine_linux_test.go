@@ -1,6 +1,6 @@
 //go:build linux
 
-package szengine
+package szengine_test
 
 import (
 	"context"
