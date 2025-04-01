@@ -18,5 +18,6 @@ func GetEnv(variableName string, defaultValue string) string {
 	if len(osenvValue) > 0 {
 		return osenvValue
 	}
+
 	return defaultValue
 }

@@ -72,33 +72,45 @@ Output
   - senzing.SzConfig:
 */
 func (client *Szconfigmanager) CreateConfigFromConfigID(ctx context.Context, configID int64) (senzing.SzConfig, error) {
-	var err error
-	var result senzing.SzConfig
+	var (
+		err    error
+		result senzing.SzConfig
+	)
+
 	if client.isTrace {
-		entryTime := time.Now()
 		client.traceEntry(7, configID)
+
+		entryTime := time.Now()
 		defer func() { client.traceExit(8, configID, result, err, time.Since(entryTime)) }()
 	}
+
 	result, err = client.createConfigFromConfigIDChoreography(ctx, configID)
+
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8003, err, details)
 		}()
 	}
+
 	return result, err
 }
 
 func (client *Szconfigmanager) CreateConfigFromString(ctx context.Context, configDefinition string) (senzing.SzConfig, error) {
-	var err error
-	var result senzing.SzConfig
+	var (
+		err    error
+		result senzing.SzConfig
+	)
 
 	if client.isTrace {
-		entryTime := time.Now()
 		client.traceEntry(999, configDefinition)
+
+		entryTime := time.Now()
 		defer func() { client.traceExit(999, configDefinition, result, err, time.Since(entryTime)) }()
 	}
+
 	result, err = client.createConfigFromStringChoreography(ctx, configDefinition)
+
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
@@ -110,15 +122,20 @@ func (client *Szconfigmanager) CreateConfigFromString(ctx context.Context, confi
 }
 
 func (client *Szconfigmanager) CreateConfigFromTemplate(ctx context.Context) (senzing.SzConfig, error) {
-	var err error
-	var result senzing.SzConfig
+	var (
+		err    error
+		result senzing.SzConfig
+	)
 
 	if client.isTrace {
-		entryTime := time.Now()
 		client.traceEntry(999)
+
+		entryTime := time.Now()
 		defer func() { client.traceExit(8, result, err, time.Since(entryTime)) }()
 	}
+
 	result, err = client.createConfigFromTemplateChoreography(ctx)
+
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
@@ -139,20 +156,27 @@ Output
   - A JSON document listing Senzing configuration JSON document metadata.
 */
 func (client *Szconfigmanager) GetConfigs(ctx context.Context) (string, error) {
-	var err error
-	var result string
+	var (
+		err    error
+		result string
+	)
+
 	if client.isTrace {
-		entryTime := time.Now()
 		client.traceEntry(9)
+
+		entryTime := time.Now()
 		defer func() { client.traceExit(10, result, err, time.Since(entryTime)) }()
 	}
+
 	result, err = client.getConfigList(ctx)
+
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8004, err, details)
 		}()
 	}
+
 	return result, err
 }
 
@@ -168,20 +192,27 @@ Output
   - configID: The default Senzing configuration JSON document identifier. If none exists, zero (0) is returned.
 */
 func (client *Szconfigmanager) GetDefaultConfigID(ctx context.Context) (int64, error) {
-	var err error
-	var result int64
+	var (
+		err    error
+		result int64
+	)
+
 	if client.isTrace {
-		entryTime := time.Now()
 		client.traceEntry(11)
+
+		entryTime := time.Now()
 		defer func() { client.traceExit(12, result, err, time.Since(entryTime)) }()
 	}
+
 	result, err = client.getDefaultConfigID(ctx)
+
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8005, err, details)
 		}()
 	}
+
 	return result, err
 }
 
@@ -197,16 +228,22 @@ Output
   - configID: A Senzing configuration JSON document identifier.
 */
 func (client *Szconfigmanager) RegisterConfig(ctx context.Context, configDefinition string, configComment string) (int64, error) {
-	var err error
-	var result int64
+	var (
+		err    error
+		result int64
+	)
+
 	if client.isTrace {
-		entryTime := time.Now()
 		client.traceEntry(1, configDefinition, configComment)
+
+		entryTime := time.Now()
 		defer func() {
 			client.traceExit(2, configDefinition, configComment, result, err, time.Since(entryTime))
 		}()
 	}
+
 	result, err = client.addConfig(ctx, configDefinition, configComment)
+
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -215,6 +252,7 @@ func (client *Szconfigmanager) RegisterConfig(ctx context.Context, configDefinit
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8001, err, details)
 		}()
 	}
+
 	return result, err
 }
 
@@ -235,12 +273,16 @@ Input
 */
 func (client *Szconfigmanager) ReplaceDefaultConfigID(ctx context.Context, currentDefaultConfigID int64, newDefaultConfigID int64) error {
 	var err error
+
 	if client.isTrace {
-		entryTime := time.Now()
 		client.traceEntry(19, currentDefaultConfigID, newDefaultConfigID)
+
+		entryTime := time.Now()
 		defer func() { client.traceExit(20, currentDefaultConfigID, newDefaultConfigID, err, time.Since(entryTime)) }()
 	}
+
 	err = client.replaceDefaultConfigID(ctx, currentDefaultConfigID, newDefaultConfigID)
+
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -249,18 +291,25 @@ func (client *Szconfigmanager) ReplaceDefaultConfigID(ctx context.Context, curre
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8007, err, details)
 		}()
 	}
+
 	return err
 }
 
 func (client *Szconfigmanager) SetDefaultConfig(ctx context.Context, configDefinition string, configComment string) (int64, error) {
-	var err error
-	var result int64
+	var (
+		err    error
+		result int64
+	)
+
 	if client.isTrace {
-		entryTime := time.Now()
 		client.traceEntry(999, configDefinition, configComment)
+
+		entryTime := time.Now()
 		defer func() { client.traceExit(999, configDefinition, configComment, err, time.Since(entryTime)) }()
 	}
+
 	result, err = client.setDefaultConfigChoreography(ctx, configDefinition, configComment)
+
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -271,6 +320,7 @@ func (client *Szconfigmanager) SetDefaultConfig(ctx context.Context, configDefin
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8999, err, details)
 		}()
 	}
+
 	return result, err
 }
 
@@ -288,12 +338,16 @@ Input
 */
 func (client *Szconfigmanager) SetDefaultConfigID(ctx context.Context, configID int64) error {
 	var err error
+
 	if client.isTrace {
-		entryTime := time.Now()
 		client.traceEntry(21, configID)
+
+		entryTime := time.Now()
 		defer func() { client.traceExit(22, configID, err, time.Since(entryTime)) }()
 	}
+
 	err = client.setDefaultConfigID(ctx, configID)
+
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -302,6 +356,7 @@ func (client *Szconfigmanager) SetDefaultConfigID(ctx context.Context, configID 
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8008, err, details)
 		}()
 	}
+
 	return err
 }
 
@@ -318,18 +373,23 @@ Input
 */
 func (client *Szconfigmanager) Destroy(ctx context.Context) error {
 	var err error
+
 	if client.isTrace {
-		entryTime := time.Now()
 		client.traceEntry(5)
+
+		entryTime := time.Now()
 		defer func() { client.traceExit(6, err, time.Since(entryTime)) }()
 	}
+
 	err = client.destroy(ctx)
+
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8002, err, details)
 		}()
 	}
+
 	return err
 }
 
@@ -359,15 +419,19 @@ Input
 */
 func (client *Szconfigmanager) Initialize(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
 	var err error
+
 	if client.isTrace {
-		entryTime := time.Now()
 		client.traceEntry(17, instanceName, settings, verboseLogging)
+
+		entryTime := time.Now()
 		defer func() { client.traceExit(18, instanceName, settings, verboseLogging, err, time.Since(entryTime)) }()
 	}
+
 	client.instanceName = instanceName
 	client.settings = settings
 	client.verboseLogging = verboseLogging
 	err = client.init(ctx, instanceName, settings, verboseLogging)
+
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -378,6 +442,7 @@ func (client *Szconfigmanager) Initialize(ctx context.Context, instanceName stri
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8006, err, details)
 		}()
 	}
+
 	return err
 }
 
@@ -390,15 +455,20 @@ Input
 */
 func (client *Szconfigmanager) RegisterObserver(ctx context.Context, observer observer.Observer) error {
 	var err error
+
 	if client.isTrace {
-		entryTime := time.Now()
 		client.traceEntry(703, observer.GetObserverID(ctx))
+
+		entryTime := time.Now()
 		defer func() { client.traceExit(704, observer.GetObserverID(ctx), err, time.Since(entryTime)) }()
 	}
+
 	if client.observers == nil {
 		client.observers = &subject.SimpleSubject{}
 	}
+
 	err = client.observers.RegisterObserver(ctx, observer)
+
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -407,6 +477,7 @@ func (client *Szconfigmanager) RegisterObserver(ctx context.Context, observer ob
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8702, err, details)
 		}()
 	}
+
 	return err
 }
 
@@ -419,15 +490,20 @@ Input
 */
 func (client *Szconfigmanager) SetLogLevel(ctx context.Context, logLevelName string) error {
 	var err error
+
 	if client.isTrace {
-		entryTime := time.Now()
 		client.traceEntry(705, logLevelName)
+
+		entryTime := time.Now()
 		defer func() { client.traceExit(706, logLevelName, err, time.Since(entryTime)) }()
 	}
+
 	if !logging.IsValidLogLevelName(logLevelName) {
 		return fmt.Errorf("invalid error level: %s", logLevelName)
 	}
+
 	err = client.getLogger().SetLogLevel(logLevelName)
+
 	client.isTrace = (logLevelName == logging.LevelTraceName)
 	if client.observers != nil {
 		go func() {
@@ -437,6 +513,7 @@ func (client *Szconfigmanager) SetLogLevel(ctx context.Context, logLevelName str
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8703, err, details)
 		}()
 	}
+
 	return err
 }
 
@@ -461,11 +538,14 @@ Input
 */
 func (client *Szconfigmanager) UnregisterObserver(ctx context.Context, observer observer.Observer) error {
 	var err error
+
 	if client.isTrace {
-		entryTime := time.Now()
 		client.traceEntry(707, observer.GetObserverID(ctx))
+
+		entryTime := time.Now()
 		defer func() { client.traceExit(708, observer.GetObserverID(ctx), err, time.Since(entryTime)) }()
 	}
+
 	if client.observers != nil {
 		// Tricky code:
 		// client.notify is called synchronously before client.observers is set to nil.
@@ -475,11 +555,14 @@ func (client *Szconfigmanager) UnregisterObserver(ctx context.Context, observer 
 			"observerID": observer.GetObserverID(ctx),
 		}
 		notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8704, err, details)
+
 		err = client.observers.UnregisterObserver(ctx, observer)
+
 		if !client.observers.HasObservers(ctx) {
 			client.observers = nil
 		}
 	}
+
 	return err
 }
 
@@ -490,6 +573,7 @@ func (client *Szconfigmanager) UnregisterObserver(ctx context.Context, observer 
 func (client *Szconfigmanager) createConfigFromConfigIDChoreography(ctx context.Context, configID int64) (senzing.SzConfig, error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+
 	var err error
 
 	configDefinition, err := client.getConfig(ctx, configID)
@@ -502,12 +586,16 @@ func (client *Szconfigmanager) createConfigFromConfigIDChoreography(ctx context.
 func (client *Szconfigmanager) createConfigFromStringChoreography(ctx context.Context, configDefinition string) (senzing.SzConfig, error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+
 	var err error
+
 	result := &szconfig.Szconfig{}
+
 	err = result.Initialize(ctx, client.instanceName, client.settings, client.verboseLogging)
 	if err != nil {
 		return nil, err
 	}
+
 	err = result.Import(ctx, configDefinition)
 	if err != nil {
 		return nil, err
@@ -519,12 +607,16 @@ func (client *Szconfigmanager) createConfigFromStringChoreography(ctx context.Co
 func (client *Szconfigmanager) createConfigFromTemplateChoreography(ctx context.Context) (senzing.SzConfig, error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+
 	var err error
+
 	result := &szconfig.Szconfig{}
+
 	err = result.Initialize(ctx, client.instanceName, client.settings, client.verboseLogging)
 	if err != nil {
 		return nil, err
 	}
+
 	err = result.ImportTemplate(ctx)
 	if err != nil {
 		return nil, err
@@ -536,8 +628,11 @@ func (client *Szconfigmanager) createConfigFromTemplateChoreography(ctx context.
 func (client *Szconfigmanager) setDefaultConfigChoreography(ctx context.Context, configDefinition string, configComment string) (int64, error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error
-	var result int64
+
+	var (
+		err    error
+		result int64
+	)
 
 	result, err = client.addConfig(ctx, configDefinition, configComment)
 	if err != nil {
@@ -556,106 +651,152 @@ func (client *Szconfigmanager) setDefaultConfigChoreography(ctx context.Context,
 func (client *Szconfigmanager) addConfig(ctx context.Context, configDefinition string, configComment string) (int64, error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error
-	var resultConfigID int64
+
+	var (
+		err            error
+		resultConfigID int64
+	)
+
 	configDefinitionForC := C.CString(configDefinition)
+
 	defer C.free(unsafe.Pointer(configDefinitionForC))
+
 	configCommentForC := C.CString(configComment)
+
 	defer C.free(unsafe.Pointer(configCommentForC))
+
 	result := C.SzConfigMgr_addConfig_helper(configDefinitionForC, configCommentForC)
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4001, configDefinition, configComment, result.returnCode, result)
 	}
+
 	resultConfigID = int64(C.longlong(result.configID))
+
 	return resultConfigID, err
 }
 
 func (client *Szconfigmanager) destroy(ctx context.Context) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+
 	var err error
+
 	result := C.SzConfigMgr_destroy()
 	if result != noError {
 		err = client.newError(ctx, 4002, result)
 	}
+
 	return err
 }
 
 func (client *Szconfigmanager) getConfig(ctx context.Context, configID int64) (string, error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error
-	var resultResponse string
+
+	var (
+		err            error
+		resultResponse string
+	)
+
 	result := C.SzConfigMgr_getConfig_helper(C.longlong(configID))
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4003, configID, result.returnCode, result)
 	}
+
 	resultResponse = C.GoString(result.response)
+
 	C.SzHelper_free(unsafe.Pointer(result.response))
+
 	return resultResponse, err
 }
 
 func (client *Szconfigmanager) getConfigList(ctx context.Context) (string, error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error
-	var resultResponse string
+
+	var (
+		err            error
+		resultResponse string
+	)
+
 	result := C.SzConfigMgr_getConfigList_helper()
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4004, result.returnCode, result)
 	}
+
 	resultResponse = C.GoString(result.response)
+
 	C.SzHelper_free(unsafe.Pointer(result.response))
+
 	return resultResponse, err
 }
 
 func (client *Szconfigmanager) getDefaultConfigID(ctx context.Context) (int64, error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error
-	var resultConfigID int64
+
+	var (
+		err            error
+		resultConfigID int64
+	)
+
 	result := C.SzConfigMgr_getDefaultConfigID_helper()
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4005, result.returnCode, result)
 	}
+
 	resultConfigID = int64(C.longlong(result.configID))
+
 	return resultConfigID, err
 }
 
 func (client *Szconfigmanager) init(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+
 	var err error
+
 	moduleNameForC := C.CString(instanceName)
+
 	defer C.free(unsafe.Pointer(moduleNameForC))
+
 	iniParamsForC := C.CString(settings)
+
 	defer C.free(unsafe.Pointer(iniParamsForC))
+
 	result := C.SzConfigMgr_init(moduleNameForC, iniParamsForC, C.longlong(verboseLogging))
 	if result != noError {
 		err = client.newError(ctx, 4006, instanceName, settings, verboseLogging, result)
 	}
+
 	return err
 }
 
 func (client *Szconfigmanager) replaceDefaultConfigID(ctx context.Context, currentDefaultConfigID int64, newDefaultConfigID int64) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+
 	var err error
+
 	result := C.SzConfigMgr_replaceDefaultConfigID(C.longlong(currentDefaultConfigID), C.longlong(newDefaultConfigID))
 	if result != noError {
 		err = client.newError(ctx, 4007, currentDefaultConfigID, newDefaultConfigID, result)
 	}
+
 	return err
 }
 
 func (client *Szconfigmanager) setDefaultConfigID(ctx context.Context, configID int64) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+
 	var err error
+
 	result := C.SzConfigMgr_setDefaultConfigID(C.longlong(configID))
 	if result != noError {
 		err = client.newError(ctx, 4008, configID, result)
 	}
+
 	return err
 }
 
@@ -670,6 +811,7 @@ func (client *Szconfigmanager) getLogger() logging.Logging {
 	if client.logger == nil {
 		client.logger = helper.GetLogger(ComponentID, szconfigmanager.IDMessages, baseCallerSkip)
 	}
+
 	return client.logger
 }
 
@@ -678,6 +820,7 @@ func (client *Szconfigmanager) getMessenger() messenger.Messenger {
 	if client.messenger == nil {
 		client.messenger = helper.GetMessenger(ComponentID, szconfigmanager.IDMessages, baseCallerSkip)
 	}
+
 	return client.messenger
 }
 
@@ -696,15 +839,19 @@ func (client *Szconfigmanager) traceExit(errorNumber int, details ...interface{}
 // Create a new error.
 func (client *Szconfigmanager) newError(ctx context.Context, errorNumber int, details ...interface{}) error {
 	defer func() { client.panicOnError(client.clearLastException(ctx)) }()
+
 	lastExceptionCode, _ := client.getLastExceptionCode(ctx)
+
 	lastException, err := client.getLastException(ctx)
 	if err != nil {
 		lastException = err.Error()
 	}
+
 	details = append(details, messenger.MessageCode{Value: fmt.Sprintf(ExceptionCodeTemplate, lastExceptionCode)})
 	details = append(details, messenger.MessageReason{Value: lastException})
 	details = append(details, errors.New(lastException))
 	errorMessage := client.getMessenger().NewJSON(errorNumber, details...)
+
 	return szerror.New(lastExceptionCode, errorMessage)
 }
 
@@ -729,14 +876,19 @@ Input
   - ctx: A context to control lifecycle.
 */
 func (client *Szconfigmanager) clearLastException(ctx context.Context) error {
-	_ = ctx
 	var err error
+
+	_ = ctx
+
 	if client.isTrace {
-		entryTime := time.Now()
 		client.traceEntry(3)
+
+		entryTime := time.Now()
 		defer func() { client.traceExit(4, err, time.Since(entryTime)) }()
 	}
+
 	C.SzConfigMgr_clearLastException()
+
 	return err
 }
 
@@ -750,17 +902,24 @@ Output
   - A string containing the error received from Senzing's SzConfigMgr.
 */
 func (client *Szconfigmanager) getLastException(ctx context.Context) (string, error) {
+	var (
+		err    error
+		result string
+	)
+
 	_ = ctx
-	var err error
-	var result string
+
 	if client.isTrace {
-		entryTime := time.Now()
 		client.traceEntry(13)
+
+		entryTime := time.Now()
 		defer func() { client.traceExit(14, result, err, time.Since(entryTime)) }()
 	}
+
 	stringBuffer := client.getByteArray(initialByteArraySize)
 	C.SzConfigMgr_getLastException((*C.char)(unsafe.Pointer(&stringBuffer[0])), C.size_t(len(stringBuffer)))
 	result = string(bytes.Trim(stringBuffer, "\x00"))
+
 	return result, err
 }
 
@@ -774,15 +933,22 @@ Output:
   - An int containing the error received from Senzing's SzConfigMgr.
 */
 func (client *Szconfigmanager) getLastExceptionCode(ctx context.Context) (int, error) {
+	var (
+		err    error
+		result int
+	)
+
 	_ = ctx
-	var err error
-	var result int
+
 	if client.isTrace {
-		entryTime := time.Now()
 		client.traceEntry(15)
+
+		entryTime := time.Now()
 		defer func() { client.traceExit(16, result, err, time.Since(entryTime)) }()
 	}
+
 	result = int(C.SzConfigMgr_getLastExceptionCode())
+
 	return result, err
 }
 

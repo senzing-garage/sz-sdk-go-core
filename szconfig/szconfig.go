@@ -68,19 +68,25 @@ Output
   - A JSON document listing the newly created data source.
 */
 func (client *Szconfig) AddDataSource(ctx context.Context, dataSourceCode string) (string, error) {
-	var err error
-	var result string
+	var (
+		err    error
+		result string
+	)
+
 	if client.isTrace {
-		entryTime := time.Now()
 		client.traceEntry(1, dataSourceCode)
+
+		entryTime := time.Now()
 		defer func() {
 			client.traceExit(2, dataSourceCode, result, err, time.Since(entryTime))
 		}()
 	}
+
 	configDefinition, result, err := client.addDataSourceChoreography(ctx, client.configDefinition, dataSourceCode)
 	if err == nil {
 		client.configDefinition = configDefinition
 	}
+
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -90,6 +96,7 @@ func (client *Szconfig) AddDataSource(ctx context.Context, dataSourceCode string
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8001, err, details)
 		}()
 	}
+
 	return result, err
 }
 
@@ -104,17 +111,23 @@ Output
   - A JSON document listing the newly created data source. Currently an empty string.
 */
 func (client *Szconfig) DeleteDataSource(ctx context.Context, dataSourceCode string) (string, error) {
-	var err error
-	var result string
+	var (
+		err    error
+		result string
+	)
+
 	if client.isTrace {
-		entryTime := time.Now()
 		client.traceEntry(9, dataSourceCode)
+
+		entryTime := time.Now()
 		defer func() { client.traceExit(10, dataSourceCode, err, time.Since(entryTime)) }()
 	}
+
 	configDefinition, result, err := client.deleteDataSourceChoreography(ctx, client.configDefinition, dataSourceCode)
 	if err == nil {
 		client.configDefinition = configDefinition
 	}
+
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -123,6 +136,7 @@ func (client *Szconfig) DeleteDataSource(ctx context.Context, dataSourceCode str
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8004, err, details)
 		}()
 	}
+
 	return result, err
 }
 
@@ -136,20 +150,27 @@ Output
   - configDefinition: A Senzing configuration JSON document representation of the in-memory configuration.
 */
 func (client *Szconfig) Export(ctx context.Context) (string, error) {
-	var err error
-	var result string
+	var (
+		err    error
+		result string
+	)
+
 	if client.isTrace {
-		entryTime := time.Now()
 		client.traceEntry(13)
+
+		entryTime := time.Now()
 		defer func() { client.traceExit(14, result, err, time.Since(entryTime)) }()
 	}
+
 	result = client.configDefinition
+
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8006, err, details)
 		}()
 	}
+
 	return result, err
 }
 
@@ -163,20 +184,27 @@ Output
   - A JSON document listing data sources in the in-memory configuration.
 */
 func (client *Szconfig) GetDataSources(ctx context.Context) (string, error) {
-	var err error
-	var result string
+	var (
+		err    error
+		result string
+	)
+
 	if client.isTrace {
-		entryTime := time.Now()
 		client.traceEntry(15)
+
+		entryTime := time.Now()
 		defer func() { client.traceExit(16, result, err, time.Since(entryTime)) }()
 	}
+
 	result, err = client.getDataSourcesChoreography(ctx, client.configDefinition)
+
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8008, err, details)
 		}()
 	}
+
 	return result, err
 }
 
@@ -193,18 +221,23 @@ Input
 */
 func (client *Szconfig) Destroy(ctx context.Context) error {
 	var err error
+
 	if client.isTrace {
-		entryTime := time.Now()
 		client.traceEntry(11)
+
+		entryTime := time.Now()
 		defer func() { client.traceExit(12, err, time.Since(entryTime)) }()
 	}
+
 	err = client.destroy(ctx)
+
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8005, err, details)
 		}()
 	}
+
 	return err
 }
 
@@ -231,18 +264,23 @@ Input
 */
 func (client *Szconfig) Import(ctx context.Context, configDefinition string) error {
 	var err error
+
 	if client.isTrace {
-		entryTime := time.Now()
 		client.traceEntry(21, configDefinition)
+
+		entryTime := time.Now()
 		defer func() { client.traceExit(22, configDefinition, err, time.Since(entryTime)) }()
 	}
+
 	client.configDefinition = configDefinition
+
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8009, err, details)
 		}()
 	}
+
 	return err
 }
 
@@ -257,24 +295,32 @@ Output
   - configDefinition: A Senzing configuration JSON document.
 */
 func (client *Szconfig) ImportTemplate(ctx context.Context) error {
-	var err error
-	var result string
+	var (
+		err    error
+		result string
+	)
+
 	if client.isTrace {
-		entryTime := time.Now()
 		client.traceEntry(7)
+
+		entryTime := time.Now()
 		defer func() { client.traceExit(8, result, err, time.Since(entryTime)) }()
 	}
+
 	result, err = client.importTemplateChoregraphy(ctx)
 	if err != nil {
 		return err
 	}
+
 	client.configDefinition = result
+
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8003, err, details)
 		}()
 	}
+
 	return err
 }
 
@@ -290,12 +336,16 @@ Input
 */
 func (client *Szconfig) Initialize(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
 	var err error
+
 	if client.isTrace {
-		entryTime := time.Now()
 		client.traceEntry(23, instanceName, settings, verboseLogging)
+
+		entryTime := time.Now()
 		defer func() { client.traceExit(24, instanceName, settings, verboseLogging, err, time.Since(entryTime)) }()
 	}
+
 	err = client.init(ctx, instanceName, settings, verboseLogging)
+
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -306,6 +356,7 @@ func (client *Szconfig) Initialize(ctx context.Context, instanceName string, set
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8007, err, details)
 		}()
 	}
+
 	return err
 }
 
@@ -318,15 +369,20 @@ Input
 */
 func (client *Szconfig) RegisterObserver(ctx context.Context, observer observer.Observer) error {
 	var err error
+
 	if client.isTrace {
-		entryTime := time.Now()
 		client.traceEntry(703, observer.GetObserverID(ctx))
+
+		entryTime := time.Now()
 		defer func() { client.traceExit(704, observer.GetObserverID(ctx), err, time.Since(entryTime)) }()
 	}
+
 	if client.observers == nil {
 		client.observers = &subject.SimpleSubject{}
 	}
+
 	err = client.observers.RegisterObserver(ctx, observer)
+
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -335,6 +391,7 @@ func (client *Szconfig) RegisterObserver(ctx context.Context, observer observer.
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8702, err, details)
 		}()
 	}
+
 	return err
 }
 
@@ -347,15 +404,20 @@ Input
 */
 func (client *Szconfig) SetLogLevel(ctx context.Context, logLevelName string) error {
 	var err error
+
 	if client.isTrace {
-		entryTime := time.Now()
 		client.traceEntry(705, logLevelName)
+
+		entryTime := time.Now()
 		defer func() { client.traceExit(706, logLevelName, err, time.Since(entryTime)) }()
 	}
+
 	if !logging.IsValidLogLevelName(logLevelName) {
 		return fmt.Errorf("invalid error level: %s", logLevelName)
 	}
+
 	err = client.getLogger().SetLogLevel(logLevelName)
+
 	client.isTrace = (logLevelName == logging.LevelTraceName)
 	if client.observers != nil {
 		go func() {
@@ -365,6 +427,7 @@ func (client *Szconfig) SetLogLevel(ctx context.Context, logLevelName string) er
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8703, err, details)
 		}()
 	}
+
 	return err
 }
 
@@ -389,11 +452,14 @@ Input
 */
 func (client *Szconfig) UnregisterObserver(ctx context.Context, observer observer.Observer) error {
 	var err error
+
 	if client.isTrace {
-		entryTime := time.Now()
 		client.traceEntry(707, observer.GetObserverID(ctx))
+
+		entryTime := time.Now()
 		defer func() { client.traceExit(708, observer.GetObserverID(ctx), err, time.Since(entryTime)) }()
 	}
+
 	if client.observers != nil {
 		// Tricky code:
 		// client.notify is called synchronously before client.observers is set to nil.
@@ -404,10 +470,12 @@ func (client *Szconfig) UnregisterObserver(ctx context.Context, observer observe
 		}
 		notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8704, err, details)
 		err = client.observers.UnregisterObserver(ctx, observer)
+
 		if !client.observers.HasObservers(ctx) {
 			client.observers = nil
 		}
 	}
+
 	return err
 }
 
@@ -418,9 +486,12 @@ func (client *Szconfig) UnregisterObserver(ctx context.Context, observer observe
 func (client *Szconfig) addDataSourceChoreography(ctx context.Context, configDefinition string, dataSourceCode string) (string, string, error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error
-	var newConfigDefinition string
-	var result string
+
+	var (
+		err                 error
+		newConfigDefinition string
+		result              string
+	)
 
 	configHandle, err := client.load(ctx, configDefinition)
 	if err != nil {
@@ -448,8 +519,11 @@ func (client *Szconfig) addDataSourceChoreography(ctx context.Context, configDef
 func (client *Szconfig) importTemplateChoregraphy(ctx context.Context) (string, error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error
-	var resultResponse string
+
+	var (
+		err            error
+		resultResponse string
+	)
 
 	configHandle, err := client.create(ctx)
 	if err != nil {
@@ -472,9 +546,12 @@ func (client *Szconfig) importTemplateChoregraphy(ctx context.Context) (string, 
 func (client *Szconfig) deleteDataSourceChoreography(ctx context.Context, configDefinition string, dataSourceCode string) (string, string, error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error
-	var newConfigDefinition string
-	var result string
+
+	var (
+		err                 error
+		newConfigDefinition string
+		result              string
+	)
 
 	configHandle, err := client.load(ctx, configDefinition)
 	if err != nil {
@@ -502,8 +579,11 @@ func (client *Szconfig) deleteDataSourceChoreography(ctx context.Context, config
 func (client *Szconfig) getDataSourcesChoreography(ctx context.Context, configDefinition string) (string, error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error
-	var result string
+
+	var (
+		err    error
+		result string
+	)
 
 	configHandle, err := client.load(ctx, configDefinition)
 	if err != nil {
@@ -530,124 +610,181 @@ func (client *Szconfig) getDataSourcesChoreography(ctx context.Context, configDe
 func (client *Szconfig) addDataSource(ctx context.Context, configHandle uintptr, dataSourceCode string) (string, error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error
-	var resultResponse string
+
+	var (
+		err            error
+		resultResponse string
+	)
+
 	dataSourceDefinition := `{"DSRC_CODE": "` + dataSourceCode + `"}`
+
 	dataSourceDefinitionForC := C.CString(dataSourceDefinition)
+
 	defer C.free(unsafe.Pointer(dataSourceDefinitionForC))
+
 	result := C.SzConfig_addDataSource_helper(C.uintptr_t(configHandle), dataSourceDefinitionForC)
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4001, configHandle, dataSourceCode, result.returnCode, result)
 	}
+
 	resultResponse = C.GoString(result.response)
+
 	C.SzHelper_free(unsafe.Pointer(result.response))
+
 	return resultResponse, err
 }
 
 func (client *Szconfig) close(ctx context.Context, configHandle uintptr) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+
 	var err error
+
 	result := C.SzConfig_close_helper(C.uintptr_t(configHandle))
 	if result != noError {
 		err = client.newError(ctx, 4002, configHandle, result)
 	}
+
 	return err
 }
 
 func (client *Szconfig) create(ctx context.Context) (uintptr, error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error
-	var resultResponse uintptr
+
+	var (
+		err            error
+		resultResponse uintptr
+	)
+
 	result := C.SzConfig_create_helper()
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4003, result.returnCode)
 	}
+
 	resultResponse = uintptr(result.response)
+
 	return resultResponse, err
 }
 
 func (client *Szconfig) deleteDataSource(ctx context.Context, configHandle uintptr, dataSourceCode string) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+
 	var err error
+
 	dataSourceDefinition := `{"DSRC_CODE": "` + dataSourceCode + `"}`
+
 	dataSourceDefinitionForC := C.CString(dataSourceDefinition)
+
 	defer C.free(unsafe.Pointer(dataSourceDefinitionForC))
+
 	result := C.SzConfig_deleteDataSource_helper(C.uintptr_t(configHandle), dataSourceDefinitionForC)
 	if result != noError {
 		err = client.newError(ctx, 4004, configHandle, dataSourceCode, result)
 	}
+
 	return err
 }
 
 func (client *Szconfig) destroy(ctx context.Context) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+
 	var err error
+
 	result := C.SzConfig_destroy()
 	if result != noError {
 		err = client.newError(ctx, 4005, result)
 	}
+
 	return err
 }
 
 func (client *Szconfig) save(ctx context.Context, configHandle uintptr) (string, error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error
-	var resultResponse string
+
+	var (
+		err            error
+		resultResponse string
+	)
+
 	result := C.SzConfig_save_helper(C.uintptr_t(configHandle))
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4010, configHandle, result.returnCode, result)
 	}
+
 	resultResponse = C.GoString(result.response)
+
 	C.SzHelper_free(unsafe.Pointer(result.response))
+
 	return resultResponse, err
 }
 
 func (client *Szconfig) listDataSources(ctx context.Context, configHandle uintptr) (string, error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error
-	var resultResponse string
+
+	var (
+		err            error
+		resultResponse string
+	)
+
 	result := C.SzConfig_listDataSources_helper(C.uintptr_t(configHandle))
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4008, configHandle, result.returnCode)
 	}
+
 	resultResponse = C.GoString(result.response)
+
 	C.SzHelper_free(unsafe.Pointer(result.response))
+
 	return resultResponse, err
 }
 
 func (client *Szconfig) load(ctx context.Context, configDefinition string) (uintptr, error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error
-	var resultResponse uintptr
+
+	var (
+		err            error
+		resultResponse uintptr
+	)
+
 	jsonConfigForC := C.CString(configDefinition)
+
 	defer C.free(unsafe.Pointer(jsonConfigForC))
+
 	result := C.SzConfig_load_helper(jsonConfigForC)
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4009, configDefinition, result.returnCode)
 	}
+
 	resultResponse = uintptr(result.response)
+
 	return resultResponse, err
 }
 
 func (client *Szconfig) init(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+
 	var err error
+
 	instanceNameForC := C.CString(instanceName)
+
 	defer C.free(unsafe.Pointer(instanceNameForC))
+
 	settingsForC := C.CString(settings)
+
 	defer C.free(unsafe.Pointer(settingsForC))
+
 	result := C.SzConfig_init(instanceNameForC, settingsForC, C.longlong(verboseLogging))
 	if result != noError {
 		err = client.newError(ctx, 4007, instanceName, settings, verboseLogging, result)
 	}
+
 	return err
 }
 
@@ -662,6 +799,7 @@ func (client *Szconfig) getLogger() logging.Logging {
 	if client.logger == nil {
 		client.logger = helper.GetLogger(ComponentID, szconfig.IDMessages, baseCallerSkip)
 	}
+
 	return client.logger
 }
 
@@ -670,6 +808,7 @@ func (client *Szconfig) getMessenger() messenger.Messenger {
 	if client.messenger == nil {
 		client.messenger = helper.GetMessenger(ComponentID, szconfig.IDMessages, baseCallerSkip)
 	}
+
 	return client.messenger
 }
 
@@ -688,15 +827,19 @@ func (client *Szconfig) traceExit(errorNumber int, details ...interface{}) {
 // Create a new error.
 func (client *Szconfig) newError(ctx context.Context, errorNumber int, details ...interface{}) error {
 	defer func() { client.panicOnError(client.clearLastException(ctx)) }()
+
 	lastExceptionCode, _ := client.getLastExceptionCode(ctx)
+
 	lastException, err := client.getLastException(ctx)
 	if err != nil {
 		lastException = err.Error()
 	}
+
 	details = append(details, messenger.MessageCode{Value: fmt.Sprintf(ExceptionCodeTemplate, lastExceptionCode)})
 	details = append(details, messenger.MessageReason{Value: lastException})
 	details = append(details, errors.New(lastException))
 	errorMessage := client.getMessenger().NewJSON(errorNumber, details...)
+
 	return szerror.New(lastExceptionCode, errorMessage)
 }
 
@@ -721,14 +864,19 @@ Input
   - ctx: A context to control lifecycle.
 */
 func (client *Szconfig) clearLastException(ctx context.Context) error {
-	_ = ctx
 	var err error
+
+	_ = ctx
+
 	if client.isTrace {
-		entryTime := time.Now()
 		client.traceEntry(3)
+
+		entryTime := time.Now()
 		defer func() { client.traceExit(4, err, time.Since(entryTime)) }()
 	}
+
 	C.SzConfig_clearLastException()
+
 	return err
 }
 
@@ -742,17 +890,24 @@ Output
   - A string containing the error received from Senzing's Szconfig.
 */
 func (client *Szconfig) getLastException(ctx context.Context) (string, error) {
+	var (
+		err    error
+		result string
+	)
+
 	_ = ctx
-	var err error
-	var result string
+
 	if client.isTrace {
-		entryTime := time.Now()
 		client.traceEntry(17)
+
+		entryTime := time.Now()
 		defer func() { client.traceExit(18, result, err, time.Since(entryTime)) }()
 	}
+
 	stringBuffer := client.getByteArray(initialByteArraySize)
 	C.SzConfig_getLastException((*C.char)(unsafe.Pointer(&stringBuffer[0])), C.size_t(len(stringBuffer)))
 	result = string(bytes.Trim(stringBuffer, "\x00"))
+
 	return result, err
 }
 
@@ -766,15 +921,22 @@ Output:
   - An int containing the error received from Senzing's SzConfig.
 */
 func (client *Szconfig) getLastExceptionCode(ctx context.Context) (int, error) {
+	var (
+		err    error
+		result int
+	)
+
 	_ = ctx
-	var err error
-	var result int
+
 	if client.isTrace {
-		entryTime := time.Now()
 		client.traceEntry(19)
+
+		entryTime := time.Now()
 		defer func() { client.traceExit(20, result, err, time.Since(entryTime)) }()
 	}
+
 	result = int(C.SzConfig_getLastExceptionCode())
+
 	return result, err
 }
 

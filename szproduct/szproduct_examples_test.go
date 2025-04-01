@@ -20,14 +20,17 @@ func ExampleSzproduct_GetLicense() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szproduct/szproduct_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := getSzAbstractFactory(ctx)
+
 	szProduct, err := szAbstractFactory.CreateProduct(ctx)
 	if err != nil {
 		handleError(err)
 	}
+
 	result, err := szProduct.GetLicense(ctx)
 	if err != nil {
 		handleError(err)
 	}
+
 	fmt.Println(jsonutil.Truncate(result, 4))
 	// Output: {"billing":"YEARLY","contract":"Senzing Public Test License","customer":"Senzing Public Test License",...
 }
@@ -36,14 +39,17 @@ func ExampleSzproduct_GetVersion() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szproduct/szproduct_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := getSzAbstractFactory(ctx)
+
 	szProduct, err := szAbstractFactory.CreateProduct(ctx)
 	if err != nil {
 		handleError(err)
 	}
+
 	result, err := szProduct.GetVersion(ctx)
 	if err != nil {
 		handleError(err)
 	}
+
 	fmt.Println(truncate(result, 43))
 	// Output: {"PRODUCT_NAME":"Senzing SDK","VERSION":...
 }
@@ -56,6 +62,7 @@ func ExampleSzproduct_SetLogLevel() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szproduct/szproduct_examples_test.go
 	ctx := context.TODO()
 	szProduct := getSzProduct(ctx)
+
 	err := szProduct.SetLogLevel(ctx, logging.LevelInfoName)
 	if err != nil {
 		handleError(err)
@@ -79,6 +86,7 @@ func ExampleSzproduct_GetObserverOrigin() {
 	origin := "Machine: nn; Task: UnitTest"
 	szProduct.SetObserverOrigin(ctx, origin)
 	result := szProduct.GetObserverOrigin(ctx)
+
 	fmt.Println(result)
 	// Output: Machine: nn; Task: UnitTest
 }
@@ -88,18 +96,24 @@ func ExampleSzproduct_GetObserverOrigin() {
 // ----------------------------------------------------------------------------
 
 func getSzAbstractFactory(ctx context.Context) senzing.SzAbstractFactory {
-	var err error
-	var result senzing.SzAbstractFactory
+	var (
+		err    error
+		result senzing.SzAbstractFactory
+	)
+
 	_ = ctx
+
 	settings, err := getSettings()
 	if err != nil {
 		panic(err)
 	}
+
 	result = &szabstractfactory.Szabstractfactory{
 		ConfigID:       senzing.SzInitializeWithDefaultConfiguration,
 		InstanceName:   instanceName,
 		Settings:       settings,
 		VerboseLogging: verboseLogging,
 	}
+
 	return result
 }

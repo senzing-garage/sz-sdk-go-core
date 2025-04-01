@@ -102,7 +102,9 @@ func TestSzdiagnostic_GetFeature(test *testing.T) {
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
+
 	defer func() { handleError(deleteRecords(ctx, records)) }()
+
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szDiagnostic := getTestObject(ctx, test)
@@ -117,7 +119,9 @@ func TestSzdiagnostic_GetFeature_badFeatureID(test *testing.T) {
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
+
 	defer func() { handleError(deleteRecords(ctx, records)) }()
+
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szDiagnostic := getTestObject(ctx, test)
@@ -131,7 +135,9 @@ func TestSzdiagnostic_GetFeature_nilFeatureID(test *testing.T) {
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
+
 	defer func() { handleError(deleteRecords(ctx, records)) }()
+
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
 	szDiagnostic := getTestObject(ctx, test)
@@ -194,6 +200,7 @@ func TestSzdiagnostic_Initialize(test *testing.T) {
 	szDiagnostic := &szdiagnostic.Szdiagnostic{}
 	settings, err := getSettings()
 	require.NoError(test, err)
+
 	configID := senzing.SzInitializeWithDefaultConfiguration
 	err = szDiagnostic.Initialize(ctx, instanceName, settings, configID, verboseLogging)
 	require.NoError(test, err)
@@ -204,6 +211,7 @@ func TestSzdiagnostic_Initialize_withConfigId(test *testing.T) {
 	szDiagnostic := &szdiagnostic.Szdiagnostic{}
 	settings, err := getSettings()
 	require.NoError(test, err)
+
 	configID := getDefaultConfigID()
 	err = szDiagnostic.Initialize(ctx, instanceName, settings, configID, verboseLogging)
 	require.NoError(test, err)
@@ -249,23 +257,29 @@ func TestSzdiagnostic_Destroy_withObserver(test *testing.T) {
 
 func addRecords(ctx context.Context, records []record.Record) error {
 	var err error
+
 	szEngine := getSzEngine(ctx)
 	flags := senzing.SzWithoutInfo
+
 	for _, record := range records {
 		_, err = szEngine.AddRecord(ctx, record.DataSource, record.ID, record.JSON, flags)
 		handleErrorWithPanic(err)
 	}
+
 	return err
 }
 
 func deleteRecords(ctx context.Context, records []record.Record) error {
 	var err error
+
 	szEngine := getSzEngine(ctx)
 	flags := senzing.SzWithoutInfo
+
 	for _, record := range records {
 		_, err = szEngine.DeleteRecord(ctx, record.DataSource, record.ID, flags)
 		handleErrorWithPanic(err)
 	}
+
 	return err
 }
 
@@ -285,6 +299,7 @@ func getSettings() (string, error) {
 	testDirectoryPath := getTestDirectoryPath()
 	dbTargetPath, err := filepath.Abs(filepath.Join(testDirectoryPath, "G2C.db"))
 	handleErrorWithPanic(err)
+
 	databaseURL := fmt.Sprintf("sqlite3://na:na@nowhere/%s", dbTargetPath)
 
 	// Create Senzing engine configuration JSON.
@@ -292,6 +307,7 @@ func getSettings() (string, error) {
 	configAttrMap := map[string]string{"databaseUrl": databaseURL}
 	result, err = settings.BuildSimpleSettingsUsingMap(configAttrMap)
 	handleErrorWithPanic(err)
+
 	return result, err
 }
 
@@ -299,9 +315,11 @@ func getSzDiagnostic(ctx context.Context) *szdiagnostic.Szdiagnostic {
 	if szDiagnosticSingleton == nil {
 		settings, err := getSettings()
 		handleErrorWithPanic(err)
+
 		szDiagnosticSingleton = &szdiagnostic.Szdiagnostic{}
 		err = szDiagnosticSingleton.SetLogLevel(ctx, logLevel)
 		handleErrorWithPanic(err)
+
 		if logLevel == "TRACE" {
 			szDiagnosticSingleton.SetObserverOrigin(ctx, observerOrigin)
 			err = szDiagnosticSingleton.RegisterObserver(ctx, observerSingleton)
@@ -309,9 +327,11 @@ func getSzDiagnostic(ctx context.Context) *szdiagnostic.Szdiagnostic {
 			err = szDiagnosticSingleton.SetLogLevel(ctx, logLevel) // Duplicated for coverage testing
 			handleErrorWithPanic(err)
 		}
+
 		err = szDiagnosticSingleton.Initialize(ctx, instanceName, settings, getDefaultConfigID(), verboseLogging)
 		handleErrorWithPanic(err)
 	}
+
 	return szDiagnosticSingleton
 }
 
@@ -323,9 +343,11 @@ func getSzEngine(ctx context.Context) senzing.SzEngine {
 	if szEngineSingleton == nil {
 		settings, err := getSettings()
 		handleErrorWithPanic(err)
+
 		szEngineSingleton = &szengine.Szengine{}
 		err = szEngineSingleton.SetLogLevel(ctx, logLevel)
 		handleErrorWithPanic(err)
+
 		if logLevel == "TRACE" {
 			szEngineSingleton.SetObserverOrigin(ctx, observerOrigin)
 			err = szEngineSingleton.RegisterObserver(ctx, observerSingleton)
@@ -333,9 +355,11 @@ func getSzEngine(ctx context.Context) senzing.SzEngine {
 			err = szEngineSingleton.SetLogLevel(ctx, logLevel) // Duplicated for coverage testing
 			handleErrorWithPanic(err)
 		}
+
 		err = szEngineSingleton.Initialize(ctx, instanceName, settings, getDefaultConfigID(), verboseLogging)
 		handleErrorWithPanic(err)
 	}
+
 	return szEngineSingleton
 }
 
@@ -384,29 +408,37 @@ func TestMain(m *testing.M) {
 		if errors.Is(err, szerror.ErrSzUnrecoverable) {
 			fmt.Printf("\nUnrecoverable error detected. \n\n")
 		}
+
 		if errors.Is(err, szerror.ErrSzRetryable) {
 			fmt.Printf("\nRetryable error detected. \n\n")
 		}
+
 		if errors.Is(err, szerror.ErrSzBadInput) {
 			fmt.Printf("\nBad user input error detected. \n\n")
 		}
+
 		fmt.Print(err)
+
 		os.Exit(1)
 	}
+
 	code := m.Run()
 	err = teardown()
 	handleErrorWithPanic(err)
+
 	os.Exit(code)
 }
 
 func setup() error {
 	var err error
+
 	err = setupDirectories()
 	handleErrorWithPanic(err)
 	err = setupDatabase()
 	handleErrorWithPanic(err)
 	err = setupSenzingConfiguration()
 	handleErrorWithPanic(err)
+
 	return err
 }
 
@@ -425,16 +457,19 @@ func setupDatabase() error {
 
 	_, _, err = fileutil.CopyFile(databaseTemplatePath, testDirectoryPath, true) // Copy the SQLite database file.
 	handleErrorWithPanic(err)
+
 	return err
 }
 
 func setupDirectories() error {
 	var err error
+
 	testDirectoryPath := getTestDirectoryPath()
 	err = os.RemoveAll(filepath.Clean(testDirectoryPath)) // cleanup any previous test run
 	handleErrorWithPanic(err)
 	err = os.MkdirAll(filepath.Clean(testDirectoryPath), 0750) // recreate the test target directory
 	handleErrorWithPanic(err)
+
 	return err
 }
 
@@ -450,11 +485,13 @@ func setupSenzingConfiguration() error {
 	szConfig := &szconfig.Szconfig{}
 	err = szConfig.Initialize(ctx, instanceName, settings, verboseLogging)
 	handleErrorWithPanic(err)
+
 	defer func() { handleErrorWithPanic(szConfig.Destroy(ctx)) }()
 
 	szConfigManager := &szconfigmanager.Szconfigmanager{}
 	err = szConfigManager.Initialize(ctx, instanceName, settings, verboseLogging)
 	handleErrorWithPanic(err)
+
 	defer func() { handleErrorWithPanic(szConfigManager.Destroy(ctx)) }()
 
 	// Create a Senzing configuration.
@@ -490,16 +527,20 @@ func teardown() error {
 	handleErrorWithPanic(err)
 	err = teardownSzEngine(ctx)
 	handleErrorWithPanic(err)
+
 	return err
 }
 
 func teardownSzDiagnostic(ctx context.Context) error {
 	var err error
+
 	err = szDiagnosticSingleton.UnregisterObserver(ctx, observerSingleton)
 	handleErrorWithPanic(err)
 	err = szDiagnosticSingleton.Destroy(ctx)
 	handleErrorWithPanic(err)
+
 	szDiagnosticSingleton = nil
+
 	return err
 }
 
@@ -509,5 +550,6 @@ func teardownSzEngine(ctx context.Context) error {
 	err = szEngineSingleton.Destroy(ctx)
 	handleErrorWithPanic(err)
 	szEngineSingleton = nil
+
 	return err
 }

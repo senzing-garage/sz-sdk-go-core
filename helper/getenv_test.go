@@ -14,6 +14,7 @@ import (
 func TestHelpers_GetEnv(test *testing.T) {
 	expected := "EXPECTED_VALUE"
 	os.Setenv("TEST_ENV_VAR", expected)
+
 	actual := GetEnv("TEST_ENV_VAR", "DEFAULT_VALUE")
 	assert.Equal(test, expected, actual)
 }

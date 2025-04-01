@@ -71,6 +71,7 @@ func TestSzconfigmanager_CreateConfigFromConfigID(test *testing.T) {
 	szConfigManager := getTestObject(ctx, test)
 	configID, err1 := szConfigManager.GetDefaultConfigID(ctx)
 	handleErrorWithPanic(err1)
+
 	actual, err := szConfigManager.CreateConfigFromConfigID(ctx, configID)
 	require.NoError(test, err)
 	printActual(test, actual)
@@ -114,11 +115,13 @@ func TestSzconfigmanager_RegisterConfig(test *testing.T) {
 	now := time.Now()
 	szConfig, err := szConfigManager.CreateConfigFromTemplate(ctx)
 	require.NoError(test, err)
+
 	dataSourceCode := "GO_TEST_" + strconv.FormatInt(now.Unix(), baseTen)
 	_, err = szConfig.AddDataSource(ctx, dataSourceCode)
 	require.NoError(test, err)
 	configDefinition, err := szConfig.Export(ctx)
 	require.NoError(test, err)
+
 	configComment := fmt.Sprintf("szconfigmanager_test at %s", now.UTC())
 	actual, err := szConfigManager.RegisterConfig(ctx, configDefinition, configComment)
 	require.NoError(test, err)
@@ -320,6 +323,7 @@ func getSettings() (string, error) {
 	testDirectoryPath := getTestDirectoryPath()
 	dbTargetPath, err := filepath.Abs(filepath.Join(testDirectoryPath, "G2C.db"))
 	handleErrorWithPanic(err)
+
 	databaseURL := fmt.Sprintf("sqlite3://na:na@nowhere/%s", dbTargetPath)
 
 	// Create Senzing engine configuration JSON.
@@ -327,6 +331,7 @@ func getSettings() (string, error) {
 	configAttrMap := map[string]string{"databaseUrl": databaseURL}
 	result, err = settings.BuildSimpleSettingsUsingMap(configAttrMap)
 	handleErrorWithPanic(err)
+
 	return result, err
 }
 
@@ -354,9 +359,11 @@ func getSzConfigManager(ctx context.Context) *szconfigmanager.Szconfigmanager {
 	if szConfigManagerSingleton == nil {
 		settings, err := getSettings()
 		handleErrorWithPanic(err)
+
 		szConfigManagerSingleton = &szconfigmanager.Szconfigmanager{}
 		err = szConfigManagerSingleton.SetLogLevel(ctx, logLevel)
 		handleErrorWithPanic(err)
+
 		if logLevel == "TRACE" {
 			szConfigManagerSingleton.SetObserverOrigin(ctx, observerOrigin)
 			err = szConfigManagerSingleton.RegisterObserver(ctx, observerSingleton)
@@ -364,9 +371,11 @@ func getSzConfigManager(ctx context.Context) *szconfigmanager.Szconfigmanager {
 			err = szConfigManagerSingleton.SetLogLevel(ctx, logLevel) // Duplicated for coverage testing
 			handleErrorWithPanic(err)
 		}
+
 		err = szConfigManagerSingleton.Initialize(ctx, instanceName, settings, verboseLogging)
 		handleErrorWithPanic(err)
 	}
+
 	return szConfigManagerSingleton
 }
 
@@ -419,31 +428,40 @@ func TestMain(m *testing.M) {
 		if errors.Is(err, szerror.ErrSzUnrecoverable) {
 			fmt.Printf("\nUnrecoverable error detected. \n\n")
 		}
+
 		if errors.Is(err, szerror.ErrSzRetryable) {
 			fmt.Printf("\nRetryable error detected. \n\n")
 		}
+
 		if errors.Is(err, szerror.ErrSzBadInput) {
 			fmt.Printf("\nBad user input error detected. \n\n")
 		}
+
 		fmt.Print(err)
+
 		os.Exit(1)
 	}
+
 	code := m.Run()
+
 	err = teardown()
 	if err != nil {
 		fmt.Print(err)
 	}
+
 	os.Exit(code)
 }
 
 func setup() error {
 	var err error
+
 	err = setupDirectories()
 	handleErrorWithPanic(err)
 	err = setupDatabase()
 	handleErrorWithPanic(err)
 	err = setupSenzingConfiguration()
 	handleErrorWithPanic(err)
+
 	return err
 }
 
@@ -462,16 +480,19 @@ func setupDatabase() error {
 
 	_, _, err = fileutil.CopyFile(databaseTemplatePath, testDirectoryPath, true) // Copy the SQLite database file.
 	handleErrorWithPanic(err)
+
 	return err
 }
 
 func setupDirectories() error {
 	var err error
+
 	testDirectoryPath := getTestDirectoryPath()
 	err = os.RemoveAll(filepath.Clean(testDirectoryPath)) // cleanup any previous test run
 	handleErrorWithPanic(err)
 	err = os.MkdirAll(filepath.Clean(testDirectoryPath), 0750) // recreate the test target directory
 	handleErrorWithPanic(err)
+
 	return err
 }
 
@@ -487,11 +508,13 @@ func setupSenzingConfiguration() error {
 	szConfig := &szconfig.Szconfig{}
 	err = szConfig.Initialize(ctx, instanceName, settings, verboseLogging)
 	handleErrorWithPanic(err)
+
 	defer func() { handleErrorWithPanic(szConfig.Destroy(ctx)) }()
 
 	szConfigManager := &szconfigmanager.Szconfigmanager{}
 	err = szConfigManager.Initialize(ctx, instanceName, settings, verboseLogging)
 	handleErrorWithPanic(err)
+
 	defer func() { handleErrorWithPanic(szConfigManager.Destroy(ctx)) }()
 
 	// Create a Senzing configuration.
@@ -527,6 +550,7 @@ func teardown() error {
 	handleErrorWithPanic(err)
 	err = teardownSzConfigManager(ctx)
 	handleErrorWithPanic(err)
+
 	return err
 }
 
@@ -538,6 +562,7 @@ func teardownSzConfig(ctx context.Context) error {
 		handleErrorWithPanic(err)
 		szConfigSingleton = nil
 	}
+
 	return nil
 }
 
@@ -547,7 +572,9 @@ func teardownSzConfigManager(ctx context.Context) error {
 		handleErrorWithPanic(err)
 		err = szConfigManagerSingleton.Destroy(ctx)
 		handleErrorWithPanic(err)
+
 		szConfigManagerSingleton = nil
 	}
+
 	return nil
 }

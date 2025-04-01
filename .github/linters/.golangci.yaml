@@ -104,7 +104,7 @@ linters:
     - wastedassign
     # - whitespace
     # - wrapcheck
-    # - wsl
+    - wsl
     - zerologlint
   exclusions:
     generated: lax

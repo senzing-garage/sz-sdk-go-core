@@ -44,13 +44,16 @@ Output
 */
 func (factory *Szabstractfactory) CreateConfigManager(ctx context.Context) (senzing.SzConfigManager, error) {
 	var err error
+
 	result := &szconfigmanager.Szconfigmanager{}
+
 	if !factory.isSzconfigmanagerInitialized {
 		err = result.Initialize(ctx, factory.InstanceName, factory.Settings, factory.VerboseLogging)
 		if err == nil {
 			factory.isSzconfigmanagerInitialized = true
 		}
 	}
+
 	return result, err
 }
 
@@ -66,13 +69,16 @@ Output
 */
 func (factory *Szabstractfactory) CreateDiagnostic(ctx context.Context) (senzing.SzDiagnostic, error) {
 	var err error
+
 	result := &szdiagnostic.Szdiagnostic{}
+
 	if !factory.isSzdiagnosticInitialized {
 		err = result.Initialize(ctx, factory.InstanceName, factory.Settings, factory.ConfigID, factory.VerboseLogging)
 		if err == nil {
 			factory.isSzdiagnosticInitialized = true
 		}
 	}
+
 	return result, err
 }
 
@@ -88,13 +94,16 @@ Output
 */
 func (factory *Szabstractfactory) CreateEngine(ctx context.Context) (senzing.SzEngine, error) {
 	var err error
+
 	result := &szengine.Szengine{}
+
 	if !factory.isSzengineInitialized {
 		err := result.Initialize(ctx, factory.InstanceName, factory.Settings, factory.ConfigID, factory.VerboseLogging)
 		if err == nil {
 			factory.isSzengineInitialized = true
 		}
 	}
+
 	return result, err
 }
 
@@ -110,13 +119,16 @@ Output
 */
 func (factory *Szabstractfactory) CreateProduct(ctx context.Context) (senzing.SzProduct, error) {
 	var err error
+
 	result := &szproduct.Szproduct{}
+
 	if !factory.isSzproductInitialized {
 		err = result.Initialize(ctx, factory.InstanceName, factory.Settings, factory.VerboseLogging)
 		if err == nil {
 			factory.isSzproductInitialized = true
 		}
 	}
+
 	return result, err
 }
 
@@ -129,46 +141,62 @@ Input
 */
 func (factory *Szabstractfactory) Destroy(ctx context.Context) error {
 	var err error
+
 	if factory.isSzconfigInitialized {
 		szConfig := &szconfig.Szconfig{}
+
 		err = szConfig.Destroy(ctx)
 		if err != nil {
 			return err
 		}
+
 		factory.isSzconfigInitialized = false
 	}
+
 	if factory.isSzconfigmanagerInitialized {
 		szConfigmanager := &szconfigmanager.Szconfigmanager{}
+
 		err = szConfigmanager.Destroy(ctx)
 		if err != nil {
 			return err
 		}
+
 		factory.isSzconfigmanagerInitialized = false
 	}
+
 	if factory.isSzdiagnosticInitialized {
 		szDiagnostic := &szdiagnostic.Szdiagnostic{}
+
 		err = szDiagnostic.Destroy(ctx)
 		if err != nil {
 			return err
 		}
+
 		factory.isSzdiagnosticInitialized = false
 	}
+
 	if factory.isSzengineInitialized {
 		szEngine := &szengine.Szengine{}
+
 		err = szEngine.Destroy(ctx)
 		if err != nil {
 			return err
 		}
+
 		factory.isSzengineInitialized = false
 	}
+
 	if factory.isSzproductInitialized {
 		szProduct := &szproduct.Szproduct{}
+
 		err = szProduct.Destroy(ctx)
 		if err != nil {
 			return err
 		}
+
 		factory.isSzproductInitialized = false
 	}
+
 	return err
 }
 
@@ -181,20 +209,25 @@ Input
 */
 func (factory *Szabstractfactory) Reinitialize(ctx context.Context, configID int64) error {
 	var err error
+
 	factory.ConfigID = configID
 	if factory.isSzdiagnosticInitialized {
 		szDiagnostic := &szdiagnostic.Szdiagnostic{}
+
 		err = szDiagnostic.Reinitialize(ctx, configID)
 		if err != nil {
 			return err
 		}
 	}
+
 	if factory.isSzengineInitialized {
 		szEngine := &szengine.Szengine{}
+
 		err = szEngine.Reinitialize(ctx, configID)
 		if err != nil {
 			return err
 		}
 	}
+
 	return err
 }

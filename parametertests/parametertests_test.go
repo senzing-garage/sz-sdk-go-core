@@ -38,11 +38,10 @@ var (
 
 func captureStdout(functionName func() error) (string, error) {
 	// Reference: https://stackoverflow.com/questions/76565007/how-to-capture-the-contents-of-stderr-in-a-c-function-call-from-golang
-
 	// Switch STDOUT.
-
 	originalStdout, err := syscall.Dup(syscall.Stdout)
 	handleErrorWithPanic(err)
+
 	readFile, writeFile, _ := os.Pipe()
 	fileDescriptor := int(writeFile.Fd()) //nolint:gosec
 	err = syscall.Dup2(fileDescriptor, syscall.Stdout)
@@ -55,23 +54,25 @@ func captureStdout(functionName func() error) (string, error) {
 	// Restore STDOUT.
 
 	writeFile.Close()
+
 	err = syscall.Dup2(originalStdout, syscall.Stdout)
+
 	handleErrorWithPanic(err)
 	syscall.Close(originalStdout)
 
 	// Return results.
 
 	stdoutBuffer, _ := io.ReadAll(readFile)
+
 	return string(stdoutBuffer), resultErr
 }
 
 func captureStdoutReturningInt64(functionName func() (int64, error)) (string, int64, error) {
 	// Reference: https://stackoverflow.com/questions/76565007/how-to-capture-the-contents-of-stderr-in-a-c-function-call-from-golang
-
 	// Switch STDOUT.
-
 	originalStdout, err := syscall.Dup(syscall.Stdout)
 	handleErrorWithPanic(err)
+
 	readFile, writeFile, _ := os.Pipe()
 	fileDescriptor := int(writeFile.Fd()) //nolint:gosec
 	err = syscall.Dup2(fileDescriptor, syscall.Stdout)
@@ -84,6 +85,7 @@ func captureStdoutReturningInt64(functionName func() (int64, error)) (string, in
 	// Restore STDOUT.
 
 	writeFile.Close()
+
 	err = syscall.Dup2(originalStdout, syscall.Stdout)
 	handleErrorWithPanic(err)
 	syscall.Close(originalStdout)
@@ -91,16 +93,16 @@ func captureStdoutReturningInt64(functionName func() (int64, error)) (string, in
 	// Return results.
 
 	stdoutBuffer, _ := io.ReadAll(readFile)
+
 	return string(stdoutBuffer), result, resultErr
 }
 
 func captureStdoutReturningString(functionName func() (string, error)) (string, string, error) {
 	// Reference: https://stackoverflow.com/questions/76565007/how-to-capture-the-contents-of-stderr-in-a-c-function-call-from-golang
-
 	// Switch STDOUT.
-
 	originalStdout, err := syscall.Dup(syscall.Stdout)
 	handleErrorWithPanic(err)
+
 	readFile, writeFile, _ := os.Pipe()
 	fileDescriptor := int(writeFile.Fd()) //nolint:gosec
 	err = syscall.Dup2(fileDescriptor, syscall.Stdout)
@@ -113,6 +115,7 @@ func captureStdoutReturningString(functionName func() (string, error)) (string, 
 	// Restore STDOUT.
 
 	writeFile.Close()
+
 	err = syscall.Dup2(originalStdout, syscall.Stdout)
 	handleErrorWithPanic(err)
 	syscall.Close(originalStdout)
@@ -120,6 +123,7 @@ func captureStdoutReturningString(functionName func() (string, error)) (string, 
 	// Return results.
 
 	stdoutBuffer, _ := io.ReadAll(readFile)
+
 	return string(stdoutBuffer), result, resultErr
 }
 
@@ -164,6 +168,7 @@ func getSettings() (string, error) {
 	testDirectoryPath := getTestDirectoryPath()
 	dbTargetPath, err := filepath.Abs(filepath.Join(testDirectoryPath, "G2C.db"))
 	handleErrorWithPanic(err)
+
 	databaseURL := fmt.Sprintf("sqlite3://na:na@nowhere/%s", dbTargetPath)
 
 	// Create Senzing engine configuration JSON.
@@ -171,6 +176,7 @@ func getSettings() (string, error) {
 	configAttrMap := map[string]string{"databaseUrl": databaseURL}
 	result, err = settings.BuildSimpleSettingsUsingMap(configAttrMap)
 	handleErrorWithPanic(err)
+
 	return result, err
 }
 
@@ -180,17 +186,22 @@ func getTestDirectoryPath() string {
 
 func getSzEngine(ctx context.Context) (*szengine.Szengine, error) {
 	var err error
+
 	_ = ctx
+
 	if szEngineSingleton == nil {
 		settings, err := getSettings()
 		handleErrorWithPanic(err)
+
 		szEngine := &szengine.Szengine{}
 		_, err = captureStdout(func() error {
 			return szEngine.Initialize(ctx, instanceName, settings, senzing.SzInitializeWithDefaultConfiguration, senzing.SzVerboseLogging)
 		})
 		handleErrorWithPanic(err)
+
 		szEngineSingleton = &szengine.Szengine{}
 	}
+
 	return szEngineSingleton, err
 }
 
@@ -200,6 +211,7 @@ func getSzEngine(ctx context.Context) (*szengine.Szengine, error) {
 
 func getVerboseTestObject(ctx context.Context, test *testing.T) (senzing.SzEngine, error) {
 	_ = test
+
 	return getSzEngine(ctx)
 }
 
@@ -219,31 +231,40 @@ func TestMain(m *testing.M) {
 		if errors.Is(err, szerror.ErrSzUnrecoverable) {
 			fmt.Printf("\nUnrecoverable error detected. \n\n")
 		}
+
 		if errors.Is(err, szerror.ErrSzRetryable) {
 			fmt.Printf("\nRetryable error detected. \n\n")
 		}
+
 		if errors.Is(err, szerror.ErrSzBadInput) {
 			fmt.Printf("\nBad user input error detected. \n\n")
 		}
+
 		fmt.Print(err)
+
 		os.Exit(1)
 	}
+
 	code := m.Run()
+
 	err = teardown()
 	if err != nil {
 		fmt.Print(err)
 	}
+
 	os.Exit(code)
 }
 
 func setup() error {
 	var err error
+
 	err = setupDirectories()
 	handleErrorWithPanic(err)
 	err = setupDatabase()
 	handleErrorWithPanic(err)
 	err = setupSenzingConfiguration()
 	handleErrorWithPanic(err)
+
 	return err
 }
 
@@ -262,16 +283,19 @@ func setupDatabase() error {
 
 	_, _, err = fileutil.CopyFile(databaseTemplatePath, testDirectoryPath, true) // Copy the SQLite database file.
 	handleErrorWithPanic(err)
+
 	return err
 }
 
 func setupDirectories() error {
 	var err error
+
 	testDirectoryPath := getTestDirectoryPath()
 	err = os.RemoveAll(filepath.Clean(testDirectoryPath)) // cleanup any previous test run
 	handleErrorWithPanic(err)
 	err = os.MkdirAll(filepath.Clean(testDirectoryPath), 0750) // recreate the test target directory
 	handleErrorWithPanic(err)
+
 	return err
 }
 
@@ -289,6 +313,7 @@ func setupSenzingConfiguration() error {
 		return szConfig.Initialize(ctx, instanceName, settings, senzing.SzNoLogging)
 	})
 	handleErrorWithPanic(err)
+
 	defer func() { handleErrorWithPanic(szConfig.Destroy(ctx)) }()
 
 	szConfigManager := &szconfigmanager.Szconfigmanager{}
@@ -296,6 +321,7 @@ func setupSenzingConfiguration() error {
 		return szConfigManager.Initialize(ctx, instanceName, settings, senzing.SzNoLogging)
 	})
 	handleErrorWithPanic(err)
+
 	defer func() { handleErrorWithPanic(szConfigManager.Destroy(ctx)) }()
 
 	// Create a Senzing configuration.
@@ -336,6 +362,7 @@ func setupSenzingConfiguration() error {
 func teardown() error {
 	ctx := context.TODO()
 	err := teardownSzEngine(ctx)
+
 	return err
 }
 
@@ -344,6 +371,8 @@ func teardownSzEngine(ctx context.Context) error {
 		return szEngineSingleton.Destroy(ctx)
 	})
 	handleErrorWithPanic(err)
+
 	szEngineSingleton = nil
+
 	return nil
 }

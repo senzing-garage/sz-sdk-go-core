@@ -154,6 +154,7 @@ func getSettings() (string, error) {
 	testDirectoryPath := getTestDirectoryPath()
 	dbTargetPath, err := filepath.Abs(filepath.Join(testDirectoryPath, "G2C.db"))
 	handleErrorWithPanic(err)
+
 	databaseURL := fmt.Sprintf("sqlite3://na:na@nowhere/%s", dbTargetPath)
 
 	// Create Senzing engine configuration JSON.
@@ -161,6 +162,7 @@ func getSettings() (string, error) {
 	configAttrMap := map[string]string{"databaseUrl": databaseURL}
 	result, err = settings.BuildSimpleSettingsUsingMap(configAttrMap)
 	handleErrorWithPanic(err)
+
 	return result, err
 }
 
@@ -168,9 +170,11 @@ func getSzProduct(ctx context.Context) *szproduct.Szproduct {
 	if szProductSingleton == nil {
 		settings, err := getSettings()
 		handleErrorWithPanic(err)
+
 		szProductSingleton = &szproduct.Szproduct{}
 		err = szProductSingleton.SetLogLevel(ctx, logLevel)
 		handleErrorWithPanic(err)
+
 		if logLevel == "TRACE" {
 			szProductSingleton.SetObserverOrigin(ctx, observerOrigin)
 			err = szProductSingleton.RegisterObserver(ctx, observerSingleton)
@@ -178,9 +182,11 @@ func getSzProduct(ctx context.Context) *szproduct.Szproduct {
 			err = szProductSingleton.SetLogLevel(ctx, logLevel) // Duplicated for coverage testing
 			handleErrorWithPanic(err)
 		}
+
 		err = szProductSingleton.Initialize(ctx, instanceName, settings, verboseLogging)
 		handleErrorWithPanic(err)
 	}
+
 	return szProductSingleton
 }
 
@@ -233,29 +239,38 @@ func TestMain(m *testing.M) {
 		if errors.Is(err, szerror.ErrSzUnrecoverable) {
 			fmt.Printf("\nUnrecoverable error detected. \n\n")
 		}
+
 		if errors.Is(err, szerror.ErrSzRetryable) {
 			fmt.Printf("\nRetryable error detected. \n\n")
 		}
+
 		if errors.Is(err, szerror.ErrSzBadInput) {
 			fmt.Printf("\nBad user input error detected. \n\n")
 		}
+
 		fmt.Print(err)
+
 		os.Exit(1)
 	}
+
 	code := m.Run()
+
 	err = teardown()
 	if err != nil {
 		fmt.Print(err)
 	}
+
 	os.Exit(code)
 }
 
 func setup() error {
 	var err error
+
 	err = setupDirectories()
 	handleErrorWithPanic(err)
 	err = setupDatabase()
 	handleErrorWithPanic(err)
+
 	return err
 }
 
@@ -274,22 +289,26 @@ func setupDatabase() error {
 
 	_, _, err = fileutil.CopyFile(databaseTemplatePath, testDirectoryPath, true) // Copy the SQLite database file.
 	handleErrorWithPanic(err)
+
 	return err
 }
 
 func setupDirectories() error {
 	var err error
+
 	testDirectoryPath := getTestDirectoryPath()
 	err = os.RemoveAll(filepath.Clean(testDirectoryPath)) // cleanup any previous test run
 	handleErrorWithPanic(err)
 	err = os.MkdirAll(filepath.Clean(testDirectoryPath), 0750) // recreate the test target directory
 	handleErrorWithPanic(err)
+
 	return err
 }
 
 func teardown() error {
 	ctx := context.TODO()
 	err := teardownSzProduct(ctx)
+
 	return err
 }
 
@@ -298,6 +317,8 @@ func teardownSzProduct(ctx context.Context) error {
 	handleErrorWithPanic(err)
 	err = szProductSingleton.Destroy(ctx)
 	handleErrorWithPanic(err)
+
 	szProductSingleton = nil
+
 	return nil
 }

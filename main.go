@@ -31,6 +31,7 @@ var Messages = map[int]string{
 	2004: "License",
 	2999: "Cannot retrieve last error message.",
 }
+
 var logger logging.Logging
 
 // ----------------------------------------------------------------------------
@@ -39,6 +40,7 @@ var logger logging.Logging
 
 func main() {
 	var err error
+
 	ctx := context.TODO()
 
 	// Create a directory for temporary files.
@@ -56,6 +58,7 @@ func main() {
 	failOnError(5003, err)
 
 	log.SetFlags(0)
+
 	logger, err = getLogger(ctx)
 	failOnError(5004, err)
 
@@ -63,6 +66,7 @@ func main() {
 
 	settings, err := getSettings(databaseURL)
 	failOnError(5005, err)
+
 	szAbstractFactory := &szabstractfactory.Szabstractfactory{
 		ConfigID:       senzing.SzInitializeWithDefaultConfiguration,
 		InstanceName:   "Example instance",
@@ -91,16 +95,18 @@ func main() {
 // ----------------------------------------------------------------------------
 
 func demonstrateAddRecord(ctx context.Context, szEngine senzing.SzEngine) (string, error) {
+	var flags = senzing.SzWithInfo
+
 	dataSourceCode := "TEST"
 	randomNumber, err := rand.Int(rand.Reader, big.NewInt(1000000000))
 	failOnError(5010, err)
+
 	recordID := randomNumber.String()
 	jsonData := fmt.Sprintf(
 		"%s%s%s",
 		`{"SOCIAL_HANDLE": "flavorh", "DATE_OF_BIRTH": "4/8/1983", "ADDR_STATE": "LA", "ADDR_POSTAL_CODE": "71232", "SSN_NUMBER": "053-39-3251", "ENTITY_TYPE": "TEST", "GENDER": "F", "srccode": "MDMPER", "CC_ACCOUNT_NUMBER": "5534202208773608", "RECORD_ID": "`,
 		recordID,
 		`", "DSRC_ACTION": "A", "ADDR_CITY": "Delhi", "DRIVERS_LICENSE_STATE": "DE", "PHONE_NUMBER": "225-671-0796", "NAME_LAST": "SEAMAN", "entityid": "284430058", "ADDR_LINE1": "772 Armstrong RD"}`)
-	var flags = senzing.SzWithInfo
 
 	// Using SzEngine: Add record and return "withInfo".
 
@@ -140,9 +146,6 @@ func demonstrateConfigFunctions(ctx context.Context, szAbstractFactory senzing.S
 }
 
 func demonstrateSenzingFunctions(ctx context.Context, szAbstractFactory senzing.SzAbstractFactory) error {
-
-	// Create Senzing objects.
-
 	szDiagnostic, err := szAbstractFactory.CreateDiagnostic(ctx)
 	failOnError(5201, err)
 
@@ -187,10 +190,12 @@ func copyDatabase() (string, error) {
 	// Construct SQLite database URL.
 
 	testDirectoryPath := getTestDirectoryPath()
+
 	dbTargetPath, err := filepath.Abs(filepath.Join(testDirectoryPath, "G2C.db"))
 	if err != nil {
 		return result, fmt.Errorf("failed to make target database path (%s) absolute. Error: %w", dbTargetPath, err)
 	}
+
 	result = fmt.Sprintf("sqlite3://na:na@nowhere/%s", dbTargetPath)
 
 	// Copy template file to test directory.
@@ -199,6 +204,7 @@ func copyDatabase() (string, error) {
 	if err != nil {
 		return result, fmt.Errorf("failed to obtain absolute path to database file (%s): %s", databaseTemplatePath, err.Error())
 	}
+
 	_, _, err = fileutil.CopyFile(databaseTemplatePath, testDirectoryPath, true) // Copy the SQLite database file.
 	if err != nil {
 		return result, fmt.Errorf("setup failed to copy template database (%v) to target path (%v): %w", databaseTemplatePath, testDirectoryPath, err)
@@ -225,10 +231,12 @@ func getLogger(ctx context.Context) (logging.Logging, error) {
 
 func getSettings(databaseURL string) (string, error) {
 	configAttrMap := map[string]string{"databaseUrl": databaseURL}
+
 	result, err := settings.BuildSimpleSettingsUsingMap(configAttrMap)
 	if err != nil {
 		return result, err
 	}
+
 	return result, err
 }
 
@@ -241,5 +249,6 @@ func setupDatabase() (string, error) {
 	if ok {
 		return databaseURL, nil
 	}
+
 	return copyDatabase()
 }
