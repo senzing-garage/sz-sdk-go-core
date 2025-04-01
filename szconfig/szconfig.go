@@ -29,7 +29,6 @@ import (
 	"github.com/senzing-garage/go-observing/observer"
 	"github.com/senzing-garage/go-observing/subject"
 	"github.com/senzing-garage/sz-sdk-go-core/helper"
-	"github.com/senzing-garage/sz-sdk-go/senzing"
 	"github.com/senzing-garage/sz-sdk-go/szconfig"
 	"github.com/senzing-garage/sz-sdk-go/szerror"
 )
@@ -171,7 +170,7 @@ func (client *Szconfig) GetDataSources(ctx context.Context) (string, error) {
 		client.traceEntry(15)
 		defer func() { client.traceExit(16, result, err, time.Since(entryTime)) }()
 	}
-	configDefinition, result, err = client.getDataSourcesChoreography(ctx, client.configDefinition)
+	result, err = client.getDataSourcesChoreography(ctx, client.configDefinition)
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
@@ -184,38 +183,6 @@ func (client *Szconfig) GetDataSources(ctx context.Context) (string, error) {
 // ----------------------------------------------------------------------------
 // Public non-interface methods
 // ----------------------------------------------------------------------------
-
-/*
-Method ImportTemplate retrieves a Senzing configuration from the default template.
-The default template is the Senzing configuration JSON document file, g2config.json, located in the PIPELINE.RESOURCEPATH path.
-
-Input
-  - ctx: A context to control lifecycle.
-
-Output
-  - configDefinition: A Senzing configuration JSON document.
-*/
-func (client *Szconfig) ImportTemplate(ctx context.Context) error {
-	var err error
-	var result string
-	if client.isTrace {
-		entryTime := time.Now()
-		client.traceEntry(7)
-		defer func() { client.traceExit(8, result, err, time.Since(entryTime)) }()
-	}
-	result, err = client.importTemplateChoregraphy(ctx)
-	if err != nil {
-		return err
-	}
-	client.configDefinition = result
-	if client.observers != nil {
-		go func() {
-			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8003, err, details)
-		}()
-	}
-	return err
-}
 
 /*
 Method Destroy will destroy and perform cleanup for the Senzing Szconfig object.
@@ -274,6 +241,38 @@ func (client *Szconfig) Import(ctx context.Context, configDefinition string) err
 		go func() {
 			details := map[string]string{}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8009, err, details)
+		}()
+	}
+	return err
+}
+
+/*
+Method ImportTemplate retrieves a Senzing configuration from the default template.
+The default template is the Senzing configuration JSON document file, g2config.json, located in the PIPELINE.RESOURCEPATH path.
+
+Input
+  - ctx: A context to control lifecycle.
+
+Output
+  - configDefinition: A Senzing configuration JSON document.
+*/
+func (client *Szconfig) ImportTemplate(ctx context.Context) error {
+	var err error
+	var result string
+	if client.isTrace {
+		entryTime := time.Now()
+		client.traceEntry(7)
+		defer func() { client.traceExit(8, result, err, time.Since(entryTime)) }()
+	}
+	result, err = client.importTemplateChoregraphy(ctx)
+	if err != nil {
+		return err
+	}
+	client.configDefinition = result
+	if client.observers != nil {
+		go func() {
+			details := map[string]string{}
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8003, err, details)
 		}()
 	}
 	return err
@@ -782,10 +781,10 @@ func (client *Szconfig) getLastExceptionCode(ctx context.Context) (int, error) {
 // --- Misc -------------------------------------------------------------------
 
 // Get space for an array of bytes of a given size.
-func (client *Szconfig) getByteArrayC(size int) *C.char {
-	bytes := C.malloc(C.size_t(size))
-	return (*C.char)(bytes)
-}
+// func (client *Szconfig) getByteArrayC(size int) *C.char {
+// 	bytes := C.malloc(C.size_t(size))
+// 	return (*C.char)(bytes)
+// }
 
 // Make a byte array.
 func (client *Szconfig) getByteArray(size int) []byte {
@@ -793,6 +792,6 @@ func (client *Szconfig) getByteArray(size int) []byte {
 }
 
 // A hack: Only needed to import the "senzing" package for the godoc comments.
-func junk() {
-	fmt.Printf(senzing.SzNoAttributes)
-}
+// func junk() {
+// 	fmt.Printf(senzing.SzNoAttributes)
+// }

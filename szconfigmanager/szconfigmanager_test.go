@@ -80,16 +80,16 @@ func TestSzconfigmanager_CreateConfigFromConfigID_badConfigID(test *testing.T) {
 	ctx := context.TODO()
 	szConfigManager := getTestObject(ctx, test)
 	actual, err := szConfigManager.CreateConfigFromConfigID(ctx, badConfigID)
-	assert.Equal(test, "", actual)
 	require.ErrorIs(test, err, szerror.ErrSzConfiguration)
+	assert.Nil(test, actual)
 }
 
 func TestSzconfigmanager_CreateConfigFromConfigID_nilConfigID(test *testing.T) {
 	ctx := context.TODO()
 	szConfigManager := getTestObject(ctx, test)
 	actual, err := szConfigManager.CreateConfigFromConfigID(ctx, nilConfigID)
-	assert.Equal(test, "", actual)
 	require.ErrorIs(test, err, szerror.ErrSzConfiguration)
+	assert.Nil(test, actual)
 }
 
 func TestSzconfigmanager_GetConfigs(test *testing.T) {
@@ -531,19 +531,23 @@ func teardown() error {
 }
 
 func teardownSzConfig(ctx context.Context) error {
-	err := szConfigSingleton.UnregisterObserver(ctx, observerSingleton)
-	handleErrorWithPanic(err)
-	err = szConfigSingleton.Destroy(ctx)
-	handleErrorWithPanic(err)
-	szConfigSingleton = nil
+	if szConfigSingleton != nil {
+		err := szConfigSingleton.UnregisterObserver(ctx, observerSingleton)
+		handleErrorWithPanic(err)
+		err = szConfigSingleton.Destroy(ctx)
+		handleErrorWithPanic(err)
+		szConfigSingleton = nil
+	}
 	return nil
 }
 
 func teardownSzConfigManager(ctx context.Context) error {
-	err := szConfigManagerSingleton.UnregisterObserver(ctx, observerSingleton)
-	handleErrorWithPanic(err)
-	err = szConfigManagerSingleton.Destroy(ctx)
-	handleErrorWithPanic(err)
-	szConfigManagerSingleton = nil
+	if szConfigManagerSingleton != nil {
+		err := szConfigManagerSingleton.UnregisterObserver(ctx, observerSingleton)
+		handleErrorWithPanic(err)
+		err = szConfigManagerSingleton.Destroy(ctx)
+		handleErrorWithPanic(err)
+		szConfigManagerSingleton = nil
+	}
 	return nil
 }

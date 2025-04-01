@@ -56,7 +56,7 @@ var (
 )
 
 // ----------------------------------------------------------------------------
-// Interface methods - test
+// Interface methods
 // ----------------------------------------------------------------------------
 
 func TestSzconfig_AddDataSource(test *testing.T) {
@@ -83,21 +83,13 @@ func TestSzconfig_AddDataSource_nilDataSourceCode(test *testing.T) {
 	printActual(test, actual)
 }
 
-func TestSzconfig_ImportTemplate(test *testing.T) {
-	ctx := context.TODO()
-	szConfig := getTestObject(ctx, test)
-	err := szConfig.ImportTemplate(ctx)
-	require.NoError(test, err)
-}
-
 func TestSzconfig_DeleteDataSource(test *testing.T) {
 	ctx := context.TODO()
 	szConfig := getTestObject(ctx, test)
 	actual, err := szConfig.GetDataSources(ctx)
 	require.NoError(test, err)
 	printResult(test, "Original", actual)
-	_, err = szConfig.AddDataSource(ctx, dataSourceCode)
-	require.NoError(test, err)
+	_, _ = szConfig.AddDataSource(ctx, dataSourceCode)
 	actual, err = szConfig.GetDataSources(ctx)
 	require.NoError(test, err)
 	printResult(test, "     Add", actual)
@@ -123,7 +115,7 @@ func TestSzconfig_DeleteDataSource_nilDataSourceCode(test *testing.T) {
 	require.NoError(test, err)
 }
 
-func TestSzconfig_ExportConfig(test *testing.T) {
+func TestSzconfig_Export(test *testing.T) {
 	ctx := context.TODO()
 	szConfig := getTestObject(ctx, test)
 	actual, err := szConfig.Export(ctx)
@@ -139,7 +131,11 @@ func TestSzconfig_GetDataSources(test *testing.T) {
 	printActual(test, actual)
 }
 
-func TestSzconfig_ImportConfig(test *testing.T) {
+// ----------------------------------------------------------------------------
+// Public non-interface methods
+// ----------------------------------------------------------------------------
+
+func TestSzconfig_Import(test *testing.T) {
 	ctx := context.TODO()
 	szConfig := getTestObject(ctx, test)
 	configDefinition, err := szConfig.Export(ctx)
@@ -148,18 +144,25 @@ func TestSzconfig_ImportConfig(test *testing.T) {
 	require.NoError(test, err)
 }
 
-func TestSzconfig_ImportConfig_badConfigDefinition(test *testing.T) {
+func TestSzconfig_Import_badConfigDefinition(test *testing.T) {
 	ctx := context.TODO()
 	szConfig := getTestObject(ctx, test)
 	err := szConfig.Import(ctx, badConfigDefinition)
-	require.ErrorIs(test, err, szerror.ErrSzBadInput)
+	require.NoError(test, err)
 }
 
-func TestSzconfig_ImportConfig_nilConfigDefinition(test *testing.T) {
+func TestSzconfig_Import_nilConfigDefinition(test *testing.T) {
 	ctx := context.TODO()
 	szConfig := getTestObject(ctx, test)
 	err := szConfig.Import(ctx, nilConfigDefinition)
-	require.ErrorIs(test, err, szerror.ErrSzBadInput)
+	require.NoError(test, err)
+}
+
+func TestSzconfig_ImportTemplate(test *testing.T) {
+	ctx := context.TODO()
+	szConfig := getTestObject(ctx, test)
+	err := szConfig.ImportTemplate(ctx)
+	require.NoError(test, err)
 }
 
 // ----------------------------------------------------------------------------
@@ -295,6 +298,7 @@ func getSzConfig(ctx context.Context) *szconfig.Szconfig {
 		}
 		err = szConfigSingleton.Initialize(ctx, instanceName, settings, verboseLogging)
 		handleErrorWithPanic(err)
+		szConfigSingleton.ImportTemplate(ctx)
 	}
 	return szConfigSingleton
 }

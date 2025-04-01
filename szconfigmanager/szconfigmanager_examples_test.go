@@ -109,13 +109,17 @@ func ExampleSzconfigmanager_ReplaceDefaultConfigID() {
 	if err != nil {
 		handleError(err)
 	}
-	szConfig, err := szConfigManager.CreateConfigFromTemplate(ctx)
+	szConfig, err := szConfigManager.CreateConfigFromConfigID(ctx, currentDefaultConfigID)
 	if err != nil {
 		handleError(err)
 	}
-	_, err = szConfig.AddDataSource(ctx, "TEST_DATASOURCE")
-	if err != nil {
-		handleError(err)
+
+	dataSourceCodes := []string{"TEST_DATASOURCE"}
+	for _, dataSource := range dataSourceCodes {
+		_, err = szConfig.AddDataSource(ctx, dataSource)
+		if err != nil {
+			handleError(err)
+		}
 	}
 	configDefinition, err := szConfig.Export(ctx)
 	if err != nil {

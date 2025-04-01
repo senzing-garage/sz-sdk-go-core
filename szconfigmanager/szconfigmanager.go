@@ -130,30 +130,6 @@ func (client *Szconfigmanager) CreateConfigFromTemplate(ctx context.Context) (se
 }
 
 /*
-Method Destroy will destroy and perform cleanup for the Senzing SzConfigMgr object.
-It should be called after all other calls are complete.
-
-Input
-  - ctx: A context to control lifecycle.
-*/
-func (client *Szconfigmanager) Destroy(ctx context.Context) error {
-	var err error
-	if client.isTrace {
-		entryTime := time.Now()
-		client.traceEntry(5)
-		defer func() { client.traceExit(6, err, time.Since(entryTime)) }()
-	}
-	err = client.destroy(ctx)
-	if client.observers != nil {
-		go func() {
-			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8002, err, details)
-		}()
-	}
-	return err
-}
-
-/*
 Method GetConfigs retrieves a list of Senzing configuration JSON documents from the Senzing datastore.
 
 Input
@@ -332,6 +308,30 @@ func (client *Szconfigmanager) SetDefaultConfigID(ctx context.Context, configID 
 // ----------------------------------------------------------------------------
 // Public non-interface methods
 // ----------------------------------------------------------------------------
+
+/*
+Method Destroy will destroy and perform cleanup for the Senzing SzConfigMgr object.
+It should be called after all other calls are complete.
+
+Input
+  - ctx: A context to control lifecycle.
+*/
+func (client *Szconfigmanager) Destroy(ctx context.Context) error {
+	var err error
+	if client.isTrace {
+		entryTime := time.Now()
+		client.traceEntry(5)
+		defer func() { client.traceExit(6, err, time.Since(entryTime)) }()
+	}
+	err = client.destroy(ctx)
+	if client.observers != nil {
+		go func() {
+			details := map[string]string{}
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8002, err, details)
+		}()
+	}
+	return err
+}
 
 /*
 Method GetObserverOrigin returns the "origin" value of past Observer messages.
@@ -539,12 +539,12 @@ func (client *Szconfigmanager) setDefaultConfigChoreography(ctx context.Context,
 	var err error
 	var result int64
 
-	configID, err := client.addConfig(ctx, configDefinition, configComment)
+	result, err = client.addConfig(ctx, configDefinition, configComment)
 	if err != nil {
 		return result, err
 	}
 
-	err = client.setDefaultConfigID(ctx, configID)
+	err = client.setDefaultConfigID(ctx, result)
 
 	return result, err
 }
@@ -789,10 +789,10 @@ func (client *Szconfigmanager) getLastExceptionCode(ctx context.Context) (int, e
 // --- Misc -------------------------------------------------------------------
 
 // Get space for an array of bytes of a given size.
-func (client *Szconfigmanager) getByteArrayC(size int) *C.char {
-	bytes := C.malloc(C.size_t(size))
-	return (*C.char)(bytes)
-}
+// func (client *Szconfigmanager) getByteArrayC(size int) *C.char {
+// 	bytes := C.malloc(C.size_t(size))
+// 	return (*C.char)(bytes)
+// }
 
 // Make a byte array.
 func (client *Szconfigmanager) getByteArray(size int) []byte {
@@ -800,6 +800,6 @@ func (client *Szconfigmanager) getByteArray(size int) []byte {
 }
 
 // A hack: Only needed to import the "senzing" package for the godoc comments.
-func junk() {
-	fmt.Printf(senzing.SzNoAttributes)
-}
+// func junk() {
+// 	fmt.Printf(senzing.SzNoAttributes)
+// }

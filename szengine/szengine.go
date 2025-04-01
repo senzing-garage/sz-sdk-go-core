@@ -200,30 +200,6 @@ func (client *Szengine) DeleteRecord(ctx context.Context, dataSourceCode string,
 }
 
 /*
-Method Destroy will destroy and perform cleanup for the Senzing Sz object.
-It should be called after all other calls are complete.
-
-Input
-  - ctx: A context to control lifecycle.
-*/
-func (client *Szengine) Destroy(ctx context.Context) error {
-	var err error
-	if client.isTrace {
-		entryTime := time.Now()
-		client.traceEntry(11)
-		defer func() { client.traceExit(12, err, time.Since(entryTime)) }()
-	}
-	err = client.destroy(ctx)
-	if client.observers != nil {
-		go func() {
-			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8005, err, details)
-		}()
-	}
-	return err
-}
-
-/*
 Method ExportCsvEntityReport initializes a cursor over a CSV document of exported entities.
 It is part of the ExportCsvEntityReport, [Szengine.FetchNext], [Szengine.CloseExport] lifecycle of a list of entities to export.
 The first exported line is the CSV header.
@@ -1125,32 +1101,6 @@ func (client *Szengine) ReevaluateRecord(ctx context.Context, dataSourceCode str
 }
 
 /*
-Method Reinitialize re-initializes the Senzing engine with a specific Senzing configuration JSON document identifier.
-
-Input
-  - ctx: A context to control lifecycle.
-  - configID: The Senzing configuration JSON document identifier used for the initialization.
-*/
-func (client *Szengine) Reinitialize(ctx context.Context, configID int64) error {
-	var err error
-	if client.isTrace {
-		entryTime := time.Now()
-		client.traceEntry(65, configID)
-		defer func() { client.traceExit(66, configID, err, time.Since(entryTime)) }()
-	}
-	err = client.reinit(ctx, configID)
-	if client.observers != nil {
-		go func() {
-			details := map[string]string{
-				"configID": strconv.FormatInt(configID, baseTen),
-			}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8030, err, details)
-		}()
-	}
-	return err
-}
-
-/*
 Method SearchByAttributes retrieves entity data based on entity attributes
 and an optional search profile.
 
@@ -1297,6 +1247,30 @@ func (client *Szengine) WhyRecords(ctx context.Context, dataSourceCode1 string, 
 // ----------------------------------------------------------------------------
 
 /*
+Method Destroy will destroy and perform cleanup for the Senzing Sz object.
+It should be called after all other calls are complete.
+
+Input
+  - ctx: A context to control lifecycle.
+*/
+func (client *Szengine) Destroy(ctx context.Context) error {
+	var err error
+	if client.isTrace {
+		entryTime := time.Now()
+		client.traceEntry(11)
+		defer func() { client.traceExit(12, err, time.Since(entryTime)) }()
+	}
+	err = client.destroy(ctx)
+	if client.observers != nil {
+		go func() {
+			details := map[string]string{}
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8005, err, details)
+		}()
+	}
+	return err
+}
+
+/*
 Method GetObserverOrigin returns the "origin" value of past Observer messages.
 
 Input
@@ -1373,6 +1347,32 @@ func (client *Szengine) RegisterObserver(ctx context.Context, observer observer.
 				"observerID": observer.GetObserverID(ctx),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8702, err, details)
+		}()
+	}
+	return err
+}
+
+/*
+Method Reinitialize re-initializes the Senzing engine with a specific Senzing configuration JSON document identifier.
+
+Input
+  - ctx: A context to control lifecycle.
+  - configID: The Senzing configuration JSON document identifier used for the initialization.
+*/
+func (client *Szengine) Reinitialize(ctx context.Context, configID int64) error {
+	var err error
+	if client.isTrace {
+		entryTime := time.Now()
+		client.traceEntry(65, configID)
+		defer func() { client.traceExit(66, configID, err, time.Since(entryTime)) }()
+	}
+	err = client.reinit(ctx, configID)
+	if client.observers != nil {
+		go func() {
+			details := map[string]string{
+				"configID": strconv.FormatInt(configID, baseTen),
+			}
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8030, err, details)
 		}()
 	}
 	return err

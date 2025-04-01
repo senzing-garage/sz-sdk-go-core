@@ -214,6 +214,7 @@ func TestSzdiagnostic_Initialize_withConfigId(test *testing.T) {
 
 func TestSzdiagnostic_Reinitialize(test *testing.T) {
 	ctx := context.TODO()
+	szDiagnosticSingleton = nil
 	szDiagnostic := getTestObject(ctx, test)
 	configID := getDefaultConfigID()
 	err := szDiagnostic.Reinitialize(ctx, configID)
@@ -225,6 +226,7 @@ func TestSzdiagnostic_Reinitialize(test *testing.T) {
 
 func TestSzdiagnostic_Destroy(test *testing.T) {
 	ctx := context.TODO()
+	szDiagnosticSingleton = nil
 	szDiagnostic := getTestObject(ctx, test)
 	err := szDiagnostic.Destroy(ctx)
 	require.NoError(test, err)
@@ -393,9 +395,7 @@ func TestMain(m *testing.M) {
 	}
 	code := m.Run()
 	err = teardown()
-	if err != nil {
-		fmt.Print(err)
-	}
+	handleErrorWithPanic(err)
 	os.Exit(code)
 }
 

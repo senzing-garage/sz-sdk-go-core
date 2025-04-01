@@ -58,30 +58,6 @@ const (
 // ----------------------------------------------------------------------------
 
 /*
-Method Destroy will destroy and perform cleanup for the Senzing SzProduct object.
-It should be called after all other calls are complete.
-
-Input
-  - ctx: A context to control lifecycle.
-*/
-func (client *Szproduct) Destroy(ctx context.Context) error {
-	var err error
-	if client.isTrace {
-		entryTime := time.Now()
-		client.traceEntry(3)
-		defer func() { client.traceExit(4, err, time.Since(entryTime)) }()
-	}
-	err = client.destroy(ctx)
-	if client.observers != nil {
-		go func() {
-			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8001, err, details)
-		}()
-	}
-	return err
-}
-
-/*
 Method GetLicense retrieves information about the license used by the Senzing API.
 
 Input
@@ -138,6 +114,30 @@ func (client *Szproduct) GetVersion(ctx context.Context) (string, error) {
 // ----------------------------------------------------------------------------
 // Public non-interface methods
 // ----------------------------------------------------------------------------
+
+/*
+Method Destroy will destroy and perform cleanup for the Senzing SzProduct object.
+It should be called after all other calls are complete.
+
+Input
+  - ctx: A context to control lifecycle.
+*/
+func (client *Szproduct) Destroy(ctx context.Context) error {
+	var err error
+	if client.isTrace {
+		entryTime := time.Now()
+		client.traceEntry(3)
+		defer func() { client.traceExit(4, err, time.Since(entryTime)) }()
+	}
+	err = client.destroy(ctx)
+	if client.observers != nil {
+		go func() {
+			details := map[string]string{}
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8001, err, details)
+		}()
+	}
+	return err
+}
 
 /*
 Method GetObserverOrigin returns the "origin" value of past Observer messages.
