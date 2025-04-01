@@ -549,6 +549,7 @@ func teardownSzEngine(ctx context.Context) error {
 	handleErrorWithPanic(err)
 	err = szEngineSingleton.Destroy(ctx)
 	handleErrorWithPanic(err)
+
 	szEngineSingleton = nil
 
 	return err
