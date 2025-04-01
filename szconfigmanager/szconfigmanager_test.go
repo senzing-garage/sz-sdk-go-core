@@ -560,6 +560,7 @@ func teardownSzConfig(ctx context.Context) error {
 		handleErrorWithPanic(err)
 		err = szConfigSingleton.Destroy(ctx)
 		handleErrorWithPanic(err)
+
 		szConfigSingleton = nil
 	}
 
