@@ -177,7 +177,7 @@ func getSettings() (string, error) {
 	result, err = settings.BuildSimpleSettingsUsingMap(configAttrMap)
 	handleErrorWithPanic(err)
 
-	return result, err
+	return result, nil
 }
 
 func getTestDirectoryPath() string {
@@ -185,8 +185,6 @@ func getTestDirectoryPath() string {
 }
 
 func getSzEngine(ctx context.Context) (*szengine.Szengine, error) {
-	var err error
-
 	_ = ctx
 
 	if szEngineSingleton == nil {
@@ -202,15 +200,16 @@ func getSzEngine(ctx context.Context) (*szengine.Szengine, error) {
 		szEngineSingleton = &szengine.Szengine{}
 	}
 
-	return szEngineSingleton, err
+	return szEngineSingleton, nil
 }
 
 // func getVerboseSzEngineAsInterface(ctx context.Context) senzing.SzEngine {
 // 	return getVerboseSzEngine(ctx)
 // }
 
-func getVerboseTestObject(ctx context.Context, test *testing.T) (senzing.SzEngine, error) {
-	_ = test
+func getVerboseTestObject(t *testing.T) (senzing.SzEngine, error) {
+	t.Helper()
+	ctx := t.Context()
 
 	return getSzEngine(ctx)
 }
@@ -265,7 +264,7 @@ func setup() error {
 	err = setupSenzingConfiguration()
 	handleErrorWithPanic(err)
 
-	return err
+	return nil
 }
 
 func setupDatabase() error {
@@ -284,7 +283,7 @@ func setupDatabase() error {
 	_, _, err = fileutil.CopyFile(databaseTemplatePath, testDirectoryPath, true) // Copy the SQLite database file.
 	handleErrorWithPanic(err)
 
-	return err
+	return nil
 }
 
 func setupDirectories() error {
@@ -296,7 +295,7 @@ func setupDirectories() error {
 	err = os.MkdirAll(filepath.Clean(testDirectoryPath), 0750) // recreate the test target directory
 	handleErrorWithPanic(err)
 
-	return err
+	return nil
 }
 
 func setupSenzingConfiguration() error {
@@ -356,14 +355,15 @@ func setupSenzingConfiguration() error {
 	})
 	handleErrorWithPanic(err)
 
-	return err
+	return nil
 }
 
 func teardown() error {
 	ctx := context.TODO()
 	err := teardownSzEngine(ctx)
+	handleErrorWithPanic(err)
 
-	return err
+	return nil
 }
 
 func teardownSzEngine(ctx context.Context) error {

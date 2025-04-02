@@ -31,8 +31,8 @@ const (
 // ----------------------------------------------------------------------------
 
 func TestSzAbstractFactory_CreateConfigManager(test *testing.T) {
-	ctx := context.TODO()
-	szAbstractFactory := getTestObject(ctx, test)
+	ctx := test.Context()
+	szAbstractFactory := getTestObject(test)
 
 	defer func() { handleErrorWithPanic(szAbstractFactory.Destroy(ctx)) }()
 
@@ -44,8 +44,8 @@ func TestSzAbstractFactory_CreateConfigManager(test *testing.T) {
 }
 
 func TestSzAbstractFactory_CreateDiagnostic(test *testing.T) {
-	ctx := context.TODO()
-	szAbstractFactory := getTestObject(ctx, test)
+	ctx := test.Context()
+	szAbstractFactory := getTestObject(test)
 
 	defer func() { handleErrorWithPanic(szAbstractFactory.Destroy(ctx)) }()
 
@@ -57,8 +57,8 @@ func TestSzAbstractFactory_CreateDiagnostic(test *testing.T) {
 }
 
 func TestSzAbstractFactory_CreateEngine(test *testing.T) {
-	ctx := context.TODO()
-	szAbstractFactory := getTestObject(ctx, test)
+	ctx := test.Context()
+	szAbstractFactory := getTestObject(test)
 
 	defer func() { handleErrorWithPanic(szAbstractFactory.Destroy(ctx)) }()
 
@@ -70,8 +70,8 @@ func TestSzAbstractFactory_CreateEngine(test *testing.T) {
 }
 
 func TestSzAbstractFactory_CreateProduct(test *testing.T) {
-	ctx := context.TODO()
-	szAbstractFactory := getTestObject(ctx, test)
+	ctx := test.Context()
+	szAbstractFactory := getTestObject(test)
 
 	defer func() { handleErrorWithPanic(szAbstractFactory.Destroy(ctx)) }()
 
@@ -83,15 +83,15 @@ func TestSzAbstractFactory_CreateProduct(test *testing.T) {
 }
 
 func TestSzAbstractFactory_Destroy(test *testing.T) {
-	ctx := context.TODO()
-	szAbstractFactory := getTestObject(ctx, test)
+	ctx := test.Context()
+	szAbstractFactory := getTestObject(test)
 
 	defer func() { handleErrorWithPanic(szAbstractFactory.Destroy(ctx)) }()
 }
 
 func TestSzAbstractFactory_Reinitialize(test *testing.T) {
-	ctx := context.TODO()
-	szAbstractFactory := getTestObject(ctx, test)
+	ctx := test.Context()
+	szAbstractFactory := getTestObject(test)
 
 	defer func() { handleErrorWithPanic(szAbstractFactory.Destroy(ctx)) }()
 
@@ -132,7 +132,7 @@ func getSettings() (string, error) {
 	result, err = settings.BuildSimpleSettingsUsingMap(configAttrMap)
 	handleErrorWithPanic(err)
 
-	return result, err
+	return result, nil
 }
 
 func getSzAbstractFactory(ctx context.Context) senzing.SzAbstractFactory {
@@ -160,8 +160,10 @@ func getTestDirectoryPath() string {
 	return filepath.FromSlash("../target/test/szconfig")
 }
 
-func getTestObject(ctx context.Context, test *testing.T) senzing.SzAbstractFactory {
-	_ = test
+func getTestObject(t *testing.T) senzing.SzAbstractFactory {
+	t.Helper()
+	ctx := t.Context()
+
 	return getSzAbstractFactory(ctx)
 }
 
@@ -177,13 +179,16 @@ func handleErrorWithPanic(err error) {
 	}
 }
 
-func printActual(test *testing.T, actual interface{}) {
-	printResult(test, "Actual", actual)
+func printActual(t *testing.T, actual interface{}) {
+	t.Helper()
+	printResult(t, "Actual", actual)
 }
 
-func printResult(test *testing.T, title string, result interface{}) {
+func printResult(t *testing.T, title string, result interface{}) {
+	t.Helper()
+
 	if printResults {
-		test.Logf("%s: %v", title, truncate(fmt.Sprintf("%v", result), defaultTruncation))
+		t.Logf("%s: %v", title, truncate(fmt.Sprintf("%v", result), defaultTruncation))
 	}
 }
 
@@ -222,7 +227,7 @@ func setup() error {
 	err = setupSenzingConfiguration()
 	handleErrorWithPanic(err)
 
-	return err
+	return nil
 }
 
 func setupDatabase() error {
@@ -241,7 +246,7 @@ func setupDatabase() error {
 	_, _, err = fileutil.CopyFile(databaseTemplatePath, testDirectoryPath, true) // Copy the SQLite database file.
 	handleErrorWithPanic(err)
 
-	return err
+	return nil
 }
 
 func setupDirectories() error {
@@ -253,7 +258,7 @@ func setupDirectories() error {
 	err = os.MkdirAll(filepath.Clean(testDirectoryPath), 0750) // recreate the test target directory
 	handleErrorWithPanic(err)
 
-	return err
+	return nil
 }
 
 func setupSenzingConfiguration() error {
@@ -301,7 +306,7 @@ func setupSenzingConfiguration() error {
 	_, err = szConfigManager.SetDefaultConfig(ctx, configDefinition, configComment)
 	handleErrorWithPanic(err)
 
-	return err
+	return nil
 }
 
 func teardown() error {

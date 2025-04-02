@@ -87,7 +87,11 @@ func (client *Szproduct) GetLicense(ctx context.Context) (string, error) {
 		}()
 	}
 
-	return result, err
+	if err != nil {
+		return "", fmt.Errorf("szproduct.GetLicense error: %w", err)
+	}
+
+	return result, nil
 }
 
 /*
@@ -121,7 +125,11 @@ func (client *Szproduct) GetVersion(ctx context.Context) (string, error) {
 		}()
 	}
 
-	return result, err
+	if err != nil {
+		return "", fmt.Errorf("szproduct.GetVersion error: %w", err)
+	}
+
+	return result, nil
 }
 
 // ----------------------------------------------------------------------------
@@ -154,7 +162,11 @@ func (client *Szproduct) Destroy(ctx context.Context) error {
 		}()
 	}
 
-	return err
+	if err != nil {
+		return fmt.Errorf("szproduct.Destroy error: %w", err)
+	}
+
+	return nil
 }
 
 /*
@@ -204,7 +216,11 @@ func (client *Szproduct) Initialize(ctx context.Context, instanceName string, se
 		}()
 	}
 
-	return err
+	if err != nil {
+		return fmt.Errorf("szproduct.Initialize error: %w", err)
+	}
+
+	return nil
 }
 
 /*
@@ -239,7 +255,11 @@ func (client *Szproduct) RegisterObserver(ctx context.Context, observer observer
 		}()
 	}
 
-	return err
+	if err != nil {
+		return fmt.Errorf("szproduct.RegisterObserver error: %w", err)
+	}
+
+	return nil
 }
 
 /*
@@ -275,7 +295,11 @@ func (client *Szproduct) SetLogLevel(ctx context.Context, logLevelName string) e
 		}()
 	}
 
-	return err
+	if err != nil {
+		return fmt.Errorf("szproduct.SetLogLevel error: %w", err)
+	}
+
+	return nil
 }
 
 /*
@@ -323,7 +347,11 @@ func (client *Szproduct) UnregisterObserver(ctx context.Context, observer observ
 		}
 	}
 
-	return err
+	if err != nil {
+		return fmt.Errorf("szproduct.UnregisterObserver error: %w", err)
+	}
+
+	return nil
 }
 
 // ----------------------------------------------------------------------------
@@ -452,7 +480,7 @@ func (client *Szproduct) newError(ctx context.Context, errorNumber int, details 
 	details = append(details, errors.New(lastException))
 	errorMessage := client.getMessenger().NewJSON(errorNumber, details...)
 
-	return szerror.New(lastExceptionCode, errorMessage)
+	return szerror.New(lastExceptionCode, errorMessage) //nolint
 }
 
 /*

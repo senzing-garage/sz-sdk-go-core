@@ -1,9 +1,9 @@
-package helper
+package helper_test
 
 import (
-	"os"
 	"testing"
 
+	"github.com/senzing-garage/sz-sdk-go-core/helper"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -13,14 +13,14 @@ import (
 
 func TestHelpers_GetEnv(test *testing.T) {
 	expected := "EXPECTED_VALUE"
-	os.Setenv("TEST_ENV_VAR", expected)
+	test.Setenv("TEST_ENV_VAR", expected)
 
-	actual := GetEnv("TEST_ENV_VAR", "DEFAULT_VALUE")
+	actual := helper.GetEnv("TEST_ENV_VAR", "DEFAULT_VALUE")
 	assert.Equal(test, expected, actual)
 }
 
 func TestHelpers_GetEnv_default(test *testing.T) {
 	expected := "DEFAULT_VALUE"
-	actual := GetEnv("NO_ENV_VAR", expected)
+	actual := helper.GetEnv("NO_ENV_VAR", expected)
 	assert.Equal(test, expected, actual)
 }

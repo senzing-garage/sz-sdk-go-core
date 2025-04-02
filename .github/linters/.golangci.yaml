@@ -91,19 +91,19 @@ linters:
     - tagalign
     # - tagliatelle
     # - testableexamples
-    # - testifylint
-    # - testpackage
-    # - thelper
+    - testifylint
+    - testpackage
+    - thelper
     - tparallel
-    # - unconvert
+    - unconvert
     # - unparam
     - unused
     - usestdlibvars
-    # - usetesting
-    # - varnamelen
+    - usetesting
+    - varnamelen
     - wastedassign
-    # - whitespace
-    # - wrapcheck
+    - whitespace
+    - wrapcheck
     - wsl
     - zerologlint
   exclusions:

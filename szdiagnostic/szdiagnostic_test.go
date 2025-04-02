@@ -65,8 +65,8 @@ var (
 // ----------------------------------------------------------------------------
 
 func TestSzdiagnostic_CheckDatastorePerformance(test *testing.T) {
-	ctx := context.TODO()
-	szDiagnostic := getTestObject(ctx, test)
+	ctx := test.Context()
+	szDiagnostic := getTestObject(test)
 	secondsToRun := 1
 	actual, err := szDiagnostic.CheckDatastorePerformance(ctx, secondsToRun)
 	require.NoError(test, err)
@@ -74,31 +74,31 @@ func TestSzdiagnostic_CheckDatastorePerformance(test *testing.T) {
 }
 
 func TestSzdiagnostic_CheckDatastorePerformance_badSecondsToRun(test *testing.T) {
-	ctx := context.TODO()
-	szDiagnostic := getTestObject(ctx, test)
+	ctx := test.Context()
+	szDiagnostic := getTestObject(test)
 	actual, err := szDiagnostic.CheckDatastorePerformance(ctx, badSecondsToRun)
 	require.NoError(test, err)
 	printActual(test, actual)
 }
 
 func TestSzdiagnostic_CheckDatastorePerformance_nilSecondsToRun(test *testing.T) {
-	ctx := context.TODO()
-	szDiagnostic := getTestObject(ctx, test)
+	ctx := test.Context()
+	szDiagnostic := getTestObject(test)
 	actual, err := szDiagnostic.CheckDatastorePerformance(ctx, nilSecondsToRun)
 	require.NoError(test, err)
 	printActual(test, actual)
 }
 
 func TestSzdiagnostic_GetDatastoreInfo(test *testing.T) {
-	ctx := context.TODO()
-	szDiagnostic := getTestObject(ctx, test)
+	ctx := test.Context()
+	szDiagnostic := getTestObject(test)
 	actual, err := szDiagnostic.GetDatastoreInfo(ctx)
 	require.NoError(test, err)
 	printActual(test, actual)
 }
 
 func TestSzdiagnostic_GetFeature(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
@@ -107,7 +107,7 @@ func TestSzdiagnostic_GetFeature(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szDiagnostic := getTestObject(ctx, test)
+	szDiagnostic := getTestObject(test)
 	featureID := int64(1)
 	actual, err := szDiagnostic.GetFeature(ctx, featureID)
 	require.NoError(test, err)
@@ -115,7 +115,7 @@ func TestSzdiagnostic_GetFeature(test *testing.T) {
 }
 
 func TestSzdiagnostic_GetFeature_badFeatureID(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
@@ -124,14 +124,14 @@ func TestSzdiagnostic_GetFeature_badFeatureID(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szDiagnostic := getTestObject(ctx, test)
+	szDiagnostic := getTestObject(test)
 	actual, err := szDiagnostic.GetFeature(ctx, badFeatureID)
 	require.ErrorIs(test, err, szerror.ErrSz)
 	printActual(test, actual)
 }
 
 func TestSzdiagnostic_GetFeature_nilFeatureID(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
@@ -140,7 +140,7 @@ func TestSzdiagnostic_GetFeature_nilFeatureID(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szDiagnostic := getTestObject(ctx, test)
+	szDiagnostic := getTestObject(test)
 	actual, err := szDiagnostic.GetFeature(ctx, nilFeatureID)
 	require.ErrorIs(test, err, szerror.ErrSz)
 	printActual(test, actual)
@@ -154,21 +154,21 @@ func TestSzdiagnostic_GetFeature_nilFeatureID(test *testing.T) {
 // ----------------------------------------------------------------------------
 
 func TestSzdiagnostic_SetLogLevel_badLogLevelName(test *testing.T) {
-	ctx := context.TODO()
-	szConfig := getTestObject(ctx, test)
+	ctx := test.Context()
+	szConfig := getTestObject(test)
 	_ = szConfig.SetLogLevel(ctx, badLogLevelName)
 }
 
 func TestSzdiagnostic_SetObserverOrigin(test *testing.T) {
-	ctx := context.TODO()
-	szDiagnostic := getTestObject(ctx, test)
+	ctx := test.Context()
+	szDiagnostic := getTestObject(test)
 	origin := "Machine: nn; Task: UnitTest"
 	szDiagnostic.SetObserverOrigin(ctx, origin)
 }
 
 func TestSzdiagnostic_GetObserverOrigin(test *testing.T) {
-	ctx := context.TODO()
-	szDiagnostic := getTestObject(ctx, test)
+	ctx := test.Context()
+	szDiagnostic := getTestObject(test)
 	origin := "Machine: nn; Task: UnitTest"
 	szDiagnostic.SetObserverOrigin(ctx, origin)
 	actual := szDiagnostic.GetObserverOrigin(ctx)
@@ -176,8 +176,8 @@ func TestSzdiagnostic_GetObserverOrigin(test *testing.T) {
 }
 
 func TestSzdiagnostic_UnregisterObserver(test *testing.T) {
-	ctx := context.TODO()
-	szDiagnostic := getTestObject(ctx, test)
+	ctx := test.Context()
+	szDiagnostic := getTestObject(test)
 	err := szDiagnostic.UnregisterObserver(ctx, observerSingleton)
 	require.NoError(test, err)
 }
@@ -187,7 +187,7 @@ func TestSzdiagnostic_UnregisterObserver(test *testing.T) {
 // ----------------------------------------------------------------------------
 
 func TestSzdiagnostic_AsInterface(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	szDiagnostic := getSzDiagnosticAsInterface(ctx)
 	secondsToRun := 1
 	actual, err := szDiagnostic.CheckDatastorePerformance(ctx, secondsToRun)
@@ -196,7 +196,7 @@ func TestSzdiagnostic_AsInterface(test *testing.T) {
 }
 
 func TestSzdiagnostic_Initialize(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	szDiagnostic := &szdiagnostic.Szdiagnostic{}
 	settings, err := getSettings()
 	require.NoError(test, err)
@@ -207,7 +207,7 @@ func TestSzdiagnostic_Initialize(test *testing.T) {
 }
 
 func TestSzdiagnostic_Initialize_withConfigId(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	szDiagnostic := &szdiagnostic.Szdiagnostic{}
 	settings, err := getSettings()
 	require.NoError(test, err)
@@ -221,9 +221,9 @@ func TestSzdiagnostic_Initialize_withConfigId(test *testing.T) {
 // func TestSzdiagnostic_Initialize_withConfigId_badConfigID(test *testing.T) {}
 
 func TestSzdiagnostic_Reinitialize(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	szDiagnosticSingleton = nil
-	szDiagnostic := getTestObject(ctx, test)
+	szDiagnostic := getTestObject(test)
 	configID := getDefaultConfigID()
 	err := szDiagnostic.Reinitialize(ctx, configID)
 	require.NoError(test, err)
@@ -233,17 +233,17 @@ func TestSzdiagnostic_Reinitialize(test *testing.T) {
 // func TestSzdiagnostic_Reinitialize_error(test *testing.T) {}
 
 func TestSzdiagnostic_Destroy(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	szDiagnosticSingleton = nil
-	szDiagnostic := getTestObject(ctx, test)
+	szDiagnostic := getTestObject(test)
 	err := szDiagnostic.Destroy(ctx)
 	require.NoError(test, err)
 }
 
 func TestSzdiagnostic_Destroy_withObserver(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	szDiagnosticSingleton = nil
-	szDiagnostic := getTestObject(ctx, test)
+	szDiagnostic := getTestObject(test)
 	err := szDiagnostic.Destroy(ctx)
 	require.NoError(test, err)
 }
@@ -266,7 +266,7 @@ func addRecords(ctx context.Context, records []record.Record) error {
 		handleErrorWithPanic(err)
 	}
 
-	return err
+	return nil
 }
 
 func deleteRecords(ctx context.Context, records []record.Record) error {
@@ -280,7 +280,7 @@ func deleteRecords(ctx context.Context, records []record.Record) error {
 		handleErrorWithPanic(err)
 	}
 
-	return err
+	return nil
 }
 
 func getDatabaseTemplatePath() string {
@@ -308,7 +308,7 @@ func getSettings() (string, error) {
 	result, err = settings.BuildSimpleSettingsUsingMap(configAttrMap)
 	handleErrorWithPanic(err)
 
-	return result, err
+	return result, nil
 }
 
 func getSzDiagnostic(ctx context.Context) *szdiagnostic.Szdiagnostic {
@@ -367,8 +367,10 @@ func getTestDirectoryPath() string {
 	return filepath.FromSlash("../target/test/szdiagnostic")
 }
 
-func getTestObject(ctx context.Context, test *testing.T) *szdiagnostic.Szdiagnostic {
-	_ = test
+func getTestObject(t *testing.T) *szdiagnostic.Szdiagnostic {
+	t.Helper()
+	ctx := t.Context()
+
 	return getSzDiagnostic(ctx)
 }
 
@@ -384,13 +386,16 @@ func handleErrorWithPanic(err error) {
 	}
 }
 
-func printActual(test *testing.T, actual interface{}) {
-	printResult(test, "Actual", actual)
+func printActual(t *testing.T, actual interface{}) {
+	t.Helper()
+	printResult(t, "Actual", actual)
 }
 
-func printResult(test *testing.T, title string, result interface{}) {
+func printResult(t *testing.T, title string, result interface{}) {
+	t.Helper()
+
 	if printResults {
-		test.Logf("%s: %v", title, truncate(fmt.Sprintf("%v", result), defaultTruncation))
+		t.Logf("%s: %v", title, truncate(fmt.Sprintf("%v", result), defaultTruncation))
 	}
 }
 
@@ -439,7 +444,7 @@ func setup() error {
 	err = setupSenzingConfiguration()
 	handleErrorWithPanic(err)
 
-	return err
+	return nil
 }
 
 func setupDatabase() error {
@@ -458,7 +463,7 @@ func setupDatabase() error {
 	_, _, err = fileutil.CopyFile(databaseTemplatePath, testDirectoryPath, true) // Copy the SQLite database file.
 	handleErrorWithPanic(err)
 
-	return err
+	return nil
 }
 
 func setupDirectories() error {
@@ -470,7 +475,7 @@ func setupDirectories() error {
 	err = os.MkdirAll(filepath.Clean(testDirectoryPath), 0750) // recreate the test target directory
 	handleErrorWithPanic(err)
 
-	return err
+	return nil
 }
 
 func setupSenzingConfiguration() error {
@@ -518,7 +523,7 @@ func setupSenzingConfiguration() error {
 	defaultConfigID, err = szConfigManager.SetDefaultConfig(ctx, configDefinition, configComment)
 	handleErrorWithPanic(err)
 
-	return err
+	return nil
 }
 
 func teardown() error {
@@ -528,7 +533,7 @@ func teardown() error {
 	err = teardownSzEngine(ctx)
 	handleErrorWithPanic(err)
 
-	return err
+	return nil
 }
 
 func teardownSzDiagnostic(ctx context.Context) error {
@@ -541,7 +546,7 @@ func teardownSzDiagnostic(ctx context.Context) error {
 
 	szDiagnosticSingleton = nil
 
-	return err
+	return nil
 }
 
 func teardownSzEngine(ctx context.Context) error {
@@ -552,5 +557,5 @@ func teardownSzEngine(ctx context.Context) error {
 
 	szEngineSingleton = nil
 
-	return err
+	return nil
 }

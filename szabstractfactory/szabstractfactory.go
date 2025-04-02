@@ -2,6 +2,7 @@ package szabstractfactory
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/senzing-garage/sz-sdk-go-core/szconfig"
 	"github.com/senzing-garage/sz-sdk-go-core/szconfigmanager"
@@ -54,7 +55,11 @@ func (factory *Szabstractfactory) CreateConfigManager(ctx context.Context) (senz
 		}
 	}
 
-	return result, err
+	if err != nil {
+		return nil, fmt.Errorf("szabstractfactory.CreateConfigManager error: %w", err)
+	}
+
+	return result, nil
 }
 
 /*
@@ -79,7 +84,11 @@ func (factory *Szabstractfactory) CreateDiagnostic(ctx context.Context) (senzing
 		}
 	}
 
-	return result, err
+	if err != nil {
+		return nil, fmt.Errorf("szabstractfactory.CreateDiagnostic error: %w", err)
+	}
+
+	return result, nil
 }
 
 /*
@@ -98,13 +107,17 @@ func (factory *Szabstractfactory) CreateEngine(ctx context.Context) (senzing.SzE
 	result := &szengine.Szengine{}
 
 	if !factory.isSzengineInitialized {
-		err := result.Initialize(ctx, factory.InstanceName, factory.Settings, factory.ConfigID, factory.VerboseLogging)
+		err = result.Initialize(ctx, factory.InstanceName, factory.Settings, factory.ConfigID, factory.VerboseLogging)
 		if err == nil {
 			factory.isSzengineInitialized = true
 		}
 	}
 
-	return result, err
+	if err != nil {
+		return nil, fmt.Errorf("szabstractfactory.CreateEngine error: %w", err)
+	}
+
+	return result, nil
 }
 
 /*
@@ -129,7 +142,11 @@ func (factory *Szabstractfactory) CreateProduct(ctx context.Context) (senzing.Sz
 		}
 	}
 
-	return result, err
+	if err != nil {
+		return nil, fmt.Errorf("szabstractfactory.CreateProduct error: %w", err)
+	}
+
+	return result, nil
 }
 
 /*
@@ -147,7 +164,7 @@ func (factory *Szabstractfactory) Destroy(ctx context.Context) error {
 
 		err = szConfig.Destroy(ctx)
 		if err != nil {
-			return err
+			return fmt.Errorf("szConfig.Destroy error: %w", err)
 		}
 
 		factory.isSzconfigInitialized = false
@@ -158,7 +175,7 @@ func (factory *Szabstractfactory) Destroy(ctx context.Context) error {
 
 		err = szConfigmanager.Destroy(ctx)
 		if err != nil {
-			return err
+			return fmt.Errorf("szConfigmanager.Destroy error: %w", err)
 		}
 
 		factory.isSzconfigmanagerInitialized = false
@@ -169,7 +186,7 @@ func (factory *Szabstractfactory) Destroy(ctx context.Context) error {
 
 		err = szDiagnostic.Destroy(ctx)
 		if err != nil {
-			return err
+			return fmt.Errorf("szDiagnostic.Destroy error: %w", err)
 		}
 
 		factory.isSzdiagnosticInitialized = false
@@ -180,7 +197,7 @@ func (factory *Szabstractfactory) Destroy(ctx context.Context) error {
 
 		err = szEngine.Destroy(ctx)
 		if err != nil {
-			return err
+			return fmt.Errorf("szEngine.Destroy error: %w", err)
 		}
 
 		factory.isSzengineInitialized = false
@@ -191,13 +208,17 @@ func (factory *Szabstractfactory) Destroy(ctx context.Context) error {
 
 		err = szProduct.Destroy(ctx)
 		if err != nil {
-			return err
+			return fmt.Errorf("szProduct.Destroy error: %w", err)
 		}
 
 		factory.isSzproductInitialized = false
 	}
 
-	return err
+	if err != nil {
+		return fmt.Errorf("szabstractfactory.Destroy error: %w", err)
+	}
+
+	return nil
 }
 
 /*
@@ -216,7 +237,7 @@ func (factory *Szabstractfactory) Reinitialize(ctx context.Context, configID int
 
 		err = szDiagnostic.Reinitialize(ctx, configID)
 		if err != nil {
-			return err
+			return fmt.Errorf("szDiagnostic.Reinitialize error: %w", err)
 		}
 	}
 
@@ -225,9 +246,13 @@ func (factory *Szabstractfactory) Reinitialize(ctx context.Context, configID int
 
 		err = szEngine.Reinitialize(ctx, configID)
 		if err != nil {
-			return err
+			return fmt.Errorf("szEngine.Reinitialize error: %w", err)
 		}
 	}
 
-	return err
+	if err != nil {
+		return fmt.Errorf("szabstractfactory.Reinitialize error: %w", err)
+	}
+
+	return nil
 }

@@ -3,7 +3,6 @@
 package szengine_test
 
 import (
-	"context"
 	"testing"
 
 	"github.com/senzing-garage/go-helpers/record"
@@ -18,8 +17,8 @@ import (
 // ----------------------------------------------------------------------------
 
 func TestParameters_Szengine_AddRecord(test *testing.T) {
-	ctx := context.TODO()
-	szEngine, err := getVerboseTestObject(ctx, test)
+	ctx := test.Context()
+	szEngine, err := getVerboseTestObject(test)
 	require.NoError(test, err)
 
 	flags := senzing.SzWithoutInfo

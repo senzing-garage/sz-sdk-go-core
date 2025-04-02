@@ -95,7 +95,10 @@ func main() {
 // ----------------------------------------------------------------------------
 
 func demonstrateAddRecord(ctx context.Context, szEngine senzing.SzEngine) (string, error) {
-	var flags = senzing.SzWithInfo
+	var (
+		flags  = senzing.SzWithInfo
+		result string
+	)
 
 	dataSourceCode := "TEST"
 	randomNumber, err := rand.Int(rand.Reader, big.NewInt(1000000000))
@@ -110,7 +113,13 @@ func demonstrateAddRecord(ctx context.Context, szEngine senzing.SzEngine) (strin
 
 	// Using SzEngine: Add record and return "withInfo".
 
-	return szEngine.AddRecord(ctx, dataSourceCode, recordID, jsonData, flags)
+	result, err = szEngine.AddRecord(ctx, dataSourceCode, recordID, jsonData, flags)
+
+	if err != nil {
+		return "", fmt.Errorf("demonstrateAddRecord error: %w", err)
+	}
+
+	return result, nil
 }
 
 func demonstrateConfigFunctions(ctx context.Context, szAbstractFactory senzing.SzAbstractFactory) error {
@@ -226,7 +235,13 @@ func getDatabaseTemplatePath() string {
 
 func getLogger(ctx context.Context) (logging.Logging, error) {
 	_ = ctx
-	return logging.NewSenzingLogger(9999, Messages)
+	result, err := logging.NewSenzingLogger(9999, Messages)
+
+	if err != nil {
+		return nil, fmt.Errorf("getLogger error: %w", err)
+	}
+
+	return result, nil
 }
 
 func getSettings(databaseURL string) (string, error) {
@@ -234,10 +249,10 @@ func getSettings(databaseURL string) (string, error) {
 
 	result, err := settings.BuildSimpleSettingsUsingMap(configAttrMap)
 	if err != nil {
-		return result, err
+		return result, fmt.Errorf("getSettings error: %w", err)
 	}
 
-	return result, err
+	return result, nil
 }
 
 func getTestDirectoryPath() string {

@@ -105,8 +105,8 @@ type GetEntityByRecordIDResponse struct {
 // ----------------------------------------------------------------------------
 
 func TestSzengine_AddRecord(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
+	ctx := test.Context()
+	szEngine := getTestObject(test)
 	flags := senzing.SzWithoutInfo
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
@@ -129,8 +129,8 @@ func TestSzengine_AddRecord(test *testing.T) {
 }
 
 func TestG2engine_AddRecord_badDataSourceCodeInJSON(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
+	ctx := test.Context()
+	szEngine := getTestObject(test)
 	flags := senzing.SzWithoutInfo
 	record1 := truthset.CustomerRecords["1001"]
 	record2 := truthset.CustomerRecords["1002"]
@@ -144,8 +144,8 @@ func TestG2engine_AddRecord_badDataSourceCodeInJSON(test *testing.T) {
 }
 
 func TestSzengine_AddRecord_badDataSourceCode(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
+	ctx := test.Context()
+	szEngine := getTestObject(test)
 	record := truthset.CustomerRecords["1001"]
 	flags := senzing.SzWithoutInfo
 	actual, err := szEngine.AddRecord(ctx, badDataSourceCode, record.ID, record.JSON, flags)
@@ -154,8 +154,8 @@ func TestSzengine_AddRecord_badDataSourceCode(test *testing.T) {
 }
 
 func TestSzengine_AddRecord_badRecordID(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
+	ctx := test.Context()
+	szEngine := getTestObject(test)
 	record := truthset.CustomerRecords["1001"]
 	flags := senzing.SzWithoutInfo
 	actual, err := szEngine.AddRecord(ctx, record.DataSource, badRecordID, record.JSON, flags)
@@ -164,8 +164,8 @@ func TestSzengine_AddRecord_badRecordID(test *testing.T) {
 }
 
 func TestSzengine_AddRecord_badRecordDefinition(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
+	ctx := test.Context()
+	szEngine := getTestObject(test)
 	record := truthset.CustomerRecords["1001"]
 	flags := senzing.SzWithoutInfo
 	actual, err := szEngine.AddRecord(ctx, record.DataSource, record.ID, badRecordDefinition, flags)
@@ -174,8 +174,8 @@ func TestSzengine_AddRecord_badRecordDefinition(test *testing.T) {
 }
 
 func TestSzengine_AddRecord_nilDataSourceCode(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
+	ctx := test.Context()
+	szEngine := getTestObject(test)
 	record := truthset.CustomerRecords["1001"]
 	flags := senzing.SzWithoutInfo
 	actual, err := szEngine.AddRecord(ctx, nilDataSourceCode, record.ID, record.JSON, flags)
@@ -185,8 +185,8 @@ func TestSzengine_AddRecord_nilDataSourceCode(test *testing.T) {
 }
 
 func TestSzengine_AddRecord_nilRecordID(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
+	ctx := test.Context()
+	szEngine := getTestObject(test)
 	record := truthset.CustomerRecords["1001"]
 	flags := senzing.SzWithoutInfo
 	actual, err := szEngine.AddRecord(ctx, record.DataSource, nilRecordID, record.JSON, flags)
@@ -196,8 +196,8 @@ func TestSzengine_AddRecord_nilRecordID(test *testing.T) {
 }
 
 func TestSzengine_AddRecord_nilRecordDefinition(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
+	ctx := test.Context()
+	szEngine := getTestObject(test)
 	record := truthset.CustomerRecords["1001"]
 	flags := senzing.SzWithoutInfo
 	actual, err := szEngine.AddRecord(ctx, record.DataSource, record.ID, nilRecordDefinition, flags)
@@ -206,8 +206,8 @@ func TestSzengine_AddRecord_nilRecordDefinition(test *testing.T) {
 }
 
 func TestSzengine_AddRecord_withInfo(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
+	ctx := test.Context()
+	szEngine := getTestObject(test)
 	flags := senzing.SzWithInfo
 	records := []record.Record{
 		truthset.CustomerRecords["1003"],
@@ -230,8 +230,8 @@ func TestSzengine_AddRecord_withInfo(test *testing.T) {
 }
 
 func TestSzengine_AddRecord_withInfo_badDataSourceCode(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
+	ctx := test.Context()
+	szEngine := getTestObject(test)
 	flags := senzing.SzWithInfo
 	records := []record.Record{
 		truthset.CustomerRecords["1003"],
@@ -259,9 +259,9 @@ func TestSzengine_CloseExport(test *testing.T) {
 }
 
 func TestSzengine_CountRedoRecords(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	expected := int64(2)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	actual, err := szEngine.CountRedoRecords(ctx)
 	require.NoError(test, err)
 	printActual(test, actual)
@@ -269,8 +269,8 @@ func TestSzengine_CountRedoRecords(test *testing.T) {
 }
 
 func TestSzengine_DeleteRecord(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
+	ctx := test.Context()
+	szEngine := getTestObject(test)
 	records := []record.Record{
 		truthset.CustomerRecords["1005"],
 	}
@@ -286,8 +286,8 @@ func TestSzengine_DeleteRecord(test *testing.T) {
 }
 
 func TestSzengine_DeleteRecord_badDataSourceCode(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
+	ctx := test.Context()
+	szEngine := getTestObject(test)
 	record := truthset.CustomerRecords["1005"]
 	flags := senzing.SzWithoutInfo
 	actual, err := szEngine.DeleteRecord(ctx, badDataSourceCode, record.ID, flags)
@@ -296,8 +296,8 @@ func TestSzengine_DeleteRecord_badDataSourceCode(test *testing.T) {
 }
 
 func TestSzengine_DeleteRecord_badRecordID(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
+	ctx := test.Context()
+	szEngine := getTestObject(test)
 	record := truthset.CustomerRecords["1005"]
 	flags := senzing.SzWithoutInfo
 	actual, err := szEngine.DeleteRecord(ctx, record.DataSource, badRecordID, flags)
@@ -307,8 +307,8 @@ func TestSzengine_DeleteRecord_badRecordID(test *testing.T) {
 }
 
 func TestSzengine_DeleteRecord_nilDataSourceCode(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
+	ctx := test.Context()
+	szEngine := getTestObject(test)
 	record := truthset.CustomerRecords["1005"]
 	flags := senzing.SzWithoutInfo
 	actual, err := szEngine.DeleteRecord(ctx, nilDataSourceCode, record.ID, flags)
@@ -317,8 +317,8 @@ func TestSzengine_DeleteRecord_nilDataSourceCode(test *testing.T) {
 }
 
 func TestSzengine_DeleteRecord_nilRecordID(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
+	ctx := test.Context()
+	szEngine := getTestObject(test)
 	record := truthset.CustomerRecords["1005"]
 	flags := senzing.SzWithoutInfo
 	actual, err := szEngine.DeleteRecord(ctx, record.DataSource, nilRecordID, flags)
@@ -328,8 +328,8 @@ func TestSzengine_DeleteRecord_nilRecordID(test *testing.T) {
 }
 
 func TestSzengine_DeleteRecord_withInfo(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
+	ctx := test.Context()
+	szEngine := getTestObject(test)
 	records := []record.Record{
 		truthset.CustomerRecords["1009"],
 	}
@@ -345,8 +345,8 @@ func TestSzengine_DeleteRecord_withInfo(test *testing.T) {
 }
 
 func TestSzengine_DeleteRecord_withInfo_badDataSourceCode(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
+	ctx := test.Context()
+	szEngine := getTestObject(test)
 	records := []record.Record{
 		truthset.CustomerRecords["1009"],
 	}
@@ -362,7 +362,7 @@ func TestSzengine_DeleteRecord_withInfo_badDataSourceCode(test *testing.T) {
 
 func TestSzengine_DeleteRecord_withInfo_badDataSourceCode_fix(test *testing.T) {
 	_ = test
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1009"],
 	}
@@ -370,7 +370,7 @@ func TestSzengine_DeleteRecord_withInfo_badDataSourceCode_fix(test *testing.T) {
 }
 
 func TestSzengine_ExportCsvEntityReport(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -383,7 +383,7 @@ func TestSzengine_ExportCsvEntityReport(test *testing.T) {
 	require.NoError(test, err)
 
 	expected := expectedExportCsvEntityReport
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	csvColumnList := ""
 	flags := senzing.SzExportIncludeAllEntities
 	exportHandle, err := szEngine.ExportCsvEntityReport(ctx, csvColumnList, flags)
@@ -407,7 +407,7 @@ func TestSzengine_ExportCsvEntityReport(test *testing.T) {
 }
 
 func TestSzengine_ExportCsvEntityReport_badCsvColumnList(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
@@ -416,7 +416,7 @@ func TestSzengine_ExportCsvEntityReport_badCsvColumnList(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	flags := senzing.SzExportIncludeAllEntities
 	exportHandle, err := szEngine.ExportCsvEntityReport(ctx, badCsvColumnList, flags)
 
@@ -429,7 +429,7 @@ func TestSzengine_ExportCsvEntityReport_badCsvColumnList(test *testing.T) {
 }
 
 func TestSzengine_ExportCsvEntityReport_nilCsvColumnList(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
@@ -438,7 +438,7 @@ func TestSzengine_ExportCsvEntityReport_nilCsvColumnList(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	flags := senzing.SzExportIncludeAllEntities
 	exportHandle, err := szEngine.ExportCsvEntityReport(ctx, nilCsvColumnList, flags)
 
@@ -451,7 +451,7 @@ func TestSzengine_ExportCsvEntityReport_nilCsvColumnList(test *testing.T) {
 }
 
 func TestSzengine_ExportCsvEntityReportIterator(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -464,7 +464,7 @@ func TestSzengine_ExportCsvEntityReportIterator(test *testing.T) {
 	require.NoError(test, err)
 
 	expected := expectedExportCsvEntityReportIterator
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	csvColumnList := ""
 	flags := senzing.SzExportIncludeAllEntities
 	actualCount := 0
@@ -480,7 +480,7 @@ func TestSzengine_ExportCsvEntityReportIterator(test *testing.T) {
 }
 
 func TestSzengine_ExportCsvEntityReportIterator_badCsvColumnList(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -495,7 +495,7 @@ func TestSzengine_ExportCsvEntityReportIterator_badCsvColumnList(test *testing.T
 	expected := []string{
 		``,
 	}
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	flags := senzing.SzExportIncludeAllEntities
 	actualCount := 0
 
@@ -510,7 +510,7 @@ func TestSzengine_ExportCsvEntityReportIterator_badCsvColumnList(test *testing.T
 }
 
 func TestSzengine_ExportCsvEntityReportIterator_nilCsvColumnList(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -523,7 +523,7 @@ func TestSzengine_ExportCsvEntityReportIterator_nilCsvColumnList(test *testing.T
 	require.NoError(test, err)
 
 	expected := expectedExportCsvEntityReportIteratorNilCsvColumnList
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	flags := senzing.SzExportIncludeAllEntities
 	actualCount := 0
 
@@ -538,7 +538,7 @@ func TestSzengine_ExportCsvEntityReportIterator_nilCsvColumnList(test *testing.T
 }
 
 func TestSzengine_ExportJSONEntityReport(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -549,7 +549,7 @@ func TestSzengine_ExportJSONEntityReport(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	aRecord := testfixtures.FixtureRecords["65536-periods"]
 	flags := senzing.SzWithInfo
 	actual, err := szEngine.AddRecord(ctx, aRecord.DataSource, aRecord.ID, aRecord.JSON, flags)
@@ -588,8 +588,8 @@ func TestSzengine_ExportJSONEntityReport(test *testing.T) {
 }
 
 func TestSzengine_ExportJSONEntityReport_65536(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
+	ctx := test.Context()
+	szEngine := getTestObject(test)
 	aRecord := testfixtures.FixtureRecords["65536-periods"]
 	flags := senzing.SzWithInfo
 	actual, err := szEngine.AddRecord(ctx, aRecord.DataSource, aRecord.ID, aRecord.JSON, flags)
@@ -667,7 +667,7 @@ func TestSzengine_ExportJSONEntityReport_65536(test *testing.T) {
 // func TestSzengine_ExportJSONEntityReport_error(test *testing.T) {}
 
 func TestSzengine_ExportJSONEntityReportIterator(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -680,7 +680,7 @@ func TestSzengine_ExportJSONEntityReportIterator(test *testing.T) {
 	require.NoError(test, err)
 
 	expected := 1
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	flags := senzing.SzExportIncludeAllEntities
 	actualCount := 0
 
@@ -701,7 +701,7 @@ func TestSzengine_FetchNext(test *testing.T) {
 }
 
 func TestSzengine_FetchNext_badExportHandle(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
@@ -710,14 +710,14 @@ func TestSzengine_FetchNext_badExportHandle(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	actual, err := szEngine.FetchNext(ctx, badExportHandle)
 	require.ErrorIs(test, err, szerror.ErrSz)
 	printActual(test, actual)
 }
 
 func TestSzengine_FetchNext_nilExportHandle(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
@@ -726,14 +726,14 @@ func TestSzengine_FetchNext_nilExportHandle(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	actual, err := szEngine.FetchNext(ctx, nilExportHandle)
 	require.ErrorIs(test, err, szerror.ErrSz)
 	printActual(test, actual)
 }
 
 func TestSzengine_FindInterestingEntitiesByEntityID(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -744,7 +744,7 @@ func TestSzengine_FindInterestingEntitiesByEntityID(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	entityID, err := getEntityID(truthset.CustomerRecords["1001"])
 	require.NoError(test, err)
 
@@ -755,7 +755,7 @@ func TestSzengine_FindInterestingEntitiesByEntityID(test *testing.T) {
 }
 
 func TestSzengine_FindInterestingEntitiesByEntityID_badEntityID(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -766,7 +766,7 @@ func TestSzengine_FindInterestingEntitiesByEntityID_badEntityID(test *testing.T)
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	flags := senzing.SzNoFlags
 	actual, err := szEngine.FindInterestingEntitiesByEntityID(ctx, badEntityID, flags)
 	require.ErrorIs(test, err, szerror.ErrSzNotFound)
@@ -774,7 +774,7 @@ func TestSzengine_FindInterestingEntitiesByEntityID_badEntityID(test *testing.T)
 }
 
 func TestSzengine_FindInterestingEntitiesByEntityID_nilEntityID(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -785,7 +785,7 @@ func TestSzengine_FindInterestingEntitiesByEntityID_nilEntityID(test *testing.T)
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	flags := senzing.SzNoFlags
 	actual, err := szEngine.FindInterestingEntitiesByEntityID(ctx, nilEntityID, flags)
 	require.ErrorIs(test, err, szerror.ErrSzNotFound)
@@ -793,7 +793,7 @@ func TestSzengine_FindInterestingEntitiesByEntityID_nilEntityID(test *testing.T)
 }
 
 func TestSzengine_FindInterestingEntitiesByRecordID(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
@@ -802,7 +802,7 @@ func TestSzengine_FindInterestingEntitiesByRecordID(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	record := truthset.CustomerRecords["1001"]
 	flags := senzing.SzNoFlags
 	actual, err := szEngine.FindInterestingEntitiesByRecordID(ctx, record.DataSource, record.ID, flags)
@@ -811,7 +811,7 @@ func TestSzengine_FindInterestingEntitiesByRecordID(test *testing.T) {
 }
 
 func TestSzengine_FindInterestingEntitiesByRecordID_badDataSourceCode(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
@@ -820,7 +820,7 @@ func TestSzengine_FindInterestingEntitiesByRecordID_badDataSourceCode(test *test
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	record := truthset.CustomerRecords["1001"]
 	flags := senzing.SzNoFlags
 	actual, err := szEngine.FindInterestingEntitiesByRecordID(ctx, badDataSourceCode, record.ID, flags)
@@ -829,7 +829,7 @@ func TestSzengine_FindInterestingEntitiesByRecordID_badDataSourceCode(test *test
 }
 
 func TestSzengine_FindInterestingEntitiesByRecordID_badRecordID(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
@@ -838,7 +838,7 @@ func TestSzengine_FindInterestingEntitiesByRecordID_badRecordID(test *testing.T)
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	record := truthset.CustomerRecords["1001"]
 	flags := senzing.SzNoFlags
 	actual, err := szEngine.FindInterestingEntitiesByRecordID(ctx, record.DataSource, badRecordID, flags)
@@ -847,7 +847,7 @@ func TestSzengine_FindInterestingEntitiesByRecordID_badRecordID(test *testing.T)
 }
 
 func TestSzengine_FindInterestingEntitiesByRecordID_nilDataSourceCode(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
@@ -856,7 +856,7 @@ func TestSzengine_FindInterestingEntitiesByRecordID_nilDataSourceCode(test *test
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	record := truthset.CustomerRecords["1001"]
 	flags := senzing.SzNoFlags
 	actual, err := szEngine.FindInterestingEntitiesByRecordID(ctx, nilDataSourceCode, record.ID, flags)
@@ -865,7 +865,7 @@ func TestSzengine_FindInterestingEntitiesByRecordID_nilDataSourceCode(test *test
 }
 
 func TestSzengine_FindInterestingEntitiesByRecordID_nilRecordID(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
@@ -874,7 +874,7 @@ func TestSzengine_FindInterestingEntitiesByRecordID_nilRecordID(test *testing.T)
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	record := truthset.CustomerRecords["1001"]
 	flags := senzing.SzNoFlags
 	actual, err := szEngine.FindInterestingEntitiesByRecordID(ctx, record.DataSource, nilRecordID, flags)
@@ -883,7 +883,7 @@ func TestSzengine_FindInterestingEntitiesByRecordID_nilRecordID(test *testing.T)
 }
 
 func TestSzengine_FindNetworkByEntityID(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -893,7 +893,7 @@ func TestSzengine_FindNetworkByEntityID(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	record1 := truthset.CustomerRecords["1001"]
 	record2 := truthset.CustomerRecords["1002"]
 	entityID1, err := getEntityIDString(record1)
@@ -909,8 +909,8 @@ func TestSzengine_FindNetworkByEntityID(test *testing.T) {
 }
 
 func TestSzengine_FindNetworkByEntityID_badEntityIDs(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
+	ctx := test.Context()
+	szEngine := getTestObject(test)
 	badEntityID1 := 0
 	badEntityID2 := 1
 	badEntityIDs := `{"ENTITIES": [{"ENTITY_ID": ` + strconv.Itoa(badEntityID1) + `}, {"ENTITY_ID": ` + strconv.Itoa(badEntityID2) + `}]}`
@@ -921,7 +921,7 @@ func TestSzengine_FindNetworkByEntityID_badEntityIDs(test *testing.T) {
 }
 
 func TestSzengine_FindNetworkByEntityID_badMaxDegrees(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -931,7 +931,7 @@ func TestSzengine_FindNetworkByEntityID_badMaxDegrees(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	record1 := truthset.CustomerRecords["1001"]
 	record2 := truthset.CustomerRecords["1002"]
 	entityID1, err := getEntityIDString(record1)
@@ -947,7 +947,7 @@ func TestSzengine_FindNetworkByEntityID_badMaxDegrees(test *testing.T) {
 }
 
 func TestSzengine_FindNetworkByEntityID_badBuildOutDegrees(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -957,7 +957,7 @@ func TestSzengine_FindNetworkByEntityID_badBuildOutDegrees(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	record1 := truthset.CustomerRecords["1001"]
 	record2 := truthset.CustomerRecords["1002"]
 	entityID1, err := getEntityIDString(record1)
@@ -973,7 +973,7 @@ func TestSzengine_FindNetworkByEntityID_badBuildOutDegrees(test *testing.T) {
 }
 
 func TestSzengine_FindNetworkByEntityID_badBuildOutMaxEntities(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -983,7 +983,7 @@ func TestSzengine_FindNetworkByEntityID_badBuildOutMaxEntities(test *testing.T) 
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	record1 := truthset.CustomerRecords["1001"]
 	record2 := truthset.CustomerRecords["1002"]
 	entityID1, err := getEntityIDString(record1)
@@ -999,7 +999,7 @@ func TestSzengine_FindNetworkByEntityID_badBuildOutMaxEntities(test *testing.T) 
 }
 
 func TestSzengine_FindNetworkByEntityID_nilMaxDegrees(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -1009,7 +1009,7 @@ func TestSzengine_FindNetworkByEntityID_nilMaxDegrees(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	record1 := truthset.CustomerRecords["1001"]
 	record2 := truthset.CustomerRecords["1002"]
 	entityID1, err := getEntityIDString(record1)
@@ -1025,7 +1025,7 @@ func TestSzengine_FindNetworkByEntityID_nilMaxDegrees(test *testing.T) {
 }
 
 func TestSzengine_FindNetworkByEntityID_nilBuildOutDegrees(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -1035,7 +1035,7 @@ func TestSzengine_FindNetworkByEntityID_nilBuildOutDegrees(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	record1 := truthset.CustomerRecords["1001"]
 	record2 := truthset.CustomerRecords["1002"]
 	entityID1, err := getEntityIDString(record1)
@@ -1051,7 +1051,7 @@ func TestSzengine_FindNetworkByEntityID_nilBuildOutDegrees(test *testing.T) {
 }
 
 func TestSzengine_FindNetworkByEntityID_nilBuildOutMaxEntities(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -1061,7 +1061,7 @@ func TestSzengine_FindNetworkByEntityID_nilBuildOutMaxEntities(test *testing.T) 
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	record1 := truthset.CustomerRecords["1001"]
 	record2 := truthset.CustomerRecords["1002"]
 	entityID1, err := getEntityIDString(record1)
@@ -1077,7 +1077,7 @@ func TestSzengine_FindNetworkByEntityID_nilBuildOutMaxEntities(test *testing.T) 
 }
 
 func TestSzengine_FindNetworkByRecordID(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -1088,7 +1088,7 @@ func TestSzengine_FindNetworkByRecordID(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	record1 := truthset.CustomerRecords["1001"]
 	record2 := truthset.CustomerRecords["1002"]
 	record3 := truthset.CustomerRecords["1003"]
@@ -1100,7 +1100,7 @@ func TestSzengine_FindNetworkByRecordID(test *testing.T) {
 }
 
 func TestSzengine_FindNetworkByRecordID_badDataSourceCode(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -1111,7 +1111,7 @@ func TestSzengine_FindNetworkByRecordID_badDataSourceCode(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	record1 := truthset.CustomerRecords["1001"]
 	record2 := truthset.CustomerRecords["1002"]
 	record3 := truthset.CustomerRecords["1003"]
@@ -1123,7 +1123,7 @@ func TestSzengine_FindNetworkByRecordID_badDataSourceCode(test *testing.T) {
 }
 
 func TestSzengine_FindNetworkByRecordID_badRecordID(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -1134,7 +1134,7 @@ func TestSzengine_FindNetworkByRecordID_badRecordID(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	record1 := truthset.CustomerRecords["1001"]
 	record2 := truthset.CustomerRecords["1002"]
 	record3 := truthset.CustomerRecords["1003"]
@@ -1146,7 +1146,7 @@ func TestSzengine_FindNetworkByRecordID_badRecordID(test *testing.T) {
 }
 
 func TestSzengine_FindNetworkByRecordID_nilMaxDegrees(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -1157,7 +1157,7 @@ func TestSzengine_FindNetworkByRecordID_nilMaxDegrees(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	record1 := truthset.CustomerRecords["1001"]
 	record2 := truthset.CustomerRecords["1002"]
 	record3 := truthset.CustomerRecords["1003"]
@@ -1169,7 +1169,7 @@ func TestSzengine_FindNetworkByRecordID_nilMaxDegrees(test *testing.T) {
 }
 
 func TestSzengine_FindNetworkByRecordID_nilBuildOutDegrees(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -1180,7 +1180,7 @@ func TestSzengine_FindNetworkByRecordID_nilBuildOutDegrees(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	record1 := truthset.CustomerRecords["1001"]
 	record2 := truthset.CustomerRecords["1002"]
 	record3 := truthset.CustomerRecords["1003"]
@@ -1192,7 +1192,7 @@ func TestSzengine_FindNetworkByRecordID_nilBuildOutDegrees(test *testing.T) {
 }
 
 func TestSzengine_FindNetworkByRecordID_nilBuildOutMaxEntities(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -1203,7 +1203,7 @@ func TestSzengine_FindNetworkByRecordID_nilBuildOutMaxEntities(test *testing.T) 
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	record1 := truthset.CustomerRecords["1001"]
 	record2 := truthset.CustomerRecords["1002"]
 	record3 := truthset.CustomerRecords["1003"]
@@ -1215,7 +1215,7 @@ func TestSzengine_FindNetworkByRecordID_nilBuildOutMaxEntities(test *testing.T) 
 }
 
 func TestSzengine_FindPathByEntityID(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -1225,7 +1225,7 @@ func TestSzengine_FindPathByEntityID(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	startEntityID, err := getEntityID(truthset.CustomerRecords["1001"])
 	require.NoError(test, err)
 	endEntityID, err := getEntityID(truthset.CustomerRecords["1002"])
@@ -1238,7 +1238,7 @@ func TestSzengine_FindPathByEntityID(test *testing.T) {
 }
 
 func TestSzengine_FindPathByEntityID_badStartEntityID(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -1248,7 +1248,7 @@ func TestSzengine_FindPathByEntityID_badStartEntityID(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	badStartEntityID := badEntityID
 	endEntityID, err := getEntityID(truthset.CustomerRecords["1002"])
 	require.NoError(test, err)
@@ -1260,7 +1260,7 @@ func TestSzengine_FindPathByEntityID_badStartEntityID(test *testing.T) {
 }
 
 func TestSzengine_FindPathByEntityID_badEndEntityID(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -1270,7 +1270,7 @@ func TestSzengine_FindPathByEntityID_badEndEntityID(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	startEntityID, err := getEntityID(truthset.CustomerRecords["1001"])
 	require.NoError(test, err)
 
@@ -1282,7 +1282,7 @@ func TestSzengine_FindPathByEntityID_badEndEntityID(test *testing.T) {
 }
 
 func TestSzengine_FindPathByEntityID_badMaxDegrees(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -1292,7 +1292,7 @@ func TestSzengine_FindPathByEntityID_badMaxDegrees(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	startEntityID, err := getEntityID(truthset.CustomerRecords["1001"])
 	require.NoError(test, err)
 	endEntityID, err := getEntityID(truthset.CustomerRecords["1002"])
@@ -1305,7 +1305,7 @@ func TestSzengine_FindPathByEntityID_badMaxDegrees(test *testing.T) {
 }
 
 func TestSzengine_FindPathByEntityID_badAvoidEntityIDs(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -1315,7 +1315,7 @@ func TestSzengine_FindPathByEntityID_badAvoidEntityIDs(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	startEntityID, err := getEntityID(truthset.CustomerRecords["1001"])
 	require.NoError(test, err)
 	endEntityID, err := getEntityID(truthset.CustomerRecords["1002"])
@@ -1328,7 +1328,7 @@ func TestSzengine_FindPathByEntityID_badAvoidEntityIDs(test *testing.T) {
 }
 
 func TestSzengine_FindPathByEntityID_badRequiredDataSource(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -1338,7 +1338,7 @@ func TestSzengine_FindPathByEntityID_badRequiredDataSource(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	startEntityID, err := getEntityID(truthset.CustomerRecords["1001"])
 	require.NoError(test, err)
 	endEntityID, err := getEntityID(truthset.CustomerRecords["1002"])
@@ -1351,7 +1351,7 @@ func TestSzengine_FindPathByEntityID_badRequiredDataSource(test *testing.T) {
 }
 
 func TestSzengine_FindPathByEntityID_nilMaxDegrees(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -1361,7 +1361,7 @@ func TestSzengine_FindPathByEntityID_nilMaxDegrees(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	startEntityID, err := getEntityID(truthset.CustomerRecords["1001"])
 	require.NoError(test, err)
 	endEntityID, err := getEntityID(truthset.CustomerRecords["1002"])
@@ -1374,7 +1374,7 @@ func TestSzengine_FindPathByEntityID_nilMaxDegrees(test *testing.T) {
 }
 
 func TestSzengine_FindPathByEntityID_nilAvoidEntityIDs(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -1384,7 +1384,7 @@ func TestSzengine_FindPathByEntityID_nilAvoidEntityIDs(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	startEntityID, err := getEntityID(truthset.CustomerRecords["1001"])
 	require.NoError(test, err)
 	endEntityID, err := getEntityID(truthset.CustomerRecords["1002"])
@@ -1397,7 +1397,7 @@ func TestSzengine_FindPathByEntityID_nilAvoidEntityIDs(test *testing.T) {
 }
 
 func TestSzengine_FindPathByEntityID_nilRequiredDataSource(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -1407,7 +1407,7 @@ func TestSzengine_FindPathByEntityID_nilRequiredDataSource(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	startEntityID, err := getEntityID(truthset.CustomerRecords["1001"])
 	require.NoError(test, err)
 	endEntityID, err := getEntityID(truthset.CustomerRecords["1002"])
@@ -1420,7 +1420,7 @@ func TestSzengine_FindPathByEntityID_nilRequiredDataSource(test *testing.T) {
 }
 
 func TestSzengine_FindPathByEntityID_avoiding(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -1430,7 +1430,7 @@ func TestSzengine_FindPathByEntityID_avoiding(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	startRecord := truthset.CustomerRecords["1001"]
 	startEntityID, err := getEntityID(startRecord)
 	require.NoError(test, err)
@@ -1447,7 +1447,7 @@ func TestSzengine_FindPathByEntityID_avoiding(test *testing.T) {
 }
 
 func TestSzengine_FindPathByEntityID_avoiding_badStartEntityID(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -1457,7 +1457,7 @@ func TestSzengine_FindPathByEntityID_avoiding_badStartEntityID(test *testing.T) 
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	startRecord := truthset.CustomerRecords["1001"]
 	startEntityID := badEntityID
 	endEntityID, err := getEntityID(truthset.CustomerRecords["1002"])
@@ -1473,7 +1473,7 @@ func TestSzengine_FindPathByEntityID_avoiding_badStartEntityID(test *testing.T) 
 }
 
 func TestSzengine_FindPathByEntityID_avoidingAndIncluding(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -1483,7 +1483,7 @@ func TestSzengine_FindPathByEntityID_avoidingAndIncluding(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	startRecord := truthset.CustomerRecords["1001"]
 	startEntityID, err := getEntityID(startRecord)
 	require.NoError(test, err)
@@ -1501,7 +1501,7 @@ func TestSzengine_FindPathByEntityID_avoidingAndIncluding(test *testing.T) {
 }
 
 func TestSzengine_FindPathByEntityID_including(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -1511,7 +1511,7 @@ func TestSzengine_FindPathByEntityID_including(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	startRecord := truthset.CustomerRecords["1001"]
 	startEntityID, err := getEntityID(startRecord)
 	require.NoError(test, err)
@@ -1526,7 +1526,7 @@ func TestSzengine_FindPathByEntityID_including(test *testing.T) {
 }
 
 func TestSzengine_FindPathByEntityID_including_badStartEntityID(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -1536,7 +1536,7 @@ func TestSzengine_FindPathByEntityID_including_badStartEntityID(test *testing.T)
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	startRecord := truthset.CustomerRecords["1001"]
 	badStartEntityID := badEntityID
 	endEntityID, err := getEntityID(truthset.CustomerRecords["1002"])
@@ -1550,7 +1550,7 @@ func TestSzengine_FindPathByEntityID_including_badStartEntityID(test *testing.T)
 }
 
 func TestSzengine_FindPathByRecordID(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -1560,7 +1560,7 @@ func TestSzengine_FindPathByRecordID(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	record1 := truthset.CustomerRecords["1001"]
 	record2 := truthset.CustomerRecords["1002"]
 	flags := senzing.SzNoFlags
@@ -1570,7 +1570,7 @@ func TestSzengine_FindPathByRecordID(test *testing.T) {
 }
 
 func TestSzengine_FindPathByRecordID_badDataSourceCode(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -1580,7 +1580,7 @@ func TestSzengine_FindPathByRecordID_badDataSourceCode(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	record1 := truthset.CustomerRecords["1001"]
 	record2 := truthset.CustomerRecords["1002"]
 	flags := senzing.SzNoFlags
@@ -1590,7 +1590,7 @@ func TestSzengine_FindPathByRecordID_badDataSourceCode(test *testing.T) {
 }
 
 func TestSzengine_FindPathByRecordID_badRecordID(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -1600,7 +1600,7 @@ func TestSzengine_FindPathByRecordID_badRecordID(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	record1 := truthset.CustomerRecords["1001"]
 	record2 := truthset.CustomerRecords["1002"]
 	flags := senzing.SzNoFlags
@@ -1610,7 +1610,7 @@ func TestSzengine_FindPathByRecordID_badRecordID(test *testing.T) {
 }
 
 func TestSzengine_FindPathByRecordID_badMaxDegrees(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -1620,7 +1620,7 @@ func TestSzengine_FindPathByRecordID_badMaxDegrees(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	record1 := truthset.CustomerRecords["1001"]
 	record2 := truthset.CustomerRecords["1002"]
 	flags := senzing.SzNoFlags
@@ -1630,7 +1630,7 @@ func TestSzengine_FindPathByRecordID_badMaxDegrees(test *testing.T) {
 }
 
 func TestSzengine_FindPathByRecordID_badAvoidRecordKeys(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -1640,7 +1640,7 @@ func TestSzengine_FindPathByRecordID_badAvoidRecordKeys(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	record1 := truthset.CustomerRecords["1001"]
 	record2 := truthset.CustomerRecords["1002"]
 	flags := senzing.SzNoFlags
@@ -1650,7 +1650,7 @@ func TestSzengine_FindPathByRecordID_badAvoidRecordKeys(test *testing.T) {
 }
 
 func TestSzengine_FindPathByRecordID_badRequiredDataSources(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -1660,7 +1660,7 @@ func TestSzengine_FindPathByRecordID_badRequiredDataSources(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	record1 := truthset.CustomerRecords["1001"]
 	record2 := truthset.CustomerRecords["1002"]
 	flags := senzing.SzNoFlags
@@ -1670,7 +1670,7 @@ func TestSzengine_FindPathByRecordID_badRequiredDataSources(test *testing.T) {
 }
 
 func TestSzengine_FindPathByRecordID_avoiding(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -1680,7 +1680,7 @@ func TestSzengine_FindPathByRecordID_avoiding(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	record1 := truthset.CustomerRecords["1001"]
 	record2 := truthset.CustomerRecords["1002"]
 	avoidRecordKeys := `{"RECORDS": [{ "DATA_SOURCE": "` + record1.DataSource + `", "RECORD_ID": "` + record1.ID + `"}]}`
@@ -1691,7 +1691,7 @@ func TestSzengine_FindPathByRecordID_avoiding(test *testing.T) {
 }
 
 func TestSzengine_FindPathByRecordID_avoiding_badStartDataSourceCode(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -1701,7 +1701,7 @@ func TestSzengine_FindPathByRecordID_avoiding_badStartDataSourceCode(test *testi
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	record1 := truthset.CustomerRecords["1001"]
 	record2 := truthset.CustomerRecords["1002"]
 	avoidRecordKeys := `{"RECORDS": [{ "DATA_SOURCE": "` + record1.DataSource + `", "RECORD_ID": "` + record1.ID + `"}]}`
@@ -1712,7 +1712,7 @@ func TestSzengine_FindPathByRecordID_avoiding_badStartDataSourceCode(test *testi
 }
 
 func TestSzengine_FindPathByRecordID_avoidingAndIncluding(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -1722,7 +1722,7 @@ func TestSzengine_FindPathByRecordID_avoidingAndIncluding(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	record1 := truthset.CustomerRecords["1001"]
 	record2 := truthset.CustomerRecords["1002"]
 	avoidRecordKeys := `{"RECORDS": [{ "DATA_SOURCE": "` + record1.DataSource + `", "RECORD_ID": "` + record1.ID + `"}]}`
@@ -1734,7 +1734,7 @@ func TestSzengine_FindPathByRecordID_avoidingAndIncluding(test *testing.T) {
 }
 
 func TestSzengine_FindPathByRecordID_including(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -1744,7 +1744,7 @@ func TestSzengine_FindPathByRecordID_including(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	record1 := truthset.CustomerRecords["1001"]
 	record2 := truthset.CustomerRecords["1002"]
 	record1EntityID, err := getEntityIDString(record1)
@@ -1759,7 +1759,7 @@ func TestSzengine_FindPathByRecordID_including(test *testing.T) {
 }
 
 func TestSzengine_FindPathByRecordID_including_badDataSourceCode(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -1769,7 +1769,7 @@ func TestSzengine_FindPathByRecordID_including_badDataSourceCode(test *testing.T
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	record1 := truthset.CustomerRecords["1001"]
 	record2 := truthset.CustomerRecords["1002"]
 	record1EntityID, err := getEntityIDString(record1)
@@ -1784,15 +1784,15 @@ func TestSzengine_FindPathByRecordID_including_badDataSourceCode(test *testing.T
 }
 
 func TestSzengine_GetActiveConfigID(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
+	ctx := test.Context()
+	szEngine := getTestObject(test)
 	actual, err := szEngine.GetActiveConfigID(ctx)
 	require.NoError(test, err)
 	printActual(test, actual)
 }
 
 func TestSzengine_GetEntityByEntityID(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
@@ -1801,7 +1801,7 @@ func TestSzengine_GetEntityByEntityID(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	entityID, err := getEntityID(truthset.CustomerRecords["1001"])
 	require.NoError(test, err)
 
@@ -1812,7 +1812,7 @@ func TestSzengine_GetEntityByEntityID(test *testing.T) {
 }
 
 func TestSzengine_GetEntityByEntityID_badEntityID(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
@@ -1821,7 +1821,7 @@ func TestSzengine_GetEntityByEntityID_badEntityID(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	flags := senzing.SzNoFlags
 	actual, err := szEngine.GetEntityByEntityID(ctx, badEntityID, flags)
 	require.ErrorIs(test, err, szerror.ErrSzNotFound)
@@ -1829,7 +1829,7 @@ func TestSzengine_GetEntityByEntityID_badEntityID(test *testing.T) {
 }
 
 func TestSzengine_GetEntityByEntityID_nilEntityID(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
@@ -1838,7 +1838,7 @@ func TestSzengine_GetEntityByEntityID_nilEntityID(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	flags := senzing.SzNoFlags
 	actual, err := szEngine.GetEntityByEntityID(ctx, nilEntityID, flags)
 	require.ErrorIs(test, err, szerror.ErrSzNotFound)
@@ -1846,7 +1846,7 @@ func TestSzengine_GetEntityByEntityID_nilEntityID(test *testing.T) {
 }
 
 func TestSzengine_GetEntityByRecordID(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
@@ -1855,7 +1855,7 @@ func TestSzengine_GetEntityByRecordID(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	record := truthset.CustomerRecords["1001"]
 	flags := senzing.SzNoFlags
 	actual, err := szEngine.GetEntityByRecordID(ctx, record.DataSource, record.ID, flags)
@@ -1864,7 +1864,7 @@ func TestSzengine_GetEntityByRecordID(test *testing.T) {
 }
 
 func TestSzengine_GetEntityByRecordID_badDataSourceCode(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
@@ -1873,7 +1873,7 @@ func TestSzengine_GetEntityByRecordID_badDataSourceCode(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	record := truthset.CustomerRecords["1001"]
 	flags := senzing.SzNoFlags
 	actual, err := szEngine.GetEntityByRecordID(ctx, badDataSourceCode, record.ID, flags)
@@ -1882,7 +1882,7 @@ func TestSzengine_GetEntityByRecordID_badDataSourceCode(test *testing.T) {
 }
 
 func TestSzengine_GetEntityByRecordID_badRecordID(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
@@ -1891,7 +1891,7 @@ func TestSzengine_GetEntityByRecordID_badRecordID(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	record := truthset.CustomerRecords["1001"]
 	flags := senzing.SzNoFlags
 	actual, err := szEngine.GetEntityByRecordID(ctx, record.DataSource, badRecordID, flags)
@@ -1900,7 +1900,7 @@ func TestSzengine_GetEntityByRecordID_badRecordID(test *testing.T) {
 }
 
 func TestSzengine_GetEntityByRecordID_nilDataSourceCode(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
@@ -1909,7 +1909,7 @@ func TestSzengine_GetEntityByRecordID_nilDataSourceCode(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	record := truthset.CustomerRecords["1001"]
 	flags := senzing.SzNoFlags
 	actual, err := szEngine.GetEntityByRecordID(ctx, nilDataSourceCode, record.ID, flags)
@@ -1918,7 +1918,7 @@ func TestSzengine_GetEntityByRecordID_nilDataSourceCode(test *testing.T) {
 }
 
 func TestSzengine_GetEntityByRecordID_nilRecordID(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
@@ -1927,7 +1927,7 @@ func TestSzengine_GetEntityByRecordID_nilRecordID(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	record := truthset.CustomerRecords["1001"]
 	flags := senzing.SzNoFlags
 	actual, err := szEngine.GetEntityByRecordID(ctx, record.DataSource, nilRecordID, flags)
@@ -1936,7 +1936,7 @@ func TestSzengine_GetEntityByRecordID_nilRecordID(test *testing.T) {
 }
 
 func TestSzengine_GetRecord(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
@@ -1945,7 +1945,7 @@ func TestSzengine_GetRecord(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	record := truthset.CustomerRecords["1001"]
 	flags := senzing.SzNoFlags
 	actual, err := szEngine.GetRecord(ctx, record.DataSource, record.ID, flags)
@@ -1954,7 +1954,7 @@ func TestSzengine_GetRecord(test *testing.T) {
 }
 
 func TestSzengine_GetRecord_badDataSourceCode(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
@@ -1963,7 +1963,7 @@ func TestSzengine_GetRecord_badDataSourceCode(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	record := truthset.CustomerRecords["1001"]
 	flags := senzing.SzNoFlags
 	actual, err := szEngine.GetRecord(ctx, badDataSourceCode, record.ID, flags)
@@ -1972,7 +1972,7 @@ func TestSzengine_GetRecord_badDataSourceCode(test *testing.T) {
 }
 
 func TestSzengine_GetRecord_badRecordID(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
@@ -1981,7 +1981,7 @@ func TestSzengine_GetRecord_badRecordID(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	record := truthset.CustomerRecords["1001"]
 	flags := senzing.SzNoFlags
 	actual, err := szEngine.GetRecord(ctx, record.DataSource, badRecordID, flags)
@@ -1990,7 +1990,7 @@ func TestSzengine_GetRecord_badRecordID(test *testing.T) {
 }
 
 func TestSzengine_GetRecord_nilDataSourceCode(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
@@ -1999,7 +1999,7 @@ func TestSzengine_GetRecord_nilDataSourceCode(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	record := truthset.CustomerRecords["1001"]
 	flags := senzing.SzNoFlags
 	actual, err := szEngine.GetRecord(ctx, nilDataSourceCode, record.ID, flags)
@@ -2008,7 +2008,7 @@ func TestSzengine_GetRecord_nilDataSourceCode(test *testing.T) {
 }
 
 func TestSzengine_GetRecord_nilRecordID(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
@@ -2017,7 +2017,7 @@ func TestSzengine_GetRecord_nilRecordID(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	record := truthset.CustomerRecords["1001"]
 	flags := senzing.SzNoFlags
 	actual, err := szEngine.GetRecord(ctx, record.DataSource, nilRecordID, flags)
@@ -2026,23 +2026,23 @@ func TestSzengine_GetRecord_nilRecordID(test *testing.T) {
 }
 
 func TestSzengine_GetRedoRecord(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
+	ctx := test.Context()
+	szEngine := getTestObject(test)
 	actual, err := szEngine.GetRedoRecord(ctx)
 	require.NoError(test, err)
 	printActual(test, actual)
 }
 
 func TestSzengine_GetStats(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
+	ctx := test.Context()
+	szEngine := getTestObject(test)
 	actual, err := szEngine.GetStats(ctx)
 	require.NoError(test, err)
 	printActual(test, actual)
 }
 
 func TestSzengine_GetVirtualEntityByRecordID(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -2052,7 +2052,7 @@ func TestSzengine_GetVirtualEntityByRecordID(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	record1 := truthset.CustomerRecords["1001"]
 	record2 := truthset.CustomerRecords["1002"]
 	recordList := `{"RECORDS": [{"DATA_SOURCE": "` + record1.DataSource + `", "RECORD_ID": "` + record1.ID + `"}, {"DATA_SOURCE": "` + record2.DataSource + `", "RECORD_ID": "` + record2.ID + `"}]}`
@@ -2063,7 +2063,7 @@ func TestSzengine_GetVirtualEntityByRecordID(test *testing.T) {
 }
 
 func TestSzengine_GetVirtualEntityByRecordID_badDataSourceCode(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -2073,7 +2073,7 @@ func TestSzengine_GetVirtualEntityByRecordID_badDataSourceCode(test *testing.T) 
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	record1 := truthset.CustomerRecords["1001"]
 	record2 := truthset.CustomerRecords["1002"]
 	recordList := `{"RECORDS": [{"DATA_SOURCE": "` + badDataSourceCode + `", "RECORD_ID": "` + record1.ID + `"}, {"DATA_SOURCE": "` + record2.DataSource + `", "RECORD_ID": "` + record2.ID + `"}]}`
@@ -2084,7 +2084,7 @@ func TestSzengine_GetVirtualEntityByRecordID_badDataSourceCode(test *testing.T) 
 }
 
 func TestSzengine_GetVirtualEntityByRecordID_badRecordID(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -2094,7 +2094,7 @@ func TestSzengine_GetVirtualEntityByRecordID_badRecordID(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	record1 := truthset.CustomerRecords["1001"]
 	record2 := truthset.CustomerRecords["1002"]
 	recordList := `{"RECORDS": [{"DATA_SOURCE": "` + record1.DataSource + `", "RECORD_ID": "` + badRecordID + `"}, {"DATA_SOURCE": "` + record2.DataSource + `", "RECORD_ID": "` + record2.ID + `"}]}`
@@ -2105,7 +2105,7 @@ func TestSzengine_GetVirtualEntityByRecordID_badRecordID(test *testing.T) {
 }
 
 func TestSzengine_HowEntityByEntityID(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
@@ -2114,7 +2114,7 @@ func TestSzengine_HowEntityByEntityID(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	entityID, err := getEntityID(truthset.CustomerRecords["1001"])
 	require.NoError(test, err)
 
@@ -2125,7 +2125,7 @@ func TestSzengine_HowEntityByEntityID(test *testing.T) {
 }
 
 func TestSzengine_HowEntityByEntityID_badEntityID(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
@@ -2134,7 +2134,7 @@ func TestSzengine_HowEntityByEntityID_badEntityID(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	flags := senzing.SzNoFlags
 	actual, err := szEngine.HowEntityByEntityID(ctx, badEntityID, flags)
 	require.ErrorIs(test, err, szerror.ErrSzNotFound)
@@ -2142,7 +2142,7 @@ func TestSzengine_HowEntityByEntityID_badEntityID(test *testing.T) {
 }
 
 func TestSzengine_HowEntityByEntityID_nilEntityID(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
@@ -2151,7 +2151,7 @@ func TestSzengine_HowEntityByEntityID_nilEntityID(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	flags := senzing.SzNoFlags
 	actual, err := szEngine.HowEntityByEntityID(ctx, nilEntityID, flags)
 	require.ErrorIs(test, err, szerror.ErrSzNotFound)
@@ -2159,8 +2159,8 @@ func TestSzengine_HowEntityByEntityID_nilEntityID(test *testing.T) {
 }
 
 func TestSzengine_PreprocessRecord(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
+	ctx := test.Context()
+	szEngine := getTestObject(test)
 	flags := senzing.SzNoFlags
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
@@ -2175,8 +2175,8 @@ func TestSzengine_PreprocessRecord(test *testing.T) {
 }
 
 func TestSzengine_PreprocessRecord_badRecordDefinition(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
+	ctx := test.Context()
+	szEngine := getTestObject(test)
 	flags := senzing.SzNoFlags
 	actual, err := szEngine.PreprocessRecord(ctx, badRecordDefinition, flags)
 	require.ErrorIs(test, err, szerror.ErrSzBadInput)
@@ -2184,15 +2184,15 @@ func TestSzengine_PreprocessRecord_badRecordDefinition(test *testing.T) {
 }
 
 func TestSzengine_PrimeEngine(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
+	ctx := test.Context()
+	szEngine := getTestObject(test)
 	err := szEngine.PrimeEngine(ctx)
 	require.NoError(test, err)
 }
 
 func TestSzengine_ProcessRedoRecord(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
+	ctx := test.Context()
+	szEngine := getTestObject(test)
 	redoRecord, err := szEngine.GetRedoRecord(ctx)
 	require.NoError(test, err)
 
@@ -2206,8 +2206,8 @@ func TestSzengine_ProcessRedoRecord(test *testing.T) {
 }
 
 func TestSzengine_ProcessRedoRecord_badRedoRecord(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
+	ctx := test.Context()
+	szEngine := getTestObject(test)
 	flags := senzing.SzWithoutInfo
 	actual, err := szEngine.ProcessRedoRecord(ctx, badRedoRecord, flags)
 	require.ErrorIs(test, err, szerror.ErrSzConfiguration)
@@ -2215,8 +2215,8 @@ func TestSzengine_ProcessRedoRecord_badRedoRecord(test *testing.T) {
 }
 
 func TestSzengine_ProcessRedoRecord_nilRedoRecord(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
+	ctx := test.Context()
+	szEngine := getTestObject(test)
 	flags := senzing.SzWithoutInfo
 	actual, err := szEngine.ProcessRedoRecord(ctx, nilRedoRecord, flags)
 	require.ErrorIs(test, err, szerror.ErrSzBadInput)
@@ -2224,7 +2224,7 @@ func TestSzengine_ProcessRedoRecord_nilRedoRecord(test *testing.T) {
 }
 
 func TestSzengine_ProcessRedoRecord_withInfo(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -2238,7 +2238,7 @@ func TestSzengine_ProcessRedoRecord_withInfo(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	redoRecord, err := szEngine.GetRedoRecord(ctx)
 	require.NoError(test, err)
 
@@ -2252,8 +2252,8 @@ func TestSzengine_ProcessRedoRecord_withInfo(test *testing.T) {
 }
 
 func TestSzengine_ProcessRedoRecord_withInfo_badRedoRecord(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
+	ctx := test.Context()
+	szEngine := getTestObject(test)
 	flags := senzing.SzWithInfo
 	actual, err := szEngine.ProcessRedoRecord(ctx, badRedoRecord, flags)
 	require.ErrorIs(test, err, szerror.ErrSzConfiguration)
@@ -2261,8 +2261,8 @@ func TestSzengine_ProcessRedoRecord_withInfo_badRedoRecord(test *testing.T) {
 }
 
 func TestSzengine_ProcessRedoRecord_withInfo_nilRedoRecord(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
+	ctx := test.Context()
+	szEngine := getTestObject(test)
 	flags := senzing.SzWithInfo
 	actual, err := szEngine.ProcessRedoRecord(ctx, nilRedoRecord, flags)
 	require.ErrorIs(test, err, szerror.ErrSzBadInput)
@@ -2270,7 +2270,7 @@ func TestSzengine_ProcessRedoRecord_withInfo_nilRedoRecord(test *testing.T) {
 }
 
 func TestSzengine_ReevaluateEntity(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
@@ -2279,7 +2279,7 @@ func TestSzengine_ReevaluateEntity(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	entityID, err := getEntityID(truthset.CustomerRecords["1001"])
 	require.NoError(test, err)
 
@@ -2291,7 +2291,7 @@ func TestSzengine_ReevaluateEntity(test *testing.T) {
 }
 
 func TestSzengine_ReevaluateEntity_badEntityID(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
@@ -2300,7 +2300,7 @@ func TestSzengine_ReevaluateEntity_badEntityID(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	flags := senzing.SzWithoutInfo
 	actual, err := szEngine.ReevaluateEntity(ctx, badEntityID, flags)
 	require.NoError(test, err)
@@ -2309,7 +2309,7 @@ func TestSzengine_ReevaluateEntity_badEntityID(test *testing.T) {
 }
 
 func TestSzengine_ReevaluateEntity_nilEntityID(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
@@ -2318,7 +2318,7 @@ func TestSzengine_ReevaluateEntity_nilEntityID(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	flags := senzing.SzWithoutInfo
 	actual, err := szEngine.ReevaluateEntity(ctx, nilEntityID, flags)
 	require.NoError(test, err)
@@ -2327,7 +2327,7 @@ func TestSzengine_ReevaluateEntity_nilEntityID(test *testing.T) {
 }
 
 func TestSzengine_ReevaluateEntity_withInfo(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
@@ -2336,7 +2336,7 @@ func TestSzengine_ReevaluateEntity_withInfo(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	entityID, err := getEntityID(truthset.CustomerRecords["1001"])
 	require.NoError(test, err)
 
@@ -2347,7 +2347,7 @@ func TestSzengine_ReevaluateEntity_withInfo(test *testing.T) {
 }
 
 func TestSzengine_ReevaluateEntity_withInfo_badEntityID(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
@@ -2356,7 +2356,7 @@ func TestSzengine_ReevaluateEntity_withInfo_badEntityID(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	flags := senzing.SzWithInfo
 	actual, err := szEngine.ReevaluateEntity(ctx, badEntityID, flags)
 	require.NoError(test, err)
@@ -2364,7 +2364,7 @@ func TestSzengine_ReevaluateEntity_withInfo_badEntityID(test *testing.T) {
 }
 
 func TestSzengine_ReevaluateEntity_withInfo_nilEntityID(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
@@ -2373,7 +2373,7 @@ func TestSzengine_ReevaluateEntity_withInfo_nilEntityID(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	flags := senzing.SzWithInfo
 	actual, err := szEngine.ReevaluateEntity(ctx, nilEntityID, flags)
 	require.NoError(test, err)
@@ -2381,7 +2381,7 @@ func TestSzengine_ReevaluateEntity_withInfo_nilEntityID(test *testing.T) {
 }
 
 func TestSzengine_ReevaluateRecord(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
@@ -2390,7 +2390,7 @@ func TestSzengine_ReevaluateRecord(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	record := truthset.CustomerRecords["1001"]
 	flags := senzing.SzWithoutInfo
 	actual, err := szEngine.ReevaluateRecord(ctx, record.DataSource, record.ID, flags)
@@ -2400,7 +2400,7 @@ func TestSzengine_ReevaluateRecord(test *testing.T) {
 }
 
 func TestSzengine_ReevaluateRecord_badDataSourceCode(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
@@ -2409,7 +2409,7 @@ func TestSzengine_ReevaluateRecord_badDataSourceCode(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	record := truthset.CustomerRecords["1001"]
 	flags := senzing.SzWithoutInfo
 	actual, err := szEngine.ReevaluateRecord(ctx, badDataSourceCode, record.ID, flags)
@@ -2418,7 +2418,7 @@ func TestSzengine_ReevaluateRecord_badDataSourceCode(test *testing.T) {
 }
 
 func TestSzengine_ReevaluateRecord_badRecordID(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
@@ -2427,7 +2427,7 @@ func TestSzengine_ReevaluateRecord_badRecordID(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	record := truthset.CustomerRecords["1001"]
 	flags := senzing.SzWithoutInfo
 	actual, err := szEngine.ReevaluateRecord(ctx, record.DataSource, badRecordID, flags)
@@ -2437,7 +2437,7 @@ func TestSzengine_ReevaluateRecord_badRecordID(test *testing.T) {
 }
 
 func TestSzengine_ReevaluateRecord_nilDataSourceCode(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
@@ -2446,7 +2446,7 @@ func TestSzengine_ReevaluateRecord_nilDataSourceCode(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	record := truthset.CustomerRecords["1001"]
 	flags := senzing.SzWithoutInfo
 	actual, err := szEngine.ReevaluateRecord(ctx, nilDataSourceCode, record.ID, flags)
@@ -2455,7 +2455,7 @@ func TestSzengine_ReevaluateRecord_nilDataSourceCode(test *testing.T) {
 }
 
 func TestSzengine_ReevaluateRecord_nilRecordID(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
@@ -2464,7 +2464,7 @@ func TestSzengine_ReevaluateRecord_nilRecordID(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	record := truthset.CustomerRecords["1001"]
 	flags := senzing.SzWithoutInfo
 	actual, err := szEngine.ReevaluateRecord(ctx, record.DataSource, nilRecordID, flags)
@@ -2474,7 +2474,7 @@ func TestSzengine_ReevaluateRecord_nilRecordID(test *testing.T) {
 }
 
 func TestSzengine_ReevaluateRecord_withInfo(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
@@ -2483,7 +2483,7 @@ func TestSzengine_ReevaluateRecord_withInfo(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	record := truthset.CustomerRecords["1001"]
 	flags := senzing.SzWithInfo
 	actual, err := szEngine.ReevaluateRecord(ctx, record.DataSource, record.ID, flags)
@@ -2492,7 +2492,7 @@ func TestSzengine_ReevaluateRecord_withInfo(test *testing.T) {
 }
 
 func TestSzengine_ReevaluateRecord_withInfo_badDataSourceCode(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
@@ -2501,7 +2501,7 @@ func TestSzengine_ReevaluateRecord_withInfo_badDataSourceCode(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	record := truthset.CustomerRecords["1001"]
 	flags := senzing.SzWithInfo
 	actual, err := szEngine.ReevaluateRecord(ctx, badDataSourceCode, record.ID, flags)
@@ -2510,7 +2510,7 @@ func TestSzengine_ReevaluateRecord_withInfo_badDataSourceCode(test *testing.T) {
 }
 
 func TestSzengine_ReevaluateRecord_withInfo_nilDataSourceCode(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
@@ -2519,7 +2519,7 @@ func TestSzengine_ReevaluateRecord_withInfo_nilDataSourceCode(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	record := truthset.CustomerRecords["1001"]
 	flags := senzing.SzWithInfo
 	actual, err := szEngine.ReevaluateRecord(ctx, nilDataSourceCode, record.ID, flags)
@@ -2528,7 +2528,7 @@ func TestSzengine_ReevaluateRecord_withInfo_nilDataSourceCode(test *testing.T) {
 }
 
 func TestSzengine_SearchByAttributes(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -2539,7 +2539,7 @@ func TestSzengine_SearchByAttributes(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	attributes := `{"NAMES": [{"NAME_TYPE": "PRIMARY", "NAME_LAST": "JOHNSON"}], "SSN_NUMBER": "053-39-3251"}`
 	flags := senzing.SzNoFlags
 	actual, err := szEngine.SearchByAttributes(ctx, attributes, searchProfile, flags)
@@ -2548,7 +2548,7 @@ func TestSzengine_SearchByAttributes(test *testing.T) {
 }
 
 func TestSzengine_SearchByAttributes_badAttributes(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -2559,7 +2559,7 @@ func TestSzengine_SearchByAttributes_badAttributes(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	flags := senzing.SzNoFlags
 	actual, err := szEngine.SearchByAttributes(ctx, badAttributes, searchProfile, flags)
 	require.ErrorIs(test, err, szerror.ErrSz)
@@ -2567,7 +2567,7 @@ func TestSzengine_SearchByAttributes_badAttributes(test *testing.T) {
 }
 
 func TestSzengine_SearchByAttributes_badSearchProfile(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -2578,7 +2578,7 @@ func TestSzengine_SearchByAttributes_badSearchProfile(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	attributes := `{"NAMES": [{"NAME_TYPE": "PRIMARY", "NAME_LAST": "JOHNSON"}], "SSN_NUMBER": "053-39-3251"}`
 	flags := senzing.SzNoFlags
 	actual, err := szEngine.SearchByAttributes(ctx, attributes, badSearchProfile, flags)
@@ -2587,7 +2587,7 @@ func TestSzengine_SearchByAttributes_badSearchProfile(test *testing.T) {
 }
 
 func TestSzengine_SearchByAttributes_nilAttributes(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -2598,7 +2598,7 @@ func TestSzengine_SearchByAttributes_nilAttributes(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	flags := senzing.SzNoFlags
 	actual, err := szEngine.SearchByAttributes(ctx, nilAttributes, searchProfile, flags)
 	require.ErrorIs(test, err, szerror.ErrSz)
@@ -2606,7 +2606,7 @@ func TestSzengine_SearchByAttributes_nilAttributes(test *testing.T) {
 }
 
 func TestSzengine_SearchByAttributes_nilSearchProfile(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -2617,7 +2617,7 @@ func TestSzengine_SearchByAttributes_nilSearchProfile(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	attributes := `{"NAMES": [{"NAME_TYPE": "PRIMARY", "NAME_LAST": "JOHNSON"}], "SSN_NUMBER": "053-39-3251"}`
 	flags := senzing.SzNoFlags
 	actual, err := szEngine.SearchByAttributes(ctx, attributes, nilSearchProfile, flags)
@@ -2626,7 +2626,7 @@ func TestSzengine_SearchByAttributes_nilSearchProfile(test *testing.T) {
 }
 
 func TestSzengine_SearchByAttributes_withSearchProfile(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -2637,7 +2637,7 @@ func TestSzengine_SearchByAttributes_withSearchProfile(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	attributes := `{"NAMES": [{"NAME_TYPE": "PRIMARY", "NAME_LAST": "JOHNSON"}], "SSN_NUMBER": "053-39-3251"}`
 	// searchProfile := "SEARCH"
 	searchProfile := "INGEST"
@@ -2648,8 +2648,8 @@ func TestSzengine_SearchByAttributes_withSearchProfile(test *testing.T) {
 }
 
 func TestSzengine_SearchByAttributes_searchProfile(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
+	ctx := test.Context()
+	szEngine := getTestObject(test)
 	attributes := `{"NAMES": [{"NAME_TYPE": "PRIMARY", "NAME_LAST": "JOHNSON"}], "SSN_NUMBER": "053-39-3251"}`
 	flags := senzing.SzNoFlags
 	actual, err := szEngine.SearchByAttributes(ctx, attributes, searchProfile, flags)
@@ -2658,7 +2658,7 @@ func TestSzengine_SearchByAttributes_searchProfile(test *testing.T) {
 }
 
 func TestSzengine_WhyEntities(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -2668,7 +2668,7 @@ func TestSzengine_WhyEntities(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	entityID1, err := getEntityID(truthset.CustomerRecords["1001"])
 	require.NoError(test, err)
 	entityID2, err := getEntityID(truthset.CustomerRecords["1002"])
@@ -2681,7 +2681,7 @@ func TestSzengine_WhyEntities(test *testing.T) {
 }
 
 func TestSzengine_WhyEntities_badEnitity1(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -2691,7 +2691,7 @@ func TestSzengine_WhyEntities_badEnitity1(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	entityID2, err := getEntityID(truthset.CustomerRecords["1002"])
 	require.NoError(test, err)
 
@@ -2702,7 +2702,7 @@ func TestSzengine_WhyEntities_badEnitity1(test *testing.T) {
 }
 
 func TestSzengine_WhyEntities_badEnitity2(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -2712,7 +2712,7 @@ func TestSzengine_WhyEntities_badEnitity2(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	entityID1, err := getEntityID(truthset.CustomerRecords["1001"])
 	require.NoError(test, err)
 
@@ -2723,7 +2723,7 @@ func TestSzengine_WhyEntities_badEnitity2(test *testing.T) {
 }
 
 func TestSzengine_WhyEntities_nilEnitity1(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -2733,7 +2733,7 @@ func TestSzengine_WhyEntities_nilEnitity1(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	entityID2, err := getEntityID(truthset.CustomerRecords["1002"])
 	require.NoError(test, err)
 
@@ -2744,7 +2744,7 @@ func TestSzengine_WhyEntities_nilEnitity1(test *testing.T) {
 }
 
 func TestSzengine_WhyEntities_nilEnitity2(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -2754,7 +2754,7 @@ func TestSzengine_WhyEntities_nilEnitity2(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	entityID1, err := getEntityID(truthset.CustomerRecords["1001"])
 	require.NoError(test, err)
 
@@ -2765,7 +2765,7 @@ func TestSzengine_WhyEntities_nilEnitity2(test *testing.T) {
 }
 
 func TestSzengine_WhyRecordInEntity(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
@@ -2774,7 +2774,7 @@ func TestSzengine_WhyRecordInEntity(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	record := truthset.CustomerRecords["1001"]
 	flags := senzing.SzNoFlags
 	actual, err := szEngine.WhyRecordInEntity(ctx, record.DataSource, record.ID, flags)
@@ -2783,7 +2783,7 @@ func TestSzengine_WhyRecordInEntity(test *testing.T) {
 }
 
 func TestSzengine_WhyRecordInEntity_badDataSourceCode(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
@@ -2792,7 +2792,7 @@ func TestSzengine_WhyRecordInEntity_badDataSourceCode(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	record := truthset.CustomerRecords["1001"]
 	flags := senzing.SzNoFlags
 	actual, err := szEngine.WhyRecordInEntity(ctx, badDataSourceCode, record.ID, flags)
@@ -2801,7 +2801,7 @@ func TestSzengine_WhyRecordInEntity_badDataSourceCode(test *testing.T) {
 }
 
 func TestSzengine_WhyRecordInEntity_badRecordID(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
@@ -2810,7 +2810,7 @@ func TestSzengine_WhyRecordInEntity_badRecordID(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	record := truthset.CustomerRecords["1001"]
 	flags := senzing.SzNoFlags
 	actual, err := szEngine.WhyRecordInEntity(ctx, record.DataSource, badRecordID, flags)
@@ -2819,7 +2819,7 @@ func TestSzengine_WhyRecordInEntity_badRecordID(test *testing.T) {
 }
 
 func TestSzengine_WhyRecordInEntity_nilDataSourceCode(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
@@ -2828,7 +2828,7 @@ func TestSzengine_WhyRecordInEntity_nilDataSourceCode(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	record := truthset.CustomerRecords["1001"]
 	flags := senzing.SzNoFlags
 	actual, err := szEngine.WhyRecordInEntity(ctx, nilDataSourceCode, record.ID, flags)
@@ -2837,7 +2837,7 @@ func TestSzengine_WhyRecordInEntity_nilDataSourceCode(test *testing.T) {
 }
 
 func TestSzengine_WhyRecordInEntity_nilRecordID(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
@@ -2846,7 +2846,7 @@ func TestSzengine_WhyRecordInEntity_nilRecordID(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	record := truthset.CustomerRecords["1001"]
 	flags := senzing.SzNoFlags
 	actual, err := szEngine.WhyRecordInEntity(ctx, record.DataSource, nilRecordID, flags)
@@ -2855,7 +2855,7 @@ func TestSzengine_WhyRecordInEntity_nilRecordID(test *testing.T) {
 }
 
 func TestSzengine_WhyRecords(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -2865,7 +2865,7 @@ func TestSzengine_WhyRecords(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	record1 := truthset.CustomerRecords["1001"]
 	record2 := truthset.CustomerRecords["1002"]
 	flags := senzing.SzNoFlags
@@ -2875,7 +2875,7 @@ func TestSzengine_WhyRecords(test *testing.T) {
 }
 
 func TestSzengine_WhyRecords_badDataSourceCode(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -2885,7 +2885,7 @@ func TestSzengine_WhyRecords_badDataSourceCode(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	record1 := truthset.CustomerRecords["1001"]
 	record2 := truthset.CustomerRecords["1002"]
 	flags := senzing.SzNoFlags
@@ -2895,7 +2895,7 @@ func TestSzengine_WhyRecords_badDataSourceCode(test *testing.T) {
 }
 
 func TestSzengine_WhyRecords_badRecordID(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -2905,7 +2905,7 @@ func TestSzengine_WhyRecords_badRecordID(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	record1 := truthset.CustomerRecords["1001"]
 	record2 := truthset.CustomerRecords["1002"]
 	flags := senzing.SzNoFlags
@@ -2915,7 +2915,7 @@ func TestSzengine_WhyRecords_badRecordID(test *testing.T) {
 }
 
 func TestSzengine_WhyRecords_nilDataSourceCode(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -2925,7 +2925,7 @@ func TestSzengine_WhyRecords_nilDataSourceCode(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	record1 := truthset.CustomerRecords["1001"]
 	record2 := truthset.CustomerRecords["1002"]
 	flags := senzing.SzNoFlags
@@ -2935,7 +2935,7 @@ func TestSzengine_WhyRecords_nilDataSourceCode(test *testing.T) {
 }
 
 func TestSzengine_WhyRecords_nilRecordID(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
@@ -2945,7 +2945,7 @@ func TestSzengine_WhyRecords_nilRecordID(test *testing.T) {
 
 	err := addRecords(ctx, records)
 	require.NoError(test, err)
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	record1 := truthset.CustomerRecords["1001"]
 	record2 := truthset.CustomerRecords["1002"]
 	flags := senzing.SzNoFlags
@@ -2959,21 +2959,21 @@ func TestSzengine_WhyRecords_nilRecordID(test *testing.T) {
 // ----------------------------------------------------------------------------
 
 func TestSzengine_SetLogLevel_badLogLevelName(test *testing.T) {
-	ctx := context.TODO()
-	szConfig := getTestObject(ctx, test)
+	ctx := test.Context()
+	szConfig := getTestObject(test)
 	_ = szConfig.SetLogLevel(ctx, badLogLevelName)
 }
 
 func TestSzengine_SetObserverOrigin(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
+	ctx := test.Context()
+	szEngine := getTestObject(test)
 	origin := "Machine: nn; Task: UnitTest"
 	szEngine.SetObserverOrigin(ctx, origin)
 }
 
 func TestSzengine_GetObserverOrigin(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
+	ctx := test.Context()
+	szEngine := getTestObject(test)
 	origin := "Machine: nn; Task: UnitTest"
 	szEngine.SetObserverOrigin(ctx, origin)
 	actual := szEngine.GetObserverOrigin(ctx)
@@ -2982,8 +2982,8 @@ func TestSzengine_GetObserverOrigin(test *testing.T) {
 }
 
 func TestSzengine_UnregisterObserver(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
+	ctx := test.Context()
+	szEngine := getTestObject(test)
 	err := szEngine.UnregisterObserver(ctx, observerSingleton)
 	require.NoError(test, err)
 }
@@ -2994,7 +2994,7 @@ func TestSzengine_UnregisterObserver(test *testing.T) {
 
 func TestSzengine_AsInterface(test *testing.T) {
 	expected := int64(4)
-	ctx := context.TODO()
+	ctx := test.Context()
 	szEngine := getSzEngineAsInterface(ctx)
 	actual, err := szEngine.CountRedoRecords(ctx)
 	require.NoError(test, err)
@@ -3003,8 +3003,8 @@ func TestSzengine_AsInterface(test *testing.T) {
 }
 
 func TestSzengine_Initialize(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
+	ctx := test.Context()
+	szEngine := getTestObject(test)
 	settings, err := getSettings()
 	require.NoError(test, err)
 
@@ -3017,8 +3017,8 @@ func TestSzengine_Initialize(test *testing.T) {
 // func TestSzengine_Initialize_error(test *testing.T) {}
 
 func TestSzengine_Initialize_withConfigID(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
+	ctx := test.Context()
+	szEngine := getTestObject(test)
 	settings, err := getSettings()
 	require.NoError(test, err)
 
@@ -3031,8 +3031,8 @@ func TestSzengine_Initialize_withConfigID(test *testing.T) {
 // func TestSzengine_Initialize_withConfigID_error(test *testing.T) {}
 
 func TestSzengine_Reinitialize(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
+	ctx := test.Context()
+	szEngine := getTestObject(test)
 	configID, err := szEngine.GetActiveConfigID(ctx)
 	require.NoError(test, err)
 	err = szEngine.Reinitialize(ctx, configID)
@@ -3044,8 +3044,8 @@ func TestSzengine_Reinitialize(test *testing.T) {
 // func TestSzengine_Reinitialize_badConfigID(test *testing.T) {}
 
 func TestSzengine_Destroy(test *testing.T) {
-	ctx := context.TODO()
-	szEngine := getTestObject(ctx, test)
+	ctx := test.Context()
+	szEngine := getTestObject(test)
 	err := szEngine.Destroy(ctx)
 	require.NoError(test, err)
 }
@@ -3054,9 +3054,9 @@ func TestSzengine_Destroy(test *testing.T) {
 // func TestSzengine_Destroy_error(test *testing.T) {}
 
 func TestSzengine_Destroy_withObserver(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	szEngineSingleton = nil
-	szEngine := getTestObject(ctx, test)
+	szEngine := getTestObject(test)
 	err := szEngine.Destroy(ctx)
 	require.NoError(test, err)
 }
@@ -3076,7 +3076,7 @@ func addRecords(ctx context.Context, records []record.Record) error {
 		handleErrorWithPanic(err)
 	}
 
-	return err
+	return nil
 }
 
 func deleteRecords(ctx context.Context, records []record.Record) error {
@@ -3090,7 +3090,7 @@ func deleteRecords(ctx context.Context, records []record.Record) error {
 		handleErrorWithPanic(err)
 	}
 
-	return err
+	return nil
 }
 
 func getDatabaseTemplatePath() string {
@@ -3105,7 +3105,7 @@ func getEntityID(record record.Record) (int64, error) {
 	return getEntityIDForRecord(record.DataSource, record.ID)
 }
 
-func getEntityIDForRecord(datasource string, id string) (int64, error) {
+func getEntityIDForRecord(datasource string, recordID string) (int64, error) {
 	var (
 		err    error
 		result int64
@@ -3113,7 +3113,7 @@ func getEntityIDForRecord(datasource string, id string) (int64, error) {
 
 	ctx := context.TODO()
 	szEngine := getSzEngine(ctx)
-	response, err := szEngine.GetEntityByRecordID(ctx, datasource, id, senzing.SzWithoutInfo)
+	response, err := szEngine.GetEntityByRecordID(ctx, datasource, recordID, senzing.SzWithoutInfo)
 	handleErrorWithPanic(err)
 
 	getEntityByRecordIDResponse := &GetEntityByRecordIDResponse{}
@@ -3122,7 +3122,7 @@ func getEntityIDForRecord(datasource string, id string) (int64, error) {
 
 	result = getEntityByRecordIDResponse.ResolvedEntity.EntityID
 
-	return result, err
+	return result, nil
 }
 
 func getEntityIDString(record record.Record) (string, error) {
@@ -3136,21 +3136,21 @@ func getEntityIDString(record record.Record) (string, error) {
 
 	result = strconv.FormatInt(entityID, baseTen)
 
-	return result, err
+	return result, nil
 }
 
-func getEntityIDStringForRecord(datasource string, id string) (string, error) {
+func getEntityIDStringForRecord(datasource string, recordID string) (string, error) {
 	var (
 		result string
 		err    error
 	)
 
-	entityID, err := getEntityIDForRecord(datasource, id)
+	entityID, err := getEntityIDForRecord(datasource, recordID)
 	handleErrorWithPanic(err)
 
 	result = strconv.FormatInt(entityID, baseTen)
 
-	return result, err
+	return result, nil
 }
 
 func getNewSzEngine(ctx context.Context) (*szengine.Szengine, error) {
@@ -3177,7 +3177,7 @@ func getNewSzEngine(ctx context.Context) (*szengine.Szengine, error) {
 	err = newSzEngine.Initialize(ctx, instanceName, settings, getDefaultConfigID(), verboseLogging)
 	handleErrorWithPanic(err)
 
-	return newSzEngine, err
+	return newSzEngine, nil
 }
 
 func getSettings() (string, error) {
@@ -3197,7 +3197,7 @@ func getSettings() (string, error) {
 	result, err = settings.BuildSimpleSettingsUsingMap(configAttrMap)
 	handleErrorWithPanic(err)
 
-	return result, err
+	return result, nil
 }
 
 func getSzEngine(ctx context.Context) *szengine.Szengine {
@@ -3219,8 +3219,10 @@ func getTestDirectoryPath() string {
 	return filepath.FromSlash("../target/test/szengine")
 }
 
-func getTestObject(ctx context.Context, test *testing.T) *szengine.Szengine {
-	_ = test
+func getTestObject(t *testing.T) *szengine.Szengine {
+	t.Helper()
+	ctx := t.Context()
+
 	return getSzEngine(ctx)
 }
 
@@ -3242,13 +3244,16 @@ func handleErrorWithString(aString string, err error) {
 	handleError(err)
 }
 
-func printActual(test *testing.T, actual interface{}) {
-	printResult(test, "Actual", actual)
+func printActual(t *testing.T, actual interface{}) {
+	t.Helper()
+	printResult(t, "Actual", actual)
 }
 
-func printResult(test *testing.T, title string, result interface{}) {
+func printResult(t *testing.T, title string, result interface{}) {
+	t.Helper()
+
 	if printResults {
-		test.Logf("%s: %v", title, truncate(fmt.Sprintf("%v", result), defaultTruncation))
+		t.Logf("%s: %v", title, truncate(fmt.Sprintf("%v", result), defaultTruncation))
 	}
 }
 
@@ -3306,7 +3311,7 @@ func setup() error {
 	err = setupSenzingConfiguration()
 	handleErrorWithPanic(err)
 
-	return err
+	return nil
 }
 
 func setupDatabase() error {
@@ -3325,7 +3330,7 @@ func setupDatabase() error {
 	_, _, err = fileutil.CopyFile(databaseTemplatePath, testDirectoryPath, true) // Copy the SQLite database file.
 	handleErrorWithPanic(err)
 
-	return err
+	return nil
 }
 
 func setupDirectories() error {
@@ -3337,7 +3342,7 @@ func setupDirectories() error {
 	err = os.MkdirAll(filepath.Clean(testDirectoryPath), 0750) // recreate the test target directory
 	handleErrorWithPanic(err)
 
-	return err
+	return nil
 }
 
 func setupSenzingConfiguration() error {
@@ -3385,7 +3390,7 @@ func setupSenzingConfiguration() error {
 	defaultConfigID, err = szConfigManager.SetDefaultConfig(ctx, configDefinition, configComment)
 	handleErrorWithPanic(err)
 
-	return err
+	return nil
 }
 
 func teardown() error {
@@ -3394,7 +3399,7 @@ func teardown() error {
 	err := teardownSzEngine(ctx)
 	handleErrorWithPanic(err)
 
-	return err
+	return nil
 }
 
 func teardownSzEngine(ctx context.Context) error {
@@ -3405,5 +3410,5 @@ func teardownSzEngine(ctx context.Context) error {
 
 	szEngineSingleton = nil
 
-	return err
+	return nil
 }

@@ -2696,7 +2696,6 @@ func ExampleSzengine_GetVirtualEntityByRecordID_output() {
 	//         ]
 	//     }
 	// }
-
 }
 
 func ExampleSzengine_HowEntityByEntityID() {
