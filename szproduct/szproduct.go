@@ -180,6 +180,7 @@ Output
 */
 func (client *Szproduct) GetObserverOrigin(ctx context.Context) string {
 	_ = ctx
+
 	return client.observerOrigin
 }
 

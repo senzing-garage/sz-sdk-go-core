@@ -324,7 +324,7 @@ func getSettings() (string, error) {
 	dbTargetPath, err := filepath.Abs(filepath.Join(testDirectoryPath, "G2C.db"))
 	handleErrorWithPanic(err)
 
-	databaseURL := fmt.Sprintf("sqlite3://na:na@nowhere/%s", dbTargetPath)
+	databaseURL := "sqlite3://na:na@nowhere/" + dbTargetPath
 
 	// Create Senzing engine configuration JSON.
 

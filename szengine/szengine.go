@@ -337,6 +337,7 @@ func (client *Szengine) ExportCsvEntityReportIterator(ctx context.Context, csvCo
 				stringFragmentChannel <- senzing.StringFragment{
 					Error: ctx.Err(),
 				}
+
 				break forLoop
 			default:
 				entityReportFragment, err := client.FetchNext(ctx, reportHandle)
@@ -344,6 +345,7 @@ func (client *Szengine) ExportCsvEntityReportIterator(ctx context.Context, csvCo
 					stringFragmentChannel <- senzing.StringFragment{
 						Error: err,
 					}
+
 					break forLoop
 				}
 				if len(entityReportFragment) == 0 {
@@ -459,6 +461,7 @@ func (client *Szengine) ExportJSONEntityReportIterator(ctx context.Context, flag
 				stringFragmentChannel <- senzing.StringFragment{
 					Error: ctx.Err(),
 				}
+
 				break forLoop
 			default:
 				entityReportFragment, err := client.FetchNext(ctx, reportHandle)
@@ -466,6 +469,7 @@ func (client *Szengine) ExportJSONEntityReportIterator(ctx context.Context, flag
 					stringFragmentChannel <- senzing.StringFragment{
 						Error: err,
 					}
+
 					break forLoop
 				}
 				if len(entityReportFragment) == 0 {
@@ -1633,6 +1637,7 @@ Output
 */
 func (client *Szengine) GetObserverOrigin(ctx context.Context) string {
 	_ = ctx
+
 	return client.observerOrigin
 }
 

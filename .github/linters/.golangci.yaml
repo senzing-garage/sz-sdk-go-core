@@ -69,13 +69,13 @@ linters:
     - nilerr
     - nilnesserr
     - nilnil
-    # - nlreturn
+    - nlreturn
     - noctx
     # - nolintlint
     - nonamedreturns
     - nosprintfhostport
     # - paralleltest
-    # - perfsprint
+    - perfsprint
     - prealloc
     - predeclared
     - promlinter
@@ -89,8 +89,8 @@ linters:
     - sqlclosecheck
     - staticcheck
     - tagalign
-    # - tagliatelle
-    # - testableexamples
+    - tagliatelle
+    - testableexamples
     - testifylint
     - testpackage
     - thelper
@@ -117,7 +117,13 @@ linters:
       - third_party$
       - builtin$
       - examples$
-
+  settings:
+    tagliatelle:
+      case:
+        rules:
+          json: upperSnake
+    nlreturn:
+      block-size: 2
 formatters:
   enable:
     # - gci

@@ -205,7 +205,7 @@ func copyDatabase() (string, error) {
 		return result, fmt.Errorf("failed to make target database path (%s) absolute. Error: %w", dbTargetPath, err)
 	}
 
-	result = fmt.Sprintf("sqlite3://na:na@nowhere/%s", dbTargetPath)
+	result = "sqlite3://na:na@nowhere/" + dbTargetPath
 
 	// Copy template file to test directory.
 

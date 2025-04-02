@@ -447,6 +447,7 @@ Output
 */
 func (client *Szconfigmanager) GetObserverOrigin(ctx context.Context) string {
 	_ = ctx
+
 	return client.observerOrigin
 }
 

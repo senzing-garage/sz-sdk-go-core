@@ -22,8 +22,6 @@ const (
 // Interface methods - Examples for godoc documentation
 // ----------------------------------------------------------------------------
 
-func ExampleSzengine() {}
-
 func ExampleSzengine_AddRecord() {
 	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
@@ -223,6 +221,7 @@ func ExampleSzengine_ExportCsvEntityReportIterator() {
 	for result := range szEngine.ExportCsvEntityReportIterator(ctx, csvColumnList, flags) {
 		if result.Error != nil {
 			handleError(err)
+
 			break
 		}
 
@@ -267,6 +266,7 @@ func ExampleSzengine_ExportJSONEntityReportIterator() {
 	for result := range szEngine.ExportJSONEntityReportIterator(ctx, flags) {
 		if result.Error != nil {
 			handleError(err)
+
 			break
 		}
 
@@ -310,6 +310,7 @@ func ExampleSzengine_FetchNext() {
 
 		jsonEntityReport += jsonEntityReportFragment
 	}
+	// Output:
 }
 
 func ExampleSzengine_FindInterestingEntitiesByEntityID() {
