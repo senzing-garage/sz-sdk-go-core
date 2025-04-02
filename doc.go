@@ -1,3 +1,4 @@
+//nolint
 /*
 Module sz-sdk-go-core implements Senzing objects that communicate with the Senzing native C binary, libSz.so.
 

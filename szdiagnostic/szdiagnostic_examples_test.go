@@ -12,12 +12,17 @@ import (
 	"github.com/senzing-garage/sz-sdk-go/senzing"
 )
 
+const (
+	jsonIndentation = "    "
+)
+
 // ----------------------------------------------------------------------------
 // Interface methods - Examples for godoc documentation
 // ----------------------------------------------------------------------------
 
 func ExampleSzdiagnostic_CheckDatastorePerformance() {
-	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
+	// For more information,
+	// visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := getSzAbstractFactory(ctx)
 
@@ -38,7 +43,8 @@ func ExampleSzdiagnostic_CheckDatastorePerformance() {
 }
 
 func ExampleSzdiagnostic_GetDatastoreInfo() {
-	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
+	// For more information,
+	// visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := getSzAbstractFactory(ctx)
 
@@ -57,7 +63,8 @@ func ExampleSzdiagnostic_GetDatastoreInfo() {
 }
 
 func ExampleSzdiagnostic_GetFeature() {
-	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
+	// For more information,
+	// visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := getSzAbstractFactory(ctx)
 
@@ -73,12 +80,43 @@ func ExampleSzdiagnostic_GetFeature() {
 		handleError(err)
 	}
 
-	fmt.Println(result)
-	// Output: {"LIB_FEAT_ID":1,"FTYPE_CODE":"NAME","ELEMENTS":[{"FELEM_CODE":"FULL_NAME","FELEM_VALUE":"Robert Smith"},{"FELEM_CODE":"SUR_NAME","FELEM_VALUE":"Smith"},{"FELEM_CODE":"GIVEN_NAME","FELEM_VALUE":"Robert"},{"FELEM_CODE":"CULTURE","FELEM_VALUE":"ANGLO"},{"FELEM_CODE":"CATEGORY","FELEM_VALUE":"PERSON"},{"FELEM_CODE":"TOKENIZED_NM","FELEM_VALUE":"ROBERT|SMITH"}]}
+	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
+	// Output:
+	// {
+	// 	"LIB_FEAT_ID": 1,
+	// 	"FTYPE_CODE": "NAME",
+	// 	"ELEMENTS": [
+	// 		{
+	// 			"FELEM_CODE": "FULL_NAME",
+	// 			"FELEM_VALUE": "Robert Smith"
+	// 		},
+	// 		{
+	// 			"FELEM_CODE": "SUR_NAME",
+	// 			"FELEM_VALUE": "Smith"
+	// 		},
+	// 		{
+	// 			"FELEM_CODE": "GIVEN_NAME",
+	// 			"FELEM_VALUE": "Robert"
+	// 		},
+	// 		{
+	// 			"FELEM_CODE": "CULTURE",
+	// 			"FELEM_VALUE": "ANGLO"
+	// 		},
+	// 		{
+	// 			"FELEM_CODE": "CATEGORY",
+	// 			"FELEM_VALUE": "PERSON"
+	// 		},
+	// 		{
+	// 			"FELEM_CODE": "TOKENIZED_NM",
+	// 			"FELEM_VALUE": "ROBERT|SMITH"
+	// 		}
+	// 	]
+	// }
 }
 
 func ExampleSzdiagnostic_PurgeRepository() {
-	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
+	// For more information,
+	// visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := getSzAbstractFactory(ctx)
 
@@ -99,7 +137,8 @@ func ExampleSzdiagnostic_PurgeRepository() {
 // ----------------------------------------------------------------------------
 
 func ExampleSzdiagnostic_SetLogLevel() {
-	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
+	// For more information,
+	// visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
 	ctx := context.TODO()
 	szDiagnostic := getSzDiagnostic(ctx)
 
@@ -111,7 +150,8 @@ func ExampleSzdiagnostic_SetLogLevel() {
 }
 
 func ExampleSzdiagnostic_SetObserverOrigin() {
-	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
+	// For more information,
+	// visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
 	ctx := context.TODO()
 	szDiagnostic := getSzDiagnostic(ctx)
 	origin := "Machine: nn; Task: UnitTest"
@@ -120,7 +160,8 @@ func ExampleSzdiagnostic_SetObserverOrigin() {
 }
 
 func ExampleSzdiagnostic_GetObserverOrigin() {
-	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
+	// For more information,
+	// visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
 	ctx := context.TODO()
 	szDiagnostic := getSzDiagnostic(ctx)
 	origin := "Machine: nn; Task: UnitTest"

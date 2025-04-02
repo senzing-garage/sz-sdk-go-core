@@ -194,7 +194,11 @@ Input
   - settings: A JSON string containing configuration parameters.
   - verboseLogging: A flag to enable deeper logging of the Sz processing. 0 for no Senzing logging; 1 for logging.
 */
-func (client *Szproduct) Initialize(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
+func (client *Szproduct) Initialize(
+	ctx context.Context,
+	instanceName string,
+	settings string,
+	verboseLogging int64) error {
 	var err error
 
 	if client.isTrace {

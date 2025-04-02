@@ -159,61 +159,27 @@ Input
 func (factory *Szabstractfactory) Destroy(ctx context.Context) error {
 	var err error
 
-	if factory.isSzconfigInitialized {
-		szConfig := &szconfig.Szconfig{}
-
-		err = szConfig.Destroy(ctx)
-		if err != nil {
-			return fmt.Errorf("szConfig.Destroy error: %w", err)
-		}
-
-		factory.isSzconfigInitialized = false
+	err = factory.destroySzConfig(ctx)
+	if err != nil {
+		return fmt.Errorf("szabstractfactory.Destroy error: %w", err)
 	}
 
-	if factory.isSzconfigmanagerInitialized {
-		szConfigmanager := &szconfigmanager.Szconfigmanager{}
-
-		err = szConfigmanager.Destroy(ctx)
-		if err != nil {
-			return fmt.Errorf("szConfigmanager.Destroy error: %w", err)
-		}
-
-		factory.isSzconfigmanagerInitialized = false
+	err = factory.destroySzConfigmanager(ctx)
+	if err != nil {
+		return fmt.Errorf("szabstractfactory.Destroy error: %w", err)
 	}
 
-	if factory.isSzdiagnosticInitialized {
-		szDiagnostic := &szdiagnostic.Szdiagnostic{}
-
-		err = szDiagnostic.Destroy(ctx)
-		if err != nil {
-			return fmt.Errorf("szDiagnostic.Destroy error: %w", err)
-		}
-
-		factory.isSzdiagnosticInitialized = false
+	err = factory.destroySzDiagnostic(ctx)
+	if err != nil {
+		return fmt.Errorf("szabstractfactory.Destroy error: %w", err)
 	}
 
-	if factory.isSzengineInitialized {
-		szEngine := &szengine.Szengine{}
-
-		err = szEngine.Destroy(ctx)
-		if err != nil {
-			return fmt.Errorf("szEngine.Destroy error: %w", err)
-		}
-
-		factory.isSzengineInitialized = false
+	err = factory.destroySzEngine(ctx)
+	if err != nil {
+		return fmt.Errorf("szabstractfactory.Destroy error: %w", err)
 	}
 
-	if factory.isSzproductInitialized {
-		szProduct := &szproduct.Szproduct{}
-
-		err = szProduct.Destroy(ctx)
-		if err != nil {
-			return fmt.Errorf("szProduct.Destroy error: %w", err)
-		}
-
-		factory.isSzproductInitialized = false
-	}
-
+	err = factory.destroySzProduct(ctx)
 	if err != nil {
 		return fmt.Errorf("szabstractfactory.Destroy error: %w", err)
 	}
@@ -222,7 +188,8 @@ func (factory *Szabstractfactory) Destroy(ctx context.Context) error {
 }
 
 /*
-Method Reinitialize re-initializes the Senzing objects created by the AbstractFactory with a specific Senzing configuration JSON document identifier.
+Method Reinitialize re-initializes the Senzing objects created by the AbstractFactory
+with a specific Senzing configuration JSON document identifier.
 
 Input
   - ctx: A context to control lifecycle.
@@ -252,6 +219,94 @@ func (factory *Szabstractfactory) Reinitialize(ctx context.Context, configID int
 
 	if err != nil {
 		return fmt.Errorf("szabstractfactory.Reinitialize error: %w", err)
+	}
+
+	return nil
+}
+
+// ----------------------------------------------------------------------------
+// Private methods
+// ----------------------------------------------------------------------------
+
+func (factory *Szabstractfactory) destroySzConfig(ctx context.Context) error {
+	var err error
+
+	if factory.isSzconfigInitialized {
+		szConfig := &szconfig.Szconfig{}
+
+		err = szConfig.Destroy(ctx)
+		if err != nil {
+			return fmt.Errorf("szConfig.Destroy error: %w", err)
+		}
+
+		factory.isSzconfigInitialized = false
+	}
+
+	return nil
+}
+
+func (factory *Szabstractfactory) destroySzConfigmanager(ctx context.Context) error {
+	var err error
+
+	if factory.isSzconfigmanagerInitialized {
+		szConfigmanager := &szconfigmanager.Szconfigmanager{}
+
+		err = szConfigmanager.Destroy(ctx)
+		if err != nil {
+			return fmt.Errorf("szConfigmanager.Destroy error: %w", err)
+		}
+
+		factory.isSzconfigmanagerInitialized = false
+	}
+
+	return nil
+}
+
+func (factory *Szabstractfactory) destroySzDiagnostic(ctx context.Context) error {
+	var err error
+
+	if factory.isSzdiagnosticInitialized {
+		szDiagnostic := &szdiagnostic.Szdiagnostic{}
+
+		err = szDiagnostic.Destroy(ctx)
+		if err != nil {
+			return fmt.Errorf("szDiagnostic.Destroy error: %w", err)
+		}
+
+		factory.isSzdiagnosticInitialized = false
+	}
+
+	return nil
+}
+
+func (factory *Szabstractfactory) destroySzEngine(ctx context.Context) error {
+	var err error
+
+	if factory.isSzengineInitialized {
+		szEngine := &szengine.Szengine{}
+
+		err = szEngine.Destroy(ctx)
+		if err != nil {
+			return fmt.Errorf("szEngine.Destroy error: %w", err)
+		}
+
+		factory.isSzengineInitialized = false
+	}
+
+	return nil
+}
+func (factory *Szabstractfactory) destroySzProduct(ctx context.Context) error {
+	var err error
+
+	if factory.isSzproductInitialized {
+		szProduct := &szproduct.Szproduct{}
+
+		err = szProduct.Destroy(ctx)
+		if err != nil {
+			return fmt.Errorf("szProduct.Destroy error: %w", err)
+		}
+
+		factory.isSzproductInitialized = false
 	}
 
 	return nil

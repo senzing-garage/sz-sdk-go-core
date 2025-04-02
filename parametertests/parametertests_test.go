@@ -37,7 +37,8 @@ var (
 // TODO: See if there's any way to use currying to simplify the captureStdout* methods
 
 func captureStdout(functionName func() error) (string, error) {
-	// Reference: https://stackoverflow.com/questions/76565007/how-to-capture-the-contents-of-stderr-in-a-c-function-call-from-golang
+	// Reference:
+	// https://stackoverflow.com/questions/76565007/how-to-capture-the-contents-of-stderr-in-a-c-function-call-from-golang
 	// Switch STDOUT.
 	originalStdout, err := syscall.Dup(syscall.Stdout)
 	handleErrorWithPanic(err)
@@ -68,7 +69,8 @@ func captureStdout(functionName func() error) (string, error) {
 }
 
 func captureStdoutReturningInt64(functionName func() (int64, error)) (string, int64, error) {
-	// Reference: https://stackoverflow.com/questions/76565007/how-to-capture-the-contents-of-stderr-in-a-c-function-call-from-golang
+	// Reference:
+	// https://stackoverflow.com/questions/76565007/how-to-capture-the-contents-of-stderr-in-a-c-function-call-from-golang
 	// Switch STDOUT.
 	originalStdout, err := syscall.Dup(syscall.Stdout)
 	handleErrorWithPanic(err)
@@ -98,7 +100,8 @@ func captureStdoutReturningInt64(functionName func() (int64, error)) (string, in
 }
 
 func captureStdoutReturningString(functionName func() (string, error)) (string, string, error) {
-	// Reference: https://stackoverflow.com/questions/76565007/how-to-capture-the-contents-of-stderr-in-a-c-function-call-from-golang
+	// Reference:
+	// https://stackoverflow.com/questions/76565007/how-to-capture-the-contents-of-stderr-in-a-c-function-call-from-golang
 	// Switch STDOUT.
 	originalStdout, err := syscall.Dup(syscall.Stdout)
 	handleErrorWithPanic(err)
@@ -128,7 +131,8 @@ func captureStdoutReturningString(functionName func() (string, error)) (string, 
 }
 
 // func captureStdoutReturningUintptr(functionName func() (uintptr, error)) (string, uintptr, error) {
-// 	// Reference: https://stackoverflow.com/questions/76565007/how-to-capture-the-contents-of-stderr-in-a-c-function-call-from-golang
+// Reference:
+// https://stackoverflow.com/questions/76565007/how-to-capture-the-contents-of-stderr-in-a-c-function-call-from-golang
 
 // 	// Switch STDOUT.
 
@@ -193,7 +197,13 @@ func getSzEngine(ctx context.Context) (*szengine.Szengine, error) {
 
 		szEngine := &szengine.Szengine{}
 		_, err = captureStdout(func() error {
-			return szEngine.Initialize(ctx, instanceName, settings, senzing.SzInitializeWithDefaultConfiguration, senzing.SzVerboseLogging)
+			return szEngine.Initialize(
+				ctx,
+				instanceName,
+				settings,
+				senzing.SzInitializeWithDefaultConfiguration,
+				senzing.SzVerboseLogging,
+			)
 		})
 		handleErrorWithPanic(err)
 

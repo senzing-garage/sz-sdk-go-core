@@ -311,7 +311,8 @@ func (client *Szconfig) Import(ctx context.Context, configDefinition string) err
 
 /*
 Method ImportTemplate retrieves a Senzing configuration from the default template.
-The default template is the Senzing configuration JSON document file, g2config.json, located in the PIPELINE.RESOURCEPATH path.
+The default template is the Senzing configuration JSON document file,
+g2config.json, located in the PIPELINE.RESOURCEPATH path.
 
 Input
   - ctx: A context to control lifecycle.
@@ -363,7 +364,11 @@ Input
   - settings: A JSON string containing configuration parameters.
   - verboseLogging: A flag to enable deeper logging of the Sz processing. 0 for no Senzing logging; 1 for logging.
 */
-func (client *Szconfig) Initialize(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
+func (client *Szconfig) Initialize(
+	ctx context.Context,
+	instanceName string,
+	settings string,
+	verboseLogging int64) error {
 	var err error
 
 	if client.isTrace {
@@ -528,7 +533,10 @@ func (client *Szconfig) UnregisterObserver(ctx context.Context, observer observe
 // Private methods
 // ----------------------------------------------------------------------------
 
-func (client *Szconfig) addDataSourceChoreography(ctx context.Context, configDefinition string, dataSourceCode string) (string, string, error) {
+func (client *Szconfig) addDataSourceChoreography(
+	ctx context.Context,
+	configDefinition string,
+	dataSourceCode string) (string, string, error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 
@@ -588,7 +596,10 @@ func (client *Szconfig) importTemplateChoregraphy(ctx context.Context) (string, 
 	return resultResponse, nil
 }
 
-func (client *Szconfig) deleteDataSourceChoreography(ctx context.Context, configDefinition string, dataSourceCode string) (string, string, error) {
+func (client *Szconfig) deleteDataSourceChoreography(
+	ctx context.Context,
+	configDefinition string,
+	dataSourceCode string) (string, string, error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 
@@ -652,7 +663,10 @@ func (client *Szconfig) getDataSourcesChoreography(ctx context.Context, configDe
 // Private methods for calling the Senzing C API
 // ----------------------------------------------------------------------------
 
-func (client *Szconfig) addDataSource(ctx context.Context, configHandle uintptr, dataSourceCode string) (string, error) {
+func (client *Szconfig) addDataSource(
+	ctx context.Context,
+	configHandle uintptr,
+	dataSourceCode string) (string, error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 

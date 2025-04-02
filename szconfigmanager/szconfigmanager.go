@@ -100,7 +100,10 @@ func (client *Szconfigmanager) CreateConfigFromConfigID(ctx context.Context, con
 	return result, nil
 }
 
-func (client *Szconfigmanager) CreateConfigFromString(ctx context.Context, configDefinition string) (senzing.SzConfig, error) {
+func (client *Szconfigmanager) CreateConfigFromString(
+	ctx context.Context,
+	configDefinition string,
+) (senzing.SzConfig, error) {
 	var (
 		err    error
 		result senzing.SzConfig
@@ -197,7 +200,8 @@ func (client *Szconfigmanager) GetConfigs(ctx context.Context) (string, error) {
 }
 
 /*
-Method GetDefaultConfigID retrieves the default Senzing configuration JSON document identifier from the Senzing datastore.
+Method GetDefaultConfigID retrieves the default Senzing configuration JSON
+document identifier from the Senzing datastore.
 Note: this may not be the currently active in-memory configuration.
 See [Szconfigmanager.SetDefaultConfigID] and [Szconfigmanager.ReplaceDefaultConfigID] for more details.
 
@@ -247,7 +251,10 @@ Input
 Output
   - configID: A Senzing configuration JSON document identifier.
 */
-func (client *Szconfigmanager) RegisterConfig(ctx context.Context, configDefinition string, configComment string) (int64, error) {
+func (client *Szconfigmanager) RegisterConfig(
+	ctx context.Context,
+	configDefinition string,
+	configComment string) (int64, error) {
 	var (
 		err    error
 		result int64
@@ -282,7 +289,8 @@ func (client *Szconfigmanager) RegisterConfig(ctx context.Context, configDefinit
 
 /*
 Similar to the [Szconfigmanager.SetDefaultConfigID] method,
-method ReplaceDefaultConfigID sets which Senzing configuration JSON document is used when initializing or reinitializing the system.
+method ReplaceDefaultConfigID sets which Senzing configuration JSON document
+is used when initializing or reinitializing the system.
 The difference is that ReplaceDefaultConfigID only succeeds when the old Senzing configuration JSON document identifier
 is the existing default when the new identifier is applied.
 In other words, if currentDefaultConfigID is no longer the "old" identifier, the operation will fail.
@@ -295,7 +303,10 @@ Input
   - currentDefaultConfigID: The Senzing configuration JSON document identifier to replace.
   - newDefaultConfigID: The Senzing configuration JSON document identifier to use as the default.
 */
-func (client *Szconfigmanager) ReplaceDefaultConfigID(ctx context.Context, currentDefaultConfigID int64, newDefaultConfigID int64) error {
+func (client *Szconfigmanager) ReplaceDefaultConfigID(
+	ctx context.Context,
+	currentDefaultConfigID int64,
+	newDefaultConfigID int64) error {
 	var err error
 
 	if client.isTrace {
@@ -323,7 +334,10 @@ func (client *Szconfigmanager) ReplaceDefaultConfigID(ctx context.Context, curre
 	return nil
 }
 
-func (client *Szconfigmanager) SetDefaultConfig(ctx context.Context, configDefinition string, configComment string) (int64, error) {
+func (client *Szconfigmanager) SetDefaultConfig(
+	ctx context.Context,
+	configDefinition string,
+	configComment string) (int64, error) {
 	var (
 		err    error
 		result int64
@@ -461,7 +475,11 @@ Input
   - settings: A JSON string containing configuration parameters.
   - verboseLogging: A flag to enable deeper logging of the Sz processing. 0 for no Senzing logging; 1 for logging.
 */
-func (client *Szconfigmanager) Initialize(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
+func (client *Szconfigmanager) Initialize(
+	ctx context.Context,
+	instanceName string,
+	settings string,
+	verboseLogging int64) error {
 	var err error
 
 	if client.isTrace {
@@ -630,7 +648,9 @@ func (client *Szconfigmanager) UnregisterObserver(ctx context.Context, observer 
 // Private methods
 // ----------------------------------------------------------------------------
 
-func (client *Szconfigmanager) createConfigFromConfigIDChoreography(ctx context.Context, configID int64) (senzing.SzConfig, error) {
+func (client *Szconfigmanager) createConfigFromConfigIDChoreography(
+	ctx context.Context,
+	configID int64) (senzing.SzConfig, error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 
@@ -643,7 +663,9 @@ func (client *Szconfigmanager) createConfigFromConfigIDChoreography(ctx context.
 
 	return client.createConfigFromStringChoreography(ctx, configDefinition)
 }
-func (client *Szconfigmanager) createConfigFromStringChoreography(ctx context.Context, configDefinition string) (senzing.SzConfig, error) {
+func (client *Szconfigmanager) createConfigFromStringChoreography(
+	ctx context.Context,
+	configDefinition string) (senzing.SzConfig, error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 
@@ -685,7 +707,10 @@ func (client *Szconfigmanager) createConfigFromTemplateChoreography(ctx context.
 	return result, nil
 }
 
-func (client *Szconfigmanager) setDefaultConfigChoreography(ctx context.Context, configDefinition string, configComment string) (int64, error) {
+func (client *Szconfigmanager) setDefaultConfigChoreography(
+	ctx context.Context,
+	configDefinition string,
+	configComment string) (int64, error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 
@@ -711,7 +736,10 @@ func (client *Szconfigmanager) setDefaultConfigChoreography(ctx context.Context,
 // Private methods for calling the Senzing C API
 // ----------------------------------------------------------------------------
 
-func (client *Szconfigmanager) addConfig(ctx context.Context, configDefinition string, configComment string) (int64, error) {
+func (client *Szconfigmanager) addConfig(
+	ctx context.Context,
+	configDefinition string,
+	configComment string) (int64, error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 
@@ -813,7 +841,11 @@ func (client *Szconfigmanager) getDefaultConfigID(ctx context.Context) (int64, e
 	return resultConfigID, err
 }
 
-func (client *Szconfigmanager) init(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
+func (client *Szconfigmanager) init(
+	ctx context.Context,
+	instanceName string,
+	settings string,
+	verboseLogging int64) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 
@@ -835,7 +867,10 @@ func (client *Szconfigmanager) init(ctx context.Context, instanceName string, se
 	return err
 }
 
-func (client *Szconfigmanager) replaceDefaultConfigID(ctx context.Context, currentDefaultConfigID int64, newDefaultConfigID int64) error {
+func (client *Szconfigmanager) replaceDefaultConfigID(
+	ctx context.Context,
+	currentDefaultConfigID int64,
+	newDefaultConfigID int64) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 

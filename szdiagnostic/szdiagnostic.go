@@ -278,7 +278,13 @@ Input
   - configID: The configuration ID used for the initialization.  0 for current default configuration.
   - verboseLogging: A flag to enable deeper logging of the Sz processing. 0 for no Senzing logging; 1 for logging.
 */
-func (client *Szdiagnostic) Initialize(ctx context.Context, instanceName string, settings string, configID int64, verboseLogging int64) error {
+func (client *Szdiagnostic) Initialize(
+	ctx context.Context,
+	instanceName string,
+	settings string,
+	configID int64,
+	verboseLogging int64,
+) error {
 	var err error
 
 	if client.isTrace {
@@ -573,7 +579,12 @@ Input
   - settings: A JSON string containing configuration parameters.
   - verboseLogging: A flag to enable deeper logging of the Sz processing. 0 for no Senzing logging; 1 for logging.
 */
-func (client *Szdiagnostic) init(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
+func (client *Szdiagnostic) init(
+	ctx context.Context,
+	instanceName string,
+	settings string,
+	verboseLogging int64,
+) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 
@@ -606,7 +617,13 @@ Input
   - configID: The configuration ID used for the initialization.
   - verboseLogging: A flag to enable deeper logging of the Sz processing. 0 for no Senzing logging; 1 for logging.
 */
-func (client *Szdiagnostic) initWithConfigID(ctx context.Context, instanceName string, settings string, configID int64, verboseLogging int64) error {
+func (client *Szdiagnostic) initWithConfigID(
+	ctx context.Context,
+	instanceName string,
+	settings string,
+	configID int64,
+	verboseLogging int64,
+) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 
@@ -620,7 +637,12 @@ func (client *Szdiagnostic) initWithConfigID(ctx context.Context, instanceName s
 
 	defer C.free(unsafe.Pointer(settingsForC))
 
-	result := C.SzDiagnostic_initWithConfigID(instanceNameForC, settingsForC, C.longlong(configID), C.longlong(verboseLogging))
+	result := C.SzDiagnostic_initWithConfigID(
+		instanceNameForC,
+		settingsForC,
+		C.longlong(configID),
+		C.longlong(verboseLogging),
+	)
 	if result != noError {
 		err = client.newError(ctx, 4006, instanceName, settings, configID, verboseLogging, result)
 	}

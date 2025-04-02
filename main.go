@@ -105,11 +105,9 @@ func demonstrateAddRecord(ctx context.Context, szEngine senzing.SzEngine) (strin
 	failOnError(5010, err)
 
 	recordID := randomNumber.String()
-	jsonData := fmt.Sprintf(
-		"%s%s%s",
-		`{"SOCIAL_HANDLE": "flavorh", "DATE_OF_BIRTH": "4/8/1983", "ADDR_STATE": "LA", "ADDR_POSTAL_CODE": "71232", "SSN_NUMBER": "053-39-3251", "ENTITY_TYPE": "TEST", "GENDER": "F", "srccode": "MDMPER", "CC_ACCOUNT_NUMBER": "5534202208773608", "RECORD_ID": "`,
-		recordID,
-		`", "DSRC_ACTION": "A", "ADDR_CITY": "Delhi", "DRIVERS_LICENSE_STATE": "DE", "PHONE_NUMBER": "225-671-0796", "NAME_LAST": "SEAMAN", "entityid": "284430058", "ADDR_LINE1": "772 Armstrong RD"}`)
+	jsonData := `{"SOCIAL_HANDLE": "flavorh", "DATE_OF_BIRTH": "4/8/1983", "ADDR_STATE": "LA", "ADDR_POSTAL_CODE": "71232", "SSN_NUMBER": "053-39-3251", "ENTITY_TYPE": "TEST", "GENDER": "F", "srccode": "MDMPER", "CC_ACCOUNT_NUMBER": "5534202208773608", "RECORD_ID": "` + //nolint
+		recordID +
+		`", "DSRC_ACTION": "A", "ADDR_CITY": "Delhi", "DRIVERS_LICENSE_STATE": "DE", "PHONE_NUMBER": "225-671-0796", "NAME_LAST": "SEAMAN", "entityid": "284430058", "ADDR_LINE1": "772 Armstrong RD"}` //nolint
 
 	// Using SzEngine: Add record and return "withInfo".
 
@@ -211,12 +209,21 @@ func copyDatabase() (string, error) {
 
 	databaseTemplatePath, err := filepath.Abs(getDatabaseTemplatePath())
 	if err != nil {
-		return result, fmt.Errorf("failed to obtain absolute path to database file (%s): %s", databaseTemplatePath, err.Error())
+		return result, fmt.Errorf(
+			"failed to obtain absolute path to database file (%s): %s",
+			databaseTemplatePath,
+			err.Error(),
+		)
 	}
 
 	_, _, err = fileutil.CopyFile(databaseTemplatePath, testDirectoryPath, true) // Copy the SQLite database file.
 	if err != nil {
-		return result, fmt.Errorf("setup failed to copy template database (%v) to target path (%v): %w", databaseTemplatePath, testDirectoryPath, err)
+		return result, fmt.Errorf(
+			"setup failed to copy template database (%v) to target path (%v): %w",
+			databaseTemplatePath,
+			testDirectoryPath,
+			err,
+		)
 	}
 
 	return result, nil

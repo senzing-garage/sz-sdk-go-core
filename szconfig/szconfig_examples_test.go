@@ -17,7 +17,8 @@ import (
 // ----------------------------------------------------------------------------
 
 func ExampleSzconfig_AddDataSource() {
-	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig_examples_test.go
+	// For more information,
+	// visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := getSzAbstractFactory(ctx)
 
@@ -43,7 +44,8 @@ func ExampleSzconfig_AddDataSource() {
 }
 
 func ExampleSzconfig_DeleteDataSource() {
-	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig_examples_test.go
+	// For more information,
+	// visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := getSzAbstractFactory(ctx)
 
@@ -69,7 +71,8 @@ func ExampleSzconfig_DeleteDataSource() {
 }
 
 func ExampleSzconfig_Export() {
-	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig_examples_test.go
+	// For more information,
+	// visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := getSzAbstractFactory(ctx)
 
@@ -88,12 +91,13 @@ func ExampleSzconfig_Export() {
 		handleError(err)
 	}
 
-	fmt.Println(jsonutil.Truncate(configDefinition, 10))
-	// Output: {"G2_CONFIG":{"CFG_ATTR":[{"ATTR_CLASS":"ADDRESS","ATTR_CODE":"ADDR_CITY","ATTR_ID":1608,"DEFAULT_VALUE":null,"FELEM_CODE":"CITY","FELEM_REQ":"Any",...
+	fmt.Println(jsonutil.Truncate(configDefinition, 7))
+	// Output: {"G2_CONFIG":{"CFG_ATTR":[{"ATTR_CLASS":"ADDRESS","ATTR_CODE":"ADDR_CITY","ATTR_ID":1608,...
 }
 
 func ExampleSzconfig_GetDataSources() {
-	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig_examples_test.go
+	// For more information,
+	// visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := getSzAbstractFactory(ctx)
 
@@ -121,7 +125,8 @@ func ExampleSzconfig_GetDataSources() {
 // ----------------------------------------------------------------------------
 
 func ExampleSzconfig_SetLogLevel() {
-	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig_examples_test.go
+	// For more information,
+	// visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig_examples_test.go
 	ctx := context.TODO()
 	szConfig := getSzConfig(ctx)
 
@@ -133,7 +138,8 @@ func ExampleSzconfig_SetLogLevel() {
 }
 
 func ExampleSzconfig_SetObserverOrigin() {
-	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig_examples_test.go
+	// For more information,
+	// visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig_examples_test.go
 	ctx := context.TODO()
 	szConfig := getSzConfig(ctx)
 	origin := "Machine: nn; Task: UnitTest"
@@ -142,7 +148,8 @@ func ExampleSzconfig_SetObserverOrigin() {
 }
 
 func ExampleSzconfig_GetObserverOrigin() {
-	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig_examples_test.go
+	// For more information,
+	// visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig_examples_test.go
 	ctx := context.TODO()
 	szConfig := getSzConfig(ctx)
 	origin := "Machine: nn; Task: UnitTest"

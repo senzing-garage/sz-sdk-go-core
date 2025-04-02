@@ -11,7 +11,8 @@ import (
 // ----------------------------------------------------------------------------
 
 func ExampleSzabstractfactory_CreateConfigManager() {
-	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szabstractfactory/szabstractfactory_examples_test.go
+	// For more information, visit
+	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szabstractfactory/szabstractfactory_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := getSzAbstractFactory(ctx)
 
@@ -27,7 +28,8 @@ func ExampleSzabstractfactory_CreateConfigManager() {
 }
 
 func ExampleSzabstractfactory_CreateDiagnostic() {
-	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szabstractfactory/szabstractfactory_examples_test.go
+	// For more information, visit
+	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szabstractfactory/szabstractfactory_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := getSzAbstractFactory(ctx)
 
@@ -43,7 +45,8 @@ func ExampleSzabstractfactory_CreateDiagnostic() {
 }
 
 func ExampleSzabstractfactory_CreateEngine() {
-	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szabstractfactory/szabstractfactory_examples_test.go
+	// For more information, visit
+	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szabstractfactory/szabstractfactory_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := getSzAbstractFactory(ctx)
 
@@ -59,7 +62,8 @@ func ExampleSzabstractfactory_CreateEngine() {
 }
 
 func ExampleSzabstractfactory_CreateProduct() {
-	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szabstractfactory/szabstractfactory_examples_test.go
+	// For more information, visit
+	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szabstractfactory/szabstractfactory_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := getSzAbstractFactory(ctx)
 
@@ -75,7 +79,8 @@ func ExampleSzabstractfactory_CreateProduct() {
 }
 
 func ExampleSzabstractfactory_Destroy() {
-	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szabstractfactory/szabstractfactory_examples_test.go
+	// For more information, visit
+	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szabstractfactory/szabstractfactory_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := getSzAbstractFactory(ctx)
 
@@ -87,7 +92,8 @@ func ExampleSzabstractfactory_Destroy() {
 }
 
 func ExampleSzabstractfactory_Reinitialize() {
-	// For more information, visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szabstractfactory/szabstractfactory_examples_test.go
+	// For more information, visit
+	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szabstractfactory/szabstractfactory_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := getSzAbstractFactory(ctx)
 
