@@ -3672,6 +3672,7 @@ func (client *Szengine) fetchNextIntoChannel(
 	for {
 		select {
 		case <-ctx.Done():
+			//exhaustruct:ignore
 			stringFragmentChannel <- senzing.StringFragment{
 				Error: ctx.Err(),
 			}
@@ -3682,7 +3683,7 @@ func (client *Szengine) fetchNextIntoChannel(
 			if err != nil {
 				stringFragmentChannel <- senzing.StringFragment{
 					Error: err,
-				}
+				} //exhaustruct:ignore
 
 				break
 			}
@@ -3692,7 +3693,7 @@ func (client *Szengine) fetchNextIntoChannel(
 			}
 			stringFragmentChannel <- senzing.StringFragment{
 				Value: entityReportFragment,
-			}
+			} //exhaustruct:ignore
 		}
 	}
 }
