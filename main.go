@@ -210,9 +210,9 @@ func copyDatabase() (string, error) {
 	databaseTemplatePath, err := filepath.Abs(getDatabaseTemplatePath())
 	if err != nil {
 		return result, fmt.Errorf(
-			"failed to obtain absolute path to database file (%s): %s",
+			"failed to obtain absolute path to database file (%s): %w",
 			databaseTemplatePath,
-			err.Error(),
+			err,
 		)
 	}
 

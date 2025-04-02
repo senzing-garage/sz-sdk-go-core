@@ -16,7 +16,6 @@ import "C"
 import (
 	"bytes"
 	"context"
-	"errors"
 	"fmt"
 	"runtime"
 	"strconv"
@@ -1919,7 +1918,7 @@ func (client *Szengine) SetLogLevel(ctx context.Context, logLevelName string) er
 	}
 
 	if !logging.IsValidLogLevelName(logLevelName) {
-		return fmt.Errorf("invalid error level: %s", logLevelName)
+		return fmt.Errorf("invalid error level: %s; %w", logLevelName, szerror.ErrSzSdk)
 	}
 
 	err = client.getLogger().SetLogLevel(logLevelName)
@@ -3747,7 +3746,7 @@ func (client *Szengine) newError(ctx context.Context, errorNumber int, details .
 
 	details = append(details, messenger.MessageCode{Value: fmt.Sprintf(ExceptionCodeTemplate, lastExceptionCode)})
 	details = append(details, messenger.MessageReason{Value: lastException})
-	details = append(details, errors.New(lastException))
+	details = append(details, fmt.Errorf("%s; %w", lastException, szerror.ErrSz))
 	errorMessage := client.getMessenger().NewJSON(errorNumber, details...)
 
 	return szerror.New(lastExceptionCode, errorMessage) //nolint
