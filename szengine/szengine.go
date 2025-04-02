@@ -347,7 +347,7 @@ func (client *Szengine) ExportCsvEntityReportIterator(
 		if err != nil {
 			result := senzing.StringFragment{
 				Error: err,
-			}
+			} //exhaustruct:ignore
 			stringFragmentChannel <- result
 
 			return
@@ -447,7 +447,7 @@ func (client *Szengine) ExportJSONEntityReportIterator(ctx context.Context, flag
 		if err != nil {
 			result := senzing.StringFragment{
 				Error: err,
-			}
+			} //exhaustruct:ignore
 			stringFragmentChannel <- result
 
 			return
@@ -3672,18 +3672,19 @@ func (client *Szengine) fetchNextIntoChannel(
 	for {
 		select {
 		case <-ctx.Done():
-			//exhaustruct:ignore
-			stringFragmentChannel <- senzing.StringFragment{
+			fragment := senzing.StringFragment{
 				Error: ctx.Err(),
-			}
+			} //exhaustruct:ignore
+			stringFragmentChannel <- fragment
 
 			break
 		default:
 			entityReportFragment, err := client.FetchNext(ctx, reportHandle)
 			if err != nil {
-				stringFragmentChannel <- senzing.StringFragment{
+				fragment := senzing.StringFragment{
 					Error: err,
 				} //exhaustruct:ignore
+				stringFragmentChannel <- fragment
 
 				break
 			}
@@ -3691,9 +3692,11 @@ func (client *Szengine) fetchNextIntoChannel(
 			if len(entityReportFragment) == 0 {
 				break
 			}
-			stringFragmentChannel <- senzing.StringFragment{
+
+			fragment := senzing.StringFragment{
 				Value: entityReportFragment,
 			} //exhaustruct:ignore
+			stringFragmentChannel <- fragment
 		}
 	}
 }

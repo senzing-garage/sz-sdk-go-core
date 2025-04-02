@@ -3512,7 +3512,7 @@ func getEntityIDForRecord(datasource string, recordID string) (int64, error) {
 	response, err := szEngine.GetEntityByRecordID(ctx, datasource, recordID, senzing.SzWithoutInfo)
 	handleErrorWithPanic(err)
 
-	getEntityByRecordIDResponse := &GetEntityByRecordIDResponse{}
+	getEntityByRecordIDResponse := &GetEntityByRecordIDResponse{} //exhaustruct:ignore
 	err = json.Unmarshal([]byte(response), &getEntityByRecordIDResponse)
 	handleErrorWithPanic(err)
 
