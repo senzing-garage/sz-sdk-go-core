@@ -92,11 +92,7 @@ func (client *Szconfigmanager) CreateConfigFromConfigID(ctx context.Context, con
 		}()
 	}
 
-	if err != nil {
-		return nil, fmt.Errorf("szconfigmanager.CreateConfigFromConfigID error: %w", err)
-	}
-
-	return result, nil
+	return result, helper.Errorf(err, "szconfigmanager.CreateConfigFromConfigID error: %w", err)
 }
 
 func (client *Szconfigmanager) CreateConfigFromString(
@@ -124,11 +120,7 @@ func (client *Szconfigmanager) CreateConfigFromString(
 		}()
 	}
 
-	if err != nil {
-		return nil, fmt.Errorf("szconfigmanager.CreateConfigFromString error: %w", err)
-	}
-
-	return result, nil
+	return result, helper.Errorf(err, "szconfigmanager.CreateConfigFromString error: %w", err)
 }
 
 func (client *Szconfigmanager) CreateConfigFromTemplate(ctx context.Context) (senzing.SzConfig, error) {
@@ -153,11 +145,7 @@ func (client *Szconfigmanager) CreateConfigFromTemplate(ctx context.Context) (se
 		}()
 	}
 
-	if err != nil {
-		return nil, fmt.Errorf("szconfigmanager.CreateConfigFromTemplate error: %w", err)
-	}
-
-	return result, nil
+	return result, helper.Errorf(err, "szconfigmanager.CreateConfigFromTemplate error: %w", err)
 }
 
 /*
@@ -191,11 +179,7 @@ func (client *Szconfigmanager) GetConfigs(ctx context.Context) (string, error) {
 		}()
 	}
 
-	if err != nil {
-		return "", fmt.Errorf("szconfigmanager.GetConfigs error: %w", err)
-	}
-
-	return result, nil
+	return result, helper.Errorf(err, "szconfigmanager.GetConfigs error: %w", err)
 }
 
 /*
@@ -232,11 +216,7 @@ func (client *Szconfigmanager) GetDefaultConfigID(ctx context.Context) (int64, e
 		}()
 	}
 
-	if err != nil {
-		return 0, fmt.Errorf("szconfigmanager.GetDefaultConfigID error: %w", err)
-	}
-
-	return result, nil
+	return result, helper.Errorf(err, "szconfigmanager.GetDefaultConfigID error: %w", err)
 }
 
 /*
@@ -279,11 +259,7 @@ func (client *Szconfigmanager) RegisterConfig(
 		}()
 	}
 
-	if err != nil {
-		return 0, fmt.Errorf("szconfigmanager.RegisterConfig error: %w", err)
-	}
-
-	return result, nil
+	return result, helper.Errorf(err, "szconfigmanager.RegisterConfig error: %w", err)
 }
 
 /*
@@ -326,11 +302,7 @@ func (client *Szconfigmanager) ReplaceDefaultConfigID(
 		}()
 	}
 
-	if err != nil {
-		return fmt.Errorf("szconfigmanager.ReplaceDefaultConfigID error: %w", err)
-	}
-
-	return nil
+	return helper.Errorf(err, "szconfigmanager.ReplaceDefaultConfigID error: %w", err)
 }
 
 func (client *Szconfigmanager) SetDefaultConfig(
@@ -362,11 +334,7 @@ func (client *Szconfigmanager) SetDefaultConfig(
 		}()
 	}
 
-	if err != nil {
-		return 0, fmt.Errorf("szconfigmanager.SetDefaultConfig error: %w", err)
-	}
-
-	return result, nil
+	return result, helper.Errorf(err, "szconfigmanager.SetDefaultConfig error: %w", err)
 }
 
 /*
@@ -402,11 +370,7 @@ func (client *Szconfigmanager) SetDefaultConfigID(ctx context.Context, configID 
 		}()
 	}
 
-	if err != nil {
-		return fmt.Errorf("szconfigmanager.SetDefaultConfigID error: %w", err)
-	}
-
-	return nil
+	return helper.Errorf(err, "szconfigmanager.SetDefaultConfigID error: %w", err)
 }
 
 // ----------------------------------------------------------------------------
@@ -442,11 +406,7 @@ func (client *Szconfigmanager) Destroy(ctx context.Context) error {
 		}()
 	}
 
-	if err != nil {
-		return fmt.Errorf("szconfigmanager.Destroy error: %w", err)
-	}
-
-	return nil
+	return helper.Errorf(err, "szconfigmanager.Destroy error: %w", err)
 }
 
 /*
@@ -504,11 +464,7 @@ func (client *Szconfigmanager) Initialize(
 		}()
 	}
 
-	if err != nil {
-		return fmt.Errorf("szconfigmanager.Initialize error: %w", err)
-	}
-
-	return nil
+	return helper.Errorf(err, "szconfigmanager.Initialize error: %w", err)
 }
 
 /*
@@ -543,11 +499,7 @@ func (client *Szconfigmanager) RegisterObserver(ctx context.Context, observer ob
 		}()
 	}
 
-	if err != nil {
-		return fmt.Errorf("szconfigmanager.RegisterObserver error: %w", err)
-	}
-
-	return nil
+	return helper.Errorf(err, "szconfigmanager.RegisterObserver error: %w", err)
 }
 
 /*
@@ -583,11 +535,7 @@ func (client *Szconfigmanager) SetLogLevel(ctx context.Context, logLevelName str
 		}()
 	}
 
-	if err != nil {
-		return fmt.Errorf("szconfigmanager.SetLogLevel error: %w", err)
-	}
-
-	return nil
+	return helper.Errorf(err, "szconfigmanager.SetLogLevel error: %w", err)
 }
 
 /*
@@ -636,11 +584,7 @@ func (client *Szconfigmanager) UnregisterObserver(ctx context.Context, observer 
 		}
 	}
 
-	if err != nil {
-		return fmt.Errorf("szconfigmanager.UnregisterObserver error: %w", err)
-	}
-
-	return nil
+	return helper.Errorf(err, "szconfigmanager.UnregisterObserver error: %w", err)
 }
 
 // ----------------------------------------------------------------------------
@@ -662,6 +606,7 @@ func (client *Szconfigmanager) createConfigFromConfigIDChoreography(
 
 	return client.createConfigFromStringChoreography(ctx, configDefinition)
 }
+
 func (client *Szconfigmanager) createConfigFromStringChoreography(
 	ctx context.Context,
 	configDefinition string) (senzing.SzConfig, error) {
@@ -678,11 +623,8 @@ func (client *Szconfigmanager) createConfigFromStringChoreography(
 	}
 
 	err = result.Import(ctx, configDefinition)
-	if err != nil {
-		return nil, fmt.Errorf("createConfigFromStringChoreography.Import error: %w", err)
-	}
 
-	return result, nil
+	return result, helper.Errorf(err, "createConfigFromStringChoreography.Import error: %w", err)
 }
 
 func (client *Szconfigmanager) createConfigFromTemplateChoreography(ctx context.Context) (senzing.SzConfig, error) {
@@ -699,11 +641,8 @@ func (client *Szconfigmanager) createConfigFromTemplateChoreography(ctx context.
 	}
 
 	err = result.ImportTemplate(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("createConfigFromTemplateChoreography.ImportTemplate error: %w", err)
-	}
 
-	return result, nil
+	return result, helper.Errorf(err, "createConfigFromTemplateChoreography.ImportTemplate error: %w", err)
 }
 
 func (client *Szconfigmanager) setDefaultConfigChoreography(
@@ -724,11 +663,8 @@ func (client *Szconfigmanager) setDefaultConfigChoreography(
 	}
 
 	err = client.setDefaultConfigID(ctx, result)
-	if err != nil {
-		return 0, fmt.Errorf("setDefaultConfigChoreography.setDefaultConfigID error: %w", err)
-	}
 
-	return result, nil
+	return result, helper.Errorf(err, "setDefaultConfigChoreography.setDefaultConfigID error: %w", err)
 }
 
 // ----------------------------------------------------------------------------

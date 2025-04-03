@@ -114,11 +114,7 @@ func (client *Szengine) AddRecord(
 		}()
 	}
 
-	if err != nil {
-		return "", fmt.Errorf("szengine.AddRecord error: %w", err)
-	}
-
-	return result, nil
+	return result, helper.Errorf(err, "szengine.AddRecord error: %w", err)
 }
 
 /*
@@ -128,9 +124,7 @@ It is part of the ExportXxxEntityReport(), [Szengine.FetchNext], CloseExport lif
 CloseExport is idempotent; an exportHandle may be closed multiple times.
 
 Input
-
   - ctx: A context to control lifecycle.
-
   - exportHandle: A handle created by [Szengine.ExportJSONEntityReport] or [Szengine.ExportCsvEntityReport]
     that is to be closed.
 */
@@ -153,11 +147,7 @@ func (client *Szengine) CloseExport(ctx context.Context, exportHandle uintptr) e
 		}()
 	}
 
-	if err != nil {
-		return fmt.Errorf("szengine.CloseExport error: %w", err)
-	}
-
-	return nil
+	return helper.Errorf(err, "szengine.CloseExport error: %w", err)
 }
 
 /*
@@ -192,11 +182,7 @@ func (client *Szengine) CountRedoRecords(ctx context.Context) (int64, error) {
 		}()
 	}
 
-	if err != nil {
-		return 0, fmt.Errorf("szengine.CountRedoRecords error: %w", err)
-	}
-
-	return result, nil
+	return result, helper.Errorf(err, "szengine.CountRedoRecords error: %w", err)
 }
 
 /*
@@ -250,11 +236,7 @@ func (client *Szengine) DeleteRecord(
 		}()
 	}
 
-	if err != nil {
-		return "", fmt.Errorf("szengine.DeleteRecord error: %w", err)
-	}
-
-	return result, nil
+	return result, helper.Errorf(err, "szengine.DeleteRecord error: %w", err)
 }
 
 /*
@@ -265,12 +247,9 @@ The first exported line is the CSV header.
 Each subsequent line contains metadata for a single entity.
 
 Input
-
   - ctx: A context to control lifecycle.
-
   - csvColumnList: Use `*` to request all columns, an empty string to request "standard" columns,
     or a comma-separated list of column names for customized columns.
-
   - flags: Flags used to control information returned.
 
 Output
@@ -298,11 +277,7 @@ func (client *Szengine) ExportCsvEntityReport(ctx context.Context, csvColumnList
 		}()
 	}
 
-	if err != nil {
-		return 0, fmt.Errorf("szengine.ExportCsvEntityReport error: %w", err)
-	}
-
-	return result, nil
+	return result, helper.Errorf(err, "szengine.ExportCsvEntityReport error: %w", err)
 }
 
 /*
@@ -312,12 +287,9 @@ It is a convenience method for the [Szenzine.ExportCsvEntityReport], [Szengine.F
 lifecycle of a list of entities to export.
 
 Input
-
   - ctx: A context to control lifecycle.
-
   - csvColumnList: Use `*` to request all columns, an empty string to request "standard" columns,
     or a comma-separated list of column names for customized columns.
-
   - flags: Flags used to control information returned.
 
 Output
@@ -407,11 +379,7 @@ func (client *Szengine) ExportJSONEntityReport(ctx context.Context, flags int64)
 		}()
 	}
 
-	if err != nil {
-		return 0, fmt.Errorf("szengine.ExportJSONEntityReport error: %w", err)
-	}
-
-	return result, nil
+	return result, helper.Errorf(err, "szengine.ExportJSONEntityReport error: %w", err)
 }
 
 /*
@@ -507,11 +475,7 @@ func (client *Szengine) FetchNext(ctx context.Context, exportHandle uintptr) (st
 		}()
 	}
 
-	if err != nil {
-		return "", fmt.Errorf("szengine.FetchNext error: %w", err)
-	}
-
-	return result, nil
+	return result, helper.Errorf(err, "szengine.FetchNext error: %w", err)
 }
 
 /*
@@ -554,11 +518,7 @@ func (client *Szengine) FindInterestingEntitiesByEntityID(
 		}()
 	}
 
-	if err != nil {
-		return "", fmt.Errorf("szengine.FindInterestingEntitiesByEntityID error: %w", err)
-	}
-
-	return result, nil
+	return result, helper.Errorf(err, "szengine.FindInterestingEntitiesByEntityID error: %w", err)
 }
 
 /*
@@ -606,11 +566,7 @@ func (client *Szengine) FindInterestingEntitiesByRecordID(
 		}()
 	}
 
-	if err != nil {
-		return "", fmt.Errorf("szengine.FindInterestingEntitiesByRecordID error: %w", err)
-	}
-
-	return result, nil
+	return result, helper.Errorf(err, "szengine.FindInterestingEntitiesByRecordID error: %w", err)
 }
 
 /*
@@ -619,19 +575,13 @@ This includes the requested entities, paths between them, and relations to other
 The size and character of the returned network can be modified by input parameters.
 
 Input
-
   - ctx: A context to control lifecycle.
-
   - entityIDs: A JSON document listing entities.
     Example: `{"ENTITIES": [{"ENTITY_ID": 1}, {"ENTITY_ID": 2}, {"ENTITY_ID": 3}]}`
-
   - maxDegrees: The maximum number of degrees in paths between entityIDs.
-
   - buildOutDegrees: The number of degrees of relationships to show around each search entity. Zero (0)
     prevents buildout.
-
   - buildOutMaxEntities: The maximum number of entities to build out in the returned network.
-
   - flags: Flags used to control information returned.
 
 Output
@@ -687,11 +637,7 @@ func (client *Szengine) FindNetworkByEntityID(
 		}()
 	}
 
-	if err != nil {
-		return "", fmt.Errorf("szengine.FindNetworkByEntityID error: %w", err)
-	}
-
-	return result, nil
+	return result, helper.Errorf(err, "szengine.FindNetworkByEntityID error: %w", err)
 }
 
 /*
@@ -701,19 +647,13 @@ This includes the requested entities, paths between them, and relations to other
 The size and character of the returned network can be modified by input parameters.
 
 Input
-
   - ctx: A context to control lifecycle.
-
   - recordKeys: A JSON document listing records.
     Example: `{"RECORDS": [{"DATA_SOURCE": "CUSTOMERS", "RECORD_ID": "1001"}]}`
-
   - maxDegrees: The maximum number of degrees in paths between entities identified by the recordKeys.
-
   - buildOutDegrees: The number of degrees of relationships to show around each search entity.
     Zero (0) prevents buildout.
-
   - buildOutMaxEntities: The maximum number of entities to build out in the returned network.
-
   - flags: Flags used to control information returned.
 
 Output
@@ -769,11 +709,7 @@ func (client *Szengine) FindNetworkByRecordID(
 		}()
 	}
 
-	if err != nil {
-		return "", fmt.Errorf("szengine.FindNetworkByRecordID error: %w", err)
-	}
-
-	return result, nil
+	return result, helper.Errorf(err, "szengine.FindNetworkByRecordID error: %w", err)
 }
 
 /*
@@ -840,11 +776,7 @@ func (client *Szengine) FindPathByEntityID(
 		}()
 	}
 
-	if err != nil {
-		return "", fmt.Errorf("szengine.FindPathByEntityID error: %w", err)
-	}
-
-	return result, nil
+	return result, helper.Errorf(err, "szengine.FindPathByEntityID error: %w", err)
 }
 
 /*
@@ -853,36 +785,26 @@ Paths are found using known relationships with other entities.
 The path can be modified by input parameters.
 
 Input
-
   - ctx: A context to control lifecycle.
-
   - startDataSourceCode: Identifies the provenance of the record for the starting
     entity of the search path.
-
   - startRecordID: The unique identifier within the records of the same data source
     for the starting entity of the search path.
-
   - endDataSourceCode: Identifies the provenance of the record for the ending entity
     of the search path.
-
   - endRecordID: The unique identifier within the records of the same data source for
     the ending entity of the search path.
-
   - maxDegrees: The maximum number of degrees in paths between search entities.
-
   - avoidRecordKeys: A JSON document listing entities that should be avoided on the path.
     An empty string disables this capability.
-
     Example: `{"RECORDS": [
     {"DATA_SOURCE": "MY_DATASOURCE", "RECORD_ID": "1"},
     {"DATA_SOURCE": "MY_DATASOURCE", "RECORD_ID": "2"},
     {"DATA_SOURCE": "MY_DATASOURCE", "RECORD_ID": "3"}
     ]}`
-
   - requiredDataSources: A JSON document listing data sources that should be included on the path.
     An empty string disables this capability.
     Example: `{"DATA_SOURCES": ["MY_DATASOURCE_1", "MY_DATASOURCE_2", "MY_DATASOURCE_3"]}`
-
   - flags: Flags used to control information returned.
 
 Output
@@ -936,11 +858,7 @@ func (client *Szengine) FindPathByRecordID(ctx context.Context, startDataSourceC
 		}()
 	}
 
-	if err != nil {
-		return "", fmt.Errorf("szengine.FindPathByRecordID error: %w", err)
-	}
-
-	return result, nil
+	return result, helper.Errorf(err, "szengine.FindPathByRecordID error: %w", err)
 }
 
 /*
@@ -974,11 +892,7 @@ func (client *Szengine) GetActiveConfigID(ctx context.Context) (int64, error) {
 		}()
 	}
 
-	if err != nil {
-		return 0, fmt.Errorf("szengine.GetActiveConfigID error: %w", err)
-	}
-
-	return result, nil
+	return result, helper.Errorf(err, "szengine.GetActiveConfigID error: %w", err)
 }
 
 /*
@@ -1017,11 +931,7 @@ func (client *Szengine) GetEntityByEntityID(ctx context.Context, entityID int64,
 		}()
 	}
 
-	if err != nil {
-		return "", fmt.Errorf("szengine.GetEntityByEntityID error: %w", err)
-	}
-
-	return result, nil
+	return result, helper.Errorf(err, "szengine.GetEntityByEntityID error: %w", err)
 }
 
 /*
@@ -1068,11 +978,7 @@ func (client *Szengine) GetEntityByRecordID(
 		}()
 	}
 
-	if err != nil {
-		return "", fmt.Errorf("szengine.GetEntityByRecordID error: %w", err)
-	}
-
-	return result, nil
+	return result, helper.Errorf(err, "szengine.GetEntityByRecordID error: %w", err)
 }
 
 /*
@@ -1118,11 +1024,7 @@ func (client *Szengine) GetRecord(
 		}()
 	}
 
-	if err != nil {
-		return "", fmt.Errorf("szengine.GetRecord error: %w", err)
-	}
-
-	return result, nil
+	return result, helper.Errorf(err, "szengine.GetRecord error: %w", err)
 }
 
 /*
@@ -1157,11 +1059,7 @@ func (client *Szengine) GetRedoRecord(ctx context.Context) (string, error) {
 		}()
 	}
 
-	if err != nil {
-		return "", fmt.Errorf("szengine.GetRedoRecord error: %w", err)
-	}
-
-	return result, nil
+	return result, helper.Errorf(err, "szengine.GetRedoRecord error: %w", err)
 }
 
 /*
@@ -1196,11 +1094,7 @@ func (client *Szengine) GetStats(ctx context.Context) (string, error) {
 		}()
 	}
 
-	if err != nil {
-		return "", fmt.Errorf("szengine.GetStats error: %w", err)
-	}
-
-	return result, nil
+	return result, helper.Errorf(err, "szengine.GetStats error: %w", err)
 }
 
 /*
@@ -1241,11 +1135,7 @@ func (client *Szengine) GetVirtualEntityByRecordID(
 		}()
 	}
 
-	if err != nil {
-		return "", fmt.Errorf("szengine.GetVirtualEntityByRecordID error: %w", err)
-	}
-
-	return result, nil
+	return result, helper.Errorf(err, "szengine.GetVirtualEntityByRecordID error: %w", err)
 }
 
 /*
@@ -1283,11 +1173,7 @@ func (client *Szengine) HowEntityByEntityID(ctx context.Context, entityID int64,
 		}()
 	}
 
-	if err != nil {
-		return "", fmt.Errorf("szengine.HowEntityByEntityID error: %w", err)
-	}
-
-	return result, nil
+	return result, helper.Errorf(err, "szengine.HowEntityByEntityID error: %w", err)
 }
 
 /*
@@ -1325,11 +1211,7 @@ func (client *Szengine) PreprocessRecord(ctx context.Context, recordDefinition s
 		}()
 	}
 
-	if err != nil {
-		return "", fmt.Errorf("szengine.PreprocessRecord error: %w", err)
-	}
-
-	return result, nil
+	return result, helper.Errorf(err, "szengine.PreprocessRecord error: %w", err)
 }
 
 /*
@@ -1357,11 +1239,7 @@ func (client *Szengine) PrimeEngine(ctx context.Context) error {
 		}()
 	}
 
-	if err != nil {
-		return fmt.Errorf("szengine.PrimeEngine error: %w", err)
-	}
-
-	return nil
+	return helper.Errorf(err, "szengine.PrimeEngine error: %w", err)
 }
 
 /*
@@ -1400,11 +1278,7 @@ func (client *Szengine) ProcessRedoRecord(ctx context.Context, redoRecord string
 		}()
 	}
 
-	if err != nil {
-		return "", fmt.Errorf("szengine.ProcessRedoRecord error: %w", err)
-	}
-
-	return result, nil
+	return result, helper.Errorf(err, "szengine.ProcessRedoRecord error: %w", err)
 }
 
 /*
@@ -1447,11 +1321,7 @@ func (client *Szengine) ReevaluateEntity(ctx context.Context, entityID int64, fl
 		}()
 	}
 
-	if err != nil {
-		return "", fmt.Errorf("szengine.ReevaluateEntity error: %w", err)
-	}
-
-	return result, nil
+	return result, helper.Errorf(err, "szengine.ReevaluateEntity error: %w", err)
 }
 
 /*
@@ -1500,11 +1370,7 @@ func (client *Szengine) ReevaluateRecord(
 		}()
 	}
 
-	if err != nil {
-		return "", fmt.Errorf("szengine.ReevaluateRecord error: %w", err)
-	}
-
-	return result, nil
+	return result, helper.Errorf(err, "szengine.ReevaluateRecord error: %w", err)
 }
 
 /*
@@ -1552,11 +1418,7 @@ func (client *Szengine) SearchByAttributes(
 		}()
 	}
 
-	if err != nil {
-		return "", fmt.Errorf("szengine.SearchByAttributes error: %w", err)
-	}
-
-	return result, nil
+	return result, helper.Errorf(err, "szengine.SearchByAttributes error: %w", err)
 }
 
 /*
@@ -1601,11 +1463,7 @@ func (client *Szengine) WhyEntities(
 		}()
 	}
 
-	if err != nil {
-		return "", fmt.Errorf("szengine.WhyEntities error: %w", err)
-	}
-
-	return result, nil
+	return result, helper.Errorf(err, "szengine.WhyEntities error: %w", err)
 }
 
 /*
@@ -1649,11 +1507,7 @@ func (client *Szengine) WhyRecordInEntity(
 		}()
 	}
 
-	if err != nil {
-		return "", fmt.Errorf("szengine.WhyRecordInEntity error: %w", err)
-	}
-
-	return result, nil
+	return result, helper.Errorf(err, "szengine.WhyRecordInEntity error: %w", err)
 }
 
 /*
@@ -1715,11 +1569,7 @@ func (client *Szengine) WhyRecords(
 		}()
 	}
 
-	if err != nil {
-		return "", fmt.Errorf("szengine.WhyRecords error: %w", err)
-	}
-
-	return result, nil
+	return result, helper.Errorf(err, "szengine.WhyRecords error: %w", err)
 }
 
 // ----------------------------------------------------------------------------
@@ -1752,11 +1602,7 @@ func (client *Szengine) Destroy(ctx context.Context) error {
 		}()
 	}
 
-	if err != nil {
-		return fmt.Errorf("szengine.Destroy error: %w", err)
-	}
-
-	return nil
+	return helper.Errorf(err, "szengine.Destroy error: %w", err)
 }
 
 /*
@@ -1819,11 +1665,7 @@ func (client *Szengine) Initialize(
 		}()
 	}
 
-	if err != nil {
-		return fmt.Errorf("szengine.Initialize error: %w", err)
-	}
-
-	return nil
+	return helper.Errorf(err, "szengine.Initialize error: %w", err)
 }
 
 /*
@@ -1858,11 +1700,7 @@ func (client *Szengine) RegisterObserver(ctx context.Context, observer observer.
 		}()
 	}
 
-	if err != nil {
-		return fmt.Errorf("szengine.RegisterObserver error: %w", err)
-	}
-
-	return nil
+	return helper.Errorf(err, "szengine.RegisterObserver error: %w", err)
 }
 
 /*
@@ -1893,11 +1731,7 @@ func (client *Szengine) Reinitialize(ctx context.Context, configID int64) error 
 		}()
 	}
 
-	if err != nil {
-		return fmt.Errorf("szengine.Reinitialize error: %w", err)
-	}
-
-	return nil
+	return helper.Errorf(err, "szengine.Reinitialize error: %w", err)
 }
 
 /*
@@ -1933,11 +1767,7 @@ func (client *Szengine) SetLogLevel(ctx context.Context, logLevelName string) er
 		}()
 	}
 
-	if err != nil {
-		return fmt.Errorf("szengine.SetLogLevel error: %w", err)
-	}
-
-	return nil
+	return helper.Errorf(err, "szengine.SetLogLevel error: %w", err)
 }
 
 /*
@@ -1985,11 +1815,7 @@ func (client *Szengine) UnregisterObserver(ctx context.Context, observer observe
 		}
 	}
 
-	if err != nil {
-		return fmt.Errorf("szengine.UnregisterObserver error: %w", err)
-	}
-
-	return nil
+	return helper.Errorf(err, "szengine.UnregisterObserver error: %w", err)
 }
 
 // ----------------------------------------------------------------------------
@@ -2783,27 +2609,18 @@ using the same methodology as the FindPathExcludingByEntityID_V2() and FindPathE
 It extends FindPathIncludingSourceByRecordID() by adding output control flags.
 
 Input
-
   - ctx: A context to control lifecycle.
-
   - startDataSourceCode: Identifies the provenance of the record for the starting entity
     of the search path.
-
   - startRecordID: The unique identifier within the records of the same data source for
     the starting entity of the search path.
-
   - endDataSourceCode: Identifies the provenance of the record for the ending entity of
     the search path.
-
   - endRecordID: The unique identifier within the records of the same data source for the
     ending entity of the search path.
-
   - maxDegrees: The maximum number of degrees in paths between search entities.
-
   - avoidedRecords: A JSON document listing records that should be avoided on the path.
-
   - requiredDataSources: A JSON document listing data sources that should be included on the path.
-
   - flags: Flags used to control information returned.
 
 Output
@@ -3677,7 +3494,7 @@ func (client *Szengine) fetchNextIntoChannel(
 			} //exhaustruct:ignore
 			stringFragmentChannel <- fragment
 
-			break
+			return
 		default:
 			entityReportFragment, err := client.FetchNext(ctx, reportHandle)
 			if err != nil {
@@ -3686,11 +3503,11 @@ func (client *Szengine) fetchNextIntoChannel(
 				} //exhaustruct:ignore
 				stringFragmentChannel <- fragment
 
-				break
+				return
 			}
 
 			if len(entityReportFragment) == 0 {
-				break
+				return
 			}
 
 			fragment := senzing.StringFragment{

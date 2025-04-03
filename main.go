@@ -14,6 +14,7 @@ import (
 	"github.com/senzing-garage/go-helpers/settings"
 	"github.com/senzing-garage/go-helpers/truthset"
 	"github.com/senzing-garage/go-logging/logging"
+	"github.com/senzing-garage/sz-sdk-go-core/helper"
 	"github.com/senzing-garage/sz-sdk-go-core/szabstractfactory"
 	"github.com/senzing-garage/sz-sdk-go/senzing"
 )
@@ -111,11 +112,7 @@ func demonstrateAddRecord(ctx context.Context, szEngine senzing.SzEngine) (strin
 
 	result, err = szEngine.AddRecord(ctx, dataSourceCode, recordID, jsonData, flags)
 
-	if err != nil {
-		return "", fmt.Errorf("demonstrateAddRecord error: %w", err)
-	}
-
-	return result, nil
+	return result, helper.Errorf(err, "demonstrateAddRecord error: %w", err)
 }
 
 func demonstrateConfigFunctions(ctx context.Context, szAbstractFactory senzing.SzAbstractFactory) {
@@ -203,21 +200,14 @@ func copyDatabase() (string, error) {
 
 	databaseTemplatePath, err := filepath.Abs(getDatabaseTemplatePath())
 	if err != nil {
-		return result, fmt.Errorf(
-			"failed to obtain absolute path to database file (%s): %w",
-			databaseTemplatePath,
-			err,
-		)
+		return result, fmt.Errorf("failed to obtain absolute path to database file (%s): %w",
+			databaseTemplatePath, err)
 	}
 
 	_, _, err = fileutil.CopyFile(databaseTemplatePath, testDirectoryPath, true) // Copy the SQLite database file.
 	if err != nil {
-		return result, fmt.Errorf(
-			"setup failed to copy template database (%v) to target path (%v): %w",
-			databaseTemplatePath,
-			testDirectoryPath,
-			err,
-		)
+		return result, fmt.Errorf("setup failed to copy template database (%v) to target path (%v): %w",
+			databaseTemplatePath, testDirectoryPath, err)
 	}
 
 	return result, nil
@@ -238,22 +228,14 @@ func getLogger(ctx context.Context) (logging.Logging, error) {
 	_ = ctx
 	result, err := logging.NewSenzingLogger(9999, Messages)
 
-	if err != nil {
-		return nil, fmt.Errorf("getLogger error: %w", err)
-	}
-
-	return result, nil
+	return result, helper.Errorf(err, "getLogger error: %w", err)
 }
 
 func getSettings(databaseURL string) (string, error) {
 	configAttrMap := map[string]string{"databaseUrl": databaseURL}
-
 	result, err := settings.BuildSimpleSettingsUsingMap(configAttrMap)
-	if err != nil {
-		return result, fmt.Errorf("getSettings error: %w", err)
-	}
 
-	return result, nil
+	return result, helper.Errorf(err, "getSettings error: %w", err)
 }
 
 func getTestDirectoryPath() string {

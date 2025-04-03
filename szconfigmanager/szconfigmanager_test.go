@@ -92,6 +92,28 @@ func TestSzconfigmanager_CreateConfigFromConfigID_nilConfigID(test *testing.T) {
 	assert.Nil(test, actual)
 }
 
+func TestSzconfigmanager_CreateConfigFromString(test *testing.T) {
+	ctx := test.Context()
+	szConfigManager := getTestObject(test)
+	szConfig, err := szConfigManager.CreateConfigFromTemplate(ctx)
+	require.NoError(test, err)
+	configDefinition, err := szConfig.Export(ctx)
+	require.NoError(test, err)
+	szConfig2, err := szConfigManager.CreateConfigFromString(ctx, configDefinition)
+	require.NoError(test, err)
+	configDefinition2, err := szConfig2.Export(ctx)
+	require.NoError(test, err)
+	assert.JSONEq(test, configDefinition, configDefinition2)
+}
+
+func TestSzconfigmanager_CreateConfigFromTemplate(test *testing.T) {
+	ctx := test.Context()
+	szConfigManager := getTestObject(test)
+	actual, err := szConfigManager.CreateConfigFromTemplate(ctx)
+	require.NoError(test, err)
+	assert.NotEmpty(test, actual)
+}
+
 func TestSzconfigmanager_GetConfigs(test *testing.T) {
 	ctx := test.Context()
 	szConfigManager := getTestObject(test)
@@ -206,6 +228,25 @@ func TestSzconfigmanager_ReplaceDefaultConfigID_nilNewDefaultConfigID(test *test
 	handleErrorWithPanic(err)
 	err = szConfigManager.ReplaceDefaultConfigID(ctx, currentDefaultConfigID, nilNewDefaultConfigID)
 	require.ErrorIs(test, err, szerror.ErrSzConfiguration)
+}
+
+func TestSzconfigmanager_SetDefaultConfig(test *testing.T) {
+	ctx := test.Context()
+	now := time.Now()
+	szConfigManager := getTestObject(test)
+	defaultConfigID, err := szConfigManager.GetDefaultConfigID(ctx)
+	require.NoError(test, err)
+	szConfig, err := szConfigManager.CreateConfigFromConfigID(ctx, defaultConfigID)
+	require.NoError(test, err)
+
+	dataSourceCode := "GO_TEST_" + strconv.FormatInt(now.Unix(), baseTen)
+	_, err = szConfig.AddDataSource(ctx, dataSourceCode)
+	require.NoError(test, err)
+	configDefintion, err := szConfig.Export(ctx)
+	require.NoError(test, err)
+	configID, err := szConfigManager.SetDefaultConfig(ctx, configDefintion, "Added "+dataSourceCode)
+	require.NoError(test, err)
+	require.NotZero(test, configID)
 }
 
 func TestSzconfigmanager_SetDefaultConfigID(test *testing.T) {

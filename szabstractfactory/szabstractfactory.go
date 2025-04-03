@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/senzing-garage/sz-sdk-go-core/szconfig"
+	"github.com/senzing-garage/sz-sdk-go-core/helper"
 	"github.com/senzing-garage/sz-sdk-go-core/szconfigmanager"
 	"github.com/senzing-garage/sz-sdk-go-core/szdiagnostic"
 	"github.com/senzing-garage/sz-sdk-go-core/szengine"
@@ -22,7 +22,6 @@ type Szabstractfactory struct {
 	InstanceName                 string
 	Settings                     string
 	VerboseLogging               int64
-	isSzconfigInitialized        bool
 	isSzconfigmanagerInitialized bool
 	isSzdiagnosticInitialized    bool
 	isSzengineInitialized        bool
@@ -55,11 +54,7 @@ func (factory *Szabstractfactory) CreateConfigManager(ctx context.Context) (senz
 		}
 	}
 
-	if err != nil {
-		return nil, fmt.Errorf("szabstractfactory.CreateConfigManager error: %w", err)
-	}
-
-	return result, nil
+	return result, helper.Errorf(err, "szabstractfactory.CreateConfigManager  error: %w", err)
 }
 
 /*
@@ -84,11 +79,7 @@ func (factory *Szabstractfactory) CreateDiagnostic(ctx context.Context) (senzing
 		}
 	}
 
-	if err != nil {
-		return nil, fmt.Errorf("szabstractfactory.CreateDiagnostic error: %w", err)
-	}
-
-	return result, nil
+	return result, helper.Errorf(err, "szabstractfactory.CreateDiagnostic  error: %w", err)
 }
 
 /*
@@ -113,11 +104,7 @@ func (factory *Szabstractfactory) CreateEngine(ctx context.Context) (senzing.SzE
 		}
 	}
 
-	if err != nil {
-		return nil, fmt.Errorf("szabstractfactory.CreateEngine error: %w", err)
-	}
-
-	return result, nil
+	return result, helper.Errorf(err, "szabstractfactory.CreateEngine  error: %w", err)
 }
 
 /*
@@ -142,11 +129,7 @@ func (factory *Szabstractfactory) CreateProduct(ctx context.Context) (senzing.Sz
 		}
 	}
 
-	if err != nil {
-		return nil, fmt.Errorf("szabstractfactory.CreateProduct error: %w", err)
-	}
-
-	return result, nil
+	return result, helper.Errorf(err, "szabstractfactory.CreateProduct  error: %w", err)
 }
 
 /*
@@ -158,11 +141,6 @@ Input
 */
 func (factory *Szabstractfactory) Destroy(ctx context.Context) error {
 	var err error
-
-	err = factory.destroySzConfig(ctx)
-	if err != nil {
-		return fmt.Errorf("szabstractfactory.Destroy error: %w", err)
-	}
 
 	err = factory.destroySzConfigmanager(ctx)
 	if err != nil {
@@ -217,33 +195,12 @@ func (factory *Szabstractfactory) Reinitialize(ctx context.Context, configID int
 		}
 	}
 
-	if err != nil {
-		return fmt.Errorf("szabstractfactory.Reinitialize error: %w", err)
-	}
-
-	return nil
+	return helper.Errorf(err, "szabstractfactory.Reinitialize  error: %w", err)
 }
 
 // ----------------------------------------------------------------------------
 // Private methods
 // ----------------------------------------------------------------------------
-
-func (factory *Szabstractfactory) destroySzConfig(ctx context.Context) error {
-	var err error
-
-	if factory.isSzconfigInitialized {
-		szConfig := &szconfig.Szconfig{}
-
-		err = szConfig.Destroy(ctx)
-		if err != nil {
-			return fmt.Errorf("szConfig.Destroy error: %w", err)
-		}
-
-		factory.isSzconfigInitialized = false
-	}
-
-	return nil
-}
 
 func (factory *Szabstractfactory) destroySzConfigmanager(ctx context.Context) error {
 	var err error

@@ -366,42 +366,41 @@ func TestSzengine_DeleteRecord_withInfo_badDataSourceCode_fix(test *testing.T) {
 	deleteRecords(ctx, records)
 }
 
-// func TestSzengine_ExportCsvEntityReport(test *testing.T) {
-// 	ctx := test.Context()
-// 	records := []record.Record{
-// 		truthset.CustomerRecords["1001"],
-// 		truthset.CustomerRecords["1002"],
-// 		truthset.CustomerRecords["1003"],
-// 	}
+func TestSzengine_ExportCsvEntityReport(test *testing.T) {
+	ctx := test.Context()
+	records := []record.Record{
+		truthset.CustomerRecords["1001"],
+		truthset.CustomerRecords["1002"],
+		truthset.CustomerRecords["1003"],
+	}
 
-// defer func() { deleteRecords(ctx, records) }()
+	defer func() { deleteRecords(ctx, records) }()
 
-// 	addRecords(ctx, records)
-// 	require.NoError(test, err)
+	addRecords(ctx, records)
 
-// 	expected := expectedExportCsvEntityReport
-// 	szEngine := getTestObject(test)
-// 	csvColumnList := ""
-// 	flags := senzing.SzExportIncludeAllEntities
-// 	exportHandle, err := szEngine.ExportCsvEntityReport(ctx, csvColumnList, flags)
+	expected := expectedExportCsvEntityReport
+	szEngine := getTestObject(test)
+	csvColumnList := ""
+	flags := senzing.SzExportIncludeAllEntities
+	exportHandle, err := szEngine.ExportCsvEntityReport(ctx, csvColumnList, flags)
 
-// 	defer func() {
-// 		err := szEngine.CloseExport(ctx, exportHandle)
-// 		require.NoError(test, err)
-// 	}()
+	defer func() {
+		err := szEngine.CloseExport(ctx, exportHandle)
+		require.NoError(test, err)
+	}()
 
-// 	require.NoError(test, err)
+	require.NoError(test, err)
 
-// 	actualCount := 0
+	actualCount := 0
 
-// 	for actual := range szEngine.ExportCsvEntityReportIterator(ctx, csvColumnList, flags) {
-// 		assert.Equal(test, expected[actualCount], strings.TrimSpace(actual.Value))
+	for actual := range szEngine.ExportCsvEntityReportIterator(ctx, csvColumnList, flags) {
+		assert.Equal(test, expected[actualCount], strings.TrimSpace(actual.Value))
 
-// 		actualCount++
-// 	}
+		actualCount++
+	}
 
-// 	assert.Equal(test, len(expected), actualCount)
-// }
+	assert.Equal(test, len(expected), actualCount)
+}
 
 func TestSzengine_ExportCsvEntityReport_badCsvColumnList(test *testing.T) {
 	ctx := test.Context()
@@ -447,34 +446,33 @@ func TestSzengine_ExportCsvEntityReport_nilCsvColumnList(test *testing.T) {
 	require.NoError(test, err)
 }
 
-// func TestSzengine_ExportCsvEntityReportIterator(test *testing.T) {
-// 	ctx := test.Context()
-// 	records := []record.Record{
-// 		truthset.CustomerRecords["1001"],
-// 		truthset.CustomerRecords["1002"],
-// 		truthset.CustomerRecords["1003"],
-// 	}
+func TestSzengine_ExportCsvEntityReportIterator(test *testing.T) {
+	ctx := test.Context()
+	records := []record.Record{
+		truthset.CustomerRecords["1001"],
+		truthset.CustomerRecords["1002"],
+		truthset.CustomerRecords["1003"],
+	}
 
-// defer func() { deleteRecords(ctx, records) }()
+	defer func() { deleteRecords(ctx, records) }()
 
-// 	addRecords(ctx, records)
-// 	require.NoError(test, err)
+	addRecords(ctx, records)
 
-// 	expected := expectedExportCsvEntityReportIterator
-// 	szEngine := getTestObject(test)
-// 	csvColumnList := ""
-// 	flags := senzing.SzExportIncludeAllEntities
-// 	actualCount := 0
+	expected := expectedExportCsvEntityReportIterator
+	szEngine := getTestObject(test)
+	csvColumnList := ""
+	flags := senzing.SzExportIncludeAllEntities
+	actualCount := 0
 
-// 	for actual := range szEngine.ExportCsvEntityReportIterator(ctx, csvColumnList, flags) {
-// 		require.NoError(test, actual.Error)
-// 		assert.Equal(test, expected[actualCount], strings.TrimSpace(actual.Value))
+	for actual := range szEngine.ExportCsvEntityReportIterator(ctx, csvColumnList, flags) {
+		require.NoError(test, actual.Error)
+		assert.Equal(test, expected[actualCount], strings.TrimSpace(actual.Value))
 
-// 		actualCount++
-// 	}
+		actualCount++
+	}
 
-// 	assert.Equal(test, len(expected), actualCount)
-// }
+	assert.Equal(test, len(expected), actualCount)
+}
 
 func TestSzengine_ExportCsvEntityReportIterator_badCsvColumnList(test *testing.T) {
 	ctx := test.Context()
@@ -505,33 +503,31 @@ func TestSzengine_ExportCsvEntityReportIterator_badCsvColumnList(test *testing.T
 	assert.Equal(test, len(expected), actualCount)
 }
 
-// func TestSzengine_ExportCsvEntityReportIterator_nilCsvColumnList(test *testing.T) {
-// 	ctx := test.Context()
-// 	records := []record.Record{
-// 		truthset.CustomerRecords["1001"],
-// 		truthset.CustomerRecords["1002"],
-// 		truthset.CustomerRecords["1003"],
-// 	}
+func TestSzengine_ExportCsvEntityReportIterator_nilCsvColumnList(test *testing.T) {
+	ctx := test.Context()
+	records := []record.Record{
+		truthset.CustomerRecords["1001"],
+		truthset.CustomerRecords["1002"],
+		truthset.CustomerRecords["1003"],
+	}
 
-// defer func() { deleteRecords(ctx, records) }()
+	defer func() { deleteRecords(ctx, records) }()
 
-// 	addRecords(ctx, records)
-// 	require.NoError(test, err)
+	addRecords(ctx, records)
 
-// 	expected := expectedExportCsvEntityReportIteratorNilCsvColumnList
-// 	szEngine := getTestObject(test)
-// 	flags := senzing.SzExportIncludeAllEntities
-// 	actualCount := 0
+	expected := expectedExportCsvEntityReportIteratorNilCsvColumnList
+	szEngine := getTestObject(test)
+	flags := senzing.SzExportIncludeAllEntities
+	actualCount := 0
 
-// 	for actual := range szEngine.ExportCsvEntityReportIterator(ctx, nilCsvColumnList, flags) {
-// 		require.NoError(test, err)
-// 		assert.Equal(test, expected[actualCount], strings.TrimSpace(actual.Value))
+	for actual := range szEngine.ExportCsvEntityReportIterator(ctx, nilCsvColumnList, flags) {
+		assert.Equal(test, expected[actualCount], strings.TrimSpace(actual.Value))
 
-// 		actualCount++
-// 	}
+		actualCount++
+	}
 
-// 	assert.Equal(test, len(expected), actualCount)
-// }
+	assert.Equal(test, len(expected), actualCount)
+}
 
 func TestSzengine_ExportJSONEntityReport(test *testing.T) {
 	ctx := test.Context()
@@ -626,33 +622,32 @@ func TestSzengine_ExportJSONEntityReport_65536(test *testing.T) {
 // TODO: Implement TestSzengine_ExportJSONEntityReport_error
 // func TestSzengine_ExportJSONEntityReport_error(test *testing.T) {}
 
-// func TestSzengine_ExportJSONEntityReportIterator(test *testing.T) {
-// 	ctx := test.Context()
-// 	records := []record.Record{
-// 		truthset.CustomerRecords["1001"],
-// 		truthset.CustomerRecords["1002"],
-// 		truthset.CustomerRecords["1003"],
-// 	}
+func TestSzengine_ExportJSONEntityReportIterator(test *testing.T) {
+	ctx := test.Context()
+	records := []record.Record{
+		truthset.CustomerRecords["1001"],
+		truthset.CustomerRecords["1002"],
+		truthset.CustomerRecords["1003"],
+	}
 
-// defer func() { deleteRecords(ctx, records) }()
+	defer func() { deleteRecords(ctx, records) }()
 
-// 	addRecords(ctx, records)
-// 	require.NoError(test, err)
+	addRecords(ctx, records)
 
-// 	expected := 1
-// 	szEngine := getTestObject(test)
-// 	flags := senzing.SzExportIncludeAllEntities
-// 	actualCount := 0
+	expected := 1
+	szEngine := getTestObject(test)
+	flags := senzing.SzExportIncludeAllEntities
+	actualCount := 0
 
-// 	for actual := range szEngine.ExportJSONEntityReportIterator(ctx, flags) {
-// 		require.NoError(test, actual.Error)
-// 		printActual(test, actual.Value)
+	for actual := range szEngine.ExportJSONEntityReportIterator(ctx, flags) {
+		require.NoError(test, actual.Error)
+		printActual(test, actual.Value)
 
-// 		actualCount++
-// 	}
+		actualCount++
+	}
 
-// 	assert.Equal(test, expected, actualCount)
-// }
+	assert.Equal(test, expected, actualCount)
+}
 
 func TestSzengine_FetchNext(test *testing.T) {
 	// Tested in:

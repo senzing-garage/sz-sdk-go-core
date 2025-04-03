@@ -238,7 +238,6 @@ func (client *Szconfig) Destroy(ctx context.Context) error {
 	}
 
 	return helper.Errorf(err, "szconfig.Destroy error: %w", err)
-
 }
 
 /*

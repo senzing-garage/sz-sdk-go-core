@@ -245,6 +245,7 @@ func setupDirectories() {
 func setupSenzingConfiguration() error {
 	ctx := context.TODO()
 	now := time.Now()
+
 	settings := getSettings()
 
 	// Create sz objects.

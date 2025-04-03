@@ -91,11 +91,7 @@ func (client *Szdiagnostic) CheckDatastorePerformance(ctx context.Context, secon
 		}()
 	}
 
-	if err != nil {
-		return "", fmt.Errorf("szdiagnostic.CheckDatastorePerformance error: %w", err)
-	}
-
-	return result, nil
+	return result, helper.Errorf(err, "szdiagnostic.CheckDatastorePerformance error: %w", err)
 }
 
 /*
@@ -130,11 +126,7 @@ func (client *Szdiagnostic) GetDatastoreInfo(ctx context.Context) (string, error
 		}()
 	}
 
-	if err != nil {
-		return "", fmt.Errorf("szdiagnostic.GetDatastoreInfo error: %w", err)
-	}
-
-	return result, nil
+	return result, helper.Errorf(err, "szdiagnostic.GetDatastoreInfo error: %w", err)
 }
 
 /*
@@ -173,11 +165,7 @@ func (client *Szdiagnostic) GetFeature(ctx context.Context, featureID int64) (st
 		}()
 	}
 
-	if err != nil {
-		return "", fmt.Errorf("szdiagnostic.GetFeature error: %w", err)
-	}
-
-	return result, nil
+	return result, helper.Errorf(err, "szdiagnostic.GetFeature error: %w", err)
 }
 
 /*
@@ -207,11 +195,7 @@ func (client *Szdiagnostic) PurgeRepository(ctx context.Context) error {
 		}()
 	}
 
-	if err != nil {
-		return fmt.Errorf("szdiagnostic.PurgeRepository error: %w", err)
-	}
-
-	return nil
+	return helper.Errorf(err, "szdiagnostic.PurgeRepository error: %w", err)
 }
 
 // ----------------------------------------------------------------------------
@@ -244,11 +228,7 @@ func (client *Szdiagnostic) Destroy(ctx context.Context) error {
 		}()
 	}
 
-	if err != nil {
-		return fmt.Errorf("szdiagnostic.Destroy error: %w", err)
-	}
-
-	return nil
+	return helper.Errorf(err, "szdiagnostic.Destroy error: %w", err)
 }
 
 /*
@@ -313,11 +293,7 @@ func (client *Szdiagnostic) Initialize(
 		}()
 	}
 
-	if err != nil {
-		return fmt.Errorf("szdiagnostic.Initialize error: %w", err)
-	}
-
-	return nil
+	return helper.Errorf(err, "szdiagnostic.Initialize error: %w", err)
 }
 
 /*
@@ -352,11 +328,7 @@ func (client *Szdiagnostic) RegisterObserver(ctx context.Context, observer obser
 		}()
 	}
 
-	if err != nil {
-		return fmt.Errorf("szdiagnostic.RegisterObserver error: %w", err)
-	}
-
-	return nil
+	return helper.Errorf(err, "szdiagnostic.RegisterObserver error: %w", err)
 }
 
 /*
@@ -387,11 +359,7 @@ func (client *Szdiagnostic) Reinitialize(ctx context.Context, configID int64) er
 		}()
 	}
 
-	if err != nil {
-		return fmt.Errorf("szdiagnostic.Reinitialize error: %w", err)
-	}
-
-	return nil
+	return helper.Errorf(err, "szdiagnostic.Reinitialize error: %w", err)
 }
 
 /*
@@ -427,11 +395,7 @@ func (client *Szdiagnostic) SetLogLevel(ctx context.Context, logLevelName string
 		}()
 	}
 
-	if err != nil {
-		return fmt.Errorf("szdiagnostic.SetLogLevel error: %w", err)
-	}
-
-	return nil
+	return helper.Errorf(err, "szdiagnostic.SetLogLevel error: %w", err)
 }
 
 /*
@@ -480,11 +444,7 @@ func (client *Szdiagnostic) UnregisterObserver(ctx context.Context, observer obs
 		}
 	}
 
-	if err != nil {
-		return fmt.Errorf("szdiagnostic.UnregisterObserver error: %w", err)
-	}
-
-	return nil
+	return helper.Errorf(err, "szdiagnostic.UnregisterObserver error: %w", err)
 }
 
 // ----------------------------------------------------------------------------
