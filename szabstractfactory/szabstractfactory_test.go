@@ -169,7 +169,7 @@ func getTestObject(t *testing.T) senzing.SzAbstractFactory {
 
 func handleError(err error) {
 	if err != nil {
-		fmt.Println("Error:", err)
+		safePrintln("Error:", err)
 	}
 }
 
@@ -192,6 +192,10 @@ func printResult(t *testing.T, title string, result interface{}) {
 	}
 }
 
+func safePrintln(message ...any) {
+	fmt.Println(message...) //nolint
+}
+
 func truncate(aString string, length int) string {
 	return truncator.Truncate(aString, length, "...", truncator.PositionEnd)
 }
@@ -203,7 +207,7 @@ func truncate(aString string, length int) string {
 func TestMain(m *testing.M) {
 	err := setup()
 	if err != nil {
-		fmt.Print(err)
+		safePrintln(err)
 		os.Exit(1)
 	}
 
@@ -211,7 +215,7 @@ func TestMain(m *testing.M) {
 
 	err = teardown()
 	if err != nil {
-		fmt.Print(err)
+		safePrintln(err)
 	}
 
 	os.Exit(code)

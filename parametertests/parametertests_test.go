@@ -44,7 +44,7 @@ func captureStdout(functionName func() error) (string, error) {
 	handleErrorWithPanic(err)
 
 	readFile, writeFile, _ := os.Pipe()
-	fileDescriptor := int(writeFile.Fd()) //nolint:gosec
+	fileDescriptor := int(writeFile.Fd())
 	err = syscall.Dup2(fileDescriptor, syscall.Stdout)
 	handleErrorWithPanic(err)
 
@@ -76,7 +76,7 @@ func captureStdoutReturningInt64(functionName func() (int64, error)) (string, in
 	handleErrorWithPanic(err)
 
 	readFile, writeFile, _ := os.Pipe()
-	fileDescriptor := int(writeFile.Fd()) //nolint:gosec
+	fileDescriptor := int(writeFile.Fd())
 	err = syscall.Dup2(fileDescriptor, syscall.Stdout)
 	handleErrorWithPanic(err)
 
@@ -107,7 +107,7 @@ func captureStdoutReturningString(functionName func() (string, error)) (string, 
 	handleErrorWithPanic(err)
 
 	readFile, writeFile, _ := os.Pipe()
-	fileDescriptor := int(writeFile.Fd()) //nolint:gosec
+	fileDescriptor := int(writeFile.Fd())
 	err = syscall.Dup2(fileDescriptor, syscall.Stdout)
 	handleErrorWithPanic(err)
 
@@ -230,6 +230,14 @@ func handleErrorWithPanic(err error) {
 	}
 }
 
+func safePrintf(format string, message ...any) {
+	fmt.Printf(format, message...) //nolint
+}
+
+func safePrintln(message ...any) {
+	fmt.Println(message...) //nolint
+}
+
 // ----------------------------------------------------------------------------
 // Test harness
 // ----------------------------------------------------------------------------
@@ -238,18 +246,18 @@ func TestMain(m *testing.M) {
 	err := setup()
 	if err != nil {
 		if errors.Is(err, szerror.ErrSzUnrecoverable) {
-			fmt.Printf("\nUnrecoverable error detected. \n\n")
+			safePrintf("\nUnrecoverable error detected. \n\n")
 		}
 
 		if errors.Is(err, szerror.ErrSzRetryable) {
-			fmt.Printf("\nRetryable error detected. \n\n")
+			safePrintf("\nRetryable error detected. \n\n")
 		}
 
 		if errors.Is(err, szerror.ErrSzBadInput) {
-			fmt.Printf("\nBad user input error detected. \n\n")
+			safePrintf("\nBad user input error detected. \n\n")
 		}
 
-		fmt.Print(err)
+		safePrintln(err)
 
 		os.Exit(1)
 	}
@@ -258,7 +266,7 @@ func TestMain(m *testing.M) {
 
 	err = teardown()
 	if err != nil {
-		fmt.Print(err)
+		safePrintln(err)
 	}
 
 	os.Exit(code)

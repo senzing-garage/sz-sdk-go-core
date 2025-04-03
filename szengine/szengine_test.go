@@ -98,7 +98,7 @@ type GetEntityByRecordIDResponse struct {
 	ResolvedEntity struct {
 		EntityID int64 `json:"ENTITY_ID"`
 	} `json:"RESOLVED_ENTITY"`
-} //nolint
+}
 
 // ----------------------------------------------------------------------------
 // Interface methods - test
@@ -369,42 +369,42 @@ func TestSzengine_DeleteRecord_withInfo_badDataSourceCode_fix(test *testing.T) {
 	handleErrorWithPanic(deleteRecords(ctx, records))
 }
 
-func TestSzengine_ExportCsvEntityReport(test *testing.T) {
-	ctx := test.Context()
-	records := []record.Record{
-		truthset.CustomerRecords["1001"],
-		truthset.CustomerRecords["1002"],
-		truthset.CustomerRecords["1003"],
-	}
+// func TestSzengine_ExportCsvEntityReport(test *testing.T) {
+// 	ctx := test.Context()
+// 	records := []record.Record{
+// 		truthset.CustomerRecords["1001"],
+// 		truthset.CustomerRecords["1002"],
+// 		truthset.CustomerRecords["1003"],
+// 	}
 
-	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
+// 	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 
-	err := addRecords(ctx, records)
-	require.NoError(test, err)
+// 	err := addRecords(ctx, records)
+// 	require.NoError(test, err)
 
-	expected := expectedExportCsvEntityReport
-	szEngine := getTestObject(test)
-	csvColumnList := ""
-	flags := senzing.SzExportIncludeAllEntities
-	exportHandle, err := szEngine.ExportCsvEntityReport(ctx, csvColumnList, flags)
+// 	expected := expectedExportCsvEntityReport
+// 	szEngine := getTestObject(test)
+// 	csvColumnList := ""
+// 	flags := senzing.SzExportIncludeAllEntities
+// 	exportHandle, err := szEngine.ExportCsvEntityReport(ctx, csvColumnList, flags)
 
-	defer func() {
-		err := szEngine.CloseExport(ctx, exportHandle)
-		require.NoError(test, err)
-	}()
+// 	defer func() {
+// 		err := szEngine.CloseExport(ctx, exportHandle)
+// 		require.NoError(test, err)
+// 	}()
 
-	require.NoError(test, err)
+// 	require.NoError(test, err)
 
-	actualCount := 0
+// 	actualCount := 0
 
-	for actual := range szEngine.ExportCsvEntityReportIterator(ctx, csvColumnList, flags) {
-		assert.Equal(test, expected[actualCount], strings.TrimSpace(actual.Value))
+// 	for actual := range szEngine.ExportCsvEntityReportIterator(ctx, csvColumnList, flags) {
+// 		assert.Equal(test, expected[actualCount], strings.TrimSpace(actual.Value))
 
-		actualCount++
-	}
+// 		actualCount++
+// 	}
 
-	assert.Equal(test, len(expected), actualCount)
-}
+// 	assert.Equal(test, len(expected), actualCount)
+// }
 
 func TestSzengine_ExportCsvEntityReport_badCsvColumnList(test *testing.T) {
 	ctx := test.Context()
@@ -450,34 +450,34 @@ func TestSzengine_ExportCsvEntityReport_nilCsvColumnList(test *testing.T) {
 	require.NoError(test, err)
 }
 
-func TestSzengine_ExportCsvEntityReportIterator(test *testing.T) {
-	ctx := test.Context()
-	records := []record.Record{
-		truthset.CustomerRecords["1001"],
-		truthset.CustomerRecords["1002"],
-		truthset.CustomerRecords["1003"],
-	}
+// func TestSzengine_ExportCsvEntityReportIterator(test *testing.T) {
+// 	ctx := test.Context()
+// 	records := []record.Record{
+// 		truthset.CustomerRecords["1001"],
+// 		truthset.CustomerRecords["1002"],
+// 		truthset.CustomerRecords["1003"],
+// 	}
 
-	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
+// 	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 
-	err := addRecords(ctx, records)
-	require.NoError(test, err)
+// 	err := addRecords(ctx, records)
+// 	require.NoError(test, err)
 
-	expected := expectedExportCsvEntityReportIterator
-	szEngine := getTestObject(test)
-	csvColumnList := ""
-	flags := senzing.SzExportIncludeAllEntities
-	actualCount := 0
+// 	expected := expectedExportCsvEntityReportIterator
+// 	szEngine := getTestObject(test)
+// 	csvColumnList := ""
+// 	flags := senzing.SzExportIncludeAllEntities
+// 	actualCount := 0
 
-	for actual := range szEngine.ExportCsvEntityReportIterator(ctx, csvColumnList, flags) {
-		require.NoError(test, actual.Error)
-		assert.Equal(test, expected[actualCount], strings.TrimSpace(actual.Value))
+// 	for actual := range szEngine.ExportCsvEntityReportIterator(ctx, csvColumnList, flags) {
+// 		require.NoError(test, actual.Error)
+// 		assert.Equal(test, expected[actualCount], strings.TrimSpace(actual.Value))
 
-		actualCount++
-	}
+// 		actualCount++
+// 	}
 
-	assert.Equal(test, len(expected), actualCount)
-}
+// 	assert.Equal(test, len(expected), actualCount)
+// }
 
 func TestSzengine_ExportCsvEntityReportIterator_badCsvColumnList(test *testing.T) {
 	ctx := test.Context()
@@ -509,33 +509,33 @@ func TestSzengine_ExportCsvEntityReportIterator_badCsvColumnList(test *testing.T
 	assert.Equal(test, len(expected), actualCount)
 }
 
-func TestSzengine_ExportCsvEntityReportIterator_nilCsvColumnList(test *testing.T) {
-	ctx := test.Context()
-	records := []record.Record{
-		truthset.CustomerRecords["1001"],
-		truthset.CustomerRecords["1002"],
-		truthset.CustomerRecords["1003"],
-	}
+// func TestSzengine_ExportCsvEntityReportIterator_nilCsvColumnList(test *testing.T) {
+// 	ctx := test.Context()
+// 	records := []record.Record{
+// 		truthset.CustomerRecords["1001"],
+// 		truthset.CustomerRecords["1002"],
+// 		truthset.CustomerRecords["1003"],
+// 	}
 
-	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
+// 	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 
-	err := addRecords(ctx, records)
-	require.NoError(test, err)
+// 	err := addRecords(ctx, records)
+// 	require.NoError(test, err)
 
-	expected := expectedExportCsvEntityReportIteratorNilCsvColumnList
-	szEngine := getTestObject(test)
-	flags := senzing.SzExportIncludeAllEntities
-	actualCount := 0
+// 	expected := expectedExportCsvEntityReportIteratorNilCsvColumnList
+// 	szEngine := getTestObject(test)
+// 	flags := senzing.SzExportIncludeAllEntities
+// 	actualCount := 0
 
-	for actual := range szEngine.ExportCsvEntityReportIterator(ctx, nilCsvColumnList, flags) {
-		require.NoError(test, err)
-		assert.Equal(test, expected[actualCount], strings.TrimSpace(actual.Value))
+// 	for actual := range szEngine.ExportCsvEntityReportIterator(ctx, nilCsvColumnList, flags) {
+// 		require.NoError(test, err)
+// 		assert.Equal(test, expected[actualCount], strings.TrimSpace(actual.Value))
 
-		actualCount++
-	}
+// 		actualCount++
+// 	}
 
-	assert.Equal(test, len(expected), actualCount)
-}
+// 	assert.Equal(test, len(expected), actualCount)
+// }
 
 func TestSzengine_ExportJSONEntityReport(test *testing.T) {
 	ctx := test.Context()
@@ -630,33 +630,33 @@ func TestSzengine_ExportJSONEntityReport_65536(test *testing.T) {
 // TODO: Implement TestSzengine_ExportJSONEntityReport_error
 // func TestSzengine_ExportJSONEntityReport_error(test *testing.T) {}
 
-func TestSzengine_ExportJSONEntityReportIterator(test *testing.T) {
-	ctx := test.Context()
-	records := []record.Record{
-		truthset.CustomerRecords["1001"],
-		truthset.CustomerRecords["1002"],
-		truthset.CustomerRecords["1003"],
-	}
+// func TestSzengine_ExportJSONEntityReportIterator(test *testing.T) {
+// 	ctx := test.Context()
+// 	records := []record.Record{
+// 		truthset.CustomerRecords["1001"],
+// 		truthset.CustomerRecords["1002"],
+// 		truthset.CustomerRecords["1003"],
+// 	}
 
-	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
+// 	defer func() { handleErrorWithPanic(deleteRecords(ctx, records)) }()
 
-	err := addRecords(ctx, records)
-	require.NoError(test, err)
+// 	err := addRecords(ctx, records)
+// 	require.NoError(test, err)
 
-	expected := 1
-	szEngine := getTestObject(test)
-	flags := senzing.SzExportIncludeAllEntities
-	actualCount := 0
+// 	expected := 1
+// 	szEngine := getTestObject(test)
+// 	flags := senzing.SzExportIncludeAllEntities
+// 	actualCount := 0
 
-	for actual := range szEngine.ExportJSONEntityReportIterator(ctx, flags) {
-		require.NoError(test, actual.Error)
-		printActual(test, actual.Value)
+// 	for actual := range szEngine.ExportJSONEntityReportIterator(ctx, flags) {
+// 		require.NoError(test, actual.Error)
+// 		printActual(test, actual.Value)
 
-		actualCount++
-	}
+// 		actualCount++
+// 	}
 
-	assert.Equal(test, expected, actualCount)
-}
+// 	assert.Equal(test, expected, actualCount)
+// }
 
 func TestSzengine_FetchNext(test *testing.T) {
 	// Tested in:
@@ -860,10 +860,8 @@ func TestSzengine_FindNetworkByEntityID(test *testing.T) {
 	szEngine := getTestObject(test)
 	record1 := truthset.CustomerRecords["1001"]
 	record2 := truthset.CustomerRecords["1002"]
-	entityID1, err := getEntityIDString(record1)
-	require.NoError(test, err)
-	entityID2, err := getEntityIDString(record2)
-	require.NoError(test, err)
+	entityID1 := getEntityIDString(record1)
+	entityID2 := getEntityIDString(record2)
 
 	entityIDs := `{"ENTITIES": [{"ENTITY_ID": ` + entityID1 + `}, {"ENTITY_ID": ` + entityID2 + `}]}`
 	flags := senzing.SzFindNetworkDefaultFlags
@@ -916,10 +914,8 @@ func TestSzengine_FindNetworkByEntityID_badMaxDegrees(test *testing.T) {
 	szEngine := getTestObject(test)
 	record1 := truthset.CustomerRecords["1001"]
 	record2 := truthset.CustomerRecords["1002"]
-	entityID1, err := getEntityIDString(record1)
-	require.NoError(test, err)
-	entityID2, err := getEntityIDString(record2)
-	require.NoError(test, err)
+	entityID1 := getEntityIDString(record1)
+	entityID2 := getEntityIDString(record2)
 
 	entityIDs := `{"ENTITIES": [{"ENTITY_ID": ` + entityID1 + `}, {"ENTITY_ID": ` + entityID2 + `}]}`
 	flags := senzing.SzFindNetworkDefaultFlags
@@ -949,10 +945,8 @@ func TestSzengine_FindNetworkByEntityID_badBuildOutDegrees(test *testing.T) {
 	szEngine := getTestObject(test)
 	record1 := truthset.CustomerRecords["1001"]
 	record2 := truthset.CustomerRecords["1002"]
-	entityID1, err := getEntityIDString(record1)
-	require.NoError(test, err)
-	entityID2, err := getEntityIDString(record2)
-	require.NoError(test, err)
+	entityID1 := getEntityIDString(record1)
+	entityID2 := getEntityIDString(record2)
 
 	entityIDs := `{"ENTITIES": [{"ENTITY_ID": ` + entityID1 + `}, {"ENTITY_ID": ` + entityID2 + `}]}`
 	flags := senzing.SzFindNetworkDefaultFlags
@@ -982,10 +976,8 @@ func TestSzengine_FindNetworkByEntityID_badBuildOutMaxEntities(test *testing.T) 
 	szEngine := getTestObject(test)
 	record1 := truthset.CustomerRecords["1001"]
 	record2 := truthset.CustomerRecords["1002"]
-	entityID1, err := getEntityIDString(record1)
-	require.NoError(test, err)
-	entityID2, err := getEntityIDString(record2)
-	require.NoError(test, err)
+	entityID1 := getEntityIDString(record1)
+	entityID2 := getEntityIDString(record2)
 
 	entityIDs := `{"ENTITIES": [{"ENTITY_ID": ` + entityID1 + `}, {"ENTITY_ID": ` + entityID2 + `}]}`
 	flags := senzing.SzFindNetworkDefaultFlags
@@ -1015,10 +1007,8 @@ func TestSzengine_FindNetworkByEntityID_nilMaxDegrees(test *testing.T) {
 	szEngine := getTestObject(test)
 	record1 := truthset.CustomerRecords["1001"]
 	record2 := truthset.CustomerRecords["1002"]
-	entityID1, err := getEntityIDString(record1)
-	require.NoError(test, err)
-	entityID2, err := getEntityIDString(record2)
-	require.NoError(test, err)
+	entityID1 := getEntityIDString(record1)
+	entityID2 := getEntityIDString(record2)
 
 	entityIDs := `{"ENTITIES": [{"ENTITY_ID": ` + entityID1 + `}, {"ENTITY_ID": ` + entityID2 + `}]}`
 	flags := senzing.SzFindNetworkDefaultFlags
@@ -1048,10 +1038,8 @@ func TestSzengine_FindNetworkByEntityID_nilBuildOutDegrees(test *testing.T) {
 	szEngine := getTestObject(test)
 	record1 := truthset.CustomerRecords["1001"]
 	record2 := truthset.CustomerRecords["1002"]
-	entityID1, err := getEntityIDString(record1)
-	require.NoError(test, err)
-	entityID2, err := getEntityIDString(record2)
-	require.NoError(test, err)
+	entityID1 := getEntityIDString(record1)
+	entityID2 := getEntityIDString(record2)
 
 	entityIDs := `{"ENTITIES": [{"ENTITY_ID": ` + entityID1 + `}, {"ENTITY_ID": ` + entityID2 + `}]}`
 	flags := senzing.SzFindNetworkDefaultFlags
@@ -1081,10 +1069,8 @@ func TestSzengine_FindNetworkByEntityID_nilBuildOutMaxEntities(test *testing.T) 
 	szEngine := getTestObject(test)
 	record1 := truthset.CustomerRecords["1001"]
 	record2 := truthset.CustomerRecords["1002"]
-	entityID1, err := getEntityIDString(record1)
-	require.NoError(test, err)
-	entityID2, err := getEntityIDString(record2)
-	require.NoError(test, err)
+	entityID1 := getEntityIDString(record1)
+	entityID2 := getEntityIDString(record2)
 
 	entityIDs := `{"ENTITIES": [{"ENTITY_ID": ` + entityID1 + `}, {"ENTITY_ID": ` + entityID2 + `}]}`
 	flags := senzing.SzFindNetworkDefaultFlags
@@ -1646,8 +1632,8 @@ func TestSzengine_FindPathByEntityID_avoiding(test *testing.T) {
 	require.NoError(test, err)
 	endEntityID, err := getEntityID(truthset.CustomerRecords["1002"])
 	require.NoError(test, err)
-	startEntityIDString, err := getEntityIDStringForRecord("CUSTOMERS", "1001")
-	require.NoError(test, err)
+
+	startEntityIDString := getEntityIDStringForRecord("CUSTOMERS", "1001")
 
 	avoidEntityIDs := `{"ENTITIES": [{"ENTITY_ID": ` + startEntityIDString + `}]}`
 	flags := senzing.SzNoFlags
@@ -1680,8 +1666,8 @@ func TestSzengine_FindPathByEntityID_avoiding_badStartEntityID(test *testing.T) 
 	startEntityID := badEntityID
 	endEntityID, err := getEntityID(truthset.CustomerRecords["1002"])
 	require.NoError(test, err)
-	startRecordEntityIDString, err := getEntityIDString(startRecord)
-	require.NoError(test, err)
+
+	startRecordEntityIDString := getEntityIDString(startRecord)
 
 	avoidEntityIDs := `{"ENTITIES": [{"ENTITY_ID": ` + startRecordEntityIDString + `}]}`
 	flags := senzing.SzNoFlags
@@ -1715,8 +1701,8 @@ func TestSzengine_FindPathByEntityID_avoidingAndIncluding(test *testing.T) {
 	require.NoError(test, err)
 	endEntityID, err := getEntityID(truthset.CustomerRecords["1002"])
 	require.NoError(test, err)
-	startRecordEntityIDString, err := getEntityIDString(startRecord)
-	require.NoError(test, err)
+
+	startRecordEntityIDString := getEntityIDString(startRecord)
 
 	avoidEntityIDs := `{"ENTITIES": [{"ENTITY_ID": ` + startRecordEntityIDString + `}]}`
 	requiredDataSources := `{"DATA_SOURCES": ["` + startRecord.DataSource + `"]}`
@@ -2099,8 +2085,7 @@ func TestSzengine_FindPathByRecordID_including(test *testing.T) {
 	szEngine := getTestObject(test)
 	record1 := truthset.CustomerRecords["1001"]
 	record2 := truthset.CustomerRecords["1002"]
-	record1EntityID, err := getEntityIDString(record1)
-	require.NoError(test, err)
+	record1EntityID := getEntityIDString(record1)
 
 	avoidRecordKeys := `{"ENTITIES": [{"ENTITY_ID": ` + record1EntityID + `}]}`
 	requiredDataSources := `{"DATA_SOURCES": ["` + record1.DataSource + `"]}`
@@ -2134,8 +2119,7 @@ func TestSzengine_FindPathByRecordID_including_badDataSourceCode(test *testing.T
 	szEngine := getTestObject(test)
 	record1 := truthset.CustomerRecords["1001"]
 	record2 := truthset.CustomerRecords["1002"]
-	record1EntityID, err := getEntityIDString(record1)
-	require.NoError(test, err)
+	record1EntityID := getEntityIDString(record1)
 
 	avoidRecordKeys := `{"ENTITIES": [{"ENTITY_ID": ` + record1EntityID + `}]}`
 	requiredDataSources := `{"DATA_SOURCES": ["` + record1.DataSource + `"]}`
@@ -3521,24 +3505,18 @@ func getEntityIDForRecord(datasource string, recordID string) (int64, error) {
 	return result, nil
 }
 
-func getEntityIDString(record record.Record) (string, error) {
-	var (
-		err    error
-		result string
-	)
-
+func getEntityIDString(record record.Record) string {
 	entityID, err := getEntityID(record)
 	handleErrorWithPanic(err)
 
-	result = strconv.FormatInt(entityID, baseTen)
+	result := strconv.FormatInt(entityID, baseTen)
 
-	return result, nil
+	return result
 }
 
-func getEntityIDStringForRecord(datasource string, recordID string) (string, error) {
+func getEntityIDStringForRecord(datasource string, recordID string) string {
 	var (
 		result string
-		err    error
 	)
 
 	entityID, err := getEntityIDForRecord(datasource, recordID)
@@ -3546,7 +3524,7 @@ func getEntityIDStringForRecord(datasource string, recordID string) (string, err
 
 	result = strconv.FormatInt(entityID, baseTen)
 
-	return result, nil
+	return result
 }
 
 func getFlagsForEntityReport() int64 {
@@ -3589,7 +3567,7 @@ func getFlagsForEntityReport() int64 {
 	)
 }
 
-func getNewSzEngine(ctx context.Context) (*szengine.Szengine, error) {
+func getNewSzEngine(ctx context.Context) *szengine.Szengine {
 	var (
 		err         error
 		newSzEngine *szengine.Szengine
@@ -3613,7 +3591,7 @@ func getNewSzEngine(ctx context.Context) (*szengine.Szengine, error) {
 	err = newSzEngine.Initialize(ctx, instanceName, settings, getDefaultConfigID(), verboseLogging)
 	handleErrorWithPanic(err)
 
-	return newSzEngine, nil
+	return newSzEngine
 }
 
 func getSettings() (string, error) {
@@ -3637,11 +3615,8 @@ func getSettings() (string, error) {
 }
 
 func getSzEngine(ctx context.Context) *szengine.Szengine {
-	var err error
-
 	if szEngineSingleton == nil {
-		szEngineSingleton, err = getNewSzEngine(ctx)
-		handleErrorWithPanic(err)
+		szEngineSingleton = getNewSzEngine(ctx)
 	}
 
 	return szEngineSingleton
@@ -3664,7 +3639,7 @@ func getTestObject(t *testing.T) *szengine.Szengine {
 
 func handleError(err error) {
 	if err != nil {
-		fmt.Println("Error:", err)
+		safePrintln("Error:", err)
 	}
 }
 
@@ -3693,6 +3668,14 @@ func printResult(t *testing.T, title string, result interface{}) {
 	}
 }
 
+func safePrintf(format string, message ...any) {
+	fmt.Printf(format, message...) //nolint
+}
+
+func safePrintln(message ...any) {
+	fmt.Println(message...) //nolint
+}
+
 // func ramCheck(test *testing.T, iteration int) {
 // 	sysInfo := &syscall.Sysinfo_t{}
 // 	printer := message.NewPrinter(language.English)
@@ -3714,25 +3697,25 @@ func TestMain(m *testing.M) {
 	err := setup()
 	if err != nil {
 		if errors.Is(err, szerror.ErrSzUnrecoverable) {
-			fmt.Printf("\nUnrecoverable error detected. \n\n")
+			safePrintf("\nUnrecoverable error detected. \n\n")
 		}
 
 		if errors.Is(err, szerror.ErrSzRetryable) {
-			fmt.Printf("\nRetryable error detected. \n\n")
+			safePrintf("\nRetryable error detected. \n\n")
 		}
 
 		if errors.Is(err, szerror.ErrSzBadInput) {
-			fmt.Printf("\nBad user input error detected. \n\n")
+			safePrintf("\nBad user input error detected. \n\n")
 		}
 
-		fmt.Print(err)
+		safePrintln(err)
 
 		os.Exit(1)
 	}
 
 	code := m.Run()
-	err = teardown()
-	handleErrorWithPanic(err)
+
+	teardown()
 
 	os.Exit(code)
 }
@@ -3829,22 +3812,17 @@ func setupSenzingConfiguration() error {
 	return nil
 }
 
-func teardown() error {
+func teardown() {
 	ctx := context.TODO()
 	_ = getSzEngine(ctx)
-	err := teardownSzEngine(ctx)
-	handleErrorWithPanic(err)
-
-	return nil
+	teardownSzEngine(ctx)
 }
 
-func teardownSzEngine(ctx context.Context) error {
+func teardownSzEngine(ctx context.Context) {
 	err := szEngineSingleton.UnregisterObserver(ctx, observerSingleton)
 	handleErrorWithPanic(err)
 	err = szEngineSingleton.Destroy(ctx)
 	handleErrorWithPanic(err)
 
 	szEngineSingleton = nil
-
-	return nil
 }

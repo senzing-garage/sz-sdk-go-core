@@ -742,7 +742,7 @@ func (client *Szconfig) deleteDataSource(ctx context.Context, configHandle uintp
 		err = client.newError(ctx, 4004, configHandle, dataSourceCode, result)
 	}
 
-	return fmt.Errorf("deleteDataSource error: %w", err)
+	return err
 }
 
 func (client *Szconfig) destroy(ctx context.Context) error {
@@ -756,7 +756,7 @@ func (client *Szconfig) destroy(ctx context.Context) error {
 		err = client.newError(ctx, 4005, result)
 	}
 
-	return fmt.Errorf("destroy error: %w", err)
+	return err
 }
 
 func (client *Szconfig) save(ctx context.Context, configHandle uintptr) (string, error) {
@@ -843,7 +843,7 @@ func (client *Szconfig) init(ctx context.Context, instanceName string, settings 
 		err = client.newError(ctx, 4007, instanceName, settings, verboseLogging, result)
 	}
 
-	return fmt.Errorf("init error: %w", err)
+	return err
 }
 
 // ----------------------------------------------------------------------------
@@ -935,7 +935,7 @@ func (client *Szconfig) clearLastException(ctx context.Context) error {
 
 	C.SzConfig_clearLastException()
 
-	return fmt.Errorf("clearLastException error: %w", err)
+	return err
 }
 
 /*

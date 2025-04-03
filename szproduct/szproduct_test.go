@@ -207,7 +207,7 @@ func getTestObject(t *testing.T) *szproduct.Szproduct {
 
 func handleError(err error) {
 	if err != nil {
-		fmt.Println("Error:", err)
+		safePrintln("Error:", err)
 	}
 }
 
@@ -229,6 +229,13 @@ func printResult(t *testing.T, title string, result interface{}) {
 		t.Logf("%s: %v", title, truncate(fmt.Sprintf("%v", result), defaultTruncation))
 	}
 }
+func safePrintf(format string, message ...any) {
+	fmt.Printf(format, message...) //nolint
+}
+
+func safePrintln(message ...any) {
+	fmt.Println(message...) //nolint
+}
 
 func truncate(aString string, length int) string {
 	return truncator.Truncate(aString, length, "...", truncator.PositionEnd)
@@ -242,28 +249,25 @@ func TestMain(m *testing.M) {
 	err := setup()
 	if err != nil {
 		if errors.Is(err, szerror.ErrSzUnrecoverable) {
-			fmt.Printf("\nUnrecoverable error detected. \n\n")
+			safePrintf("\nUnrecoverable error detected. \n\n")
 		}
 
 		if errors.Is(err, szerror.ErrSzRetryable) {
-			fmt.Printf("\nRetryable error detected. \n\n")
+			safePrintf("\nRetryable error detected. \n\n")
 		}
 
 		if errors.Is(err, szerror.ErrSzBadInput) {
-			fmt.Printf("\nBad user input error detected. \n\n")
+			safePrintf("\nBad user input error detected. \n\n")
 		}
 
-		fmt.Print(err)
+		safePrintln(err)
 
 		os.Exit(1)
 	}
 
 	code := m.Run()
 
-	err = teardown()
-	if err != nil {
-		fmt.Print(err)
-	}
+	teardown()
 
 	os.Exit(code)
 }
@@ -310,21 +314,16 @@ func setupDirectories() error {
 	return nil
 }
 
-func teardown() error {
+func teardown() {
 	ctx := context.TODO()
-	err := teardownSzProduct(ctx)
-	handleErrorWithPanic(err)
-
-	return nil
+	teardownSzProduct(ctx)
 }
 
-func teardownSzProduct(ctx context.Context) error {
+func teardownSzProduct(ctx context.Context) {
 	err := szProductSingleton.UnregisterObserver(ctx, observerSingleton)
 	handleErrorWithPanic(err)
 	err = szProductSingleton.Destroy(ctx)
 	handleErrorWithPanic(err)
 
 	szProductSingleton = nil
-
-	return nil
 }

@@ -15,7 +15,7 @@ linters:
     - decorder
     - depguard
     - dogsled
-    # - dupl
+    - dupl
     - dupword
     - durationcheck
     - err113
@@ -27,7 +27,7 @@ linters:
     - exhaustruct
     - exptostd
     - fatcontext
-    # - forbidigo
+    - forbidigo
     - forcetypeassert
     - funlen
     - ginkgolinter
@@ -36,7 +36,7 @@ linters:
     - gochecknoinits
     - gochecksumtype
     - gocognit
-    - goconst
+    # - goconst
     - gocritic
     - gocyclo
     - godot
@@ -55,7 +55,7 @@ linters:
     - ineffassign
     - interfacebloat
     - intrange
-    # - ireturn
+    - ireturn
     - lll
     - loggercheck
     - maintidx
@@ -71,7 +71,7 @@ linters:
     - nilnil
     - nlreturn
     - noctx
-    # - nolintlint
+    - nolintlint
     - nonamedreturns
     - nosprintfhostport
     # - paralleltest
@@ -96,7 +96,7 @@ linters:
     - thelper
     - tparallel
     - unconvert
-    # - unparam
+    - unparam
     - unused
     - usestdlibvars
     - usetesting
@@ -125,6 +125,20 @@ linters:
           deny:
             - pkg: io/ioutil
               desc: "replaced by io and os packages since Go 1.16: https://tip.golang.org/doc/go1.16#ioutil"
+    dupl:
+      threshold: 200
+    ireturn:
+      allow:
+        - error
+        - logging.Logging
+        - messenger.Messenger
+        - observer.Observer
+        - senzing.SzAbstractFactory
+        - senzing.SzConfig
+        - senzing.SzConfigManager
+        - senzing.SzDiagnostic
+        - senzing.SzEngine
+        - senzing.SzProduct
     maintidx:
       under: 15
     nlreturn:
