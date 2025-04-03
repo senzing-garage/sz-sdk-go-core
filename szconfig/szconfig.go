@@ -96,11 +96,7 @@ func (client *Szconfig) AddDataSource(ctx context.Context, dataSourceCode string
 		}()
 	}
 
-	if err != nil {
-		return "", fmt.Errorf("szconfig.AddDataSource error: %w", err)
-	}
-
-	return result, nil
+	return result, helper.Errorf(err, "szconfig.AddDataSource error: %w", err)
 }
 
 /*
@@ -140,11 +136,7 @@ func (client *Szconfig) DeleteDataSource(ctx context.Context, dataSourceCode str
 		}()
 	}
 
-	if err != nil {
-		return "", fmt.Errorf("szconfig.DeleteDataSource error: %w", err)
-	}
-
-	return result, nil
+	return result, helper.Errorf(err, "szconfig.DeleteDataSource error: %w", err)
 }
 
 /*
@@ -178,11 +170,7 @@ func (client *Szconfig) Export(ctx context.Context) (string, error) {
 		}()
 	}
 
-	if err != nil {
-		return "", fmt.Errorf("szconfig.Export error: %w", err)
-	}
-
-	return result, nil
+	return result, helper.Errorf(err, "szconfig.Export error: %w", err)
 }
 
 /*
@@ -216,11 +204,7 @@ func (client *Szconfig) GetDataSources(ctx context.Context) (string, error) {
 		}()
 	}
 
-	if err != nil {
-		return "", fmt.Errorf("szconfig.GetDataSources error: %w", err)
-	}
-
-	return result, nil
+	return result, helper.Errorf(err, "szconfig.GetDataSources error: %w", err)
 }
 
 // ----------------------------------------------------------------------------
@@ -253,11 +237,8 @@ func (client *Szconfig) Destroy(ctx context.Context) error {
 		}()
 	}
 
-	if err != nil {
-		return fmt.Errorf("szconfig.Destroy error: %w", err)
-	}
+	return helper.Errorf(err, "szconfig.Destroy error: %w", err)
 
-	return nil
 }
 
 /*
@@ -301,11 +282,7 @@ func (client *Szconfig) Import(ctx context.Context, configDefinition string) err
 		}()
 	}
 
-	if err != nil {
-		return fmt.Errorf("szconfig.Import error: %w", err)
-	}
-
-	return nil
+	return helper.Errorf(err, "szconfig.Import error: %w", err)
 }
 
 /*
@@ -346,11 +323,7 @@ func (client *Szconfig) ImportTemplate(ctx context.Context) error {
 		}()
 	}
 
-	if err != nil {
-		return fmt.Errorf("szconfig.ImportTemplate error: %w", err)
-	}
-
-	return nil
+	return helper.Errorf(err, "szconfig.ImportTemplate error: %w", err)
 }
 
 /*
@@ -390,11 +363,7 @@ func (client *Szconfig) Initialize(
 		}()
 	}
 
-	if err != nil {
-		return fmt.Errorf("szconfig.Initialize error: %w", err)
-	}
-
-	return nil
+	return helper.Errorf(err, "szconfig.Initialize error: %w", err)
 }
 
 /*
@@ -429,11 +398,7 @@ func (client *Szconfig) RegisterObserver(ctx context.Context, observer observer.
 		}()
 	}
 
-	if err != nil {
-		return fmt.Errorf("szconfig.RegisterObserver error: %w", err)
-	}
-
-	return nil
+	return helper.Errorf(err, "szconfig.RegisterObserver error: %w", err)
 }
 
 /*
@@ -469,11 +434,7 @@ func (client *Szconfig) SetLogLevel(ctx context.Context, logLevelName string) er
 		}()
 	}
 
-	if err != nil {
-		return fmt.Errorf("szconfig.SetLogLevel error: %w", err)
-	}
-
-	return nil
+	return helper.Errorf(err, "szconfig.SetLogLevel error: %w", err)
 }
 
 /*
@@ -521,11 +482,7 @@ func (client *Szconfig) UnregisterObserver(ctx context.Context, observer observe
 		}
 	}
 
-	if err != nil {
-		return fmt.Errorf("szconfig.UnregisterObserver error: %w", err)
-	}
-
-	return nil
+	return helper.Errorf(err, "szconfig.UnregisterObserver error: %w", err)
 }
 
 // ----------------------------------------------------------------------------
