@@ -2,7 +2,6 @@ package szconfigmanager_test
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -280,9 +279,8 @@ func TestSzconfigmanager_AsInterface(test *testing.T) {
 func TestSzconfigmanager_Initialize(test *testing.T) {
 	ctx := test.Context()
 	szConfigManager := getTestObject(test)
-	settings, err := getSettings()
-	require.NoError(test, err)
-	err = szConfigManager.Initialize(ctx, instanceName, settings, verboseLogging)
+	settings := getSettings()
+	err := szConfigManager.Initialize(ctx, instanceName, settings, verboseLogging)
 	require.NoError(test, err)
 }
 
@@ -315,7 +313,7 @@ func getDatabaseTemplatePath() string {
 	return filepath.FromSlash("../testdata/sqlite/G2C.db")
 }
 
-func getSettings() (string, error) {
+func getSettings() string {
 	var result string
 
 	// Determine Database URL.
@@ -332,7 +330,7 @@ func getSettings() (string, error) {
 	result, err = settings.BuildSimpleSettingsUsingMap(configAttrMap)
 	handleErrorWithPanic(err)
 
-	return result, nil
+	return result
 }
 
 // func getSzConfig(ctx context.Context) *szconfig.Szconfig {
@@ -357,11 +355,9 @@ func getSettings() (string, error) {
 
 func getSzConfigManager(ctx context.Context) *szconfigmanager.Szconfigmanager {
 	if szConfigManagerSingleton == nil {
-		settings, err := getSettings()
-		handleErrorWithPanic(err)
-
+		settings := getSettings()
 		szConfigManagerSingleton = &szconfigmanager.Szconfigmanager{}
-		err = szConfigManagerSingleton.SetLogLevel(ctx, logLevel)
+		err := szConfigManagerSingleton.SetLogLevel(ctx, logLevel)
 		handleErrorWithPanic(err)
 
 		if logLevel == "TRACE" {
@@ -419,10 +415,6 @@ func printResult(t *testing.T, title string, result interface{}) {
 	}
 }
 
-func safePrintf(format string, message ...any) {
-	fmt.Printf(format, message...) //nolint
-}
-
 func safePrintln(message ...any) {
 	fmt.Println(message...) //nolint
 }
@@ -436,55 +428,25 @@ func truncate(aString string, length int) string {
 // ----------------------------------------------------------------------------
 
 func TestMain(m *testing.M) {
-	err := setup()
-	if err != nil {
-		if errors.Is(err, szerror.ErrSzUnrecoverable) {
-			safePrintf("\nUnrecoverable error detected. \n\n")
-		}
-
-		if errors.Is(err, szerror.ErrSzRetryable) {
-			safePrintf("\nRetryable error detected. \n\n")
-		}
-
-		if errors.Is(err, szerror.ErrSzBadInput) {
-			safePrintf("\nBad user input error detected. \n\n")
-		}
-
-		safePrintln(err)
-
-		os.Exit(1)
-	}
+	setup()
 
 	code := m.Run()
 
-	err = teardown()
-	if err != nil {
-		safePrintln(err)
-	}
-
+	teardown()
 	os.Exit(code)
 }
 
-func setup() error {
-	var err error
+func setup() {
+	setupDirectories()
+	setupDatabase()
 
-	err = setupDirectories()
+	err := setupSenzingConfiguration()
 	handleErrorWithPanic(err)
-	err = setupDatabase()
-	handleErrorWithPanic(err)
-	err = setupSenzingConfiguration()
-	handleErrorWithPanic(err)
-
-	return nil
 }
 
-func setupDatabase() error {
-	var err error
-
-	// Locate source and target paths.
-
+func setupDatabase() {
 	testDirectoryPath := getTestDirectoryPath()
-	_, err = filepath.Abs(filepath.Join(testDirectoryPath, "G2C.db"))
+	_, err := filepath.Abs(filepath.Join(testDirectoryPath, "G2C.db"))
 	handleErrorWithPanic(err)
 	databaseTemplatePath, err := filepath.Abs(getDatabaseTemplatePath())
 	handleErrorWithPanic(err)
@@ -493,33 +455,25 @@ func setupDatabase() error {
 
 	_, _, err = fileutil.CopyFile(databaseTemplatePath, testDirectoryPath, true) // Copy the SQLite database file.
 	handleErrorWithPanic(err)
-
-	return nil
 }
 
-func setupDirectories() error {
-	var err error
-
+func setupDirectories() {
 	testDirectoryPath := getTestDirectoryPath()
-	err = os.RemoveAll(filepath.Clean(testDirectoryPath)) // cleanup any previous test run
+	err := os.RemoveAll(filepath.Clean(testDirectoryPath)) // cleanup any previous test run
 	handleErrorWithPanic(err)
 	err = os.MkdirAll(filepath.Clean(testDirectoryPath), 0750) // recreate the test target directory
 	handleErrorWithPanic(err)
-
-	return nil
 }
 
 func setupSenzingConfiguration() error {
 	ctx := context.TODO()
 	now := time.Now()
-
-	settings, err := getSettings()
-	handleErrorWithPanic(err)
+	settings := getSettings()
 
 	// Create sz objects.
 
 	szConfig := &szconfig.Szconfig{}
-	err = szConfig.Initialize(ctx, instanceName, settings, verboseLogging)
+	err := szConfig.Initialize(ctx, instanceName, settings, verboseLogging)
 	handleErrorWithPanic(err)
 
 	defer func() { handleErrorWithPanic(szConfig.Destroy(ctx)) }()
@@ -557,17 +511,13 @@ func setupSenzingConfiguration() error {
 	return nil
 }
 
-func teardown() error {
+func teardown() {
 	ctx := context.TODO()
-	err := teardownSzConfig(ctx)
-	handleErrorWithPanic(err)
-	err = teardownSzConfigManager(ctx)
-	handleErrorWithPanic(err)
-
-	return nil
+	teardownSzConfig(ctx)
+	teardownSzConfigManager(ctx)
 }
 
-func teardownSzConfig(ctx context.Context) error {
+func teardownSzConfig(ctx context.Context) {
 	if szConfigSingleton != nil {
 		err := szConfigSingleton.UnregisterObserver(ctx, observerSingleton)
 		handleErrorWithPanic(err)
@@ -576,11 +526,9 @@ func teardownSzConfig(ctx context.Context) error {
 
 		szConfigSingleton = nil
 	}
-
-	return nil
 }
 
-func teardownSzConfigManager(ctx context.Context) error {
+func teardownSzConfigManager(ctx context.Context) {
 	if szConfigManagerSingleton != nil {
 		err := szConfigManagerSingleton.UnregisterObserver(ctx, observerSingleton)
 		handleErrorWithPanic(err)
@@ -589,6 +537,4 @@ func teardownSzConfigManager(ctx context.Context) error {
 
 		szConfigManagerSingleton = nil
 	}
-
-	return nil
 }

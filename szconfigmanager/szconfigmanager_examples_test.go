@@ -237,17 +237,11 @@ func ExampleSzconfigmanager_GetObserverOrigin() {
 
 func getSzAbstractFactory(ctx context.Context) senzing.SzAbstractFactory {
 	var (
-		err    error
 		result senzing.SzAbstractFactory
 	)
 
 	_ = ctx
-
-	settings, err := getSettings()
-	if err != nil {
-		panic(err)
-	}
-
+	settings := getSettings()
 	result = &szabstractfactory.Szabstractfactory{
 		ConfigID:       senzing.SzInitializeWithDefaultConfiguration,
 		InstanceName:   instanceName,

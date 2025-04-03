@@ -18,8 +18,7 @@ import (
 
 func TestParameters_Szengine_AddRecord(test *testing.T) {
 	ctx := test.Context()
-	szEngine, err := getVerboseTestObject(test)
-	require.NoError(test, err)
+	szEngine := getVerboseTestObject(test)
 
 	flags := senzing.SzWithoutInfo
 	records := []record.Record{

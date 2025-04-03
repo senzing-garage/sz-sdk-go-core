@@ -115,7 +115,7 @@ func getDatabaseTemplatePath() string {
 	return filepath.FromSlash("../testdata/sqlite/G2C.db")
 }
 
-func getSettings() (string, error) {
+func getSettings() string {
 	var result string
 
 	// Determine Database URL.
@@ -132,20 +132,16 @@ func getSettings() (string, error) {
 	result, err = settings.BuildSimpleSettingsUsingMap(configAttrMap)
 	handleErrorWithPanic(err)
 
-	return result, nil
+	return result
 }
 
 func getSzAbstractFactory(ctx context.Context) senzing.SzAbstractFactory {
 	var (
-		err    error
 		result senzing.SzAbstractFactory
 	)
 
 	_ = ctx
-
-	settings, err := getSettings()
-	handleErrorWithPanic(err)
-
+	settings := getSettings()
 	result = &szabstractfactory.Szabstractfactory{
 		ConfigID:       senzing.SzInitializeWithDefaultConfiguration,
 		InstanceName:   instanceName,
@@ -205,15 +201,11 @@ func truncate(aString string, length int) string {
 // ----------------------------------------------------------------------------
 
 func TestMain(m *testing.M) {
-	err := setup()
-	if err != nil {
-		safePrintln(err)
-		os.Exit(1)
-	}
+	setup()
 
 	code := m.Run()
 
-	err = teardown()
+	err := teardown()
 	if err != nil {
 		safePrintln(err)
 	}
@@ -221,26 +213,17 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
-func setup() error {
-	var err error
+func setup() {
+	setupDirectories()
+	setupDatabase()
 
-	err = setupDirectories()
+	err := setupSenzingConfiguration()
 	handleErrorWithPanic(err)
-	err = setupDatabase()
-	handleErrorWithPanic(err)
-	err = setupSenzingConfiguration()
-	handleErrorWithPanic(err)
-
-	return nil
 }
 
-func setupDatabase() error {
-	var err error
-
-	// Locate source and target paths.
-
+func setupDatabase() {
 	testDirectoryPath := getTestDirectoryPath()
-	_, err = filepath.Abs(filepath.Join(testDirectoryPath, "G2C.db"))
+	_, err := filepath.Abs(filepath.Join(testDirectoryPath, "G2C.db"))
 	handleErrorWithPanic(err)
 	databaseTemplatePath, err := filepath.Abs(getDatabaseTemplatePath())
 	handleErrorWithPanic(err)
@@ -249,33 +232,25 @@ func setupDatabase() error {
 
 	_, _, err = fileutil.CopyFile(databaseTemplatePath, testDirectoryPath, true) // Copy the SQLite database file.
 	handleErrorWithPanic(err)
-
-	return nil
 }
 
-func setupDirectories() error {
-	var err error
-
+func setupDirectories() {
 	testDirectoryPath := getTestDirectoryPath()
-	err = os.RemoveAll(filepath.Clean(testDirectoryPath)) // cleanup any previous test run
+	err := os.RemoveAll(filepath.Clean(testDirectoryPath)) // cleanup any previous test run
 	handleErrorWithPanic(err)
 	err = os.MkdirAll(filepath.Clean(testDirectoryPath), 0750) // recreate the test target directory
 	handleErrorWithPanic(err)
-
-	return nil
 }
 
 func setupSenzingConfiguration() error {
 	ctx := context.TODO()
 	now := time.Now()
-
-	settings, err := getSettings()
-	handleErrorWithPanic(err)
+	settings := getSettings()
 
 	// Create sz objects.
 
 	szConfig := &szconfig.Szconfig{}
-	err = szConfig.Initialize(ctx, instanceName, settings, verboseLogging)
+	err := szConfig.Initialize(ctx, instanceName, settings, verboseLogging)
 	handleErrorWithPanic(err)
 
 	defer func() { handleErrorWithPanic(szConfig.Destroy(ctx)) }()

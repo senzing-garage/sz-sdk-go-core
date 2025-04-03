@@ -36,7 +36,7 @@ linters:
     - gochecknoinits
     - gochecksumtype
     - gocognit
-    # - goconst
+    - goconst
     - gocritic
     - gocyclo
     - godot
@@ -127,6 +127,9 @@ linters:
               desc: "replaced by io and os packages since Go 1.16: https://tip.golang.org/doc/go1.16#ioutil"
     dupl:
       threshold: 200
+    goconst:
+      min-occurrences: 5
+      ignore-strings: "CUSTOMERS"
     ireturn:
       allow:
         - error

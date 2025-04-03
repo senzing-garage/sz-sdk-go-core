@@ -76,13 +76,11 @@ func main() {
 
 	// Demonstrate persisting a Senzing configuration to the Senzing repository.
 
-	err = demonstrateConfigFunctions(ctx, szAbstractFactory)
-	failOnError(5006, err)
+	demonstrateConfigFunctions(ctx, szAbstractFactory)
 
 	// Demonstrate tests.
 
-	err = demonstrateSenzingFunctions(ctx, szAbstractFactory)
-	failOnError(5007, err)
+	demonstrateSenzingFunctions(ctx, szAbstractFactory)
 
 	err = szAbstractFactory.Destroy(ctx)
 	failOnError(5008, err)
@@ -120,7 +118,7 @@ func demonstrateAddRecord(ctx context.Context, szEngine senzing.SzEngine) (strin
 	return result, nil
 }
 
-func demonstrateConfigFunctions(ctx context.Context, szAbstractFactory senzing.SzAbstractFactory) error {
+func demonstrateConfigFunctions(ctx context.Context, szAbstractFactory senzing.SzAbstractFactory) {
 	now := time.Now()
 
 	// Create Senzing objects.
@@ -148,11 +146,9 @@ func demonstrateConfigFunctions(ctx context.Context, szAbstractFactory senzing.S
 	configComment := fmt.Sprintf("Created by main.go at %s", now.UTC())
 	_, err = szConfigManager.SetDefaultConfig(ctx, configStr, configComment)
 	failOnError(5106, err)
-
-	return nil
 }
 
-func demonstrateSenzingFunctions(ctx context.Context, szAbstractFactory senzing.SzAbstractFactory) error {
+func demonstrateSenzingFunctions(ctx context.Context, szAbstractFactory senzing.SzAbstractFactory) {
 	szDiagnostic, err := szAbstractFactory.CreateDiagnostic(ctx)
 	failOnError(5201, err)
 
@@ -183,8 +179,6 @@ func demonstrateSenzingFunctions(ctx context.Context, szAbstractFactory senzing.
 
 	err = szDiagnostic.PurgeRepository(ctx)
 	failOnError(5207, err)
-
-	return nil
 }
 
 // ----------------------------------------------------------------------------

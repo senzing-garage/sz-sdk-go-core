@@ -4,7 +4,6 @@ package szengine_test
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -19,7 +18,6 @@ import (
 	"github.com/senzing-garage/sz-sdk-go-core/szconfigmanager"
 	"github.com/senzing-garage/sz-sdk-go-core/szengine"
 	"github.com/senzing-garage/sz-sdk-go/senzing"
-	"github.com/senzing-garage/sz-sdk-go/szerror"
 )
 
 const (
@@ -36,7 +34,7 @@ var (
 
 // TODO: See if there's any way to use currying to simplify the captureStdout* methods
 
-func captureStdout(functionName func() error) (string, error) {
+func captureStdout(functionName func() error) (string, error) { //nolint
 	// Reference:
 	// https://stackoverflow.com/questions/76565007/how-to-capture-the-contents-of-stderr-in-a-c-function-call-from-golang
 	// Switch STDOUT.
@@ -164,7 +162,7 @@ func getDatabaseTemplatePath() string {
 	return filepath.FromSlash("../testdata/sqlite/G2C.db")
 }
 
-func getSettings() (string, error) {
+func getSettings() string {
 	var result string
 
 	// Determine Database URL.
@@ -181,22 +179,20 @@ func getSettings() (string, error) {
 	result, err = settings.BuildSimpleSettingsUsingMap(configAttrMap)
 	handleErrorWithPanic(err)
 
-	return result, nil
+	return result
 }
 
 func getTestDirectoryPath() string {
 	return filepath.FromSlash("../target/test/szengine")
 }
 
-func getSzEngine(ctx context.Context) (*szengine.Szengine, error) {
+func getSzEngine(ctx context.Context) *szengine.Szengine {
 	_ = ctx
 
 	if szEngineSingleton == nil {
-		settings, err := getSettings()
-		handleErrorWithPanic(err)
-
+		settings := getSettings()
 		szEngine := &szengine.Szengine{}
-		_, err = captureStdout(func() error {
+		_, err := captureStdout(func() error {
 			return szEngine.Initialize(
 				ctx,
 				instanceName,
@@ -210,14 +206,14 @@ func getSzEngine(ctx context.Context) (*szengine.Szengine, error) {
 		szEngineSingleton = &szengine.Szengine{}
 	}
 
-	return szEngineSingleton, nil
+	return szEngineSingleton
 }
 
 // func getVerboseSzEngineAsInterface(ctx context.Context) senzing.SzEngine {
 // 	return getVerboseSzEngine(ctx)
 // }
 
-func getVerboseTestObject(t *testing.T) (senzing.SzEngine, error) {
+func getVerboseTestObject(t *testing.T) senzing.SzEngine {
 	t.Helper()
 	ctx := t.Context()
 
@@ -230,68 +226,30 @@ func handleErrorWithPanic(err error) {
 	}
 }
 
-func safePrintf(format string, message ...any) {
-	fmt.Printf(format, message...) //nolint
-}
-
-func safePrintln(message ...any) {
-	fmt.Println(message...) //nolint
-}
-
 // ----------------------------------------------------------------------------
 // Test harness
 // ----------------------------------------------------------------------------
 
 func TestMain(m *testing.M) {
-	err := setup()
-	if err != nil {
-		if errors.Is(err, szerror.ErrSzUnrecoverable) {
-			safePrintf("\nUnrecoverable error detected. \n\n")
-		}
-
-		if errors.Is(err, szerror.ErrSzRetryable) {
-			safePrintf("\nRetryable error detected. \n\n")
-		}
-
-		if errors.Is(err, szerror.ErrSzBadInput) {
-			safePrintf("\nBad user input error detected. \n\n")
-		}
-
-		safePrintln(err)
-
-		os.Exit(1)
-	}
+	setup()
 
 	code := m.Run()
 
-	err = teardown()
-	if err != nil {
-		safePrintln(err)
-	}
-
+	teardown()
 	os.Exit(code)
 }
 
-func setup() error {
-	var err error
+func setup() {
+	setupDirectories()
+	setupDatabase()
 
-	err = setupDirectories()
+	err := setupSenzingConfiguration()
 	handleErrorWithPanic(err)
-	err = setupDatabase()
-	handleErrorWithPanic(err)
-	err = setupSenzingConfiguration()
-	handleErrorWithPanic(err)
-
-	return nil
 }
 
-func setupDatabase() error {
-	var err error
-
-	// Locate source and target paths.
-
+func setupDatabase() {
 	testDirectoryPath := getTestDirectoryPath()
-	_, err = filepath.Abs(filepath.Join(testDirectoryPath, "G2C.db"))
+	_, err := filepath.Abs(filepath.Join(testDirectoryPath, "G2C.db"))
 	handleErrorWithPanic(err)
 	databaseTemplatePath, err := filepath.Abs(getDatabaseTemplatePath())
 	handleErrorWithPanic(err)
@@ -300,33 +258,25 @@ func setupDatabase() error {
 
 	_, _, err = fileutil.CopyFile(databaseTemplatePath, testDirectoryPath, true) // Copy the SQLite database file.
 	handleErrorWithPanic(err)
-
-	return nil
 }
 
-func setupDirectories() error {
-	var err error
-
+func setupDirectories() {
 	testDirectoryPath := getTestDirectoryPath()
-	err = os.RemoveAll(filepath.Clean(testDirectoryPath)) // cleanup any previous test run
+	err := os.RemoveAll(filepath.Clean(testDirectoryPath)) // cleanup any previous test run
 	handleErrorWithPanic(err)
 	err = os.MkdirAll(filepath.Clean(testDirectoryPath), 0750) // recreate the test target directory
 	handleErrorWithPanic(err)
-
-	return nil
 }
 
 func setupSenzingConfiguration() error {
 	ctx := context.TODO()
 	now := time.Now()
-
-	settings, err := getSettings()
-	handleErrorWithPanic(err)
+	settings := getSettings()
 
 	// Create sz objects.
 
 	szConfig := &szconfig.Szconfig{}
-	_, err = captureStdout(func() error {
+	_, err := captureStdout(func() error {
 		return szConfig.Initialize(ctx, instanceName, settings, senzing.SzNoLogging)
 	})
 	handleErrorWithPanic(err)
@@ -376,21 +326,16 @@ func setupSenzingConfiguration() error {
 	return nil
 }
 
-func teardown() error {
+func teardown() {
 	ctx := context.TODO()
-	err := teardownSzEngine(ctx)
-	handleErrorWithPanic(err)
-
-	return nil
+	teardownSzEngine(ctx)
 }
 
-func teardownSzEngine(ctx context.Context) error {
+func teardownSzEngine(ctx context.Context) {
 	_, err := captureStdout(func() error {
 		return szEngineSingleton.Destroy(ctx)
 	})
 	handleErrorWithPanic(err)
 
 	szEngineSingleton = nil
-
-	return nil
 }

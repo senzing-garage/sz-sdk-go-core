@@ -2,7 +2,6 @@ package szconfig_test
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -214,9 +213,8 @@ func TestSzconfig_AsInterface(test *testing.T) {
 func TestSzconfig_Initialize(test *testing.T) {
 	ctx := test.Context()
 	szConfig := getTestObject(test)
-	settings, err := getSettings()
-	require.NoError(test, err)
-	err = szConfig.Initialize(ctx, instanceName, settings, verboseLogging)
+	settings := getSettings()
+	err := szConfig.Initialize(ctx, instanceName, settings, verboseLogging)
 	require.NoError(test, err)
 }
 
@@ -233,9 +231,8 @@ func TestSzconfig_Initialize_badSettings(test *testing.T) {
 func TestSzconfig_Initialize_again(test *testing.T) {
 	ctx := test.Context()
 	szConfig := getTestObject(test)
-	settings, err := getSettings()
-	require.NoError(test, err)
-	err = szConfig.Initialize(ctx, instanceName, settings, verboseLogging)
+	settings := getSettings()
+	err := szConfig.Initialize(ctx, instanceName, settings, verboseLogging)
 	require.NoError(test, err)
 }
 
@@ -265,7 +262,7 @@ func getDatabaseTemplatePath() string {
 	return filepath.FromSlash("../testdata/sqlite/G2C.db")
 }
 
-func getSettings() (string, error) {
+func getSettings() string {
 	var result string
 
 	// Determine Database URL.
@@ -282,16 +279,14 @@ func getSettings() (string, error) {
 	result, err = settings.BuildSimpleSettingsUsingMap(configAttrMap)
 	handleErrorWithPanic(err)
 
-	return result, nil
+	return result
 }
 
 func getSzConfig(ctx context.Context) *szconfig.Szconfig {
 	if szConfigSingleton == nil {
-		settings, err := getSettings()
-		handleErrorWithPanic(err)
-
+		settings := getSettings()
 		szConfigSingleton = &szconfig.Szconfig{}
-		err = szConfigSingleton.SetLogLevel(ctx, logLevel)
+		err := szConfigSingleton.SetLogLevel(ctx, logLevel)
 		handleErrorWithPanic(err)
 
 		if logLevel == "TRACE" {
@@ -351,10 +346,6 @@ func printResult(t *testing.T, title string, result interface{}) {
 	}
 }
 
-func safePrintf(format string, message ...any) {
-	fmt.Printf(format, message...) //nolint
-}
-
 func safePrintln(message ...any) {
 	fmt.Println(message...) //nolint
 }
@@ -368,53 +359,22 @@ func truncate(aString string, length int) string {
 // ----------------------------------------------------------------------------
 
 func TestMain(m *testing.M) {
-	err := setup()
-	if err != nil {
-		if errors.Is(err, szerror.ErrSzUnrecoverable) {
-			safePrintf("\nUnrecoverable error detected. \n\n")
-		}
-
-		if errors.Is(err, szerror.ErrSzRetryable) {
-			safePrintf("\nRetryable error detected. \n\n")
-		}
-
-		if errors.Is(err, szerror.ErrSzBadInput) {
-			safePrintf("\nBad user input error detected. \n\n")
-		}
-
-		safePrintln(err)
-
-		os.Exit(1)
-	}
+	setup()
 
 	code := m.Run()
 
-	err = teardown()
-	if err != nil {
-		safePrintln(err)
-	}
-
+	teardown()
 	os.Exit(code)
 }
 
-func setup() error {
-	var err error
-
-	err = setupDirectories()
-	handleErrorWithPanic(err)
-	err = setupDatabase()
-	handleErrorWithPanic(err)
-
-	return nil
+func setup() {
+	setupDirectories()
+	setupDatabase()
 }
 
-func setupDatabase() error {
-	var err error
-
-	// Locate source and target paths.
-
+func setupDatabase() {
 	testDirectoryPath := getTestDirectoryPath()
-	_, err = filepath.Abs(filepath.Join(testDirectoryPath, "G2C.db"))
+	_, err := filepath.Abs(filepath.Join(testDirectoryPath, "G2C.db"))
 	handleErrorWithPanic(err)
 	databaseTemplatePath, err := filepath.Abs(getDatabaseTemplatePath())
 	handleErrorWithPanic(err)
@@ -423,37 +383,26 @@ func setupDatabase() error {
 
 	_, _, err = fileutil.CopyFile(databaseTemplatePath, testDirectoryPath, true) // Copy the SQLite database file.
 	handleErrorWithPanic(err)
-
-	return nil
 }
 
-func setupDirectories() error {
-	var err error
-
+func setupDirectories() {
 	testDirectoryPath := getTestDirectoryPath()
-	err = os.RemoveAll(filepath.Clean(testDirectoryPath)) // cleanup any previous test run
+	err := os.RemoveAll(filepath.Clean(testDirectoryPath)) // cleanup any previous test run
 	handleErrorWithPanic(err)
 	err = os.MkdirAll(filepath.Clean(testDirectoryPath), 0750) // recreate the test target directory
 	handleErrorWithPanic(err)
-
-	return nil
 }
 
-func teardown() error {
+func teardown() {
 	ctx := context.TODO()
-	err := teardownSzConfig(ctx)
-	handleErrorWithPanic(err)
-
-	return nil
+	teardownSzConfig(ctx)
 }
 
-func teardownSzConfig(ctx context.Context) error {
+func teardownSzConfig(ctx context.Context) {
 	err := szConfigSingleton.UnregisterObserver(ctx, observerSingleton)
 	handleErrorWithPanic(err)
 	err = szConfigSingleton.Destroy(ctx)
 	handleErrorWithPanic(err)
 
 	szConfigSingleton = nil
-
-	return nil
 }
