@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/senzing-garage/sz-sdk-go-core/helper"
+	"github.com/senzing-garage/go-helpers/wraperror"
 	"github.com/senzing-garage/sz-sdk-go-core/szconfigmanager"
 	"github.com/senzing-garage/sz-sdk-go-core/szdiagnostic"
 	"github.com/senzing-garage/sz-sdk-go-core/szengine"
@@ -54,7 +54,7 @@ func (factory *Szabstractfactory) CreateConfigManager(ctx context.Context) (senz
 		}
 	}
 
-	return result, helper.Errorf(err, "szabstractfactory.CreateConfigManager  error: %w", err)
+	return result, wraperror.Errorf(err, "szabstractfactory.CreateConfigManager  error: %w", err)
 }
 
 /*
@@ -79,7 +79,7 @@ func (factory *Szabstractfactory) CreateDiagnostic(ctx context.Context) (senzing
 		}
 	}
 
-	return result, helper.Errorf(err, "szabstractfactory.CreateDiagnostic  error: %w", err)
+	return result, wraperror.Errorf(err, "szabstractfactory.CreateDiagnostic  error: %w", err)
 }
 
 /*
@@ -104,7 +104,7 @@ func (factory *Szabstractfactory) CreateEngine(ctx context.Context) (senzing.SzE
 		}
 	}
 
-	return result, helper.Errorf(err, "szabstractfactory.CreateEngine  error: %w", err)
+	return result, wraperror.Errorf(err, "szabstractfactory.CreateEngine  error: %w", err)
 }
 
 /*
@@ -129,7 +129,7 @@ func (factory *Szabstractfactory) CreateProduct(ctx context.Context) (senzing.Sz
 		}
 	}
 
-	return result, helper.Errorf(err, "szabstractfactory.CreateProduct  error: %w", err)
+	return result, wraperror.Errorf(err, "szabstractfactory.CreateProduct  error: %w", err)
 }
 
 /*
@@ -195,7 +195,7 @@ func (factory *Szabstractfactory) Reinitialize(ctx context.Context, configID int
 		}
 	}
 
-	return helper.Errorf(err, "szabstractfactory.Reinitialize  error: %w", err)
+	return wraperror.Errorf(err, "szabstractfactory.Reinitialize  error: %w", err)
 }
 
 // ----------------------------------------------------------------------------

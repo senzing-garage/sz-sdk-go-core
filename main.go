@@ -13,8 +13,8 @@ import (
 	"github.com/senzing-garage/go-helpers/fileutil"
 	"github.com/senzing-garage/go-helpers/settings"
 	"github.com/senzing-garage/go-helpers/truthset"
+	"github.com/senzing-garage/go-helpers/wraperror"
 	"github.com/senzing-garage/go-logging/logging"
-	"github.com/senzing-garage/sz-sdk-go-core/helper"
 	"github.com/senzing-garage/sz-sdk-go-core/szabstractfactory"
 	"github.com/senzing-garage/sz-sdk-go/senzing"
 )
@@ -112,7 +112,7 @@ func demonstrateAddRecord(ctx context.Context, szEngine senzing.SzEngine) (strin
 
 	result, err = szEngine.AddRecord(ctx, dataSourceCode, recordID, jsonData, flags)
 
-	return result, helper.Errorf(err, "demonstrateAddRecord error: %w", err)
+	return result, wraperror.Errorf(err, "demonstrateAddRecord error: %w", err)
 }
 
 func demonstrateConfigFunctions(ctx context.Context, szAbstractFactory senzing.SzAbstractFactory) {
@@ -228,14 +228,14 @@ func getLogger(ctx context.Context) (logging.Logging, error) {
 	_ = ctx
 	result, err := logging.NewSenzingLogger(9999, Messages)
 
-	return result, helper.Errorf(err, "getLogger error: %w", err)
+	return result, wraperror.Errorf(err, "getLogger error: %w", err)
 }
 
 func getSettings(databaseURL string) (string, error) {
 	configAttrMap := map[string]string{"databaseUrl": databaseURL}
 	result, err := settings.BuildSimpleSettingsUsingMap(configAttrMap)
 
-	return result, helper.Errorf(err, "getSettings error: %w", err)
+	return result, wraperror.Errorf(err, "getSettings error: %w", err)
 }
 
 func getTestDirectoryPath() string {

@@ -22,6 +22,7 @@ import (
 	"time"
 	"unsafe"
 
+	"github.com/senzing-garage/go-helpers/wraperror"
 	"github.com/senzing-garage/go-logging/logging"
 	"github.com/senzing-garage/go-messaging/messenger"
 	"github.com/senzing-garage/go-observing/notifier"
@@ -92,7 +93,7 @@ func (client *Szconfigmanager) CreateConfigFromConfigID(ctx context.Context, con
 		}()
 	}
 
-	return result, helper.Errorf(err, "szconfigmanager.CreateConfigFromConfigID error: %w", err)
+	return result, wraperror.Errorf(err, "szconfigmanager.CreateConfigFromConfigID error: %w", err)
 }
 
 func (client *Szconfigmanager) CreateConfigFromString(
@@ -120,7 +121,7 @@ func (client *Szconfigmanager) CreateConfigFromString(
 		}()
 	}
 
-	return result, helper.Errorf(err, "szconfigmanager.CreateConfigFromString error: %w", err)
+	return result, wraperror.Errorf(err, "szconfigmanager.CreateConfigFromString error: %w", err)
 }
 
 func (client *Szconfigmanager) CreateConfigFromTemplate(ctx context.Context) (senzing.SzConfig, error) {
@@ -145,7 +146,7 @@ func (client *Szconfigmanager) CreateConfigFromTemplate(ctx context.Context) (se
 		}()
 	}
 
-	return result, helper.Errorf(err, "szconfigmanager.CreateConfigFromTemplate error: %w", err)
+	return result, wraperror.Errorf(err, "szconfigmanager.CreateConfigFromTemplate error: %w", err)
 }
 
 /*
@@ -179,7 +180,7 @@ func (client *Szconfigmanager) GetConfigs(ctx context.Context) (string, error) {
 		}()
 	}
 
-	return result, helper.Errorf(err, "szconfigmanager.GetConfigs error: %w", err)
+	return result, wraperror.Errorf(err, "szconfigmanager.GetConfigs error: %w", err)
 }
 
 /*
@@ -216,7 +217,7 @@ func (client *Szconfigmanager) GetDefaultConfigID(ctx context.Context) (int64, e
 		}()
 	}
 
-	return result, helper.Errorf(err, "szconfigmanager.GetDefaultConfigID error: %w", err)
+	return result, wraperror.Errorf(err, "szconfigmanager.GetDefaultConfigID error: %w", err)
 }
 
 /*
@@ -259,7 +260,7 @@ func (client *Szconfigmanager) RegisterConfig(
 		}()
 	}
 
-	return result, helper.Errorf(err, "szconfigmanager.RegisterConfig error: %w", err)
+	return result, wraperror.Errorf(err, "szconfigmanager.RegisterConfig error: %w", err)
 }
 
 /*
@@ -302,7 +303,7 @@ func (client *Szconfigmanager) ReplaceDefaultConfigID(
 		}()
 	}
 
-	return helper.Errorf(err, "szconfigmanager.ReplaceDefaultConfigID error: %w", err)
+	return wraperror.Errorf(err, "szconfigmanager.ReplaceDefaultConfigID error: %w", err)
 }
 
 func (client *Szconfigmanager) SetDefaultConfig(
@@ -334,7 +335,7 @@ func (client *Szconfigmanager) SetDefaultConfig(
 		}()
 	}
 
-	return result, helper.Errorf(err, "szconfigmanager.SetDefaultConfig error: %w", err)
+	return result, wraperror.Errorf(err, "szconfigmanager.SetDefaultConfig error: %w", err)
 }
 
 /*
@@ -370,7 +371,7 @@ func (client *Szconfigmanager) SetDefaultConfigID(ctx context.Context, configID 
 		}()
 	}
 
-	return helper.Errorf(err, "szconfigmanager.SetDefaultConfigID error: %w", err)
+	return wraperror.Errorf(err, "szconfigmanager.SetDefaultConfigID error: %w", err)
 }
 
 // ----------------------------------------------------------------------------
@@ -406,7 +407,7 @@ func (client *Szconfigmanager) Destroy(ctx context.Context) error {
 		}()
 	}
 
-	return helper.Errorf(err, "szconfigmanager.Destroy error: %w", err)
+	return wraperror.Errorf(err, "szconfigmanager.Destroy error: %w", err)
 }
 
 /*
@@ -464,7 +465,7 @@ func (client *Szconfigmanager) Initialize(
 		}()
 	}
 
-	return helper.Errorf(err, "szconfigmanager.Initialize error: %w", err)
+	return wraperror.Errorf(err, "szconfigmanager.Initialize error: %w", err)
 }
 
 /*
@@ -499,7 +500,7 @@ func (client *Szconfigmanager) RegisterObserver(ctx context.Context, observer ob
 		}()
 	}
 
-	return helper.Errorf(err, "szconfigmanager.RegisterObserver error: %w", err)
+	return wraperror.Errorf(err, "szconfigmanager.RegisterObserver error: %w", err)
 }
 
 /*
@@ -535,7 +536,7 @@ func (client *Szconfigmanager) SetLogLevel(ctx context.Context, logLevelName str
 		}()
 	}
 
-	return helper.Errorf(err, "szconfigmanager.SetLogLevel error: %w", err)
+	return wraperror.Errorf(err, "szconfigmanager.SetLogLevel error: %w", err)
 }
 
 /*
@@ -584,7 +585,7 @@ func (client *Szconfigmanager) UnregisterObserver(ctx context.Context, observer 
 		}
 	}
 
-	return helper.Errorf(err, "szconfigmanager.UnregisterObserver error: %w", err)
+	return wraperror.Errorf(err, "szconfigmanager.UnregisterObserver error: %w", err)
 }
 
 // ----------------------------------------------------------------------------
@@ -624,7 +625,7 @@ func (client *Szconfigmanager) createConfigFromStringChoreography(
 
 	err = result.Import(ctx, configDefinition)
 
-	return result, helper.Errorf(err, "createConfigFromStringChoreography.Import error: %w", err)
+	return result, wraperror.Errorf(err, "createConfigFromStringChoreography.Import error: %w", err)
 }
 
 func (client *Szconfigmanager) createConfigFromTemplateChoreography(ctx context.Context) (senzing.SzConfig, error) {
@@ -642,7 +643,7 @@ func (client *Szconfigmanager) createConfigFromTemplateChoreography(ctx context.
 
 	err = result.ImportTemplate(ctx)
 
-	return result, helper.Errorf(err, "createConfigFromTemplateChoreography.ImportTemplate error: %w", err)
+	return result, wraperror.Errorf(err, "createConfigFromTemplateChoreography.ImportTemplate error: %w", err)
 }
 
 func (client *Szconfigmanager) setDefaultConfigChoreography(
@@ -664,7 +665,7 @@ func (client *Szconfigmanager) setDefaultConfigChoreography(
 
 	err = client.setDefaultConfigID(ctx, result)
 
-	return result, helper.Errorf(err, "setDefaultConfigChoreography.setDefaultConfigID error: %w", err)
+	return result, wraperror.Errorf(err, "setDefaultConfigChoreography.setDefaultConfigID error: %w", err)
 }
 
 // ----------------------------------------------------------------------------

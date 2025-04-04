@@ -22,6 +22,7 @@ import (
 	"time"
 	"unsafe"
 
+	"github.com/senzing-garage/go-helpers/wraperror"
 	"github.com/senzing-garage/go-logging/logging"
 	"github.com/senzing-garage/go-messaging/messenger"
 	"github.com/senzing-garage/go-observing/notifier"
@@ -86,7 +87,7 @@ func (client *Szproduct) GetLicense(ctx context.Context) (string, error) {
 		}()
 	}
 
-	return result, helper.Errorf(err, "szproduct.GetLicense error: %w", err)
+	return result, wraperror.Errorf(err, "szproduct.GetLicense error: %w", err)
 }
 
 /*
@@ -120,7 +121,7 @@ func (client *Szproduct) GetVersion(ctx context.Context) (string, error) {
 		}()
 	}
 
-	return result, helper.Errorf(err, "szproduct.GetVersion error: %w", err)
+	return result, wraperror.Errorf(err, "szproduct.GetVersion error: %w", err)
 }
 
 // ----------------------------------------------------------------------------
@@ -153,7 +154,7 @@ func (client *Szproduct) Destroy(ctx context.Context) error {
 		}()
 	}
 
-	return helper.Errorf(err, "szproduct.Destroy error: %w", err)
+	return wraperror.Errorf(err, "szproduct.Destroy error: %w", err)
 }
 
 /*
@@ -208,7 +209,7 @@ func (client *Szproduct) Initialize(
 		}()
 	}
 
-	return helper.Errorf(err, "szproduct.Initialize error: %w", err)
+	return wraperror.Errorf(err, "szproduct.Initialize error: %w", err)
 }
 
 /*
@@ -243,7 +244,7 @@ func (client *Szproduct) RegisterObserver(ctx context.Context, observer observer
 		}()
 	}
 
-	return helper.Errorf(err, "szproduct.RegisterObserver error: %w", err)
+	return wraperror.Errorf(err, "szproduct.RegisterObserver error: %w", err)
 }
 
 /*
@@ -279,7 +280,7 @@ func (client *Szproduct) SetLogLevel(ctx context.Context, logLevelName string) e
 		}()
 	}
 
-	return helper.Errorf(err, "szproduct.SetLogLevel error: %w", err)
+	return wraperror.Errorf(err, "szproduct.SetLogLevel error: %w", err)
 }
 
 /*
@@ -327,7 +328,7 @@ func (client *Szproduct) UnregisterObserver(ctx context.Context, observer observ
 		}
 	}
 
-	return helper.Errorf(err, "szproduct.UnregisterObserver error: %w", err)
+	return wraperror.Errorf(err, "szproduct.UnregisterObserver error: %w", err)
 }
 
 // ----------------------------------------------------------------------------
