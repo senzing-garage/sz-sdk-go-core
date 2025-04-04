@@ -21,8 +21,8 @@ const (
 // ----------------------------------------------------------------------------
 
 func ExampleSzdiagnostic_CheckDatastorePerformance() {
-	// For more information,
-	// visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
+	// For more information, visit
+	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := getSzAbstractFactory(ctx)
 
@@ -43,8 +43,8 @@ func ExampleSzdiagnostic_CheckDatastorePerformance() {
 }
 
 func ExampleSzdiagnostic_GetDatastoreInfo() {
-	// For more information,
-	// visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
+	// For more information, visit
+	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := getSzAbstractFactory(ctx)
 
@@ -63,8 +63,8 @@ func ExampleSzdiagnostic_GetDatastoreInfo() {
 }
 
 func ExampleSzdiagnostic_GetFeature() {
-	// For more information,
-	// visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
+	// For more information, visit
+	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := getSzAbstractFactory(ctx)
 
@@ -115,8 +115,8 @@ func ExampleSzdiagnostic_GetFeature() {
 }
 
 func ExampleSzdiagnostic_PurgeRepository() {
-	// For more information,
-	// visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
+	// For more information, visit
+	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := getSzAbstractFactory(ctx)
 
@@ -137,8 +137,8 @@ func ExampleSzdiagnostic_PurgeRepository() {
 // ----------------------------------------------------------------------------
 
 func ExampleSzdiagnostic_SetLogLevel() {
-	// For more information,
-	// visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
+	// For more information, visit
+	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
 	ctx := context.TODO()
 	szDiagnostic := getSzDiagnostic(ctx)
 
@@ -150,8 +150,8 @@ func ExampleSzdiagnostic_SetLogLevel() {
 }
 
 func ExampleSzdiagnostic_SetObserverOrigin() {
-	// For more information,
-	// visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
+	// For more information, visit
+	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
 	ctx := context.TODO()
 	szDiagnostic := getSzDiagnostic(ctx)
 	origin := "Machine: nn; Task: UnitTest"
@@ -160,8 +160,8 @@ func ExampleSzdiagnostic_SetObserverOrigin() {
 }
 
 func ExampleSzdiagnostic_GetObserverOrigin() {
-	// For more information,
-	// visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
+	// For more information, visit
+	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
 	ctx := context.TODO()
 	szDiagnostic := getSzDiagnostic(ctx)
 	origin := "Machine: nn; Task: UnitTest"

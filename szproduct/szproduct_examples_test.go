@@ -37,8 +37,8 @@ func ExampleSzproduct_GetLicense() {
 }
 
 func ExampleSzproduct_GetVersion() {
-	// For more information,
-	// visit https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szproduct/szproduct_examples_test.go
+	// For more information, visit
+	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szproduct/szproduct_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := getSzAbstractFactory(ctx)
 
