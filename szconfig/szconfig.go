@@ -162,7 +162,7 @@ func (client *Szconfig) Export(ctx context.Context) (string, error) {
 		defer func() { client.traceExit(14, result, err, time.Since(entryTime)) }()
 	}
 
-	result = client.configDefinition
+	result, err = client.export(ctx)
 
 	if client.observers != nil {
 		go func() {
@@ -273,7 +273,7 @@ func (client *Szconfig) Import(ctx context.Context, configDefinition string) err
 		defer func() { client.traceExit(22, configDefinition, err, time.Since(entryTime)) }()
 	}
 
-	client.configDefinition = configDefinition
+	err = client.importConfigDefinition(ctx, configDefinition)
 
 	if client.observers != nil {
 		go func() {
@@ -314,7 +314,7 @@ func (client *Szconfig) ImportTemplate(ctx context.Context) error {
 		return fmt.Errorf("importTemplateChoregraphy error: %w", err)
 	}
 
-	client.configDefinition = result
+	err = client.importConfigDefinition(ctx, result)
 
 	if client.observers != nil {
 		go func() {
@@ -615,6 +615,13 @@ func (client *Szconfig) getDataSourcesChoreography(ctx context.Context, configDe
 	return result, nil
 }
 
+func (client *Szconfig) importConfigDefinition(ctx context.Context, configDefinition string) error {
+	_ = ctx
+	client.configDefinition = configDefinition
+
+	return nil
+}
+
 // ----------------------------------------------------------------------------
 // Private methods for calling the Senzing C API
 // ----------------------------------------------------------------------------
@@ -700,6 +707,11 @@ func (client *Szconfig) deleteDataSource(ctx context.Context, configHandle uintp
 	}
 
 	return err
+}
+
+func (client *Szconfig) export(ctx context.Context) (string, error) {
+	_ = ctx
+	return client.configDefinition, nil
 }
 
 func (client *Szconfig) destroy(ctx context.Context) error {

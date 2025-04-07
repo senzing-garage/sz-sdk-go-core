@@ -31,10 +31,12 @@ import (
 const (
 	avoidEntityIDs      = senzing.SzNoAvoidance
 	avoidRecordKeys     = senzing.SzNoAvoidance
+	baseTen             = 10
 	buildOutDegrees     = int64(2)
 	buildOutMaxEntities = int64(10)
 	defaultTruncation   = 76
 	instanceName        = "SzEngine Test"
+	jsonIndentation     = "    "
 	maxDegrees          = int64(2)
 	observerOrigin      = "SzEngine observer"
 	printResults        = false

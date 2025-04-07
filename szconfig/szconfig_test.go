@@ -20,6 +20,7 @@ import (
 )
 
 const (
+	baseTen           = 10
 	dataSourceCode    = "GO_TEST"
 	defaultTruncation = 76
 	instanceName      = "SzConfig Test"

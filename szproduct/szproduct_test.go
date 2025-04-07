@@ -173,8 +173,10 @@ func getSzProduct(ctx context.Context) *szproduct.Szproduct {
 
 		if logLevel == "TRACE" {
 			szProductSingleton.SetObserverOrigin(ctx, observerOrigin)
+
 			err = szProductSingleton.RegisterObserver(ctx, observerSingleton)
 			handleErrorWithPanic(err)
+
 			err = szProductSingleton.SetLogLevel(ctx, logLevel) // Duplicated for coverage testing
 			handleErrorWithPanic(err)
 		}

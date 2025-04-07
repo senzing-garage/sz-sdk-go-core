@@ -28,6 +28,7 @@ import (
 const (
 	defaultTruncation = 76
 	instanceName      = "SzDiagnostic Test"
+	jsonIndentation   = "    "
 	observerOrigin    = "SzDiagnostic observer"
 	printResults      = false
 	verboseLogging    = senzing.SzNoLogging

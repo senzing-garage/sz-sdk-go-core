@@ -12,10 +12,6 @@ import (
 	"github.com/senzing-garage/sz-sdk-go/senzing"
 )
 
-const (
-	jsonIndentation = "    "
-)
-
 // ----------------------------------------------------------------------------
 // Interface methods - Examples for godoc documentation
 // ----------------------------------------------------------------------------
