@@ -19,6 +19,7 @@ import (
 	"github.com/senzing-garage/go-helpers/testfixtures"
 	"github.com/senzing-garage/go-helpers/truthset"
 	"github.com/senzing-garage/go-observing/observer"
+	"github.com/senzing-garage/sz-sdk-go-core/szabstractfactory"
 	"github.com/senzing-garage/sz-sdk-go-core/szconfig"
 	"github.com/senzing-garage/sz-sdk-go-core/szconfigmanager"
 	"github.com/senzing-garage/sz-sdk-go-core/szengine"
@@ -551,7 +552,7 @@ func TestSzengine_ExportJSONEntityReport(test *testing.T) {
 	printActual(test, actual)
 
 	defer func() {
-		handleErrorWithString(szEngine.DeleteRecord(ctx, aRecord.DataSource, aRecord.ID, senzing.SzWithoutInfo))
+		panicOnErrorWithString(szEngine.DeleteRecord(ctx, aRecord.DataSource, aRecord.ID, senzing.SzWithoutInfo))
 	}()
 
 	flags = senzing.SzExportDefaultFlags
@@ -3437,7 +3438,7 @@ func addRecords(ctx context.Context, records []record.Record) {
 
 	for _, record := range records {
 		_, err := szEngine.AddRecord(ctx, record.DataSource, record.ID, record.JSON, flags)
-		handleErrorWithPanic(err)
+		panicOnError(err)
 	}
 }
 
@@ -3447,7 +3448,7 @@ func deleteRecords(ctx context.Context, records []record.Record) {
 
 	for _, record := range records {
 		_, err := szEngine.DeleteRecord(ctx, record.DataSource, record.ID, flags)
-		handleErrorWithPanic(err)
+		panicOnError(err)
 	}
 }
 
@@ -3472,11 +3473,11 @@ func getEntityIDForRecord(datasource string, recordID string) (int64, error) {
 	ctx := context.TODO()
 	szEngine := getSzEngine(ctx)
 	response, err := szEngine.GetEntityByRecordID(ctx, datasource, recordID, senzing.SzWithoutInfo)
-	handleErrorWithPanic(err)
+	panicOnError(err)
 
 	getEntityByRecordIDResponse := &GetEntityByRecordIDResponse{} //exhaustruct:ignore
 	err = json.Unmarshal([]byte(response), &getEntityByRecordIDResponse)
-	handleErrorWithPanic(err)
+	panicOnError(err)
 
 	result = getEntityByRecordIDResponse.ResolvedEntity.EntityID
 
@@ -3485,7 +3486,7 @@ func getEntityIDForRecord(datasource string, recordID string) (int64, error) {
 
 func getEntityIDString(record record.Record) string {
 	entityID, err := getEntityID(record)
-	handleErrorWithPanic(err)
+	panicOnError(err)
 
 	result := strconv.FormatInt(entityID, baseTen)
 
@@ -3498,7 +3499,7 @@ func getEntityIDStringForRecord(datasource string, recordID string) string {
 	)
 
 	entityID, err := getEntityIDForRecord(datasource, recordID)
-	handleErrorWithPanic(err)
+	panicOnError(err)
 
 	result = strconv.FormatInt(entityID, baseTen)
 
@@ -3555,18 +3556,18 @@ func getNewSzEngine(ctx context.Context) *szengine.Szengine {
 
 	newSzEngine = &szengine.Szengine{}
 	err = newSzEngine.SetLogLevel(ctx, logLevel)
-	handleErrorWithPanic(err)
+	panicOnError(err)
 
 	if logLevel == "TRACE" {
 		newSzEngine.SetObserverOrigin(ctx, observerOrigin)
 		err = newSzEngine.RegisterObserver(ctx, observerSingleton)
-		handleErrorWithPanic(err)
+		panicOnError(err)
 		err = newSzEngine.SetLogLevel(ctx, logLevel) // Duplicated for coverage testing
-		handleErrorWithPanic(err)
+		panicOnError(err)
 	}
 
 	err = newSzEngine.Initialize(ctx, instanceName, settings, getDefaultConfigID(), verboseLogging)
-	handleErrorWithPanic(err)
+	panicOnError(err)
 
 	return newSzEngine
 }
@@ -3578,7 +3579,7 @@ func getSettings() string {
 
 	testDirectoryPath := getTestDirectoryPath()
 	dbTargetPath, err := filepath.Abs(filepath.Join(testDirectoryPath, "G2C.db"))
-	handleErrorWithPanic(err)
+	panicOnError(err)
 
 	databaseURL := "sqlite3://na:na@nowhere/" + dbTargetPath
 
@@ -3586,7 +3587,26 @@ func getSettings() string {
 
 	configAttrMap := map[string]string{"databaseUrl": databaseURL}
 	result, err = settings.BuildSimpleSettingsUsingMap(configAttrMap)
-	handleErrorWithPanic(err)
+	panicOnError(err)
+
+	return result
+}
+
+func getSzAbstractFactory(ctx context.Context) senzing.SzAbstractFactory {
+	var (
+		result senzing.SzAbstractFactory
+	)
+
+	_ = ctx
+
+	settings := getSettings()
+
+	result = &szabstractfactory.Szabstractfactory{
+		ConfigID:       senzing.SzInitializeWithDefaultConfiguration,
+		InstanceName:   instanceName,
+		Settings:       settings,
+		VerboseLogging: verboseLogging,
+	}
 
 	return result
 }
@@ -3609,27 +3629,26 @@ func getTestDirectoryPath() string {
 
 func getTestObject(t *testing.T) *szengine.Szengine {
 	t.Helper()
-	ctx := t.Context()
 
-	return getSzEngine(ctx)
+	return getSzEngine(t.Context())
 }
 
 func handleError(err error) {
 	if err != nil {
-		safePrintln("Error:", err)
+		fmt.Println("Error:", err) //nolint:forbidigo
 	}
 }
 
-func handleErrorWithPanic(err error) {
+func panicOnError(err error) {
 	if err != nil {
 		panic(err)
 	}
 }
 
-func handleErrorWithString(aString string, err error) {
+func panicOnErrorWithString(aString string, err error) {
 	_ = aString
 
-	handleError(err)
+	panicOnError(err)
 }
 
 func printActual(t *testing.T, actual interface{}) {
@@ -3643,10 +3662,6 @@ func printResult(t *testing.T, title string, result interface{}) {
 	if printResults {
 		t.Logf("%s: %v", title, truncate(fmt.Sprintf("%v", result), defaultTruncation))
 	}
-}
-
-func safePrintln(message ...any) {
-	fmt.Println(message...) //nolint
 }
 
 // func ramCheck(test *testing.T, iteration int) {
@@ -3680,28 +3695,28 @@ func setup() {
 	setupDatabase()
 
 	err := setupSenzingConfiguration()
-	handleErrorWithPanic(err)
+	panicOnError(err)
 }
 
 func setupDatabase() {
 	testDirectoryPath := getTestDirectoryPath()
 	_, err := filepath.Abs(filepath.Join(testDirectoryPath, "G2C.db"))
-	handleErrorWithPanic(err)
+	panicOnError(err)
 	databaseTemplatePath, err := filepath.Abs(getDatabaseTemplatePath())
-	handleErrorWithPanic(err)
+	panicOnError(err)
 
 	// Copy template file to test directory.
 
 	_, _, err = fileutil.CopyFile(databaseTemplatePath, testDirectoryPath, true) // Copy the SQLite database file.
-	handleErrorWithPanic(err)
+	panicOnError(err)
 }
 
 func setupDirectories() {
 	testDirectoryPath := getTestDirectoryPath()
 	err := os.RemoveAll(filepath.Clean(testDirectoryPath)) // cleanup any previous test run
-	handleErrorWithPanic(err)
+	panicOnError(err)
 	err = os.MkdirAll(filepath.Clean(testDirectoryPath), 0750) // recreate the test target directory
-	handleErrorWithPanic(err)
+	panicOnError(err)
 }
 
 func setupSenzingConfiguration() error {
@@ -3714,39 +3729,39 @@ func setupSenzingConfiguration() error {
 
 	szConfig := &szconfig.Szconfig{}
 	err := szConfig.Initialize(ctx, instanceName, settings, verboseLogging)
-	handleErrorWithPanic(err)
+	panicOnError(err)
 
-	defer func() { handleErrorWithPanic(szConfig.Destroy(ctx)) }()
+	defer func() { panicOnError(szConfig.Destroy(ctx)) }()
 
 	szConfigManager := &szconfigmanager.Szconfigmanager{}
 	err = szConfigManager.Initialize(ctx, instanceName, settings, verboseLogging)
-	handleErrorWithPanic(err)
+	panicOnError(err)
 
-	defer func() { handleErrorWithPanic(szConfigManager.Destroy(ctx)) }()
+	defer func() { panicOnError(szConfigManager.Destroy(ctx)) }()
 
 	// Create a Senzing configuration.
 
 	err = szConfig.ImportTemplate(ctx)
-	handleErrorWithPanic(err)
+	panicOnError(err)
 
 	// Add data sources to template Senzing configuration.
 
 	dataSourceCodes := []string{"CUSTOMERS", "REFERENCE", "WATCHLIST"}
 	for _, dataSourceCode := range dataSourceCodes {
 		_, err := szConfig.AddDataSource(ctx, dataSourceCode)
-		handleErrorWithPanic(err)
+		panicOnError(err)
 	}
 
 	// Create a string representation of the Senzing configuration.
 
 	configDefinition, err := szConfig.Export(ctx)
-	handleErrorWithPanic(err)
+	panicOnError(err)
 
 	// Persist the Senzing configuration to the Senzing repository as default.
 
 	configComment := fmt.Sprintf("Created by szengine_test at %s", now.UTC())
 	defaultConfigID, err = szConfigManager.SetDefaultConfig(ctx, configDefinition, configComment)
-	handleErrorWithPanic(err)
+	panicOnError(err)
 
 	return nil
 }
@@ -3759,9 +3774,9 @@ func teardown() {
 
 func teardownSzEngine(ctx context.Context) {
 	err := szEngineSingleton.UnregisterObserver(ctx, observerSingleton)
-	handleErrorWithPanic(err)
+	panicOnError(err)
 	err = szEngineSingleton.Destroy(ctx)
-	handleErrorWithPanic(err)
+	panicOnError(err)
 
 	szEngineSingleton = nil
 }

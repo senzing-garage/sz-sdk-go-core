@@ -46,13 +46,8 @@ func (factory *Szabstractfactory) CreateConfigManager(ctx context.Context) (senz
 	var err error
 
 	result := &szconfigmanager.Szconfigmanager{}
-
-	if !factory.isSzconfigmanagerInitialized {
-		err = result.Initialize(ctx, factory.InstanceName, factory.Settings, factory.VerboseLogging)
-		if err == nil {
-			factory.isSzconfigmanagerInitialized = true
-		}
-	}
+	err = result.Initialize(ctx, factory.InstanceName, factory.Settings, factory.VerboseLogging)
+	factory.isSzconfigmanagerInitialized = true
 
 	return result, wraperror.Errorf(err, "szabstractfactory.CreateConfigManager  error: %w", err)
 }
@@ -71,13 +66,8 @@ func (factory *Szabstractfactory) CreateDiagnostic(ctx context.Context) (senzing
 	var err error
 
 	result := &szdiagnostic.Szdiagnostic{}
-
-	if !factory.isSzdiagnosticInitialized {
-		err = result.Initialize(ctx, factory.InstanceName, factory.Settings, factory.ConfigID, factory.VerboseLogging)
-		if err == nil {
-			factory.isSzdiagnosticInitialized = true
-		}
-	}
+	err = result.Initialize(ctx, factory.InstanceName, factory.Settings, factory.ConfigID, factory.VerboseLogging)
+	factory.isSzdiagnosticInitialized = true
 
 	return result, wraperror.Errorf(err, "szabstractfactory.CreateDiagnostic  error: %w", err)
 }
@@ -96,13 +86,8 @@ func (factory *Szabstractfactory) CreateEngine(ctx context.Context) (senzing.SzE
 	var err error
 
 	result := &szengine.Szengine{}
-
-	if !factory.isSzengineInitialized {
-		err = result.Initialize(ctx, factory.InstanceName, factory.Settings, factory.ConfigID, factory.VerboseLogging)
-		if err == nil {
-			factory.isSzengineInitialized = true
-		}
-	}
+	err = result.Initialize(ctx, factory.InstanceName, factory.Settings, factory.ConfigID, factory.VerboseLogging)
+	factory.isSzengineInitialized = true
 
 	return result, wraperror.Errorf(err, "szabstractfactory.CreateEngine  error: %w", err)
 }
@@ -121,13 +106,8 @@ func (factory *Szabstractfactory) CreateProduct(ctx context.Context) (senzing.Sz
 	var err error
 
 	result := &szproduct.Szproduct{}
-
-	if !factory.isSzproductInitialized {
-		err = result.Initialize(ctx, factory.InstanceName, factory.Settings, factory.VerboseLogging)
-		if err == nil {
-			factory.isSzproductInitialized = true
-		}
-	}
+	err = result.Initialize(ctx, factory.InstanceName, factory.Settings, factory.VerboseLogging)
+	factory.isSzproductInitialized = true
 
 	return result, wraperror.Errorf(err, "szabstractfactory.CreateProduct  error: %w", err)
 }
@@ -177,6 +157,7 @@ func (factory *Szabstractfactory) Reinitialize(ctx context.Context, configID int
 	var err error
 
 	factory.ConfigID = configID
+
 	if factory.isSzdiagnosticInitialized {
 		szDiagnostic := &szdiagnostic.Szdiagnostic{}
 

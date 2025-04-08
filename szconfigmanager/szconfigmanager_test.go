@@ -14,6 +14,7 @@ import (
 	"github.com/senzing-garage/go-helpers/fileutil"
 	"github.com/senzing-garage/go-helpers/settings"
 	"github.com/senzing-garage/go-observing/observer"
+	"github.com/senzing-garage/sz-sdk-go-core/szabstractfactory"
 	"github.com/senzing-garage/sz-sdk-go-core/szconfig"
 	"github.com/senzing-garage/sz-sdk-go-core/szconfigmanager"
 	"github.com/senzing-garage/sz-sdk-go/senzing"
@@ -69,7 +70,7 @@ func TestSzconfigmanager_CreateConfigFromConfigID(test *testing.T) {
 	ctx := test.Context()
 	szConfigManager := getTestObject(test)
 	configID, err1 := szConfigManager.GetDefaultConfigID(ctx)
-	handleErrorWithPanic(err1)
+	panicOnError(err1)
 
 	actual, err := szConfigManager.CreateConfigFromConfigID(ctx, configID)
 	require.NoError(test, err)
@@ -183,12 +184,12 @@ func TestSzconfigmanager_ReplaceDefaultConfigID(test *testing.T) {
 	ctx := test.Context()
 	szConfigManager := getTestObject(test)
 	currentDefaultConfigID, err1 := szConfigManager.GetDefaultConfigID(ctx)
-	handleErrorWithPanic(err1)
+	panicOnError(err1)
 
 	// TODO: This is kind of a cheater.
 
 	newDefaultConfigID, err2 := szConfigManager.GetDefaultConfigID(ctx)
-	handleErrorWithPanic(err2)
+	panicOnError(err2)
 
 	err := szConfigManager.ReplaceDefaultConfigID(ctx, currentDefaultConfigID, newDefaultConfigID)
 	require.NoError(test, err)
@@ -198,7 +199,7 @@ func TestSzconfigmanager_ReplaceDefaultConfigID_badCurrentDefaultConfigID(test *
 	ctx := test.Context()
 	szConfigManager := getTestObject(test)
 	newDefaultConfigID, err := szConfigManager.GetDefaultConfigID(ctx)
-	handleErrorWithPanic(err)
+	panicOnError(err)
 	err = szConfigManager.ReplaceDefaultConfigID(ctx, badCurrentDefaultConfigID, newDefaultConfigID)
 	require.ErrorIs(test, err, szerror.ErrSzReplaceConflict)
 }
@@ -207,7 +208,7 @@ func TestSzconfigmanager_ReplaceDefaultConfigID_badNewDefaultConfigID(test *test
 	ctx := test.Context()
 	szConfigManager := getTestObject(test)
 	currentDefaultConfigID, err := szConfigManager.GetDefaultConfigID(ctx)
-	handleErrorWithPanic(err)
+	panicOnError(err)
 	err = szConfigManager.ReplaceDefaultConfigID(ctx, currentDefaultConfigID, badNewDefaultConfigID)
 	require.ErrorIs(test, err, szerror.ErrSzConfiguration)
 }
@@ -216,7 +217,7 @@ func TestSzconfigmanager_ReplaceDefaultConfigID_nilCurrentDefaultConfigID(test *
 	ctx := test.Context()
 	szConfigManager := getTestObject(test)
 	newDefaultConfigID, err := szConfigManager.GetDefaultConfigID(ctx)
-	handleErrorWithPanic(err)
+	panicOnError(err)
 	err = szConfigManager.ReplaceDefaultConfigID(ctx, nilCurrentDefaultConfigID, newDefaultConfigID)
 	require.ErrorIs(test, err, szerror.ErrSzReplaceConflict)
 }
@@ -225,7 +226,7 @@ func TestSzconfigmanager_ReplaceDefaultConfigID_nilNewDefaultConfigID(test *test
 	ctx := test.Context()
 	szConfigManager := getTestObject(test)
 	currentDefaultConfigID, err := szConfigManager.GetDefaultConfigID(ctx)
-	handleErrorWithPanic(err)
+	panicOnError(err)
 	err = szConfigManager.ReplaceDefaultConfigID(ctx, currentDefaultConfigID, nilNewDefaultConfigID)
 	require.ErrorIs(test, err, szerror.ErrSzConfiguration)
 }
@@ -253,7 +254,7 @@ func TestSzconfigmanager_SetDefaultConfigID(test *testing.T) {
 	ctx := test.Context()
 	szConfigManager := getTestObject(test)
 	configID, err := szConfigManager.GetDefaultConfigID(ctx)
-	handleErrorWithPanic(err)
+	panicOnError(err)
 	err = szConfigManager.SetDefaultConfigID(ctx, configID)
 	require.NoError(test, err)
 }
@@ -361,7 +362,7 @@ func getSettings() string {
 
 	testDirectoryPath := getTestDirectoryPath()
 	dbTargetPath, err := filepath.Abs(filepath.Join(testDirectoryPath, "G2C.db"))
-	handleErrorWithPanic(err)
+	panicOnError(err)
 
 	databaseURL := "sqlite3://na:na@nowhere/" + dbTargetPath
 
@@ -369,7 +370,24 @@ func getSettings() string {
 
 	configAttrMap := map[string]string{"databaseUrl": databaseURL}
 	result, err = settings.BuildSimpleSettingsUsingMap(configAttrMap)
-	handleErrorWithPanic(err)
+	panicOnError(err)
+
+	return result
+}
+
+func getSzAbstractFactory(ctx context.Context) senzing.SzAbstractFactory {
+	var (
+		result senzing.SzAbstractFactory
+	)
+
+	_ = ctx
+	settings := getSettings()
+	result = &szabstractfactory.Szabstractfactory{
+		ConfigID:       senzing.SzInitializeWithDefaultConfiguration,
+		InstanceName:   instanceName,
+		Settings:       settings,
+		VerboseLogging: verboseLogging,
+	}
 
 	return result
 }
@@ -377,19 +395,19 @@ func getSettings() string {
 // func getSzConfig(ctx context.Context) *szconfig.Szconfig {
 // 	if szConfigSingleton == nil {
 // 		settings, err := getSettings()
-// 		handleErrorWithPanic(err)
+// 		panicOnError(err)
 // 		szConfigSingleton = &szconfig.Szconfig{}
 // 		err = szConfigSingleton.SetLogLevel(ctx, logLevel)
-// 		handleErrorWithPanic(err)
+// 		panicOnError(err)
 // 		if logLevel == "TRACE" {
 // 			szConfigSingleton.SetObserverOrigin(ctx, observerOrigin)
 // 			err = szConfigSingleton.RegisterObserver(ctx, observerSingleton)
-// 			handleErrorWithPanic(err)
+// 			panicOnError(err)
 // 			err = szConfigSingleton.SetLogLevel(ctx, logLevel) // Duplicated for coverage testing
-// 			handleErrorWithPanic(err)
+// 			panicOnError(err)
 // 		}
 // 		err = szConfigSingleton.Initialize(ctx, instanceName, settings, verboseLogging)
-// 		handleErrorWithPanic(err)
+// 		panicOnError(err)
 // 	}
 // 	return szConfigSingleton
 // }
@@ -399,18 +417,18 @@ func getSzConfigManager(ctx context.Context) *szconfigmanager.Szconfigmanager {
 		settings := getSettings()
 		szConfigManagerSingleton = &szconfigmanager.Szconfigmanager{}
 		err := szConfigManagerSingleton.SetLogLevel(ctx, logLevel)
-		handleErrorWithPanic(err)
+		panicOnError(err)
 
 		if logLevel == "TRACE" {
 			szConfigManagerSingleton.SetObserverOrigin(ctx, observerOrigin)
 			err = szConfigManagerSingleton.RegisterObserver(ctx, observerSingleton)
-			handleErrorWithPanic(err)
+			panicOnError(err)
 			err = szConfigManagerSingleton.SetLogLevel(ctx, logLevel) // Duplicated for coverage testing
-			handleErrorWithPanic(err)
+			panicOnError(err)
 		}
 
 		err = szConfigManagerSingleton.Initialize(ctx, instanceName, settings, verboseLogging)
-		handleErrorWithPanic(err)
+		panicOnError(err)
 	}
 
 	return szConfigManagerSingleton
@@ -433,11 +451,11 @@ func getTestObject(t *testing.T) *szconfigmanager.Szconfigmanager {
 
 func handleError(err error) {
 	if err != nil {
-		safePrintln("Error:", err)
+		fmt.Println("Error:", err) //nolint:forbidigo
 	}
 }
 
-func handleErrorWithPanic(err error) {
+func panicOnError(err error) {
 	if err != nil {
 		panic(err)
 	}
@@ -454,10 +472,6 @@ func printResult(t *testing.T, title string, result interface{}) {
 	if printResults {
 		t.Logf("%s: %v", title, truncate(fmt.Sprintf("%v", result), defaultTruncation))
 	}
-}
-
-func safePrintln(message ...any) {
-	fmt.Println(message...) //nolint
 }
 
 func truncate(aString string, length int) string {
@@ -482,28 +496,28 @@ func setup() {
 	setupDatabase()
 
 	err := setupSenzingConfiguration()
-	handleErrorWithPanic(err)
+	panicOnError(err)
 }
 
 func setupDatabase() {
 	testDirectoryPath := getTestDirectoryPath()
 	_, err := filepath.Abs(filepath.Join(testDirectoryPath, "G2C.db"))
-	handleErrorWithPanic(err)
+	panicOnError(err)
 	databaseTemplatePath, err := filepath.Abs(getDatabaseTemplatePath())
-	handleErrorWithPanic(err)
+	panicOnError(err)
 
 	// Copy template file to test directory.
 
 	_, _, err = fileutil.CopyFile(databaseTemplatePath, testDirectoryPath, true) // Copy the SQLite database file.
-	handleErrorWithPanic(err)
+	panicOnError(err)
 }
 
 func setupDirectories() {
 	testDirectoryPath := getTestDirectoryPath()
 	err := os.RemoveAll(filepath.Clean(testDirectoryPath)) // cleanup any previous test run
-	handleErrorWithPanic(err)
+	panicOnError(err)
 	err = os.MkdirAll(filepath.Clean(testDirectoryPath), 0750) // recreate the test target directory
-	handleErrorWithPanic(err)
+	panicOnError(err)
 }
 
 func setupSenzingConfiguration() error {
@@ -515,39 +529,39 @@ func setupSenzingConfiguration() error {
 
 	szConfig := &szconfig.Szconfig{}
 	err := szConfig.Initialize(ctx, instanceName, settings, verboseLogging)
-	handleErrorWithPanic(err)
+	panicOnError(err)
 
-	defer func() { handleErrorWithPanic(szConfig.Destroy(ctx)) }()
+	defer func() { panicOnError(szConfig.Destroy(ctx)) }()
 
 	szConfigManager := &szconfigmanager.Szconfigmanager{}
 	err = szConfigManager.Initialize(ctx, instanceName, settings, verboseLogging)
-	handleErrorWithPanic(err)
+	panicOnError(err)
 
-	defer func() { handleErrorWithPanic(szConfigManager.Destroy(ctx)) }()
+	defer func() { panicOnError(szConfigManager.Destroy(ctx)) }()
 
 	// Create a Senzing configuration.
 
 	err = szConfig.ImportTemplate(ctx)
-	handleErrorWithPanic(err)
+	panicOnError(err)
 
 	// Add data sources to template Senzing configuration.
 
 	dataSourceCodes := []string{"CUSTOMERS", "REFERENCE", "WATCHLIST"}
 	for _, dataSourceCode := range dataSourceCodes {
 		_, err := szConfig.AddDataSource(ctx, dataSourceCode)
-		handleErrorWithPanic(err)
+		panicOnError(err)
 	}
 
 	// Create a string representation of the Senzing configuration.
 
 	configDefinition, err := szConfig.Export(ctx)
-	handleErrorWithPanic(err)
+	panicOnError(err)
 
 	// Persist the Senzing configuration to the Senzing repository as default.
 
 	configComment := fmt.Sprintf("Created by szconfigmanager_test at %s", now.UTC())
 	_, err = szConfigManager.SetDefaultConfig(ctx, configDefinition, configComment)
-	handleErrorWithPanic(err)
+	panicOnError(err)
 
 	return nil
 }
@@ -561,9 +575,9 @@ func teardown() {
 func teardownSzConfig(ctx context.Context) {
 	if szConfigSingleton != nil {
 		err := szConfigSingleton.UnregisterObserver(ctx, observerSingleton)
-		handleErrorWithPanic(err)
+		panicOnError(err)
 		err = szConfigSingleton.Destroy(ctx)
-		handleErrorWithPanic(err)
+		panicOnError(err)
 
 		szConfigSingleton = nil
 	}
@@ -572,9 +586,9 @@ func teardownSzConfig(ctx context.Context) {
 func teardownSzConfigManager(ctx context.Context) {
 	if szConfigManagerSingleton != nil {
 		err := szConfigManagerSingleton.UnregisterObserver(ctx, observerSingleton)
-		handleErrorWithPanic(err)
+		panicOnError(err)
 		err = szConfigManagerSingleton.Destroy(ctx)
-		handleErrorWithPanic(err)
+		panicOnError(err)
 
 		szConfigManagerSingleton = nil
 	}

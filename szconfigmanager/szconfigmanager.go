@@ -134,7 +134,7 @@ func (client *Szconfigmanager) CreateConfigFromTemplate(ctx context.Context) (se
 		client.traceEntry(999)
 
 		entryTime := time.Now()
-		defer func() { client.traceExit(8, result, err, time.Since(entryTime)) }()
+		defer func() { client.traceExit(999, result, err, time.Since(entryTime)) }()
 	}
 
 	result, err = client.createConfigFromTemplateChoreography(ctx)
@@ -142,7 +142,7 @@ func (client *Szconfigmanager) CreateConfigFromTemplate(ctx context.Context) (se
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8003, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8999, err, details)
 		}()
 	}
 

@@ -39,11 +39,14 @@ Type Szengine struct implements the [senzing.SzEngine] interface
 for communicating with the Senzing C binaries.
 */
 type Szengine struct {
+	instanceName   string
 	isTrace        bool
 	logger         logging.Logging
 	messenger      messenger.Messenger
 	observerOrigin string
 	observers      subject.Subject
+	settings       string
+	verboseLogging int64
 }
 
 const (
@@ -825,8 +828,20 @@ func (client *Szengine) FindPathByRecordID(ctx context.Context, startDataSourceC
 
 		entryTime := time.Now()
 		defer func() {
-			client.traceExit(34, startDataSourceCode, startRecordID, endDataSourceCode, endRecordID, maxDegrees,
-				avoidRecordKeys, requiredDataSources, flags, result, err, time.Since(entryTime))
+			client.traceExit(
+				34,
+				startDataSourceCode,
+				startRecordID,
+				endDataSourceCode,
+				endRecordID,
+				maxDegrees,
+				avoidRecordKeys,
+				requiredDataSources,
+				flags,
+				result,
+				err,
+				time.Since(entryTime),
+			)
 		}()
 	}
 
@@ -1647,6 +1662,10 @@ func (client *Szengine) Initialize(
 			client.traceExit(56, instanceName, settings, configID, verboseLogging, err, time.Since(entryTime))
 		}()
 	}
+
+	client.instanceName = instanceName
+	client.settings = settings
+	client.verboseLogging = verboseLogging
 
 	if configID > 0 {
 		err = client.initWithConfigID(ctx, instanceName, settings, configID, verboseLogging)

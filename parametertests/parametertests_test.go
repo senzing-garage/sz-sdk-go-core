@@ -39,12 +39,12 @@ func captureStdout(functionName func() error) (string, error) { //nolint
 	// https://stackoverflow.com/questions/76565007/how-to-capture-the-contents-of-stderr-in-a-c-function-call-from-golang
 	// Switch STDOUT.
 	originalStdout, err := syscall.Dup(syscall.Stdout)
-	handleErrorWithPanic(err)
+	panicOnError(err)
 
 	readFile, writeFile, _ := os.Pipe()
 	fileDescriptor := int(writeFile.Fd())
 	err = syscall.Dup2(fileDescriptor, syscall.Stdout)
-	handleErrorWithPanic(err)
+	panicOnError(err)
 
 	// Call function.
 
@@ -56,7 +56,7 @@ func captureStdout(functionName func() error) (string, error) { //nolint
 
 	err = syscall.Dup2(originalStdout, syscall.Stdout)
 
-	handleErrorWithPanic(err)
+	panicOnError(err)
 	syscall.Close(originalStdout)
 
 	// Return results.
@@ -71,12 +71,12 @@ func captureStdoutReturningInt64(functionName func() (int64, error)) (string, in
 	// https://stackoverflow.com/questions/76565007/how-to-capture-the-contents-of-stderr-in-a-c-function-call-from-golang
 	// Switch STDOUT.
 	originalStdout, err := syscall.Dup(syscall.Stdout)
-	handleErrorWithPanic(err)
+	panicOnError(err)
 
 	readFile, writeFile, _ := os.Pipe()
 	fileDescriptor := int(writeFile.Fd())
 	err = syscall.Dup2(fileDescriptor, syscall.Stdout)
-	handleErrorWithPanic(err)
+	panicOnError(err)
 
 	// Call function.
 
@@ -87,7 +87,7 @@ func captureStdoutReturningInt64(functionName func() (int64, error)) (string, in
 	writeFile.Close()
 
 	err = syscall.Dup2(originalStdout, syscall.Stdout)
-	handleErrorWithPanic(err)
+	panicOnError(err)
 	syscall.Close(originalStdout)
 
 	// Return results.
@@ -102,12 +102,12 @@ func captureStdoutReturningString(functionName func() (string, error)) (string, 
 	// https://stackoverflow.com/questions/76565007/how-to-capture-the-contents-of-stderr-in-a-c-function-call-from-golang
 	// Switch STDOUT.
 	originalStdout, err := syscall.Dup(syscall.Stdout)
-	handleErrorWithPanic(err)
+	panicOnError(err)
 
 	readFile, writeFile, _ := os.Pipe()
 	fileDescriptor := int(writeFile.Fd())
 	err = syscall.Dup2(fileDescriptor, syscall.Stdout)
-	handleErrorWithPanic(err)
+	panicOnError(err)
 
 	// Call function.
 
@@ -118,7 +118,7 @@ func captureStdoutReturningString(functionName func() (string, error)) (string, 
 	writeFile.Close()
 
 	err = syscall.Dup2(originalStdout, syscall.Stdout)
-	handleErrorWithPanic(err)
+	panicOnError(err)
 	syscall.Close(originalStdout)
 
 	// Return results.
@@ -135,11 +135,11 @@ func captureStdoutReturningString(functionName func() (string, error)) (string, 
 // 	// Switch STDOUT.
 
 // 	originalStdout, err := syscall.Dup(syscall.Stdout)
-//  handleErrorWithPanic(err)
+//  panicOnError(err)
 // 	readFile, writeFile, _ := os.Pipe()
 // 	fileDescriptor := int(writeFile.Fd()) //nolint:gosec
 // 	err = syscall.Dup2(fileDescriptor, syscall.Stdout)
-//  handleErrorWithPanic(err)
+//  panicOnError(err)
 
 // 	// Call function.
 
@@ -149,7 +149,7 @@ func captureStdoutReturningString(functionName func() (string, error)) (string, 
 
 // 	writeFile.Close()
 // 	err = syscall.Dup2(originalStdout, syscall.Stdout)
-//  handleErrorWithPanic(err)
+//  panicOnError(err)
 // 	syscall.Close(originalStdout)
 
 // 	// Return results.
@@ -169,7 +169,7 @@ func getSettings() string {
 
 	testDirectoryPath := getTestDirectoryPath()
 	dbTargetPath, err := filepath.Abs(filepath.Join(testDirectoryPath, "G2C.db"))
-	handleErrorWithPanic(err)
+	panicOnError(err)
 
 	databaseURL := "sqlite3://na:na@nowhere/" + dbTargetPath
 
@@ -177,7 +177,7 @@ func getSettings() string {
 
 	configAttrMap := map[string]string{"databaseUrl": databaseURL}
 	result, err = settings.BuildSimpleSettingsUsingMap(configAttrMap)
-	handleErrorWithPanic(err)
+	panicOnError(err)
 
 	return result
 }
@@ -201,7 +201,7 @@ func getSzEngine(ctx context.Context) *szengine.Szengine {
 				senzing.SzVerboseLogging,
 			)
 		})
-		handleErrorWithPanic(err)
+		panicOnError(err)
 
 		szEngineSingleton = &szengine.Szengine{}
 	}
@@ -220,7 +220,7 @@ func getVerboseTestObject(t *testing.T) senzing.SzEngine {
 	return getSzEngine(ctx)
 }
 
-func handleErrorWithPanic(err error) {
+func panicOnError(err error) {
 	if err != nil {
 		panic(err)
 	}
@@ -244,28 +244,28 @@ func setup() {
 	setupDatabase()
 
 	err := setupSenzingConfiguration()
-	handleErrorWithPanic(err)
+	panicOnError(err)
 }
 
 func setupDatabase() {
 	testDirectoryPath := getTestDirectoryPath()
 	_, err := filepath.Abs(filepath.Join(testDirectoryPath, "G2C.db"))
-	handleErrorWithPanic(err)
+	panicOnError(err)
 	databaseTemplatePath, err := filepath.Abs(getDatabaseTemplatePath())
-	handleErrorWithPanic(err)
+	panicOnError(err)
 
 	// Copy template file to test directory.
 
 	_, _, err = fileutil.CopyFile(databaseTemplatePath, testDirectoryPath, true) // Copy the SQLite database file.
-	handleErrorWithPanic(err)
+	panicOnError(err)
 }
 
 func setupDirectories() {
 	testDirectoryPath := getTestDirectoryPath()
 	err := os.RemoveAll(filepath.Clean(testDirectoryPath)) // cleanup any previous test run
-	handleErrorWithPanic(err)
+	panicOnError(err)
 	err = os.MkdirAll(filepath.Clean(testDirectoryPath), 0750) // recreate the test target directory
-	handleErrorWithPanic(err)
+	panicOnError(err)
 }
 
 func setupSenzingConfiguration() error {
@@ -279,24 +279,24 @@ func setupSenzingConfiguration() error {
 	_, err := captureStdout(func() error {
 		return szConfig.Initialize(ctx, instanceName, settings, senzing.SzNoLogging)
 	})
-	handleErrorWithPanic(err)
+	panicOnError(err)
 
-	defer func() { handleErrorWithPanic(szConfig.Destroy(ctx)) }()
+	defer func() { panicOnError(szConfig.Destroy(ctx)) }()
 
 	szConfigManager := &szconfigmanager.Szconfigmanager{}
 	_, err = captureStdout(func() error {
 		return szConfigManager.Initialize(ctx, instanceName, settings, senzing.SzNoLogging)
 	})
-	handleErrorWithPanic(err)
+	panicOnError(err)
 
-	defer func() { handleErrorWithPanic(szConfigManager.Destroy(ctx)) }()
+	defer func() { panicOnError(szConfigManager.Destroy(ctx)) }()
 
 	// Create a Senzing configuration.
 
 	_, err = captureStdout(func() error {
 		return szConfig.ImportTemplate(ctx)
 	})
-	handleErrorWithPanic(err)
+	panicOnError(err)
 
 	// Add data sources to template Senzing configuration.
 
@@ -305,7 +305,7 @@ func setupSenzingConfiguration() error {
 		_, _, err := captureStdoutReturningString(func() (string, error) {
 			return szConfig.AddDataSource(ctx, dataSourceCode)
 		})
-		handleErrorWithPanic(err)
+		panicOnError(err)
 	}
 
 	// Create a string representation of the Senzing configuration.
@@ -313,7 +313,7 @@ func setupSenzingConfiguration() error {
 	_, configDefinition, err := captureStdoutReturningString(func() (string, error) {
 		return szConfig.Export(ctx)
 	})
-	handleErrorWithPanic(err)
+	panicOnError(err)
 
 	// Persist the Senzing configuration to the Senzing repository as default.
 
@@ -321,7 +321,7 @@ func setupSenzingConfiguration() error {
 	_, _, err = captureStdoutReturningInt64(func() (int64, error) {
 		return szConfigManager.SetDefaultConfig(ctx, configDefinition, configComment)
 	})
-	handleErrorWithPanic(err)
+	panicOnError(err)
 
 	return nil
 }
@@ -335,7 +335,7 @@ func teardownSzEngine(ctx context.Context) {
 	_, err := captureStdout(func() error {
 		return szEngineSingleton.Destroy(ctx)
 	})
-	handleErrorWithPanic(err)
+	panicOnError(err)
 
 	szEngineSingleton = nil
 }

@@ -38,11 +38,14 @@ Type Szproduct struct implements the [senzing.SzProduct] interface
 for communicating with the Senzing C binaries.
 */
 type Szproduct struct {
+	instanceName   string
 	isTrace        bool
 	logger         logging.Logging
 	messenger      messenger.Messenger
 	observerOrigin string
 	observers      subject.Subject
+	settings       string
+	verboseLogging int64
 }
 
 const (
@@ -196,6 +199,9 @@ func (client *Szproduct) Initialize(
 		defer func() { client.traceExit(14, instanceName, settings, verboseLogging, err, time.Since(entryTime)) }()
 	}
 
+	client.instanceName = instanceName
+	client.settings = settings
+	client.verboseLogging = verboseLogging
 	err = client.init(ctx, instanceName, settings, verboseLogging)
 
 	if client.observers != nil {

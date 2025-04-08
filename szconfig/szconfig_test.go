@@ -12,6 +12,7 @@ import (
 	"github.com/senzing-garage/go-helpers/fileutil"
 	"github.com/senzing-garage/go-helpers/settings"
 	"github.com/senzing-garage/go-observing/observer"
+	"github.com/senzing-garage/sz-sdk-go-core/szabstractfactory"
 	"github.com/senzing-garage/sz-sdk-go-core/szconfig"
 	"github.com/senzing-garage/sz-sdk-go/senzing"
 	"github.com/senzing-garage/sz-sdk-go/szerror"
@@ -270,7 +271,7 @@ func getSettings() string {
 
 	testDirectoryPath := getTestDirectoryPath()
 	dbTargetPath, err := filepath.Abs(filepath.Join(testDirectoryPath, "G2C.db"))
-	handleErrorWithPanic(err)
+	panicOnError(err)
 
 	databaseURL := "sqlite3://na:na@nowhere/" + dbTargetPath
 
@@ -278,30 +279,46 @@ func getSettings() string {
 
 	configAttrMap := map[string]string{"databaseUrl": databaseURL}
 	result, err = settings.BuildSimpleSettingsUsingMap(configAttrMap)
-	handleErrorWithPanic(err)
+	panicOnError(err)
 
 	return result
 }
 
+func getSzAbstractFactory(ctx context.Context) senzing.SzAbstractFactory {
+	var (
+		result senzing.SzAbstractFactory
+	)
+
+	_ = ctx
+	settings := getSettings()
+	result = &szabstractfactory.Szabstractfactory{
+		ConfigID:       senzing.SzInitializeWithDefaultConfiguration,
+		InstanceName:   instanceName,
+		Settings:       settings,
+		VerboseLogging: verboseLogging,
+	}
+
+	return result
+}
 func getSzConfig(ctx context.Context) *szconfig.Szconfig {
 	if szConfigSingleton == nil {
 		settings := getSettings()
 		szConfigSingleton = &szconfig.Szconfig{}
 		err := szConfigSingleton.SetLogLevel(ctx, logLevel)
-		handleErrorWithPanic(err)
+		panicOnError(err)
 
 		if logLevel == "TRACE" {
 			szConfigSingleton.SetObserverOrigin(ctx, observerOrigin)
 			err = szConfigSingleton.RegisterObserver(ctx, observerSingleton)
-			handleErrorWithPanic(err)
+			panicOnError(err)
 			err = szConfigSingleton.SetLogLevel(ctx, logLevel) // Duplicated for coverage testing
-			handleErrorWithPanic(err)
+			panicOnError(err)
 		}
 
 		err = szConfigSingleton.Initialize(ctx, instanceName, settings, verboseLogging)
-		handleErrorWithPanic(err)
+		panicOnError(err)
 		err = szConfigSingleton.ImportTemplate(ctx)
-		handleErrorWithPanic(err)
+		panicOnError(err)
 	}
 
 	return szConfigSingleton
@@ -324,11 +341,11 @@ func getTestObject(t *testing.T) *szconfig.Szconfig {
 
 func handleError(err error) {
 	if err != nil {
-		safePrintln("Error:", err)
+		fmt.Println("Error:", err) //nolint:forbidigo
 	}
 }
 
-func handleErrorWithPanic(err error) {
+func panicOnError(err error) {
 	if err != nil {
 		panic(err)
 	}
@@ -345,10 +362,6 @@ func printResult(t *testing.T, title string, result interface{}) {
 	if printResults {
 		t.Logf("%s: %v", title, truncate(fmt.Sprintf("%v", result), defaultTruncation))
 	}
-}
-
-func safePrintln(message ...any) {
-	fmt.Println(message...) //nolint
 }
 
 func truncate(aString string, length int) string {
@@ -376,22 +389,22 @@ func setup() {
 func setupDatabase() {
 	testDirectoryPath := getTestDirectoryPath()
 	_, err := filepath.Abs(filepath.Join(testDirectoryPath, "G2C.db"))
-	handleErrorWithPanic(err)
+	panicOnError(err)
 	databaseTemplatePath, err := filepath.Abs(getDatabaseTemplatePath())
-	handleErrorWithPanic(err)
+	panicOnError(err)
 
 	// Copy template file to test directory.
 
 	_, _, err = fileutil.CopyFile(databaseTemplatePath, testDirectoryPath, true) // Copy the SQLite database file.
-	handleErrorWithPanic(err)
+	panicOnError(err)
 }
 
 func setupDirectories() {
 	testDirectoryPath := getTestDirectoryPath()
 	err := os.RemoveAll(filepath.Clean(testDirectoryPath)) // cleanup any previous test run
-	handleErrorWithPanic(err)
+	panicOnError(err)
 	err = os.MkdirAll(filepath.Clean(testDirectoryPath), 0750) // recreate the test target directory
-	handleErrorWithPanic(err)
+	panicOnError(err)
 }
 
 func teardown() {
@@ -401,9 +414,9 @@ func teardown() {
 
 func teardownSzConfig(ctx context.Context) {
 	err := szConfigSingleton.UnregisterObserver(ctx, observerSingleton)
-	handleErrorWithPanic(err)
+	panicOnError(err)
 	err = szConfigSingleton.Destroy(ctx)
-	handleErrorWithPanic(err)
+	panicOnError(err)
 
 	szConfigSingleton = nil
 }

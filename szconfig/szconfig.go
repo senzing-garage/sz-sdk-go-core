@@ -39,11 +39,14 @@ for communicating with the Senzing C binaries.
 */
 type Szconfig struct {
 	configDefinition string
+	instanceName     string
 	isTrace          bool
 	logger           logging.Logging
 	messenger        messenger.Messenger
 	observerOrigin   string
 	observers        subject.Subject
+	settings         string
+	verboseLogging   int64
 }
 
 const (
@@ -350,6 +353,9 @@ func (client *Szconfig) Initialize(
 		defer func() { client.traceExit(24, instanceName, settings, verboseLogging, err, time.Since(entryTime)) }()
 	}
 
+	client.instanceName = instanceName
+	client.settings = settings
+	client.verboseLogging = verboseLogging
 	err = client.init(ctx, instanceName, settings, verboseLogging)
 
 	if client.observers != nil {

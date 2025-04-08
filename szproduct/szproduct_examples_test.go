@@ -8,8 +8,6 @@ import (
 
 	"github.com/senzing-garage/go-helpers/jsonutil"
 	"github.com/senzing-garage/go-logging/logging"
-	"github.com/senzing-garage/sz-sdk-go-core/szabstractfactory"
-	"github.com/senzing-garage/sz-sdk-go/senzing"
 )
 
 // ----------------------------------------------------------------------------
@@ -94,27 +92,4 @@ func ExampleSzproduct_GetObserverOrigin() {
 
 	fmt.Println(result)
 	// Output: Machine: nn; Task: UnitTest
-}
-
-// ----------------------------------------------------------------------------
-// Helper functions
-// ----------------------------------------------------------------------------
-
-func getSzAbstractFactory(ctx context.Context) senzing.SzAbstractFactory {
-	var (
-		result senzing.SzAbstractFactory
-	)
-
-	_ = ctx
-
-	settings := getSettings()
-
-	result = &szabstractfactory.Szabstractfactory{
-		ConfigID:       senzing.SzInitializeWithDefaultConfiguration,
-		InstanceName:   instanceName,
-		Settings:       settings,
-		VerboseLogging: verboseLogging,
-	}
-
-	return result
 }
