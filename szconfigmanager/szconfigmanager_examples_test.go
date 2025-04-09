@@ -238,6 +238,9 @@ func ExampleSzconfigmanager_SetDefaultConfig() {
 	}
 
 	defaultConfigID, err := szConfigManager.GetDefaultConfigID(ctx)
+	if err != nil {
+		handleError(err)
+	}
 
 	szConfig, err := szConfigManager.CreateConfigFromConfigID(ctx, defaultConfigID)
 	if err != nil {
@@ -252,7 +255,11 @@ func ExampleSzconfigmanager_SetDefaultConfig() {
 	}
 
 	configComment := "Added datasource: " + dataSourceCode
+
 	configDefinition, err := szConfig.Export(ctx)
+	if err != nil {
+		handleError(err)
+	}
 
 	configID, err := szConfigManager.SetDefaultConfig(ctx, configDefinition, configComment)
 	if err != nil {
