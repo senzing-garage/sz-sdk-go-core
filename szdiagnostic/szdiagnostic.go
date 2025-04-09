@@ -17,13 +17,13 @@ import "C"
 import (
 	"bytes"
 	"context"
-	"errors"
 	"fmt"
 	"runtime"
 	"strconv"
 	"time"
 	"unsafe"
 
+	"github.com/senzing-garage/go-helpers/wraperror"
 	"github.com/senzing-garage/go-logging/logging"
 	"github.com/senzing-garage/go-messaging/messenger"
 	"github.com/senzing-garage/go-observing/notifier"
@@ -40,11 +40,14 @@ Type Szdiagnostic struct implements the [senzing.SzDiagnostic] interface
 for communicating with the Senzing C binaries.
 */
 type Szdiagnostic struct {
+	instanceName   string
 	isTrace        bool
 	logger         logging.Logging
 	messenger      messenger.Messenger
 	observerOrigin string
 	observers      subject.Subject
+	settings       string
+	verboseLogging int64
 }
 
 const (
@@ -71,45 +74,28 @@ Output
     Example: `{"numRecordsInserted":0,"insertTime":0}`
 */
 func (client *Szdiagnostic) CheckDatastorePerformance(ctx context.Context, secondsToRun int) (string, error) {
-	var err error
-	var result string
+	var (
+		err    error
+		result string
+	)
+
 	if client.isTrace {
-		entryTime := time.Now()
 		client.traceEntry(1, secondsToRun)
+
+		entryTime := time.Now()
 		defer func() { client.traceExit(2, secondsToRun, result, err, time.Since(entryTime)) }()
 	}
+
 	result, err = client.checkDatastorePerformance(ctx, secondsToRun)
+
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8001, err, details)
 		}()
 	}
-	return result, err
-}
 
-/*
-Method Destroy will destroy and perform cleanup for the Senzing SzDiagnostic object.
-It should be called after all other calls are complete.
-
-Input
-  - ctx: A context to control lifecycle.
-*/
-func (client *Szdiagnostic) Destroy(ctx context.Context) error {
-	var err error
-	if client.isTrace {
-		entryTime := time.Now()
-		client.traceEntry(5)
-		defer func() { client.traceExit(6, err, time.Since(entryTime)) }()
-	}
-	err = client.destroy(ctx)
-	if client.observers != nil {
-		go func() {
-			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8002, err, details)
-		}()
-	}
-	return err
+	return result, wraperror.Errorf(err, "szdiagnostic.CheckDatastorePerformance error: %w", err)
 }
 
 /*
@@ -123,21 +109,28 @@ Output
   - A JSON document containing Senzing datastore metadata.
 */
 func (client *Szdiagnostic) GetDatastoreInfo(ctx context.Context) (string, error) {
-	var err error
-	var result string
+	var (
+		err    error
+		result string
+	)
+
 	if client.isTrace {
-		entryTime := time.Now()
 		client.traceEntry(7)
+
+		entryTime := time.Now()
 		defer func() { client.traceExit(8, result, err, time.Since(entryTime)) }()
 	}
+
 	result, err = client.getDatastoreInfo(ctx)
+
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8003, err, details)
 		}()
 	}
-	return result, err
+
+	return result, wraperror.Errorf(err, "szdiagnostic.GetDatastoreInfo error: %w", err)
 }
 
 /*
@@ -153,14 +146,20 @@ Output
   - A JSON document containing feature metadata.
 */
 func (client *Szdiagnostic) GetFeature(ctx context.Context, featureID int64) (string, error) {
-	var err error
-	var result string
+	var (
+		err    error
+		result string
+	)
+
 	if client.isTrace {
-		entryTime := time.Now()
 		client.traceEntry(9, featureID)
+
+		entryTime := time.Now()
 		defer func() { client.traceExit(10, featureID, result, err, time.Since(entryTime)) }()
 	}
+
 	result, err = client.getFeature(ctx, featureID)
+
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -169,7 +168,8 @@ func (client *Szdiagnostic) GetFeature(ctx context.Context, featureID int64) (st
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8004, err, details)
 		}()
 	}
-	return result, err
+
+	return result, wraperror.Errorf(err, "szdiagnostic.GetFeature error: %w", err)
 }
 
 /*
@@ -182,45 +182,57 @@ Input
 */
 func (client *Szdiagnostic) PurgeRepository(ctx context.Context) error {
 	var err error
+
 	if client.isTrace {
-		entryTime := time.Now()
 		client.traceEntry(17)
+
+		entryTime := time.Now()
 		defer func() { client.traceExit(18, err, time.Since(entryTime)) }()
 	}
+
 	err = client.purgeRepository(ctx)
+
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8007, err, details)
 		}()
 	}
-	return err
+
+	return wraperror.Errorf(err, "szdiagnostic.PurgeRepository error: %w", err)
 }
 
+// ----------------------------------------------------------------------------
+// Public non-interface methods
+// ----------------------------------------------------------------------------
+
 /*
-Method Reinitialize re-initializes the Senzing SzDiagnostic object.
+Method Destroy will destroy and perform cleanup for the Senzing SzDiagnostic object.
+It should be called after all other calls are complete.
 
 Input
   - ctx: A context to control lifecycle.
-  - configID: The Senzing configuration JSON document identifier used for the initialization.
 */
-func (client *Szdiagnostic) Reinitialize(ctx context.Context, configID int64) error {
+func (client *Szdiagnostic) Destroy(ctx context.Context) error {
 	var err error
+
 	if client.isTrace {
+		client.traceEntry(5)
+
 		entryTime := time.Now()
-		client.traceEntry(19, configID)
-		defer func() { client.traceExit(20, configID, err, time.Since(entryTime)) }()
+		defer func() { client.traceExit(6, err, time.Since(entryTime)) }()
 	}
-	err = client.reinit(ctx, configID)
+
+	err = client.destroy(ctx)
+
 	if client.observers != nil {
 		go func() {
-			details := map[string]string{
-				"configID": strconv.FormatInt(configID, baseTen),
-			}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8008, err, details)
+			details := map[string]string{}
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8002, err, details)
 		}()
 	}
-	return err
+
+	return wraperror.Errorf(err, "szdiagnostic.Destroy error: %w", err)
 }
 
 // ----------------------------------------------------------------------------
@@ -238,6 +250,7 @@ Output
 */
 func (client *Szdiagnostic) GetObserverOrigin(ctx context.Context) string {
 	_ = ctx
+
 	return client.observerOrigin
 }
 
@@ -252,20 +265,34 @@ Input
   - configID: The configuration ID used for the initialization.  0 for current default configuration.
   - verboseLogging: A flag to enable deeper logging of the Sz processing. 0 for no Senzing logging; 1 for logging.
 */
-func (client *Szdiagnostic) Initialize(ctx context.Context, instanceName string, settings string, configID int64, verboseLogging int64) error {
+func (client *Szdiagnostic) Initialize(
+	ctx context.Context,
+	instanceName string,
+	settings string,
+	configID int64,
+	verboseLogging int64,
+) error {
 	var err error
+
 	if client.isTrace {
-		entryTime := time.Now()
 		client.traceEntry(15, instanceName, settings, configID, verboseLogging)
+
+		entryTime := time.Now()
 		defer func() {
 			client.traceExit(16, instanceName, settings, configID, verboseLogging, err, time.Since(entryTime))
 		}()
 	}
+
+	client.instanceName = instanceName
+	client.settings = settings
+	client.verboseLogging = verboseLogging
+
 	if configID == senzing.SzInitializeWithDefaultConfiguration {
 		err = client.init(ctx, instanceName, settings, verboseLogging)
 	} else {
 		err = client.initWithConfigID(ctx, instanceName, settings, configID, verboseLogging)
 	}
+
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -277,7 +304,8 @@ func (client *Szdiagnostic) Initialize(ctx context.Context, instanceName string,
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8005, err, details)
 		}()
 	}
-	return err
+
+	return wraperror.Errorf(err, "szdiagnostic.Initialize error: %w", err)
 }
 
 /*
@@ -289,15 +317,20 @@ Input
 */
 func (client *Szdiagnostic) RegisterObserver(ctx context.Context, observer observer.Observer) error {
 	var err error
+
 	if client.isTrace {
-		entryTime := time.Now()
 		client.traceEntry(703, observer.GetObserverID(ctx))
+
+		entryTime := time.Now()
 		defer func() { client.traceExit(704, observer.GetObserverID(ctx), err, time.Since(entryTime)) }()
 	}
+
 	if client.observers == nil {
 		client.observers = &subject.SimpleSubject{}
 	}
+
 	err = client.observers.RegisterObserver(ctx, observer)
+
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -306,7 +339,39 @@ func (client *Szdiagnostic) RegisterObserver(ctx context.Context, observer obser
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8702, err, details)
 		}()
 	}
-	return err
+
+	return wraperror.Errorf(err, "szdiagnostic.RegisterObserver error: %w", err)
+}
+
+/*
+Method Reinitialize re-initializes the Senzing SzDiagnostic object.
+
+Input
+  - ctx: A context to control lifecycle.
+  - configID: The Senzing configuration JSON document identifier used for the initialization.
+*/
+func (client *Szdiagnostic) Reinitialize(ctx context.Context, configID int64) error {
+	var err error
+
+	if client.isTrace {
+		client.traceEntry(19, configID)
+
+		entryTime := time.Now()
+		defer func() { client.traceExit(20, configID, err, time.Since(entryTime)) }()
+	}
+
+	err = client.reinit(ctx, configID)
+
+	if client.observers != nil {
+		go func() {
+			details := map[string]string{
+				"configID": strconv.FormatInt(configID, baseTen),
+			}
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8008, err, details)
+		}()
+	}
+
+	return wraperror.Errorf(err, "szdiagnostic.Reinitialize error: %w", err)
 }
 
 /*
@@ -318,16 +383,21 @@ Input
 */
 func (client *Szdiagnostic) SetLogLevel(ctx context.Context, logLevelName string) error {
 	var err error
+
 	if client.isTrace {
-		entryTime := time.Now()
 		client.traceEntry(705, logLevelName)
+
+		entryTime := time.Now()
 		defer func() { client.traceExit(706, logLevelName, err, time.Since(entryTime)) }()
 	}
+
 	if !logging.IsValidLogLevelName(logLevelName) {
-		return fmt.Errorf("invalid error level: %s", logLevelName)
+		return fmt.Errorf("invalid error level: %s; %w", logLevelName, szerror.ErrSzSdk)
 	}
+
 	err = client.getLogger().SetLogLevel(logLevelName)
 	client.isTrace = (logLevelName == logging.LevelTraceName)
+
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
@@ -336,7 +406,8 @@ func (client *Szdiagnostic) SetLogLevel(ctx context.Context, logLevelName string
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8703, err, details)
 		}()
 	}
-	return err
+
+	return wraperror.Errorf(err, "szdiagnostic.SetLogLevel error: %w", err)
 }
 
 /*
@@ -360,11 +431,14 @@ Input
 */
 func (client *Szdiagnostic) UnregisterObserver(ctx context.Context, observer observer.Observer) error {
 	var err error
+
 	if client.isTrace {
-		entryTime := time.Now()
 		client.traceEntry(707, observer.GetObserverID(ctx))
+
+		entryTime := time.Now()
 		defer func() { client.traceExit(708, observer.GetObserverID(ctx), err, time.Since(entryTime)) }()
 	}
+
 	if client.observers != nil {
 		// Tricky code:
 		// client.notify is called synchronously before client.observers is set to nil.
@@ -373,13 +447,16 @@ func (client *Szdiagnostic) UnregisterObserver(ctx context.Context, observer obs
 		details := map[string]string{
 			"observerID": observer.GetObserverID(ctx),
 		}
+
 		notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8704, err, details)
 		err = client.observers.UnregisterObserver(ctx, observer)
+
 		if !client.observers.HasObservers(ctx) {
 			client.observers = nil
 		}
 	}
-	return err
+
+	return wraperror.Errorf(err, "szdiagnostic.UnregisterObserver error: %w", err)
 }
 
 // ----------------------------------------------------------------------------
@@ -389,53 +466,77 @@ func (client *Szdiagnostic) UnregisterObserver(ctx context.Context, observer obs
 func (client *Szdiagnostic) checkDatastorePerformance(ctx context.Context, secondsToRun int) (string, error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error
-	var resultResponse string
+
+	var (
+		err            error
+		resultResponse string
+	)
+
 	result := C.SzDiagnostic_checkDatastorePerformance_helper(C.longlong(secondsToRun))
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4001, secondsToRun, result.returnCode)
 	}
+
 	resultResponse = C.GoString(result.response)
+
 	C.SzHelper_free(unsafe.Pointer(result.response))
+
 	return resultResponse, err
 }
 
 func (client *Szdiagnostic) destroy(ctx context.Context) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+
 	var err error
+
 	result := C.SzDiagnostic_destroy()
 	if result != noError {
 		err = client.newError(ctx, 4002, result)
 	}
+
 	return err
 }
 
 func (client *Szdiagnostic) getDatastoreInfo(ctx context.Context) (string, error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error
-	var resultResponse string
+
+	var (
+		err            error
+		resultResponse string
+	)
+
 	result := C.SzDiagnostic_getDatastoreInfo_helper()
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4003, result.returnCode)
 	}
+
 	resultResponse = C.GoString(result.response)
+
 	C.SzHelper_free(unsafe.Pointer(result.response))
+
 	return resultResponse, err
 }
 
 func (client *Szdiagnostic) getFeature(ctx context.Context, featureID int64) (string, error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	var err error
-	var resultResponse string
+
+	var (
+		err            error
+		resultResponse string
+	)
+
 	result := C.SzDiagnostic_getFeature_helper(C.longlong(featureID))
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4004, featureID, result)
 	}
+
 	resultResponse = C.GoString(result.response)
+
 	C.SzHelper_free(unsafe.Pointer(result.response))
+
 	return resultResponse, err
 }
 
@@ -449,18 +550,30 @@ Input
   - settings: A JSON string containing configuration parameters.
   - verboseLogging: A flag to enable deeper logging of the Sz processing. 0 for no Senzing logging; 1 for logging.
 */
-func (client *Szdiagnostic) init(ctx context.Context, instanceName string, settings string, verboseLogging int64) error {
+func (client *Szdiagnostic) init(
+	ctx context.Context,
+	instanceName string,
+	settings string,
+	verboseLogging int64,
+) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+
 	var err error
+
 	instanceNameForC := C.CString(instanceName)
+
 	defer C.free(unsafe.Pointer(instanceNameForC))
+
 	settingsForC := C.CString(settings)
+
 	defer C.free(unsafe.Pointer(settingsForC))
+
 	result := C.SzDiagnostic_init(instanceNameForC, settingsForC, C.longlong(verboseLogging))
 	if result != noError {
 		err = client.newError(ctx, 4005, instanceName, settings, verboseLogging, result)
 	}
+
 	return err
 }
 
@@ -475,40 +588,64 @@ Input
   - configID: The configuration ID used for the initialization.
   - verboseLogging: A flag to enable deeper logging of the Sz processing. 0 for no Senzing logging; 1 for logging.
 */
-func (client *Szdiagnostic) initWithConfigID(ctx context.Context, instanceName string, settings string, configID int64, verboseLogging int64) error {
+func (client *Szdiagnostic) initWithConfigID(
+	ctx context.Context,
+	instanceName string,
+	settings string,
+	configID int64,
+	verboseLogging int64,
+) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+
 	var err error
+
 	instanceNameForC := C.CString(instanceName)
+
 	defer C.free(unsafe.Pointer(instanceNameForC))
+
 	settingsForC := C.CString(settings)
+
 	defer C.free(unsafe.Pointer(settingsForC))
-	result := C.SzDiagnostic_initWithConfigID(instanceNameForC, settingsForC, C.longlong(configID), C.longlong(verboseLogging))
+
+	result := C.SzDiagnostic_initWithConfigID(
+		instanceNameForC,
+		settingsForC,
+		C.longlong(configID),
+		C.longlong(verboseLogging),
+	)
 	if result != noError {
 		err = client.newError(ctx, 4006, instanceName, settings, configID, verboseLogging, result)
 	}
+
 	return err
 }
 
 func (client *Szdiagnostic) purgeRepository(ctx context.Context) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+
 	var err error
+
 	result := C.SzDiagnostic_purgeRepository()
 	if result != noError {
 		err = client.newError(ctx, 4007, result)
 	}
+
 	return err
 }
 
 func (client *Szdiagnostic) reinit(ctx context.Context, configID int64) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
+
 	var err error
+
 	result := C.SzDiagnostic_reinit(C.longlong(configID))
 	if result != noError {
 		err = client.newError(ctx, 4008, configID, result)
 	}
+
 	return err
 }
 
@@ -523,6 +660,7 @@ func (client *Szdiagnostic) getLogger() logging.Logging {
 	if client.logger == nil {
 		client.logger = helper.GetLogger(ComponentID, szdiagnostic.IDMessages, baseCallerSkip)
 	}
+
 	return client.logger
 }
 
@@ -531,6 +669,7 @@ func (client *Szdiagnostic) getMessenger() messenger.Messenger {
 	if client.messenger == nil {
 		client.messenger = helper.GetMessenger(ComponentID, szdiagnostic.IDMessages, baseCallerSkip)
 	}
+
 	return client.messenger
 }
 
@@ -549,16 +688,20 @@ func (client *Szdiagnostic) traceExit(errorNumber int, details ...interface{}) {
 // Create a new error.
 func (client *Szdiagnostic) newError(ctx context.Context, errorNumber int, details ...interface{}) error {
 	defer func() { client.panicOnError(client.clearLastException(ctx)) }()
+
 	lastExceptionCode, _ := client.getLastExceptionCode(ctx)
+
 	lastException, err := client.getLastException(ctx)
 	if err != nil {
 		lastException = err.Error()
 	}
+
 	details = append(details, messenger.MessageCode{Value: fmt.Sprintf(ExceptionCodeTemplate, lastExceptionCode)})
 	details = append(details, messenger.MessageReason{Value: lastException})
-	details = append(details, errors.New(lastException))
+	details = append(details, fmt.Errorf("%s; %w", lastException, szerror.ErrSz))
 	errorMessage := client.getMessenger().NewJSON(errorNumber, details...)
-	return szerror.New(lastExceptionCode, errorMessage)
+
+	return szerror.New(lastExceptionCode, errorMessage) //nolint
 }
 
 /*
@@ -582,14 +725,19 @@ Input
   - ctx: A context to control lifecycle.
 */
 func (client *Szdiagnostic) clearLastException(ctx context.Context) error {
-	_ = ctx
 	var err error
+
+	_ = ctx
+
 	if client.isTrace {
-		entryTime := time.Now()
 		client.traceEntry(3)
+
+		entryTime := time.Now()
 		defer func() { client.traceExit(4, err, time.Since(entryTime)) }()
 	}
+
 	C.SzDiagnostic_clearLastException()
+
 	return err
 }
 
@@ -603,17 +751,24 @@ Output
   - A string containing the error received from Senzing's SzDiagnostic.
 */
 func (client *Szdiagnostic) getLastException(ctx context.Context) (string, error) {
+	var (
+		err    error
+		result string
+	)
+
 	_ = ctx
-	var err error
-	var result string
+
 	if client.isTrace {
-		entryTime := time.Now()
 		client.traceEntry(11)
+
+		entryTime := time.Now()
 		defer func() { client.traceExit(12, result, err, time.Since(entryTime)) }()
 	}
+
 	stringBuffer := client.getByteArray(initialByteArraySize)
 	C.SzDiagnostic_getLastException((*C.char)(unsafe.Pointer(&stringBuffer[0])), C.size_t(len(stringBuffer)))
 	result = string(bytes.Trim(stringBuffer, "\x00"))
+
 	return result, err
 }
 
@@ -627,25 +782,32 @@ Output:
   - An int containing the error received from Senzing's SzDiagnostic.
 */
 func (client *Szdiagnostic) getLastExceptionCode(ctx context.Context) (int, error) {
+	var (
+		err    error
+		result int
+	)
+
 	_ = ctx
-	var err error
-	var result int
+
 	if client.isTrace {
-		entryTime := time.Now()
 		client.traceEntry(13)
+
+		entryTime := time.Now()
 		defer func() { client.traceExit(14, result, err, time.Since(entryTime)) }()
 	}
+
 	result = int(C.SzDiagnostic_getLastExceptionCode())
+
 	return result, err
 }
 
 // --- Misc -------------------------------------------------------------------
 
 // Get space for an array of bytes of a given size.
-func (client *Szdiagnostic) getByteArrayC(size int) *C.char {
-	bytes := C.malloc(C.size_t(size))
-	return (*C.char)(bytes)
-}
+// func (client *Szdiagnostic) getByteArrayC(size int) *C.char {
+// 	bytes := C.malloc(C.size_t(size))
+// 	return (*C.char)(bytes)
+// }
 
 // Make a byte array.
 func (client *Szdiagnostic) getByteArray(size int) []byte {
@@ -653,6 +815,6 @@ func (client *Szdiagnostic) getByteArray(size int) []byte {
 }
 
 // A hack: Only needed to import the "senzing" package for the godoc comments.
-func junk() {
-	fmt.Printf(senzing.SzNoAttributes)
-}
+// func junk() {
+// 	fmt.Printf(senzing.SzNoAttributes)
+// }

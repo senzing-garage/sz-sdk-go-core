@@ -31,9 +31,11 @@ func GetLogger(componentID int, idMessages map[int]string, callerSkip int, optio
 		logging.OptionMessageIDTemplate{Value: optionMessageID},
 	}
 	loggerOptions = append(loggerOptions, options...)
+
 	result, err := logging.New(loggerOptions...)
 	if err != nil {
 		panic(err)
 	}
+
 	return result
 }

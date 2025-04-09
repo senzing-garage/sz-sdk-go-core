@@ -21,7 +21,11 @@ Output
 [logging]: http://localhost:6060/pkg/github.com/senzing-garage/go-logging/logging/
 [runtime.Caller]: https://pkg.go.dev/runtime#Caller
 */
-func GetMessenger(componentID int, idMessages map[int]string, callerSkip int, options ...interface{}) messenger.Messenger {
+func GetMessenger(
+	componentID int,
+	idMessages map[int]string,
+	callerSkip int,
+	options ...interface{}) messenger.Messenger {
 	optionMessageIDTemplate := fmt.Sprintf("%s%04d", MessageIDPrefix, componentID) + "%04d"
 	messengerOptions := []interface{}{
 		messenger.OptionCallerSkip{Value: callerSkip},
@@ -30,9 +34,11 @@ func GetMessenger(componentID int, idMessages map[int]string, callerSkip int, op
 		messenger.OptionMessageIDTemplate{Value: optionMessageIDTemplate},
 	}
 	messengerOptions = append(messengerOptions, options...)
+
 	result, err := messenger.New(messengerOptions...)
 	if err != nil {
 		panic(err)
 	}
+
 	return result
 }

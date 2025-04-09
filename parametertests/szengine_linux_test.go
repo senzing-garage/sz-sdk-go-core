@@ -1,9 +1,8 @@
 //go:build linux
 
-package szengine
+package szengine_test
 
 import (
-	"context"
 	"testing"
 
 	"github.com/senzing-garage/go-helpers/record"
@@ -18,14 +17,15 @@ import (
 // ----------------------------------------------------------------------------
 
 func TestParameters_Szengine_AddRecord(test *testing.T) {
-	ctx := context.TODO()
-	szEngine, err := getVerboseTestObject(ctx, test)
-	require.NoError(test, err)
+	ctx := test.Context()
+	szEngine := getVerboseTestObject(test)
+
 	flags := senzing.SzWithoutInfo
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 		truthset.CustomerRecords["1002"],
 	}
+
 	for _, record := range records {
 		stdOut, _, err := captureStdoutReturningString(func() (string, error) {
 			return szEngine.AddRecord(ctx, record.DataSource, record.ID, record.JSON, flags)
@@ -33,6 +33,7 @@ func TestParameters_Szengine_AddRecord(test *testing.T) {
 		require.NoError(test, err)
 		inspectStdout(stdOut)
 	}
+
 	for _, record := range records {
 		stdOut, _, err := captureStdoutReturningString(func() (string, error) {
 			return szEngine.DeleteRecord(ctx, record.DataSource, record.ID, flags)
