@@ -44,6 +44,66 @@ func ExampleSzconfigmanager_CreateConfigFromConfigID() {
 	// Output: {"G2_CONFIG":{"CFG_ATTR":[{"ATTR_CLASS":"ADDRESS","ATTR_CODE":"ADDR_CITY","ATTR_ID":1608,...
 }
 
+func ExampleSzconfigmanager_CreateConfigFromString() {
+	// For more information, visit
+	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfigmanager/szconfigmanager_examples_test.go
+	ctx := context.TODO()
+	szAbstractFactory := getSzAbstractFactory(ctx)
+
+	szConfigManager, err := szAbstractFactory.CreateConfigManager(ctx)
+	if err != nil {
+		handleError(err)
+	}
+
+	szConfigFromTemplate, err := szConfigManager.CreateConfigFromTemplate(ctx)
+	if err != nil {
+		handleError(err)
+	}
+
+	configDefinitionFromTemplate, err := szConfigFromTemplate.Export(ctx)
+	if err != nil {
+		handleError(err)
+	}
+
+	szConfig, err := szConfigManager.CreateConfigFromString(ctx, configDefinitionFromTemplate)
+	if err != nil {
+		handleError(err)
+	}
+
+	configDefinition, err := szConfig.Export(ctx)
+	if err != nil {
+		handleError(err)
+	}
+
+	fmt.Println(jsonutil.Truncate(configDefinition, 7))
+	// Output: {"G2_CONFIG":{"CFG_ATTR":[{"ATTR_CLASS":"ADDRESS","ATTR_CODE":"ADDR_CITY","ATTR_ID":1608,...
+}
+
+func ExampleSzconfigmanager_CreateConfigFromTemplate() {
+	// For more information, visit
+	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfigmanager/szconfigmanager_examples_test.go
+	ctx := context.TODO()
+	szAbstractFactory := getSzAbstractFactory(ctx)
+
+	szConfigManager, err := szAbstractFactory.CreateConfigManager(ctx)
+	if err != nil {
+		handleError(err)
+	}
+
+	szConfig, err := szConfigManager.CreateConfigFromTemplate(ctx)
+	if err != nil {
+		handleError(err)
+	}
+
+	configDefinition, err := szConfig.Export(ctx)
+	if err != nil {
+		handleError(err)
+	}
+
+	fmt.Println(jsonutil.Truncate(configDefinition, 7))
+	// Output: {"G2_CONFIG":{"CFG_ATTR":[{"ATTR_CLASS":"ADDRESS","ATTR_CODE":"ADDR_CITY","ATTR_ID":1608,...
+}
+
 func ExampleSzconfigmanager_GetConfigs() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfigmanager/szconfigmanager_examples_test.go
@@ -162,6 +222,45 @@ func ExampleSzconfigmanager_ReplaceDefaultConfigID() {
 		handleError(err)
 	}
 	// Output:
+}
+
+func ExampleSzconfigmanager_SetDefaultConfig() {
+	// For more information, visit
+	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfigmanager/szconfigmanager_examples_test.go
+	ctx := context.TODO()
+	szAbstractFactory := getSzAbstractFactory(ctx)
+
+	// FIXME:
+
+	szConfigManager, err := szAbstractFactory.CreateConfigManager(ctx)
+	if err != nil {
+		handleError(err)
+	}
+
+	defaultConfigID, err := szConfigManager.GetDefaultConfigID(ctx)
+
+	szConfig, err := szConfigManager.CreateConfigFromConfigID(ctx, defaultConfigID)
+	if err != nil {
+		handleError(err)
+	}
+
+	dataSourceCode := "GO_TEST"
+
+	_, err = szConfig.AddDataSource(ctx, dataSourceCode)
+	if err != nil {
+		handleError(err)
+	}
+
+	configComment := "Added datasource: " + dataSourceCode
+	configDefinition, err := szConfig.Export(ctx)
+
+	configID, err := szConfigManager.SetDefaultConfig(ctx, configDefinition, configComment)
+	if err != nil {
+		handleError(err)
+	}
+
+	fmt.Println(configID > 0) // Dummy output.
+	// Output: true
 }
 
 func ExampleSzconfigmanager_SetDefaultConfigID() {
