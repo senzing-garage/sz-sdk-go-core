@@ -3635,7 +3635,7 @@ func getTestObject(t *testing.T) *szengine.Szengine {
 
 func handleError(err error) {
 	if err != nil {
-		fmt.Println("Error:", err) //nolint:forbidigo
+		safePrintln("Error:", err)
 	}
 }
 
@@ -3662,6 +3662,10 @@ func printResult(t *testing.T, title string, result interface{}) {
 	if printResults {
 		t.Logf("%s: %v", title, truncate(fmt.Sprintf("%v", result), defaultTruncation))
 	}
+}
+
+func safePrintln(message ...any) {
+	fmt.Println(message...) //nolint
 }
 
 // func ramCheck(test *testing.T, iteration int) {

@@ -235,6 +235,10 @@ func (client *Szdiagnostic) Destroy(ctx context.Context) error {
 	return wraperror.Errorf(err, "szdiagnostic.Destroy error: %w", err)
 }
 
+// ----------------------------------------------------------------------------
+// Public non-interface methods
+// ----------------------------------------------------------------------------
+
 /*
 Method GetObserverOrigin returns the "origin" value of past Observer messages.
 

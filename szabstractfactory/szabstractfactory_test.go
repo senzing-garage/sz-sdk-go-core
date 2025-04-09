@@ -34,7 +34,7 @@ func TestSzAbstractFactory_CreateConfigManager(test *testing.T) {
 	ctx := test.Context()
 	szAbstractFactory := getTestObject(test)
 
-	defer func() { panicOnError(szAbstractFactory.Destroy(ctx)) }()
+	defer func() { require.NoError(test, szAbstractFactory.Destroy(ctx)) }()
 
 	szConfigManager, err := szAbstractFactory.CreateConfigManager(ctx)
 	require.NoError(test, err)
@@ -47,7 +47,7 @@ func TestSzAbstractFactory_CreateDiagnostic(test *testing.T) {
 	ctx := test.Context()
 	szAbstractFactory := getTestObject(test)
 
-	defer func() { panicOnError(szAbstractFactory.Destroy(ctx)) }()
+	defer func() { require.NoError(test, szAbstractFactory.Destroy(ctx)) }()
 
 	szDiagnostic, err := szAbstractFactory.CreateDiagnostic(ctx)
 	require.NoError(test, err)
@@ -60,7 +60,7 @@ func TestSzAbstractFactory_CreateEngine(test *testing.T) {
 	ctx := test.Context()
 	szAbstractFactory := getTestObject(test)
 
-	defer func() { panicOnError(szAbstractFactory.Destroy(ctx)) }()
+	defer func() { require.NoError(test, szAbstractFactory.Destroy(ctx)) }()
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	require.NoError(test, err)
@@ -73,7 +73,7 @@ func TestSzAbstractFactory_CreateProduct(test *testing.T) {
 	ctx := test.Context()
 	szAbstractFactory := getTestObject(test)
 
-	defer func() { panicOnError(szAbstractFactory.Destroy(ctx)) }()
+	defer func() { require.NoError(test, szAbstractFactory.Destroy(ctx)) }()
 
 	szProduct, err := szAbstractFactory.CreateProduct(ctx)
 	require.NoError(test, err)
@@ -86,14 +86,14 @@ func TestSzAbstractFactory_Destroy(test *testing.T) {
 	ctx := test.Context()
 	szAbstractFactory := getTestObject(test)
 
-	defer func() { panicOnError(szAbstractFactory.Destroy(ctx)) }()
+	defer func() { require.NoError(test, szAbstractFactory.Destroy(ctx)) }()
 }
 
 func TestSzAbstractFactory_Reinitialize(test *testing.T) {
 	ctx := test.Context()
 	szAbstractFactory := getTestObject(test)
 
-	defer func() { panicOnError(szAbstractFactory.Destroy(ctx)) }()
+	defer func() { require.NoError(test, szAbstractFactory.Destroy(ctx)) }()
 
 	_, err := szAbstractFactory.CreateDiagnostic(ctx)
 	require.NoError(test, err)
@@ -165,7 +165,7 @@ func getTestObject(t *testing.T) senzing.SzAbstractFactory {
 
 func handleError(err error) {
 	if err != nil {
-		fmt.Println("Error:", err) //nolint:forbidigo
+		safePrintln("Error:", err)
 	}
 }
 
