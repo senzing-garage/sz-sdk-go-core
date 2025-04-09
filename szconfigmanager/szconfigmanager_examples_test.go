@@ -230,8 +230,6 @@ func ExampleSzconfigmanager_SetDefaultConfig() {
 	ctx := context.TODO()
 	szAbstractFactory := getSzAbstractFactory(ctx)
 
-	// FIXME:
-
 	szConfigManager, err := szAbstractFactory.CreateConfigManager(ctx)
 	if err != nil {
 		handleError(err)

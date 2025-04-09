@@ -623,6 +623,11 @@ func (client *Szconfigmanager) createConfigFromStringChoreography(
 		return nil, fmt.Errorf("createConfigFromStringChoreography.Initialize error: %w", err)
 	}
 
+	err = result.VerifyConfigDefinition(ctx, configDefinition)
+	if err != nil {
+		return nil, fmt.Errorf("createConfigFromStringChoreography.VerifyConfigDefinition error: %w", err)
+	}
+
 	err = result.Import(ctx, configDefinition)
 
 	return result, wraperror.Errorf(err, "createConfigFromStringChoreography.Import error: %w", err)

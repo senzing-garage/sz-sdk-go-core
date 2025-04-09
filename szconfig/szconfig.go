@@ -301,23 +301,23 @@ Output
 */
 func (client *Szconfig) ImportTemplate(ctx context.Context) error {
 	var (
-		err    error
-		result string
+		err              error
+		configDefinition string
 	)
 
 	if client.isTrace {
 		client.traceEntry(7)
 
 		entryTime := time.Now()
-		defer func() { client.traceExit(8, result, err, time.Since(entryTime)) }()
+		defer func() { client.traceExit(8, configDefinition, err, time.Since(entryTime)) }()
 	}
 
-	result, err = client.importTemplateChoregraphy(ctx)
+	configDefinition, err = client.importTemplateChoregraphy(ctx)
 	if err != nil {
 		return fmt.Errorf("importTemplateChoregraphy error: %w", err)
 	}
 
-	err = client.importConfigDefinition(ctx, result)
+	err = client.importConfigDefinition(ctx, configDefinition)
 
 	if client.observers != nil {
 		go func() {
@@ -491,6 +491,35 @@ func (client *Szconfig) UnregisterObserver(ctx context.Context, observer observe
 	return wraperror.Errorf(err, "szconfig.UnregisterObserver error: %w", err)
 }
 
+/*
+Method Verify sets the value of the Senzing configuration to be operated upon.
+
+Input
+  - ctx: A context to control lifecycle.
+  - configDefinition: A Senzing configuration JSON document.
+*/
+func (client *Szconfig) VerifyConfigDefinition(ctx context.Context, configDefinition string) error {
+	var err error
+
+	if client.isTrace {
+		client.traceEntry(99, configDefinition)
+
+		entryTime := time.Now()
+		defer func() { client.traceExit(99, configDefinition, err, time.Since(entryTime)) }()
+	}
+
+	err = client.verifyConfigDefinitionChoreography(ctx, configDefinition)
+
+	if client.observers != nil {
+		go func() {
+			details := map[string]string{}
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8999, err, details)
+		}()
+	}
+
+	return wraperror.Errorf(err, "szconfig.Import error: %w", err)
+}
+
 // ----------------------------------------------------------------------------
 // Private methods
 // ----------------------------------------------------------------------------
@@ -513,6 +542,10 @@ func (client *Szconfig) addDataSourceChoreography(
 		return newConfigDefinition, result, fmt.Errorf("addDataSourceChoreography.load error: %w", err)
 	}
 
+	defer func() {
+		err = client.close(ctx, configHandle)
+	}()
+
 	result, err = client.addDataSource(ctx, configHandle, dataSourceCode)
 	if err != nil {
 		return newConfigDefinition, result, fmt.Errorf("addDataSourceChoreography.addDataSource error: %w", err)
@@ -523,12 +556,7 @@ func (client *Szconfig) addDataSourceChoreography(
 		return newConfigDefinition, result, fmt.Errorf("addDataSourceChoreography.save error: %w", err)
 	}
 
-	err = client.close(ctx, configHandle)
-	if err != nil {
-		return newConfigDefinition, result, fmt.Errorf("addDataSourceChoreography.close error: %w", err)
-	}
-
-	return newConfigDefinition, result, nil
+	return newConfigDefinition, result, err
 }
 
 func (client *Szconfig) importTemplateChoregraphy(ctx context.Context) (string, error) {
@@ -545,17 +573,16 @@ func (client *Szconfig) importTemplateChoregraphy(ctx context.Context) (string, 
 		return resultResponse, fmt.Errorf("importTemplateChoregraphy.create error: %w", err)
 	}
 
+	defer func() {
+		err = client.close(ctx, configHandle)
+	}()
+
 	resultResponse, err = client.save(ctx, configHandle)
 	if err != nil {
 		return resultResponse, fmt.Errorf("importTemplateChoregraphy.save error: %w", err)
 	}
 
-	err = client.close(ctx, configHandle)
-	if err != nil {
-		return resultResponse, fmt.Errorf("importTemplateChoregraphy.close error: %w", err)
-	}
-
-	return resultResponse, nil
+	return resultResponse, err
 }
 
 func (client *Szconfig) deleteDataSourceChoreography(
@@ -576,6 +603,10 @@ func (client *Szconfig) deleteDataSourceChoreography(
 		return newConfigDefinition, result, fmt.Errorf("deleteDataSourceChoreography.load error: %w", err)
 	}
 
+	defer func() {
+		err = client.close(ctx, configHandle)
+	}()
+
 	err = client.deleteDataSource(ctx, configHandle, dataSourceCode)
 	if err != nil {
 		return newConfigDefinition, result, fmt.Errorf("deleteDataSourceChoreography.deleteDataSource error: %w", err)
@@ -586,12 +617,7 @@ func (client *Szconfig) deleteDataSourceChoreography(
 		return newConfigDefinition, result, fmt.Errorf("deleteDataSourceChoreography.save error: %w", err)
 	}
 
-	err = client.close(ctx, configHandle)
-	if err != nil {
-		return newConfigDefinition, result, fmt.Errorf("deleteDataSourceChoreography.close error: %w", err)
-	}
-
-	return newConfigDefinition, result, nil
+	return newConfigDefinition, result, err
 }
 
 func (client *Szconfig) getDataSourcesChoreography(ctx context.Context, configDefinition string) (string, error) {
@@ -608,17 +634,16 @@ func (client *Szconfig) getDataSourcesChoreography(ctx context.Context, configDe
 		return result, fmt.Errorf("getDataSourcesChoreography.load error: %w", err)
 	}
 
+	defer func() {
+		err = client.close(ctx, configHandle)
+	}()
+
 	result, err = client.listDataSources(ctx, configHandle)
 	if err != nil {
 		return result, fmt.Errorf("getDataSourcesChoreography.listDataSources error: %w", err)
 	}
 
-	err = client.close(ctx, configHandle)
-	if err != nil {
-		return result, fmt.Errorf("getDataSourcesChoreography.close error: %w", err)
-	}
-
-	return result, nil
+	return result, err
 }
 
 func (client *Szconfig) importConfigDefinition(ctx context.Context, configDefinition string) error {
@@ -626,6 +651,34 @@ func (client *Szconfig) importConfigDefinition(ctx context.Context, configDefini
 	client.configDefinition = configDefinition
 
 	return nil
+}
+
+func (client *Szconfig) verifyConfigDefinitionChoreography(
+	ctx context.Context,
+	configDefinition string,
+) error {
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+
+	var (
+		err error
+	)
+
+	configHandle, err := client.load(ctx, configDefinition)
+	if err != nil {
+		return fmt.Errorf("verifyConfigDefinitionChoreography.load error: %w", err)
+	}
+
+	defer func() {
+		err = client.close(ctx, configHandle)
+	}()
+
+	_, err = client.save(ctx, configHandle)
+	if err != nil {
+		return fmt.Errorf("verifyConfigDefinitionChoreography.save error: %w", err)
+	}
+
+	return err
 }
 
 // ----------------------------------------------------------------------------

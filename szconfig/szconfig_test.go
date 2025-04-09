@@ -167,6 +167,22 @@ func TestSzconfig_ImportTemplate(test *testing.T) {
 	require.NoError(test, err)
 }
 
+func TestSzconfig_VerifyConfigDefinition(test *testing.T) {
+	ctx := test.Context()
+	szConfig := getTestObject(test)
+	configDefinition, err := szConfig.Export(ctx)
+	require.NoError(test, err)
+	err = szConfig.VerifyConfigDefinition(ctx, configDefinition)
+	require.NoError(test, err)
+}
+
+func TestSzconfig_VerifyConfigDefinition_badConfigDefinition(test *testing.T) {
+	ctx := test.Context()
+	szConfig := getTestObject(test)
+	err := szConfig.VerifyConfigDefinition(ctx, badConfigDefinition)
+	require.ErrorIs(test, err, szerror.ErrSzBadInput)
+}
+
 // ----------------------------------------------------------------------------
 // Logging and observing
 // ----------------------------------------------------------------------------
