@@ -314,7 +314,7 @@ func (client *Szconfig) ImportTemplate(ctx context.Context) error {
 
 	configDefinition, err = client.importTemplateChoregraphy(ctx)
 	if err != nil {
-		return fmt.Errorf("importTemplateChoregraphy error: %w", err)
+		return fmt.Errorf("szconfig.ImportTemplate.importTemplateChoregraphy error: %w", err)
 	}
 
 	err = client.importConfigDefinition(ctx, configDefinition)

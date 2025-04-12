@@ -677,12 +677,12 @@ func (client *Szengine) FindNetworkByRecordID(
 	)
 
 	if client.isTrace {
-		client.traceEntry(39, recordKeys, maxDegrees, buildOutDegrees, buildOutMaxEntities, flags)
+		client.traceEntry(29, recordKeys, maxDegrees, buildOutDegrees, buildOutMaxEntities, flags)
 
 		entryTime := time.Now()
 		defer func() {
 			client.traceExit(
-				40,
+				30,
 				recordKeys,
 				maxDegrees,
 				buildOutDegrees,
@@ -1955,7 +1955,7 @@ func (client *Szengine) countRedoRecords(ctx context.Context) (int64, error) {
 
 	result := int64(C.Sz_countRedoRecords())
 	if result < 0 {
-		err = client.newError(ctx, 4061, result)
+		err = client.newError(ctx, 4062, result)
 	}
 
 	return result, err

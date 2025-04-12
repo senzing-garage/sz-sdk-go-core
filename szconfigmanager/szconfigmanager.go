@@ -106,10 +106,10 @@ func (client *Szconfigmanager) CreateConfigFromString(
 	)
 
 	if client.isTrace {
-		client.traceEntry(999, configDefinition)
+		client.traceEntry(23, configDefinition)
 
 		entryTime := time.Now()
-		defer func() { client.traceExit(999, configDefinition, result, err, time.Since(entryTime)) }()
+		defer func() { client.traceExit(24, configDefinition, result, err, time.Since(entryTime)) }()
 	}
 
 	result, err = client.createConfigFromStringChoreography(ctx, configDefinition)
@@ -117,7 +117,7 @@ func (client *Szconfigmanager) CreateConfigFromString(
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8999, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8009, err, details)
 		}()
 	}
 
@@ -131,10 +131,10 @@ func (client *Szconfigmanager) CreateConfigFromTemplate(ctx context.Context) (se
 	)
 
 	if client.isTrace {
-		client.traceEntry(999)
+		client.traceEntry(25)
 
 		entryTime := time.Now()
-		defer func() { client.traceExit(8, result, err, time.Since(entryTime)) }()
+		defer func() { client.traceExit(26, result, err, time.Since(entryTime)) }()
 	}
 
 	result, err = client.createConfigFromTemplateChoreography(ctx)
@@ -142,7 +142,7 @@ func (client *Szconfigmanager) CreateConfigFromTemplate(ctx context.Context) (se
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8003, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8010, err, details)
 		}()
 	}
 
@@ -316,10 +316,10 @@ func (client *Szconfigmanager) SetDefaultConfig(
 	)
 
 	if client.isTrace {
-		client.traceEntry(999, configDefinition, configComment)
+		client.traceEntry(27, configDefinition, configComment)
 
 		entryTime := time.Now()
-		defer func() { client.traceExit(999, configDefinition, configComment, err, time.Since(entryTime)) }()
+		defer func() { client.traceExit(28, configDefinition, configComment, err, time.Since(entryTime)) }()
 	}
 
 	result, err = client.setDefaultConfigChoreography(ctx, configDefinition, configComment)
@@ -331,7 +331,7 @@ func (client *Szconfigmanager) SetDefaultConfig(
 				"configComment":      configComment,
 				"newDefaultConfigID": strconv.FormatInt(result, baseTen),
 			}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8999, err, details)
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8011, err, details)
 		}()
 	}
 
