@@ -96,6 +96,16 @@ func (client *Szconfigmanager) CreateConfigFromConfigID(ctx context.Context, con
 	return result, wraperror.Errorf(err, "szconfigmanager.CreateConfigFromConfigID error: %w", err)
 }
 
+/*
+Method CreateConfigFromString creates an SzConfig from the submitted Senzing configuration JSON document.
+
+Input
+  - ctx: A context to control lifecycle.
+  - configDefinition: The Senzing configuration JSON document.
+
+Output
+  - senzing.SzConfig:
+*/
 func (client *Szconfigmanager) CreateConfigFromString(
 	ctx context.Context,
 	configDefinition string,
@@ -124,6 +134,16 @@ func (client *Szconfigmanager) CreateConfigFromString(
 	return result, wraperror.Errorf(err, "szconfigmanager.CreateConfigFromString error: %w", err)
 }
 
+/*
+Method CreateConfigFromTemplate creates an SzConfig from the template Senzing configuration JSON document.
+This document is found in a file on the gRPC server at PIPELINE.RESOURCEPATH/templates/g2config.json
+
+Input
+  - ctx: A context to control lifecycle.
+
+Output
+  - senzing.SzConfig:
+*/
 func (client *Szconfigmanager) CreateConfigFromTemplate(ctx context.Context) (senzing.SzConfig, error) {
 	var (
 		err    error
@@ -306,6 +326,19 @@ func (client *Szconfigmanager) ReplaceDefaultConfigID(
 	return wraperror.Errorf(err, "szconfigmanager.ReplaceDefaultConfigID error: %w", err)
 }
 
+/*
+Method SetDefaultConfig sets which Senzing configuration JSON document
+is used when initializing or reinitializing the system.
+Note that calling the SetDefaultConfig method does not affect the currently
+running in-memory configuration.
+SetDefaultConfig is susceptible to "race conditions".
+To avoid race conditions, see  [Szconfigmanager.ReplaceDefaultConfigID].
+
+Input
+  - ctx: A context to control lifecycle.
+  - configDefinition: The Senzing configuration JSON document.
+  - configComment: A free-form string describing the Senzing configuration JSON document.
+*/
 func (client *Szconfigmanager) SetDefaultConfig(
 	ctx context.Context,
 	configDefinition string,
@@ -665,7 +698,7 @@ func (client *Szconfigmanager) setDefaultConfigChoreography(
 
 	result, err = client.registerConfig(ctx, configDefinition, configComment)
 	if err != nil {
-		return 0, fmt.Errorf("setDefaultConfigChoreography.addConfig error: %w", err)
+		return 0, fmt.Errorf("setDefaultConfigChoreography.registerConfig error: %w", err)
 	}
 
 	err = client.setDefaultConfigID(ctx, result)

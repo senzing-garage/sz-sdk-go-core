@@ -492,7 +492,8 @@ func (client *Szconfig) UnregisterObserver(ctx context.Context, observer observe
 }
 
 /*
-Method Verify sets the value of the Senzing configuration to be operated upon.
+Method VerifyConfigDefinition determines if the Senzing configuration JSON document is syntactically correct.
+If no error is returned, the JSON document is valid.
 
 Input
   - ctx: A context to control lifecycle.

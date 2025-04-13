@@ -1634,10 +1634,12 @@ func (client *Szengine) WhySearch(
 	)
 
 	if client.isTrace {
-		client.traceEntry(69, attributes, searchProfile, flags)
+		client.traceEntry(69, attributes, entityID, searchProfile, flags)
 
 		entryTime := time.Now()
-		defer func() { client.traceExit(70, attributes, searchProfile, flags, result, err, time.Since(entryTime)) }()
+		defer func() {
+			client.traceExit(70, attributes, entityID, searchProfile, flags, result, err, time.Since(entryTime))
+		}()
 	}
 
 	result, err = client.whySearchV2(ctx, attributes, entityID, searchProfile, flags)
