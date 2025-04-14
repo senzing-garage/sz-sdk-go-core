@@ -122,7 +122,7 @@ func (client *Szconfigmanager) CreateConfigFromString(
 		defer func() { client.traceExit(24, configDefinition, result, err, time.Since(entryTime)) }()
 	}
 
-	result, err = client.createConfigFromStringChoreography(ctx, configDefinition)
+	result, err = client.CreateConfigFromStringChoreography(ctx, configDefinition)
 
 	if client.observers != nil {
 		go func() {
@@ -638,12 +638,12 @@ func (client *Szconfigmanager) createConfigFromConfigIDChoreography(
 		return nil, fmt.Errorf("createConfigFromConfigIDChoreography.getConfig error: %w", err)
 	}
 
-	return client.createConfigFromStringChoreography(ctx, configDefinition)
+	return client.CreateConfigFromStringChoreography(ctx, configDefinition)
 }
 
-func (client *Szconfigmanager) createConfigFromStringChoreography(
+func (client *Szconfigmanager) CreateConfigFromStringChoreography(
 	ctx context.Context,
-	configDefinition string) (senzing.SzConfig, error) {
+	configDefinition string) (*szconfig.Szconfig, error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 
