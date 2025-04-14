@@ -7013,7 +7013,7 @@ func ExampleSzengine_WhySearch() {
 	}
 
 	attributes := `{"NAMES": [{"NAME_TYPE": "PRIMARY", "NAME_LAST": "Smith"}], "EMAIL_ADDRESS": "bsmith@work.com"}`
-	searchProfile := ""
+	searchProfile := "SEARCH"
 	flags := senzing.SzNoFlags
 
 	entityID, err := getEntityID(truthset.CustomerRecords["1001"])
