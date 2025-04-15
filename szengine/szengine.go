@@ -113,6 +113,7 @@ func (client *Szengine) AddRecord(
 			details := map[string]string{
 				"dataSourceCode": dataSourceCode,
 				"recordID":       recordID,
+				"flags":          strconv.FormatInt(flags, baseTen),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8001, err, details)
 		}()
@@ -235,6 +236,7 @@ func (client *Szengine) DeleteRecord(
 			details := map[string]string{
 				"dataSourceCode": dataSourceCode,
 				"recordID":       recordID,
+				"flags":          strconv.FormatInt(flags, baseTen),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8004, err, details)
 		}()
@@ -276,7 +278,9 @@ func (client *Szengine) ExportCsvEntityReport(ctx context.Context, csvColumnList
 
 	if client.observers != nil {
 		go func() {
-			details := map[string]string{}
+			details := map[string]string{
+				"flags": strconv.FormatInt(flags, baseTen),
+			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8006, err, details)
 		}()
 	}
@@ -340,7 +344,9 @@ func (client *Szengine) ExportCsvEntityReportIterator(
 
 		if client.observers != nil {
 			go func() {
-				details := map[string]string{}
+				details := map[string]string{
+					"flags": strconv.FormatInt(flags, baseTen),
+				}
 				notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8007, err, details)
 			}()
 		}
@@ -378,7 +384,9 @@ func (client *Szengine) ExportJSONEntityReport(ctx context.Context, flags int64)
 
 	if client.observers != nil {
 		go func() {
-			details := map[string]string{}
+			details := map[string]string{
+				"flags": strconv.FormatInt(flags, baseTen),
+			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8008, err, details)
 		}()
 	}
@@ -517,6 +525,7 @@ func (client *Szengine) FindInterestingEntitiesByEntityID(
 		go func() {
 			details := map[string]string{
 				"entityID": formatEntityID(entityID),
+				"flags":    strconv.FormatInt(flags, baseTen),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8011, err, details)
 		}()
@@ -565,6 +574,7 @@ func (client *Szengine) FindInterestingEntitiesByRecordID(
 			details := map[string]string{
 				"dataSourceCode": dataSourceCode,
 				"recordID":       recordID,
+				"flags":          strconv.FormatInt(flags, baseTen),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8012, err, details)
 		}()
@@ -636,6 +646,7 @@ func (client *Szengine) FindNetworkByEntityID(
 		go func() {
 			details := map[string]string{
 				"entityIDs": entityIDs,
+				"flags":     strconv.FormatInt(flags, baseTen),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8013, err, details)
 		}()
@@ -677,12 +688,12 @@ func (client *Szengine) FindNetworkByRecordID(
 	)
 
 	if client.isTrace {
-		client.traceEntry(39, recordKeys, maxDegrees, buildOutDegrees, buildOutMaxEntities, flags)
+		client.traceEntry(29, recordKeys, maxDegrees, buildOutDegrees, buildOutMaxEntities, flags)
 
 		entryTime := time.Now()
 		defer func() {
 			client.traceExit(
-				40,
+				30,
 				recordKeys,
 				maxDegrees,
 				buildOutDegrees,
@@ -708,6 +719,7 @@ func (client *Szengine) FindNetworkByRecordID(
 		go func() {
 			details := map[string]string{
 				"recordKeys": recordKeys,
+				"flags":      strconv.FormatInt(flags, baseTen),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8014, err, details)
 		}()
@@ -775,6 +787,7 @@ func (client *Szengine) FindPathByEntityID(
 				"endEntityID":         formatEntityID(endEntityID),
 				"avoidEntityIDs":      avoidEntityIDs,
 				"requiredDataSources": requiredDataSources,
+				"flags":               strconv.FormatInt(flags, baseTen),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8015, err, details)
 		}()
@@ -815,8 +828,8 @@ Output
   - A JSON document.
 */
 func (client *Szengine) FindPathByRecordID(ctx context.Context, startDataSourceCode string, startRecordID string,
-	endDataSourceCode string, endRecordID string, maxDegrees int64, avoidRecordKeys string,
-	requiredDataSources string, flags int64) (string, error) {
+	endDataSourceCode string, endRecordID string, maxDegrees int64, avoidRecordKeys string, requiredDataSources string,
+	flags int64) (string, error) {
 	var (
 		err    error
 		result string
@@ -828,20 +841,8 @@ func (client *Szengine) FindPathByRecordID(ctx context.Context, startDataSourceC
 
 		entryTime := time.Now()
 		defer func() {
-			client.traceExit(
-				34,
-				startDataSourceCode,
-				startRecordID,
-				endDataSourceCode,
-				endRecordID,
-				maxDegrees,
-				avoidRecordKeys,
-				requiredDataSources,
-				flags,
-				result,
-				err,
-				time.Since(entryTime),
-			)
+			client.traceExit(34, startDataSourceCode, startRecordID, endDataSourceCode, endRecordID, maxDegrees,
+				avoidRecordKeys, requiredDataSources, flags, result, err, time.Since(entryTime))
 		}()
 	}
 
@@ -869,6 +870,7 @@ func (client *Szengine) FindPathByRecordID(ctx context.Context, startDataSourceC
 				"endRecordID":         endRecordID,
 				"avoidRecordKeys":     avoidRecordKeys,
 				"requiredDataSources": requiredDataSources,
+				"flags":               strconv.FormatInt(flags, baseTen),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8016, err, details)
 		}()
@@ -942,6 +944,7 @@ func (client *Szengine) GetEntityByEntityID(ctx context.Context, entityID int64,
 		go func() {
 			details := map[string]string{
 				"entityID": formatEntityID(entityID),
+				"flags":    strconv.FormatInt(flags, baseTen),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8018, err, details)
 		}()
@@ -989,6 +992,7 @@ func (client *Szengine) GetEntityByRecordID(
 			details := map[string]string{
 				"dataSourceCode": dataSourceCode,
 				"recordID":       recordID,
+				"flags":          strconv.FormatInt(flags, baseTen),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8019, err, details)
 		}()
@@ -1035,6 +1039,7 @@ func (client *Szengine) GetRecord(
 			details := map[string]string{
 				"dataSourceCode": dataSourceCode,
 				"recordID":       recordID,
+				"flags":          strconv.FormatInt(flags, baseTen),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8020, err, details)
 		}()
@@ -1146,7 +1151,9 @@ func (client *Szengine) GetVirtualEntityByRecordID(
 	if client.observers != nil {
 		go func() {
 			details := map[string]string{
-				"recordKeys": recordKeys}
+				"recordKeys": recordKeys,
+				"flags":      strconv.FormatInt(flags, baseTen),
+			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8023, err, details)
 		}()
 	}
@@ -1184,6 +1191,7 @@ func (client *Szengine) HowEntityByEntityID(ctx context.Context, entityID int64,
 		go func() {
 			details := map[string]string{
 				"entityID": formatEntityID(entityID),
+				"flags":    strconv.FormatInt(flags, baseTen),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8024, err, details)
 		}()
@@ -1222,7 +1230,9 @@ func (client *Szengine) PreprocessRecord(ctx context.Context, recordDefinition s
 
 	if client.observers != nil {
 		go func() {
-			details := map[string]string{}
+			details := map[string]string{
+				"flags": strconv.FormatInt(flags, baseTen),
+			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8035, err, details)
 		}()
 	}
@@ -1289,7 +1299,9 @@ func (client *Szengine) ProcessRedoRecord(ctx context.Context, redoRecord string
 
 	if client.observers != nil {
 		go func() {
-			details := map[string]string{}
+			details := map[string]string{
+				"flags": strconv.FormatInt(flags, baseTen),
+			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8027, err, details)
 		}()
 	}
@@ -1332,6 +1344,7 @@ func (client *Szengine) ReevaluateEntity(ctx context.Context, entityID int64, fl
 		go func() {
 			details := map[string]string{
 				"entityID": formatEntityID(entityID),
+				"flags":    strconv.FormatInt(flags, baseTen),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8028, err, details)
 		}()
@@ -1381,6 +1394,7 @@ func (client *Szengine) ReevaluateRecord(
 			details := map[string]string{
 				"dataSourceCode": dataSourceCode,
 				"recordID":       recordID,
+				"flags":          strconv.FormatInt(flags, baseTen),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8029, err, details)
 		}()
@@ -1429,6 +1443,7 @@ func (client *Szengine) SearchByAttributes(
 			details := map[string]string{
 				"attributes":    attributes,
 				"searchProfile": searchProfile,
+				"flags":         strconv.FormatInt(flags, baseTen),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8031, err, details)
 		}()
@@ -1474,6 +1489,7 @@ func (client *Szengine) WhyEntities(
 			details := map[string]string{
 				"entityID1": formatEntityID(entityID1),
 				"entityID2": formatEntityID(entityID2),
+				"flags":     strconv.FormatInt(flags, baseTen),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8032, err, details)
 		}()
@@ -1518,6 +1534,7 @@ func (client *Szengine) WhyRecordInEntity(
 			details := map[string]string{
 				"dataSourceCode": dataSourceCode,
 				"recordID":       recordID,
+				"flags":          strconv.FormatInt(flags, baseTen),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8033, err, details)
 		}()
@@ -1580,12 +1597,66 @@ func (client *Szengine) WhyRecords(
 				"recordID1":       recordID1,
 				"dataSourceCode2": dataSourceCode2,
 				"recordID2":       recordID2,
+				"flags":           strconv.FormatInt(flags, baseTen),
 			}
 			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8034, err, details)
 		}()
 	}
 
 	return result, wraperror.Errorf(err, "szengine.WhyRecords error: %w", err)
+}
+
+/*
+Method WhySearch ...
+
+Input
+  - ctx: A context to control lifecycle.
+  - attributes: A JSON document containing the attributes desired in the result set.
+    Example: `{"NAME_FULL": "BOB SMITH", "EMAIL_ADDRESS": "bsmith@work.com"}`
+  - entityID:
+  - searchProfile: The name of the search profile to use in the search.
+    An empty string will use the default search profile.
+    Example: "SEARCH"
+  - flags: Flags used to control information returned.
+
+Output
+  - A JSON document.
+*/
+func (client *Szengine) WhySearch(
+	ctx context.Context,
+	attributes string,
+	entityID int64,
+	searchProfile string,
+	flags int64) (string, error) {
+	var (
+		err    error
+		result string
+	)
+
+	if client.isTrace {
+		client.traceEntry(69, attributes, entityID, searchProfile, flags)
+
+		entryTime := time.Now()
+		defer func() {
+			client.traceExit(70, attributes, entityID, searchProfile, flags, result, err, time.Since(entryTime))
+		}()
+	}
+
+	result, err = client.whySearchV2(ctx, attributes, entityID, searchProfile, flags)
+
+	if client.observers != nil {
+		go func() {
+			details := map[string]string{
+				"attributes":    attributes,
+				"entityID":      formatEntityID(entityID),
+				"searchProfile": searchProfile,
+				"flags":         strconv.FormatInt(flags, baseTen),
+			}
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8031, err, details)
+		}()
+	}
+
+	return result, wraperror.Errorf(err, "szengine.WhySearch error: %w", err)
 }
 
 // ----------------------------------------------------------------------------
@@ -1955,7 +2026,7 @@ func (client *Szengine) countRedoRecords(ctx context.Context) (int64, error) {
 
 	result := int64(C.Sz_countRedoRecords())
 	if result < 0 {
-		err = client.newError(ctx, 4061, result)
+		err = client.newError(ctx, 4062, result)
 	}
 
 	return result, err
@@ -3488,6 +3559,106 @@ func (client *Szengine) whyRecordsV2(
 			flags,
 			result.returnCode,
 		)
+	}
+
+	resultResponse = C.GoString(result.response)
+
+	C.SzHelper_free(unsafe.Pointer(result.response))
+
+	return resultResponse, err
+}
+
+/*
+Method whySearch ...
+
+Input
+  - ctx: A context to control lifecycle.
+  - attributes: A JSON document containing the attributes desired in the result set.
+    Example: `{"NAME_FULL": "BOB SMITH", "EMAIL_ADDRESS": "bsmith@work.com"}`
+  - entityID: The unique identifier of an entity.
+  - searchProfile: The name of the search profile to use in the search.
+    An empty string will use the default search profile.
+    Example: "SEARCH"
+
+Output
+  - A JSON document.
+*/
+// func (client *Szengine) whySearch(
+// 	ctx context.Context,
+// 	attributes string,
+// 	entityID int64,
+// 	searchProfile string,
+// ) (string, error) {
+// 	runtime.LockOSThread()
+// 	defer runtime.UnlockOSThread()
+
+// 	var (
+// 		err            error
+// 		resultResponse string
+// 	)
+
+// 	attributesForC := C.CString(attributes)
+
+// 	defer C.free(unsafe.Pointer(attributesForC))
+
+// 	searchProfileForC := C.CString(searchProfile)
+
+// 	defer C.free(unsafe.Pointer(searchProfileForC))
+
+// 	result := C.Sz_whySearch_helper(attributesForC, C.longlong(entityID), searchProfileForC)
+// 	if result.returnCode != noError {
+// 		err = client.newError(ctx, 4063, attributes, entityID, searchProfile, result.returnCode)
+// 	}
+
+// 	resultResponse = C.GoString(result.response)
+
+// 	C.SzHelper_free(unsafe.Pointer(result.response))
+
+// 	return resultResponse, err
+// }
+
+/*
+Method whySearchV2 ...
+
+Input
+  - ctx: A context to control lifecycle.
+  - attributes: A JSON document containing the attributes desired in the result set.
+    Example: `{"NAME_FULL": "BOB SMITH", "EMAIL_ADDRESS": "bsmith@work.com"}`
+  - entityID: The unique identifier of an entity.
+  - searchProfile: The name of the search profile to use in the search.
+    An empty string will use the default search profile.
+    Example: "SEARCH"
+  - flags: Flags used to control information returned.
+
+Output
+  - A JSON document.
+*/
+func (client *Szengine) whySearchV2(
+	ctx context.Context,
+	attributes string,
+	entityID int64,
+	searchProfile string,
+	flags int64,
+) (string, error) {
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+
+	var (
+		err            error
+		resultResponse string
+	)
+
+	attributesForC := C.CString(attributes)
+
+	defer C.free(unsafe.Pointer(attributesForC))
+
+	searchProfileForC := C.CString(searchProfile)
+
+	defer C.free(unsafe.Pointer(searchProfileForC))
+
+	result := C.Sz_whySearch_V2_helper(attributesForC, C.longlong(entityID), searchProfileForC, C.longlong(flags))
+	if result.returnCode != noError {
+		err = client.newError(ctx, 4064, attributes, entityID, searchProfile, flags, result.returnCode)
 	}
 
 	resultResponse = C.GoString(result.response)

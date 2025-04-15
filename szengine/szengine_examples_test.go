@@ -7001,6 +7001,55 @@ func ExampleSzengine_WhyRecords_output() {
 	// }
 }
 
+func ExampleSzengine_WhySearch() {
+	// For more information, visit
+	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
+	ctx := context.TODO()
+	szAbstractFactory := getSzAbstractFactory(ctx)
+
+	szEngine, err := szAbstractFactory.CreateEngine(ctx)
+	if err != nil {
+		handleError(err)
+	}
+
+	attributes := `{"NAMES": [{"NAME_TYPE": "PRIMARY", "NAME_LAST": "Smith"}], "EMAIL_ADDRESS": "bsmith@work.com"}`
+	searchProfile := "SEARCH"
+	flags := senzing.SzNoFlags
+
+	entityID, err := getEntityID(truthset.CustomerRecords["1001"])
+	if err != nil {
+		handleError(err)
+	}
+
+	result, err := szEngine.WhySearch(ctx, attributes, entityID, searchProfile, flags)
+	if err != nil {
+		handleError(err)
+	}
+
+	fmt.Println(
+		jsonutil.PrettyPrint(result, jsonIndentation))
+	// Output:
+	// {
+	//     "WHY_RESULTS": [
+	//         {
+	//             "ENTITY_ID": 100001,
+	//             "MATCH_INFO": {
+	//                 "WHY_KEY": "+PNAME+EMAIL",
+	//                 "WHY_ERRULE_CODE": "SF1",
+	//                 "MATCH_LEVEL_CODE": "POSSIBLY_RELATED"
+	//             }
+	//         }
+	//     ],
+	//     "ENTITIES": [
+	//         {
+	//             "RESOLVED_ENTITY": {
+	//                 "ENTITY_ID": 100001
+	//             }
+	//         }
+	//     ]
+	// }
+}
+
 // ----------------------------------------------------------------------------
 // Logging and observing
 // ----------------------------------------------------------------------------

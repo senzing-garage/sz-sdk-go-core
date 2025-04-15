@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning].
 
 -
 
+## [0.9.2] - 2025-04-14
+
+### Added in 0.9.2
+
+- `SzEngine.WhySearch`
+
 ## [0.9.1] - 2025-04-09
 
 ### Changed in 0.9.1

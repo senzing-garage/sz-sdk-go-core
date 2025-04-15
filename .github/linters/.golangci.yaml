@@ -129,7 +129,7 @@ linters:
       threshold: 200
     goconst:
       min-occurrences: 5
-      ignore-strings: "CUSTOMERS"
+      ignore-string-values: ["CUSTOMERS"]
     ireturn:
       allow:
         - error

@@ -3323,6 +3323,28 @@ func TestSzengine_WhyRecords_nilRecordID(test *testing.T) {
 	printActual(test, actual)
 }
 
+func TestSzengine_WhySearch(test *testing.T) {
+	ctx := test.Context()
+	records := []record.Record{
+		truthset.CustomerRecords["1001"],
+		truthset.CustomerRecords["1002"],
+		truthset.CustomerRecords["1003"],
+	}
+
+	defer func() { deleteRecords(ctx, records) }()
+
+	addRecords(ctx, records)
+
+	szEngine := getTestObject(test)
+	entityID, err := getEntityID(truthset.CustomerRecords["1001"])
+	require.NoError(test, err)
+
+	flags := senzing.SzNoFlags
+	actual, err := szEngine.WhySearch(ctx, searchAttributes, entityID, searchProfile, flags)
+	require.NoError(test, err)
+	printActual(test, actual)
+}
+
 // ----------------------------------------------------------------------------
 // Logging and observing
 // ----------------------------------------------------------------------------
