@@ -407,7 +407,7 @@ func (client *Szproduct) init(ctx context.Context, instanceName string, settings
 
 	defer C.free(unsafe.Pointer(iniParamsForC))
 
-	result := C.SzProduct_init(moduleNameForC, iniParamsForC, C.longlong(verboseLogging))
+	result := C.SzProduct_init(moduleNameForC, iniParamsForC, C.int64_t(verboseLogging))
 	if result != noError {
 		err = client.newError(ctx, 4002, instanceName, settings, verboseLogging, result)
 	}

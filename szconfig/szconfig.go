@@ -867,7 +867,7 @@ func (client *Szconfig) init(ctx context.Context, instanceName string, settings 
 
 	defer C.free(unsafe.Pointer(settingsForC))
 
-	result := C.SzConfig_init(instanceNameForC, settingsForC, C.longlong(verboseLogging))
+	result := C.SzConfig_init(instanceNameForC, settingsForC, C.int64_t(verboseLogging))
 	if result != noError {
 		err = client.newError(ctx, 4007, instanceName, settings, verboseLogging, result)
 	}

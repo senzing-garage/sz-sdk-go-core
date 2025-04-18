@@ -1990,7 +1990,7 @@ func (client *Szengine) addRecordWithInfo(
 
 	defer C.free(unsafe.Pointer(recordDefinitionForC))
 
-	result := C.Sz_addRecordWithInfo_helper(dataSourceCodeForC, recordIDForC, recordDefinitionForC, C.longlong(flags))
+	result := C.Sz_addRecordWithInfo_helper(dataSourceCodeForC, recordIDForC, recordDefinitionForC, C.int64_t(flags))
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4002, dataSourceCode, recordID, recordDefinition, flags, result.returnCode)
 	}
@@ -2097,7 +2097,7 @@ func (client *Szengine) deleteRecordWithInfo(
 
 	defer C.free(unsafe.Pointer(recordIDForC))
 
-	result := C.Sz_deleteRecordWithInfo_helper(dataSourceCodeForC, recordIDForC, C.longlong(flags))
+	result := C.Sz_deleteRecordWithInfo_helper(dataSourceCodeForC, recordIDForC, C.int64_t(flags))
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4005, dataSourceCode, recordID, flags, result.returnCode)
 	}
@@ -2136,7 +2136,7 @@ func (client *Szengine) exportCsvEntityReport(ctx context.Context, csvColumnList
 
 	defer C.free(unsafe.Pointer(csvColumnListForC))
 
-	result := C.Sz_exportCSVEntityReport_helper(csvColumnListForC, C.longlong(flags))
+	result := C.Sz_exportCSVEntityReport_helper(csvColumnListForC, C.int64_t(flags))
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4007, csvColumnList, flags, result.returnCode, result)
 	}
@@ -2155,7 +2155,7 @@ func (client *Szengine) exportJSONEntityReport(ctx context.Context, flags int64)
 		resultExportHandle uintptr
 	)
 
-	result := C.Sz_exportJSONEntityReport_helper(C.longlong(flags))
+	result := C.Sz_exportJSONEntityReport_helper(C.int64_t(flags))
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4008, flags, result.returnCode, result)
 	}
@@ -2199,7 +2199,7 @@ func (client *Szengine) findInterestingEntitiesByEntityID(
 		resultResponse string
 	)
 
-	result := C.Sz_findInterestingEntitiesByEntityID_helper(C.longlong(entityID), C.longlong(flags))
+	result := C.Sz_findInterestingEntitiesByEntityID_helper(C.int64_t(entityID), C.int64_t(flags))
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4010, entityID, flags, result.returnCode)
 	}
@@ -2233,7 +2233,7 @@ func (client *Szengine) findInterestingEntitiesByRecordID(
 
 	defer C.free(unsafe.Pointer(recordIDForC))
 
-	result := C.Sz_findInterestingEntitiesByRecordID_helper(dataSourceCodeForC, recordIDForC, C.longlong(flags))
+	result := C.Sz_findInterestingEntitiesByRecordID_helper(dataSourceCodeForC, recordIDForC, C.int64_t(flags))
 
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4011, dataSourceCode, recordID, flags, result.returnCode)
@@ -2268,10 +2268,10 @@ func (client *Szengine) findNetworkByEntityIDV2(
 
 	result := C.Sz_findNetworkByEntityID_V2_helper(
 		entityListForC,
-		C.longlong(maxDegrees),
-		C.longlong(buildOutDegrees),
-		C.longlong(buildOutMaxEntities),
-		C.longlong(flags),
+		C.int64_t(maxDegrees),
+		C.int64_t(buildOutDegrees),
+		C.int64_t(buildOutMaxEntities),
+		C.int64_t(flags),
 	)
 	if result.returnCode != noError {
 		err = client.newError(
@@ -2314,10 +2314,10 @@ func (client *Szengine) findNetworkByRecordIDV2(
 
 	result := C.Sz_findNetworkByRecordID_V2_helper(
 		recordListForC,
-		C.longlong(maxDegrees),
-		C.longlong(buildOutDegrees),
-		C.longlong(buildOutMaxEntities),
-		C.longlong(flags))
+		C.int64_t(maxDegrees),
+		C.int64_t(buildOutDegrees),
+		C.int64_t(buildOutMaxEntities),
+		C.int64_t(flags))
 	if result.returnCode != noError {
 		err = client.newError(
 			ctx,
@@ -2368,10 +2368,10 @@ func (client *Szengine) findPathByEntityIDV2(
 	)
 
 	result := C.Sz_findPathByEntityID_V2_helper(
-		C.longlong(startEntityID),
-		C.longlong(endEntityID),
-		C.longlong(maxDegrees),
-		C.longlong(flags))
+		C.int64_t(startEntityID),
+		C.int64_t(endEntityID),
+		C.int64_t(maxDegrees),
+		C.int64_t(flags))
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4017, startEntityID, endEntityID, maxDegrees, flags, result.returnCode)
 	}
@@ -2440,8 +2440,8 @@ func (client *Szengine) findPathByRecordIDV2(
 		startRecordIDForC,
 		endDataSourceCodeForC,
 		endRecordIDForC,
-		C.longlong(maxDegrees),
-		C.longlong(flags))
+		C.int64_t(maxDegrees),
+		C.int64_t(flags))
 	if result.returnCode != noError {
 		err = client.newError(
 			ctx,
@@ -2503,11 +2503,11 @@ func (client *Szengine) findPathByEntityIDWithAvoidsV2(
 	defer C.free(unsafe.Pointer(avoidedEntitiesForC))
 
 	result := C.Sz_findPathByEntityIDWithAvoids_V2_helper(
-		C.longlong(startEntityID),
-		C.longlong(endEntityID),
-		C.longlong(maxDegrees),
+		C.int64_t(startEntityID),
+		C.int64_t(endEntityID),
+		C.int64_t(maxDegrees),
 		avoidedEntitiesForC,
-		C.longlong(flags))
+		C.int64_t(flags))
 	if result.returnCode != noError {
 		err = client.newError(
 			ctx,
@@ -2596,9 +2596,9 @@ func (client *Szengine) findPathByRecordIDWithAvoidsV2(
 		startRecordIDForC,
 		endDataSourceCodeForC,
 		endRecordIDForC,
-		C.longlong(maxDegrees),
+		C.int64_t(maxDegrees),
 		avoidedRecordsForC,
-		C.longlong(flags))
+		C.int64_t(flags))
 	if result.returnCode != noError {
 		err = client.newError(
 			ctx,
@@ -2666,12 +2666,12 @@ func (client *Szengine) findPathByEntityIDIncludingSourceV2(
 	defer C.free(unsafe.Pointer(requiredDataSourcesForC))
 
 	result := C.Sz_findPathByEntityIDIncludingSource_V2_helper(
-		C.longlong(startEntityID),
-		C.longlong(endEntityID),
-		C.longlong(maxDegrees),
+		C.int64_t(startEntityID),
+		C.int64_t(endEntityID),
+		C.int64_t(maxDegrees),
 		avoidedEntitiesForC,
 		requiredDataSourcesForC,
-		C.longlong(flags))
+		C.int64_t(flags))
 	if result.returnCode != noError {
 		err = client.newError(
 			ctx,
@@ -2765,10 +2765,10 @@ func (client *Szengine) findPathByRecordIDIncludingSourceV2(
 		startRecordIDForC,
 		endDataSourceCodeForC,
 		endRecordIDForC,
-		C.longlong(maxDegrees),
+		C.int64_t(maxDegrees),
 		avoidedRecordsForC,
 		requiredDataSourcesForC,
-		C.longlong(flags),
+		C.int64_t(flags),
 	)
 	if result.returnCode != noError {
 		err = client.newError(
@@ -2821,7 +2821,7 @@ func (client *Szengine) getEntityByEntityIDV2(ctx context.Context, entityID int6
 		resultResponse string
 	)
 
-	result := C.Sz_getEntityByEntityID_V2_helper(C.longlong(entityID), C.longlong(flags))
+	result := C.Sz_getEntityByEntityID_V2_helper(C.int64_t(entityID), C.int64_t(flags))
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4030, entityID, flags, result.returnCode)
 	}
@@ -2855,7 +2855,7 @@ func (client *Szengine) getEntityByRecordIDV2(
 
 	defer C.free(unsafe.Pointer(recordIDForC))
 
-	result := C.Sz_getEntityByRecordID_V2_helper(dataSourceCodeForC, recordIDForC, C.longlong(flags))
+	result := C.Sz_getEntityByRecordID_V2_helper(dataSourceCodeForC, recordIDForC, C.int64_t(flags))
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4032, dataSourceCode, recordID, flags, result.returnCode)
 	}
@@ -2889,7 +2889,7 @@ func (client *Szengine) getRecordV2(
 
 	defer C.free(unsafe.Pointer(recordIDForC))
 
-	result := C.Sz_getRecord_V2_helper(dataSourceCodeForC, recordIDForC, C.longlong(flags))
+	result := C.Sz_getRecord_V2_helper(dataSourceCodeForC, recordIDForC, C.int64_t(flags))
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4035, dataSourceCode, recordID, flags, result.returnCode)
 	}
@@ -2960,7 +2960,7 @@ func (client *Szengine) getVirtualEntityByRecordIDV2(
 
 	defer C.free(unsafe.Pointer(recordListForC))
 
-	result := C.Sz_getVirtualEntityByRecordID_V2_helper(recordListForC, C.longlong(flags))
+	result := C.Sz_getVirtualEntityByRecordID_V2_helper(recordListForC, C.int64_t(flags))
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4038, recordKeys, flags, result.returnCode)
 	}
@@ -2981,7 +2981,7 @@ func (client *Szengine) howEntityByEntityIDV2(ctx context.Context, entityID int6
 		resultResponse string
 	)
 
-	result := C.Sz_howEntityByEntityID_V2_helper(C.longlong(entityID), C.longlong(flags))
+	result := C.Sz_howEntityByEntityID_V2_helper(C.int64_t(entityID), C.int64_t(flags))
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4040, entityID, flags, result.returnCode)
 	}
@@ -3017,7 +3017,7 @@ func (client *Szengine) init(ctx context.Context, instanceName string, settings 
 
 	defer C.free(unsafe.Pointer(settingsForC))
 
-	result := C.Sz_init(instanceNameForC, settingsForC, C.longlong(verboseLogging))
+	result := C.Sz_init(instanceNameForC, settingsForC, C.int64_t(verboseLogging))
 	if result != noError {
 		err = client.newError(ctx, 4041, instanceName, settings, verboseLogging, result)
 	}
@@ -3056,7 +3056,7 @@ func (client *Szengine) initWithConfigID(
 
 	defer C.free(unsafe.Pointer(settingsForC))
 
-	result := C.Sz_initWithConfigID(instanceNameForC, settingsForC, C.longlong(configID), C.longlong(verboseLogging))
+	result := C.Sz_initWithConfigID(instanceNameForC, settingsForC, C.int64_t(configID), C.int64_t(verboseLogging))
 	if result != noError {
 		err = client.newError(ctx, 4042, instanceName, settings, configID, verboseLogging, result)
 	}
@@ -3103,7 +3103,7 @@ func (client *Szengine) preprocessRecord(ctx context.Context, recordDefinition s
 
 	defer C.free(unsafe.Pointer(recordDefinitionForC))
 
-	result := C.Sz_preprocessRecord_helper(recordDefinitionForC, C.longlong(flags))
+	result := C.Sz_preprocessRecord_helper(recordDefinitionForC, C.int64_t(flags))
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4061, recordDefinition, flags, result.returnCode)
 	}
@@ -3194,7 +3194,7 @@ func (client *Szengine) reevaluateEntity(ctx context.Context, entityID int64, fl
 
 	var err error
 
-	result := C.Sz_reevaluateEntity(C.longlong(entityID), C.longlong(flags))
+	result := C.Sz_reevaluateEntity(C.int64_t(entityID), C.int64_t(flags))
 	if result != noError {
 		err = client.newError(ctx, 4046, entityID, flags, result)
 	}
@@ -3223,7 +3223,7 @@ func (client *Szengine) reevaluateEntityWithInfo(ctx context.Context, entityID i
 		resultResponse string
 	)
 
-	result := C.Sz_reevaluateEntityWithInfo_helper(C.longlong(entityID), C.longlong(flags))
+	result := C.Sz_reevaluateEntityWithInfo_helper(C.int64_t(entityID), C.int64_t(flags))
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4047, entityID, flags, result.returnCode)
 	}
@@ -3263,7 +3263,7 @@ func (client *Szengine) reevaluateRecord(
 
 	defer C.free(unsafe.Pointer(recordIDForC))
 
-	result := C.Sz_reevaluateRecord(dataSourceCodeForC, recordIDForC, C.longlong(flags))
+	result := C.Sz_reevaluateRecord(dataSourceCodeForC, recordIDForC, C.int64_t(flags))
 	if result != noError {
 		err = client.newError(ctx, 4048, dataSourceCode, recordID, flags, result)
 	}
@@ -3306,7 +3306,7 @@ func (client *Szengine) reevaluateRecordWithInfo(
 
 	defer C.free(unsafe.Pointer(recordIDForC))
 
-	result := C.Sz_reevaluateRecordWithInfo_helper(dataSourceCodeForC, recordIDForC, C.longlong(flags))
+	result := C.Sz_reevaluateRecordWithInfo_helper(dataSourceCodeForC, recordIDForC, C.int64_t(flags))
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4049, dataSourceCode, recordID, flags, result.returnCode)
 	}
@@ -3324,7 +3324,7 @@ func (client *Szengine) reinit(ctx context.Context, configID int64) error {
 
 	var err error
 
-	result := C.Sz_reinit(C.longlong(configID))
+	result := C.Sz_reinit(C.int64_t(configID))
 	if result != noError {
 		err = client.newError(ctx, 4050, configID, result)
 	}
@@ -3394,7 +3394,7 @@ func (client *Szengine) searchByAttributesV3(
 
 	defer C.free(unsafe.Pointer(searchProfileForC))
 
-	result := C.Sz_searchByAttributes_V3_helper(attributesForC, searchProfileForC, C.longlong(flags))
+	result := C.Sz_searchByAttributes_V3_helper(attributesForC, searchProfileForC, C.int64_t(flags))
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4053, attributes, searchProfile, flags, result.returnCode)
 	}
@@ -3436,7 +3436,7 @@ func (client *Szengine) whyEntitiesV2(
 		resultResponse string
 	)
 
-	result := C.Sz_whyEntities_V2_helper(C.longlong(entityID1), C.longlong(entityID2), C.longlong(flags))
+	result := C.Sz_whyEntities_V2_helper(C.int64_t(entityID1), C.int64_t(entityID2), C.int64_t(flags))
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4056, entityID1, entityID2, flags, result.returnCode)
 	}
@@ -3482,7 +3482,7 @@ func (client *Szengine) whyRecordInEntityV2(
 
 	defer C.free(unsafe.Pointer(recordIDForC))
 
-	result := C.Sz_whyRecordInEntity_V2_helper(dataSourceCodeForC, recordIDForC, C.longlong(flags))
+	result := C.Sz_whyRecordInEntity_V2_helper(dataSourceCodeForC, recordIDForC, C.int64_t(flags))
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4058, dataSourceCode, recordID, flags, result.returnCode)
 	}
@@ -3546,7 +3546,7 @@ func (client *Szengine) whyRecordsV2(
 		recordID1ForC,
 		dataSource2CodeForC,
 		recordID2ForC,
-		C.longlong(flags),
+		C.int64_t(flags),
 	)
 	if result.returnCode != noError {
 		err = client.newError(
@@ -3656,7 +3656,7 @@ func (client *Szengine) whySearchV2(
 
 	defer C.free(unsafe.Pointer(searchProfileForC))
 
-	result := C.Sz_whySearch_V2_helper(attributesForC, C.longlong(entityID), searchProfileForC, C.longlong(flags))
+	result := C.Sz_whySearch_V2_helper(attributesForC, C.int64_t(entityID), searchProfileForC, C.int64_t(flags))
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4064, attributes, entityID, searchProfile, flags, result.returnCode)
 	}
