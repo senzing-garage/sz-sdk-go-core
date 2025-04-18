@@ -763,7 +763,7 @@ func (client *Szconfigmanager) getConfig(ctx context.Context, configID int64) (s
 		resultResponse string
 	)
 
-	result := C.SzConfigMgr_getConfig_helper(C.longlong(configID))
+	result := C.SzConfigMgr_getConfig_helper(C.int64_t(configID))
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4003, configID, result.returnCode, result)
 	}
@@ -833,7 +833,7 @@ func (client *Szconfigmanager) init(
 
 	defer C.free(unsafe.Pointer(iniParamsForC))
 
-	result := C.SzConfigMgr_init(moduleNameForC, iniParamsForC, C.longlong(verboseLogging))
+	result := C.SzConfigMgr_init(moduleNameForC, iniParamsForC, C.int64_t(verboseLogging))
 	if result != noError {
 		err = client.newError(ctx, 4006, instanceName, settings, verboseLogging, result)
 	}
@@ -850,7 +850,7 @@ func (client *Szconfigmanager) replaceDefaultConfigID(
 
 	var err error
 
-	result := C.SzConfigMgr_replaceDefaultConfigID(C.longlong(currentDefaultConfigID), C.longlong(newDefaultConfigID))
+	result := C.SzConfigMgr_replaceDefaultConfigID(C.int64_t(currentDefaultConfigID), C.int64_t(newDefaultConfigID))
 	if result != noError {
 		err = client.newError(ctx, 4007, currentDefaultConfigID, newDefaultConfigID, result)
 	}
@@ -864,7 +864,7 @@ func (client *Szconfigmanager) setDefaultConfigID(ctx context.Context, configID 
 
 	var err error
 
-	result := C.SzConfigMgr_setDefaultConfigID(C.longlong(configID))
+	result := C.SzConfigMgr_setDefaultConfigID(C.int64_t(configID))
 	if result != noError {
 		err = client.newError(ctx, 4008, configID, result)
 	}

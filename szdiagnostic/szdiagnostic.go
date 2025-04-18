@@ -468,7 +468,7 @@ func (client *Szdiagnostic) checkDatastorePerformance(ctx context.Context, secon
 		resultResponse string
 	)
 
-	result := C.SzDiagnostic_checkDatastorePerformance_helper(C.longlong(secondsToRun))
+	result := C.SzDiagnostic_checkDatastorePerformance_helper(C.int64_t(secondsToRun))
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4001, secondsToRun, result.returnCode)
 	}
@@ -524,7 +524,7 @@ func (client *Szdiagnostic) getFeature(ctx context.Context, featureID int64) (st
 		resultResponse string
 	)
 
-	result := C.SzDiagnostic_getFeature_helper(C.longlong(featureID))
+	result := C.SzDiagnostic_getFeature_helper(C.int64_t(featureID))
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4004, featureID, result)
 	}
@@ -565,7 +565,7 @@ func (client *Szdiagnostic) init(
 
 	defer C.free(unsafe.Pointer(settingsForC))
 
-	result := C.SzDiagnostic_init(instanceNameForC, settingsForC, C.longlong(verboseLogging))
+	result := C.SzDiagnostic_init(instanceNameForC, settingsForC, C.int64_t(verboseLogging))
 	if result != noError {
 		err = client.newError(ctx, 4005, instanceName, settings, verboseLogging, result)
 	}
@@ -607,8 +607,8 @@ func (client *Szdiagnostic) initWithConfigID(
 	result := C.SzDiagnostic_initWithConfigID(
 		instanceNameForC,
 		settingsForC,
-		C.longlong(configID),
-		C.longlong(verboseLogging),
+		C.int64_t(configID),
+		C.int64_t(verboseLogging),
 	)
 	if result != noError {
 		err = client.newError(ctx, 4006, instanceName, settings, configID, verboseLogging, result)
@@ -637,7 +637,7 @@ func (client *Szdiagnostic) reinit(ctx context.Context, configID int64) error {
 
 	var err error
 
-	result := C.SzDiagnostic_reinit(C.longlong(configID))
+	result := C.SzDiagnostic_reinit(C.int64_t(configID))
 	if result != noError {
 		err = client.newError(ctx, 4008, configID, result)
 	}
