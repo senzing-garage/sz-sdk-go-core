@@ -1,6 +1,5 @@
 github.com/aquilax/truncate v1.0.1 h1:+hqGSRxnQ0F5wdPCGbi1XW4ipQ6vzpli23V9Rd+I/mc=
 github.com/aquilax/truncate v1.0.1/go.mod h1:BeMESIDMlvlS3bmg4BVvBbbZUNwWtS8uzYPAKXwwhLw=
-github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ33E=
 github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc h1:U9qPSI2PIWSS1VwoXQT9A3Wy9MM3WgvqSxFWenqJduM=
 github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/go-logr/logr v1.4.2 h1:6pFjapn8bFcIbiKo3XT4j/BhANplGihG6tvd+8rYgrY=
@@ -23,8 +22,8 @@ github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 h1:Jamvg5psRI
 github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/rogpeppe/go-internal v1.10.0 h1:TMyTOH3F/DB16zRVcYyreMH6GnZZrwQVAoYjRBZyWFQ=
 github.com/rogpeppe/go-internal v1.10.0/go.mod h1:UQnix2H7Ngw/k4C5ijL5+65zddjncjaFoBhdsK/akog=
-github.com/senzing-garage/go-helpers v0.6.10 h1:38jbZDzSLze2ooRStB/2pnwaxo/Lm4byiqGnGUFF+BI=
-github.com/senzing-garage/go-helpers v0.6.10/go.mod h1:98w6+o6u0l1byzoj0vJW7V59hLSGqhBFZ3gaks9n2G0=
+github.com/senzing-garage/go-helpers v0.6.11 h1:cwXZLVFKRnriyX+RCaS1Rg9+x7/sJcJjN0TIVZo/vdo=
+github.com/senzing-garage/go-helpers v0.6.11/go.mod h1:xjTBckB68M54X5fPyG1ArjXsqfs4rW4CKLNkMDFxAmo=
 github.com/senzing-garage/go-logging v1.5.2 h1:9Rhsvxu6jLHfCLIoDxSMXX0sf/w0TY/L7i7fFfSdP64=
 github.com/senzing-garage/go-logging v1.5.2/go.mod h1:+QsFSi/qKmCC3YAyuXcRbQlBpvpmhTWLWVH2Miap1Fw=
 github.com/senzing-garage/go-messaging v1.5.3 h1:bH+LtEgNJj/PRbg1VMK9/Gk457CdfdcjMiubxffbTog=
