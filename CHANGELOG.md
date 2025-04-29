@@ -283,7 +283,7 @@ and this project adheres to [Semantic Versioning].
 
 ### Changed in 0.2.4
 
-- Changes to accomodate macOS builds -- cleanup tests for multiplatform differences
+- Changes to accommodate macOS builds -- cleanup tests for multiplatform differences
 - Switched Linux github action workflow test to use Senzing Staging Repository
 
 ## [0.2.3] - 2023-08-07

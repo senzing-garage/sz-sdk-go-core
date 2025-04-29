@@ -137,6 +137,7 @@ linters:
     exhaustruct:
       exclude:
         - '.+/subject\.SimpleSubject$'
+
     goconst:
       min-occurrences: 5
       ignore-string-values: ["CUSTOMERS"]
