@@ -50,7 +50,7 @@ func main() {
 	err = os.RemoveAll(filepath.Clean(testDirectoryPath)) // Cleanup any previous test run.
 	failOnError(5001, err)
 
-	err = os.MkdirAll(filepath.Clean(testDirectoryPath), 0750) // Recreate the test target directory.
+	err = os.MkdirAll(filepath.Clean(testDirectoryPath), 0o750) // Recreate the test target directory.
 	failOnError(5002, err)
 
 	// Setup dependencies.

@@ -186,7 +186,7 @@ func TestSzconfigmanager_ReplaceDefaultConfigID(test *testing.T) {
 	currentDefaultConfigID, err1 := szConfigManager.GetDefaultConfigID(ctx)
 	require.NoError(test, err1)
 
-	// TODO: This is kind of a cheater.
+	// IMPROVE: This is kind of a cheater.
 
 	newDefaultConfigID, err2 := szConfigManager.GetDefaultConfigID(ctx)
 	require.NoError(test, err2)
@@ -326,7 +326,7 @@ func TestSzconfigmanager_Initialize(test *testing.T) {
 	require.NoError(test, err)
 }
 
-// TODO: Implement TestSzconfigmanager_Initialize_error
+// IMPROVE: Implement TestSzconfigmanager_Initialize_error
 // func TestSzconfigmanager_Initialize_error(test *testing.T) {}
 
 func TestSzconfigmanager_Destroy(test *testing.T) {
@@ -344,7 +344,7 @@ func TestSzconfigmanager_Destroy_withObserver(test *testing.T) {
 	require.NoError(test, err)
 }
 
-// TODO: Implement TestSzconfigmanager_Destroy_error
+// IMPROVE: Implement TestSzconfigmanager_Destroy_error
 // func TestSzconfigmanager_Destroy_error(test *testing.T) {}
 
 // ----------------------------------------------------------------------------
@@ -376,9 +376,7 @@ func getSettings() string {
 }
 
 func getSzAbstractFactory(ctx context.Context) senzing.SzAbstractFactory {
-	var (
-		result senzing.SzAbstractFactory
-	)
+	var result senzing.SzAbstractFactory
 
 	_ = ctx
 	settings := getSettings()
@@ -520,7 +518,7 @@ func setupDirectories() {
 	testDirectoryPath := getTestDirectoryPath()
 	err := os.RemoveAll(filepath.Clean(testDirectoryPath)) // cleanup any previous test run
 	panicOnError(err)
-	err = os.MkdirAll(filepath.Clean(testDirectoryPath), 0750) // recreate the test target directory
+	err = os.MkdirAll(filepath.Clean(testDirectoryPath), 0o750) // recreate the test target directory
 	panicOnError(err)
 }
 

@@ -336,7 +336,7 @@ func (client *Szengine) ExportCsvEntityReportIterator(
 		defer func() {
 			err = client.CloseExport(ctx, reportHandle)
 			if err != nil {
-				panic(err) // TODO:  Something better than panic(err)?
+				panic(err) // IMPROVE:  Something better than panic(err)?
 			}
 		}()
 
@@ -436,7 +436,7 @@ func (client *Szengine) ExportJSONEntityReportIterator(ctx context.Context, flag
 		defer func() {
 			err = client.CloseExport(ctx, reportHandle)
 			if err != nil {
-				panic(err) // TODO:  Something better than panic(err)?
+				panic(err) // IMPROVE:  Something better than panic(err)?
 			}
 		}()
 
@@ -750,8 +750,14 @@ Output
   - A JSON document.
 */
 func (client *Szengine) FindPathByEntityID(
-	ctx context.Context, startEntityID int64, endEntityID int64, maxDegrees int64, avoidEntityIDs string,
-	requiredDataSources string, flags int64) (string, error) {
+	ctx context.Context,
+	startEntityID int64,
+	endEntityID int64,
+	maxDegrees int64,
+	avoidEntityIDs string,
+	requiredDataSources string,
+	flags int64,
+) (string, error) {
 	var (
 		err    error
 		result string
@@ -827,9 +833,17 @@ Input
 Output
   - A JSON document.
 */
-func (client *Szengine) FindPathByRecordID(ctx context.Context, startDataSourceCode string, startRecordID string,
-	endDataSourceCode string, endRecordID string, maxDegrees int64, avoidRecordKeys string, requiredDataSources string,
-	flags int64) (string, error) {
+func (client *Szengine) FindPathByRecordID(
+	ctx context.Context,
+	startDataSourceCode string,
+	startRecordID string,
+	endDataSourceCode string,
+	endRecordID string,
+	maxDegrees int64,
+	avoidRecordKeys string,
+	requiredDataSources string,
+	flags int64,
+) (string, error) {
 	var (
 		err    error
 		result string
@@ -970,7 +984,8 @@ func (client *Szengine) GetEntityByRecordID(
 	ctx context.Context,
 	dataSourceCode string,
 	recordID string,
-	flags int64) (string, error) {
+	flags int64,
+) (string, error) {
 	var (
 		err    error
 		result string
@@ -1017,7 +1032,8 @@ func (client *Szengine) GetRecord(
 	ctx context.Context,
 	dataSourceCode string,
 	recordID string,
-	flags int64) (string, error) {
+	flags int64,
+) (string, error) {
 	var (
 		err    error
 		result string
@@ -1133,7 +1149,8 @@ Output
 func (client *Szengine) GetVirtualEntityByRecordID(
 	ctx context.Context,
 	recordKeys string,
-	flags int64) (string, error) {
+	flags int64,
+) (string, error) {
 	var (
 		err    error
 		result string
@@ -1369,7 +1386,8 @@ func (client *Szengine) ReevaluateRecord(
 	ctx context.Context,
 	dataSourceCode string,
 	recordID string,
-	flags int64) (string, error) {
+	flags int64,
+) (string, error) {
 	var (
 		err    error
 		result string
@@ -1423,7 +1441,8 @@ func (client *Szengine) SearchByAttributes(
 	ctx context.Context,
 	attributes string,
 	searchProfile string,
-	flags int64) (string, error) {
+	flags int64,
+) (string, error) {
 	var (
 		err    error
 		result string
@@ -1514,7 +1533,8 @@ func (client *Szengine) WhyRecordInEntity(
 	ctx context.Context,
 	dataSourceCode string,
 	recordID string,
-	flags int64) (string, error) {
+	flags int64,
+) (string, error) {
 	var (
 		err    error
 		result string
@@ -1563,7 +1583,8 @@ func (client *Szengine) WhyRecords(
 	recordID1 string,
 	dataSourceCode2 string,
 	recordID2 string,
-	flags int64) (string, error) {
+	flags int64,
+) (string, error) {
 	var (
 		err    error
 		result string
@@ -1627,7 +1648,8 @@ func (client *Szengine) WhySearch(
 	attributes string,
 	entityID int64,
 	searchProfile string,
-	flags int64) (string, error) {
+	flags int64,
+) (string, error) {
 	var (
 		err    error
 		result string
@@ -1722,7 +1744,9 @@ func (client *Szengine) Initialize(
 	ctx context.Context,
 	instanceName string,
 	settings string,
-	configID int64, verboseLogging int64) error {
+	configID int64,
+	verboseLogging int64,
+) error {
 	var err error
 
 	if client.isTrace {
@@ -1926,7 +1950,8 @@ func (client *Szengine) addRecord(
 	ctx context.Context,
 	dataSourceCode string,
 	recordID string,
-	recordDefinition string) (string, error) {
+	recordDefinition string,
+) (string, error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 
@@ -1969,7 +1994,9 @@ func (client *Szengine) addRecordWithInfo(
 	ctx context.Context,
 	dataSourceCode string,
 	recordID string,
-	recordDefinition string, flags int64) (string, error) {
+	recordDefinition string,
+	flags int64,
+) (string, error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 
@@ -2299,7 +2326,8 @@ func (client *Szengine) findNetworkByRecordIDV2(
 	maxDegrees int64,
 	buildOutDegrees int64,
 	buildOutMaxEntities int64,
-	flags int64) (string, error) {
+	flags int64,
+) (string, error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 
@@ -2358,7 +2386,8 @@ func (client *Szengine) findPathByEntityIDV2(
 	startEntityID int64,
 	endEntityID int64,
 	maxDegrees int64,
-	flags int64) (string, error) {
+	flags int64,
+) (string, error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 
@@ -2410,7 +2439,8 @@ func (client *Szengine) findPathByRecordIDV2(
 	endDataSourceCode string,
 	endRecordID string,
 	maxDegrees int64,
-	flags int64) (string, error) {
+	flags int64,
+) (string, error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 
@@ -2489,7 +2519,8 @@ func (client *Szengine) findPathByEntityIDWithAvoidsV2(
 	endEntityID int64,
 	maxDegrees int64,
 	avoidedEntities string,
-	flags int64) (string, error) {
+	flags int64,
+) (string, error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 
@@ -2562,7 +2593,8 @@ func (client *Szengine) findPathByRecordIDWithAvoidsV2(
 	endRecordID string,
 	maxDegrees int64,
 	avoidedRecords string,
-	flags int64) (string, error) {
+	flags int64,
+) (string, error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 

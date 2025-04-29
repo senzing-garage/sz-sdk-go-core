@@ -254,6 +254,7 @@ func TestSzengine_AddRecord_withInfo_badDataSourceCode(test *testing.T) {
 		printActual(test, actual)
 	}
 }
+
 func TestSzengine_CloseExport(test *testing.T) {
 	// Tested in:
 	//  - TestSzengine_ExportCsvEntityReport
@@ -622,7 +623,7 @@ func TestSzengine_ExportJSONEntityReport_65536(test *testing.T) {
 	assert.Greater(test, len(jsonEntityReport), 65536)
 }
 
-// TODO: Implement TestSzengine_ExportJSONEntityReport_error
+// IMPROVE: Implement TestSzengine_ExportJSONEntityReport_error
 // func TestSzengine_ExportJSONEntityReport_error(test *testing.T) {}
 
 func TestSzengine_ExportJSONEntityReportIterator(test *testing.T) {
@@ -3403,7 +3404,7 @@ func TestSzengine_Initialize(test *testing.T) {
 	require.NoError(test, err)
 }
 
-// TODO: Implement TestSzengine_Initialize_error
+// IMPROVE: Implement TestSzengine_Initialize_error
 // func TestSzengine_Initialize_error(test *testing.T) {}
 
 func TestSzengine_Initialize_withConfigID(test *testing.T) {
@@ -3416,7 +3417,7 @@ func TestSzengine_Initialize_withConfigID(test *testing.T) {
 	require.NoError(test, err)
 }
 
-// TODO: Implement TestSzengine_Initialize_withConfigID_error
+// IMPROVE: Implement TestSzengine_Initialize_withConfigID_error
 // func TestSzengine_Initialize_withConfigID_error(test *testing.T) {}
 
 func TestSzengine_Reinitialize(test *testing.T) {
@@ -3429,7 +3430,7 @@ func TestSzengine_Reinitialize(test *testing.T) {
 	printActual(test, configID)
 }
 
-// TODO: Implement TestSzengine_Reinitialize_badConfigID
+// IMPROVE: Implement TestSzengine_Reinitialize_badConfigID
 // func TestSzengine_Reinitialize_badConfigID(test *testing.T) {}
 
 func TestSzengine_Destroy(test *testing.T) {
@@ -3439,7 +3440,7 @@ func TestSzengine_Destroy(test *testing.T) {
 	require.NoError(test, err)
 }
 
-// TODO: Implement TestSzengine_Destroy_error
+// IMPROVE: Implement TestSzengine_Destroy_error
 // func TestSzengine_Destroy_error(test *testing.T) {}
 
 func TestSzengine_Destroy_withObserver(test *testing.T) {
@@ -3516,9 +3517,7 @@ func getEntityIDString(record record.Record) string {
 }
 
 func getEntityIDStringForRecord(datasource string, recordID string) string {
-	var (
-		result string
-	)
+	var result string
 
 	entityID, err := getEntityIDForRecord(datasource, recordID)
 	panicOnError(err)
@@ -3615,9 +3614,7 @@ func getSettings() string {
 }
 
 func getSzAbstractFactory(ctx context.Context) senzing.SzAbstractFactory {
-	var (
-		result senzing.SzAbstractFactory
-	)
+	var result senzing.SzAbstractFactory
 
 	_ = ctx
 
@@ -3741,7 +3738,7 @@ func setupDirectories() {
 	testDirectoryPath := getTestDirectoryPath()
 	err := os.RemoveAll(filepath.Clean(testDirectoryPath)) // cleanup any previous test run
 	panicOnError(err)
-	err = os.MkdirAll(filepath.Clean(testDirectoryPath), 0750) // recreate the test target directory
+	err = os.MkdirAll(filepath.Clean(testDirectoryPath), 0o750) // recreate the test target directory
 	panicOnError(err)
 }
 

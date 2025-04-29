@@ -25,7 +25,8 @@ func GetMessenger(
 	componentID int,
 	idMessages map[int]string,
 	callerSkip int,
-	options ...interface{}) messenger.Messenger {
+	options ...interface{},
+) messenger.Messenger {
 	optionMessageIDTemplate := fmt.Sprintf("%s%04d", MessageIDPrefix, componentID) + "%04d"
 	messengerOptions := []interface{}{
 		messenger.OptionCallerSkip{Value: callerSkip},

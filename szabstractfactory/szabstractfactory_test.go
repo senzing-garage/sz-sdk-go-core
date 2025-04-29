@@ -136,9 +136,7 @@ func getSettings() string {
 }
 
 func getSzAbstractFactory(ctx context.Context) senzing.SzAbstractFactory {
-	var (
-		result senzing.SzAbstractFactory
-	)
+	var result senzing.SzAbstractFactory
 
 	_ = ctx
 	settings := getSettings()
@@ -238,7 +236,7 @@ func setupDirectories() {
 	testDirectoryPath := getTestDirectoryPath()
 	err := os.RemoveAll(filepath.Clean(testDirectoryPath)) // cleanup any previous test run
 	panicOnError(err)
-	err = os.MkdirAll(filepath.Clean(testDirectoryPath), 0750) // recreate the test target directory
+	err = os.MkdirAll(filepath.Clean(testDirectoryPath), 0o750) // recreate the test target directory
 	panicOnError(err)
 }
 

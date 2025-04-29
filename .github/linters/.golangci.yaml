@@ -33,7 +33,7 @@ linters:
     - funlen
     - ginkgolinter
     - gocheckcompilerdirectives
-    # - gochecknoglobals
+    - gochecknoglobals
     - gochecknoinits
     - gochecksumtype
     - gocognit
@@ -41,7 +41,7 @@ linters:
     - gocritic
     - gocyclo
     - godot
-    # - godox
+    - godox
     - goheader
     - gomoddirectives
     - gomodguard
@@ -63,7 +63,7 @@ linters:
     - makezero
     - mirror
     - misspell
-    # - mnd
+    - mnd
     - musttag
     - nakedret
     - nestif
@@ -75,7 +75,7 @@ linters:
     - nolintlint
     - nonamedreturns
     - nosprintfhostport
-    # - paralleltest
+    - paralleltest
     - perfsprint
     - prealloc
     - predeclared
@@ -109,7 +109,8 @@ linters:
     - zerologlint
   disable:
     - gochecknoglobals
-    - gochecknoinits
+    - mnd
+    - paralleltest
   exclusions:
     generated: lax
     presets:
@@ -133,6 +134,9 @@ linters:
               desc: "replaced by io and os packages since Go 1.16: https://tip.golang.org/doc/go1.16#ioutil"
     dupl:
       threshold: 200
+    exhaustruct:
+      exclude:
+        - '.+/subject\.SimpleSubject$'
     goconst:
       min-occurrences: 5
       ignore-string-values: ["CUSTOMERS"]
@@ -158,11 +162,11 @@ linters:
           json: upperSnake
 formatters:
   enable:
-    # - gci
+    - gci
     - gofmt
-    # - gofumpt
+    - gofumpt
     - goimports
-    # - golines
+    - golines
   exclusions:
     generated: lax
     paths:

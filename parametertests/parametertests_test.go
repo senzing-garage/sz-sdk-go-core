@@ -24,15 +24,13 @@ const (
 	instanceName = "SzEngine Test"
 )
 
-var (
-	szEngineSingleton *szengine.Szengine
-)
+var szEngineSingleton *szengine.Szengine
 
 // ----------------------------------------------------------------------------
 // Internal functions
 // ----------------------------------------------------------------------------
 
-// TODO: See if there's any way to use currying to simplify the captureStdout* methods
+// IMPROVE: See if there's any way to use currying to simplify the captureStdout* methods
 
 func captureStdout(functionName func() error) (string, error) { //nolint
 	// Reference:
@@ -264,7 +262,7 @@ func setupDirectories() {
 	testDirectoryPath := getTestDirectoryPath()
 	err := os.RemoveAll(filepath.Clean(testDirectoryPath)) // cleanup any previous test run
 	panicOnError(err)
-	err = os.MkdirAll(filepath.Clean(testDirectoryPath), 0750) // recreate the test target directory
+	err = os.MkdirAll(filepath.Clean(testDirectoryPath), 0o750) // recreate the test target directory
 	panicOnError(err)
 }
 
