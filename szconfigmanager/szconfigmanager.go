@@ -254,7 +254,8 @@ Output
 func (client *Szconfigmanager) RegisterConfig(
 	ctx context.Context,
 	configDefinition string,
-	configComment string) (int64, error) {
+	configComment string,
+) (int64, error) {
 	var (
 		err    error
 		result int64
@@ -302,7 +303,8 @@ Input
 func (client *Szconfigmanager) ReplaceDefaultConfigID(
 	ctx context.Context,
 	currentDefaultConfigID int64,
-	newDefaultConfigID int64) error {
+	newDefaultConfigID int64,
+) error {
 	var err error
 
 	if client.isTrace {
@@ -342,7 +344,8 @@ Input
 func (client *Szconfigmanager) SetDefaultConfig(
 	ctx context.Context,
 	configDefinition string,
-	configComment string) (int64, error) {
+	configComment string,
+) (int64, error) {
 	var (
 		err    error
 		result int64
@@ -411,6 +414,32 @@ func (client *Szconfigmanager) SetDefaultConfigID(ctx context.Context, configID 
 // Public non-interface methods
 // ----------------------------------------------------------------------------
 
+func (client *Szconfigmanager) CreateConfigFromStringChoreography(
+	ctx context.Context,
+	configDefinition string,
+) (*szconfig.Szconfig, error) {
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+
+	var err error
+
+	result := &szconfig.Szconfig{}
+
+	err = result.Initialize(ctx, client.instanceName, client.settings, client.verboseLogging)
+	if err != nil {
+		return nil, fmt.Errorf("createConfigFromStringChoreography.Initialize error: %w", err)
+	}
+
+	err = result.VerifyConfigDefinition(ctx, configDefinition)
+	if err != nil {
+		return nil, fmt.Errorf("createConfigFromStringChoreography.VerifyConfigDefinition error: %w", err)
+	}
+
+	err = result.Import(ctx, configDefinition)
+
+	return result, wraperror.Errorf(err, "createConfigFromStringChoreography.Import error: %w", err)
+}
+
 /*
 Method Destroy will destroy and perform cleanup for the Senzing SzConfigMgr object.
 It should be called after all other calls are complete.
@@ -472,7 +501,8 @@ func (client *Szconfigmanager) Initialize(
 	ctx context.Context,
 	instanceName string,
 	settings string,
-	verboseLogging int64) error {
+	verboseLogging int64,
+) error {
 	var err error
 
 	if client.isTrace {
@@ -627,7 +657,8 @@ func (client *Szconfigmanager) UnregisterObserver(ctx context.Context, observer 
 
 func (client *Szconfigmanager) createConfigFromConfigIDChoreography(
 	ctx context.Context,
-	configID int64) (senzing.SzConfig, error) {
+	configID int64,
+) (senzing.SzConfig, error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 
@@ -639,31 +670,6 @@ func (client *Szconfigmanager) createConfigFromConfigIDChoreography(
 	}
 
 	return client.CreateConfigFromStringChoreography(ctx, configDefinition)
-}
-
-func (client *Szconfigmanager) CreateConfigFromStringChoreography(
-	ctx context.Context,
-	configDefinition string) (*szconfig.Szconfig, error) {
-	runtime.LockOSThread()
-	defer runtime.UnlockOSThread()
-
-	var err error
-
-	result := &szconfig.Szconfig{}
-
-	err = result.Initialize(ctx, client.instanceName, client.settings, client.verboseLogging)
-	if err != nil {
-		return nil, fmt.Errorf("createConfigFromStringChoreography.Initialize error: %w", err)
-	}
-
-	err = result.VerifyConfigDefinition(ctx, configDefinition)
-	if err != nil {
-		return nil, fmt.Errorf("createConfigFromStringChoreography.VerifyConfigDefinition error: %w", err)
-	}
-
-	err = result.Import(ctx, configDefinition)
-
-	return result, wraperror.Errorf(err, "createConfigFromStringChoreography.Import error: %w", err)
 }
 
 func (client *Szconfigmanager) createConfigFromTemplateChoreography(ctx context.Context) (senzing.SzConfig, error) {
@@ -687,7 +693,8 @@ func (client *Szconfigmanager) createConfigFromTemplateChoreography(ctx context.
 func (client *Szconfigmanager) setDefaultConfigChoreography(
 	ctx context.Context,
 	configDefinition string,
-	configComment string) (int64, error) {
+	configComment string,
+) (int64, error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 
@@ -713,7 +720,8 @@ func (client *Szconfigmanager) setDefaultConfigChoreography(
 func (client *Szconfigmanager) registerConfig(
 	ctx context.Context,
 	configDefinition string,
-	configComment string) (int64, error) {
+	configComment string,
+) (int64, error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 
@@ -819,7 +827,8 @@ func (client *Szconfigmanager) init(
 	ctx context.Context,
 	instanceName string,
 	settings string,
-	verboseLogging int64) error {
+	verboseLogging int64,
+) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 
@@ -844,7 +853,8 @@ func (client *Szconfigmanager) init(
 func (client *Szconfigmanager) replaceDefaultConfigID(
 	ctx context.Context,
 	currentDefaultConfigID int64,
-	newDefaultConfigID int64) error {
+	newDefaultConfigID int64,
+) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 

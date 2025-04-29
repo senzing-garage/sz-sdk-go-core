@@ -233,6 +233,7 @@ func (factory *Szabstractfactory) destroySzEngine(ctx context.Context) error {
 
 	return nil
 }
+
 func (factory *Szabstractfactory) destroySzProduct(ctx context.Context) error {
 	var err error
 

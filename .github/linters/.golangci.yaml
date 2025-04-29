@@ -29,10 +29,11 @@ linters:
     - fatcontext
     - forbidigo
     - forcetypeassert
+    - funcorder
     - funlen
     - ginkgolinter
     - gocheckcompilerdirectives
-    # - gochecknoglobals
+    - gochecknoglobals
     - gochecknoinits
     - gochecksumtype
     - gocognit
@@ -40,7 +41,7 @@ linters:
     - gocritic
     - gocyclo
     - godot
-    # - godox
+    - godox
     - goheader
     - gomoddirectives
     - gomodguard
@@ -62,7 +63,7 @@ linters:
     - makezero
     - mirror
     - misspell
-    # - mnd
+    - mnd
     - musttag
     - nakedret
     - nestif
@@ -74,7 +75,7 @@ linters:
     - nolintlint
     - nonamedreturns
     - nosprintfhostport
-    # - paralleltest
+    - paralleltest
     - perfsprint
     - prealloc
     - predeclared
@@ -106,6 +107,10 @@ linters:
     - wrapcheck
     - wsl
     - zerologlint
+  disable:
+    - gochecknoglobals
+    - mnd
+    - paralleltest
   exclusions:
     generated: lax
     presets:
@@ -122,11 +127,16 @@ linters:
       rules:
         prevent_unmaintained_packages:
           list-mode: lax # allow unless explicitely denied
+          allow:
+            - github.com/stretchr/testify/*
           deny:
             - pkg: io/ioutil
               desc: "replaced by io and os packages since Go 1.16: https://tip.golang.org/doc/go1.16#ioutil"
     dupl:
       threshold: 200
+    exhaustruct:
+      exclude:
+        - '.+/subject\.SimpleSubject$'
     goconst:
       min-occurrences: 5
       ignore-string-values: ["CUSTOMERS"]
@@ -152,14 +162,17 @@ linters:
           json: upperSnake
 formatters:
   enable:
-    # - gci
+    - gci
     - gofmt
-    # - gofumpt
+    - gofumpt
     - goimports
-    # - golines
+    - golines
   exclusions:
     generated: lax
     paths:
       - third_party$
       - builtin$
       - examples$
+  settings:
+    golines:
+      max-len: 120

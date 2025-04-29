@@ -343,7 +343,8 @@ func (client *Szconfig) Initialize(
 	ctx context.Context,
 	instanceName string,
 	settings string,
-	verboseLogging int64) error {
+	verboseLogging int64,
+) error {
 	var err error
 
 	if client.isTrace {
@@ -528,7 +529,8 @@ func (client *Szconfig) VerifyConfigDefinition(ctx context.Context, configDefini
 func (client *Szconfig) addDataSourceChoreography(
 	ctx context.Context,
 	configDefinition string,
-	dataSourceCode string) (string, string, error) {
+	dataSourceCode string,
+) (string, string, error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 
@@ -589,7 +591,8 @@ func (client *Szconfig) importTemplateChoregraphy(ctx context.Context) (string, 
 func (client *Szconfig) deleteDataSourceChoreography(
 	ctx context.Context,
 	configDefinition string,
-	dataSourceCode string) (string, string, error) {
+	dataSourceCode string,
+) (string, string, error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 
@@ -660,11 +663,7 @@ func (client *Szconfig) verifyConfigDefinitionChoreography(
 ) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-
-	var (
-		err error
-	)
-
+	var err error
 	configHandle, err := client.load(ctx, configDefinition)
 	if err != nil {
 		return fmt.Errorf("verifyConfigDefinitionChoreography.load error: %w", err)
@@ -689,7 +688,8 @@ func (client *Szconfig) verifyConfigDefinitionChoreography(
 func (client *Szconfig) addDataSource(
 	ctx context.Context,
 	configHandle uintptr,
-	dataSourceCode string) (string, error) {
+	dataSourceCode string,
+) (string, error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 

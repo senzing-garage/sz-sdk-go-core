@@ -243,7 +243,7 @@ func TestSzconfig_Initialize_badSettings(test *testing.T) {
 	assert.NoError(test, err)
 }
 
-// TODO: Implement TestSzconfig_Initialize_error
+// IMPROVE: Implement TestSzconfig_Initialize_error
 // func TestSzconfig_Initialize_error(test *testing.T) {}
 
 func TestSzconfig_Initialize_again(test *testing.T) {
@@ -261,7 +261,7 @@ func TestSzconfig_Destroy(test *testing.T) {
 	require.NoError(test, err)
 }
 
-// TODO: Implement TestSzconfig_Destroy_error
+// IMPROVE: Implement TestSzconfig_Destroy_error
 // func TestSzconfig_Destroy_error(test *testing.T) {}
 
 func TestSzconfig_Destroy_withObserver(test *testing.T) {
@@ -301,9 +301,7 @@ func getSettings() string {
 }
 
 func getSzAbstractFactory(ctx context.Context) senzing.SzAbstractFactory {
-	var (
-		result senzing.SzAbstractFactory
-	)
+	var result senzing.SzAbstractFactory
 
 	_ = ctx
 	settings := getSettings()
@@ -316,6 +314,7 @@ func getSzAbstractFactory(ctx context.Context) senzing.SzAbstractFactory {
 
 	return result
 }
+
 func getSzConfig(ctx context.Context) *szconfig.Szconfig {
 	if szConfigSingleton == nil {
 		settings := getSettings()
@@ -423,7 +422,7 @@ func setupDirectories() {
 	testDirectoryPath := getTestDirectoryPath()
 	err := os.RemoveAll(filepath.Clean(testDirectoryPath)) // cleanup any previous test run
 	panicOnError(err)
-	err = os.MkdirAll(filepath.Clean(testDirectoryPath), 0750) // recreate the test target directory
+	err = os.MkdirAll(filepath.Clean(testDirectoryPath), 0o750) // recreate the test target directory
 	panicOnError(err)
 }
 

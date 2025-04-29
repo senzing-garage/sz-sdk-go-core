@@ -8,7 +8,6 @@ import (
 	"github.com/senzing-garage/go-helpers/record"
 	"github.com/senzing-garage/go-helpers/truthset"
 	"github.com/senzing-garage/sz-sdk-go/senzing"
-
 	"github.com/stretchr/testify/require"
 )
 
