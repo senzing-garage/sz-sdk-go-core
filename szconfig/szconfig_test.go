@@ -114,7 +114,7 @@ func TestSzconfig_DeleteDataSource_nilDataSourceCode(test *testing.T) {
 	ctx := test.Context()
 	szConfig := getTestObject(test)
 	_, err := szConfig.DeleteDataSource(ctx, nilDataSourceCode)
-	require.NoError(test, err)
+	require.ErrorIs(test, err, szerror.ErrSzBadInput)
 }
 
 func TestSzconfig_Export(test *testing.T) {
