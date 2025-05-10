@@ -8,7 +8,7 @@ require (
 	github.com/senzing-garage/go-logging v1.5.2
 	github.com/senzing-garage/go-messaging v1.5.3
 	github.com/senzing-garage/go-observing v0.3.4
-	github.com/senzing-garage/sz-sdk-go v0.15.2
+	github.com/senzing-garage/sz-sdk-go v0.15.3
 	github.com/stretchr/testify v1.10.0
 )
 
