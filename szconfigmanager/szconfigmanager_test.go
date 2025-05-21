@@ -27,6 +27,7 @@ const (
 	defaultTruncation = 76
 	instanceName      = "SzConfigManager Test"
 	observerOrigin    = "SzConfigManager observer"
+	originMessage     = "Machine: nn; Task: UnitTest"
 	printResults      = false
 	verboseLogging    = senzing.SzNoLogging
 )
@@ -286,17 +287,15 @@ func TestSzconfigmanager_SetLogLevel_badLogLevelName(test *testing.T) {
 func TestSzconfigmanager_SetObserverOrigin(test *testing.T) {
 	ctx := test.Context()
 	szConfigManager := getTestObject(test)
-	origin := "Machine: nn; Task: UnitTest"
-	szConfigManager.SetObserverOrigin(ctx, origin)
+	szConfigManager.SetObserverOrigin(ctx, originMessage)
 }
 
 func TestSzconfigmanager_GetObserverOrigin(test *testing.T) {
 	ctx := test.Context()
 	szConfigManager := getTestObject(test)
-	origin := "Machine: nn; Task: UnitTest"
-	szConfigManager.SetObserverOrigin(ctx, origin)
+	szConfigManager.SetObserverOrigin(ctx, originMessage)
 	actual := szConfigManager.GetObserverOrigin(ctx)
-	assert.Equal(test, origin, actual)
+	assert.Equal(test, originMessage, actual)
 }
 
 func TestSzconfigmanager_UnregisterObserver(test *testing.T) {
@@ -442,15 +441,18 @@ func getTestDirectoryPath() string {
 
 func getTestObject(t *testing.T) *szconfigmanager.Szconfigmanager {
 	t.Helper()
-	ctx := t.Context()
 
-	return getSzConfigManager(ctx)
+	return getSzConfigManager(t.Context())
 }
 
 func handleError(err error) {
 	if err != nil {
-		safePrintln("Error:", err)
+		outputln("Error:", err)
 	}
+}
+
+func outputln(message ...any) {
+	fmt.Println(message...) //nolint
 }
 
 func panicOnError(err error) {
@@ -470,10 +472,6 @@ func printResult(t *testing.T, title string, result interface{}) {
 	if printResults {
 		t.Logf("%s: %v", title, truncate(fmt.Sprintf("%v", result), defaultTruncation))
 	}
-}
-
-func safePrintln(message ...any) {
-	fmt.Println(message...) //nolint
 }
 
 func truncate(aString string, length int) string {

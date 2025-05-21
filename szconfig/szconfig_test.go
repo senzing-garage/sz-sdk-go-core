@@ -26,6 +26,7 @@ const (
 	defaultTruncation = 76
 	instanceName      = "SzConfig Test"
 	observerOrigin    = "SzConfig observer"
+	originMessage     = "Machine: nn; Task: UnitTest"
 	printResults      = false
 	verboseLogging    = senzing.SzNoLogging
 )
@@ -196,14 +197,14 @@ func TestSzconfig_SetLogLevel_badLogLevelName(test *testing.T) {
 func TestSzconfig_SetObserverOrigin(test *testing.T) {
 	ctx := test.Context()
 	szConfig := getTestObject(test)
-	origin := "Machine: nn; Task: UnitTest"
+	origin := originMessage
 	szConfig.SetObserverOrigin(ctx, origin)
 }
 
 func TestSzconfig_GetObserverOrigin(test *testing.T) {
 	ctx := test.Context()
 	szConfig := getTestObject(test)
-	origin := "Machine: nn; Task: UnitTest"
+	origin := originMessage
 	szConfig.SetObserverOrigin(ctx, origin)
 	actual := szConfig.GetObserverOrigin(ctx)
 	assert.Equal(test, origin, actual)
@@ -349,15 +350,18 @@ func getTestDirectoryPath() string {
 
 func getTestObject(t *testing.T) *szconfig.Szconfig {
 	t.Helper()
-	ctx := t.Context()
 
-	return getSzConfig(ctx)
+	return getSzConfig(t.Context())
 }
 
 func handleError(err error) {
 	if err != nil {
-		safePrintln("Error:", err)
+		outputln("Error:", err)
 	}
+}
+
+func outputln(message ...any) {
+	fmt.Println(message...) //nolint
 }
 
 func panicOnError(err error) {
@@ -377,10 +381,6 @@ func printResult(t *testing.T, title string, result interface{}) {
 	if printResults {
 		t.Logf("%s: %v", title, truncate(fmt.Sprintf("%v", result), defaultTruncation))
 	}
-}
-
-func safePrintln(message ...any) {
-	fmt.Println(message...) //nolint
 }
 
 func truncate(aString string, length int) string {

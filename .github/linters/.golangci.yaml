@@ -109,7 +109,6 @@ linters:
     - zerologlint
   disable:
     - gochecknoglobals
-    - mnd
     - paralleltest
   exclusions:
     generated: lax
@@ -139,7 +138,8 @@ linters:
         - '.+/subject\.SimpleSubject$'
     goconst:
       min-occurrences: 5
-      ignore-string-values: ["CUSTOMERS"]
+      ignore-string-values:
+        - "CUSTOMERS"
     ireturn:
       allow:
         - error
@@ -154,6 +154,16 @@ linters:
         - senzing.SzProduct
     maintidx:
       under: 15
+    mnd:
+      ignored-functions:
+        - '^logger\.Log$'
+        - '^client\.newError$'
+        - '^client\.traceExit$'
+        - '^client\.traceEntry$'
+        - '^notifier\.Notify'
+        - "^failOnError$"
+        - '^logging\.NewSenzingLogger$'
+        - '^big\.NewInt$'
     nlreturn:
       block-size: 2
     tagliatelle:

@@ -93,7 +93,7 @@ func (client *Szconfigmanager) CreateConfigFromConfigID(ctx context.Context, con
 		}()
 	}
 
-	return result, wraperror.Errorf(err, "szconfigmanager.CreateConfigFromConfigID error: %w", err)
+	return result, wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 /*
@@ -131,7 +131,7 @@ func (client *Szconfigmanager) CreateConfigFromString(
 		}()
 	}
 
-	return result, wraperror.Errorf(err, "szconfigmanager.CreateConfigFromString error: %w", err)
+	return result, wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 /*
@@ -166,7 +166,7 @@ func (client *Szconfigmanager) CreateConfigFromTemplate(ctx context.Context) (se
 		}()
 	}
 
-	return result, wraperror.Errorf(err, "szconfigmanager.CreateConfigFromTemplate error: %w", err)
+	return result, wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 /*
@@ -200,7 +200,7 @@ func (client *Szconfigmanager) GetConfigs(ctx context.Context) (string, error) {
 		}()
 	}
 
-	return result, wraperror.Errorf(err, "szconfigmanager.GetConfigs error: %w", err)
+	return result, wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 /*
@@ -237,7 +237,7 @@ func (client *Szconfigmanager) GetDefaultConfigID(ctx context.Context) (int64, e
 		}()
 	}
 
-	return result, wraperror.Errorf(err, "szconfigmanager.GetDefaultConfigID error: %w", err)
+	return result, wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 /*
@@ -281,7 +281,7 @@ func (client *Szconfigmanager) RegisterConfig(
 		}()
 	}
 
-	return result, wraperror.Errorf(err, "szconfigmanager.RegisterConfig error: %w", err)
+	return result, wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 /*
@@ -325,7 +325,7 @@ func (client *Szconfigmanager) ReplaceDefaultConfigID(
 		}()
 	}
 
-	return wraperror.Errorf(err, "szconfigmanager.ReplaceDefaultConfigID error: %w", err)
+	return wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 /*
@@ -371,7 +371,7 @@ func (client *Szconfigmanager) SetDefaultConfig(
 		}()
 	}
 
-	return result, wraperror.Errorf(err, "szconfigmanager.SetDefaultConfig error: %w", err)
+	return result, wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 /*
@@ -407,7 +407,7 @@ func (client *Szconfigmanager) SetDefaultConfigID(ctx context.Context, configID 
 		}()
 	}
 
-	return wraperror.Errorf(err, "szconfigmanager.SetDefaultConfigID error: %w", err)
+	return wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 // ----------------------------------------------------------------------------
@@ -427,17 +427,17 @@ func (client *Szconfigmanager) CreateConfigFromStringChoreography(
 
 	err = result.Initialize(ctx, client.instanceName, client.settings, client.verboseLogging)
 	if err != nil {
-		return nil, fmt.Errorf("createConfigFromStringChoreography.Initialize error: %w", err)
+		return nil, wraperror.Errorf(err, "%s", client.settings)
 	}
 
 	err = result.VerifyConfigDefinition(ctx, configDefinition)
 	if err != nil {
-		return nil, fmt.Errorf("createConfigFromStringChoreography.VerifyConfigDefinition error: %w", err)
+		return nil, wraperror.Errorf(err, "VerifyConfigDefinition")
 	}
 
 	err = result.Import(ctx, configDefinition)
 
-	return result, wraperror.Errorf(err, "createConfigFromStringChoreography.Import error: %w", err)
+	return result, wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 /*
@@ -459,7 +459,7 @@ func (client *Szconfigmanager) Destroy(ctx context.Context) error {
 
 	err = client.destroy(ctx)
 	if err != nil {
-		return fmt.Errorf("szconfigmanager.Destroy.destroy error: %w", err)
+		return wraperror.Errorf(err, "destroy")
 	}
 
 	if client.observers != nil {
@@ -469,7 +469,7 @@ func (client *Szconfigmanager) Destroy(ctx context.Context) error {
 		}()
 	}
 
-	return wraperror.Errorf(err, "szconfigmanager.Destroy error: %w", err)
+	return wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 /*
@@ -528,7 +528,7 @@ func (client *Szconfigmanager) Initialize(
 		}()
 	}
 
-	return wraperror.Errorf(err, "szconfigmanager.Initialize error: %w", err)
+	return wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 /*
@@ -563,7 +563,7 @@ func (client *Szconfigmanager) RegisterObserver(ctx context.Context, observer ob
 		}()
 	}
 
-	return wraperror.Errorf(err, "szconfigmanager.RegisterObserver error: %w", err)
+	return wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 /*
@@ -584,7 +584,7 @@ func (client *Szconfigmanager) SetLogLevel(ctx context.Context, logLevelName str
 	}
 
 	if !logging.IsValidLogLevelName(logLevelName) {
-		return fmt.Errorf("invalid error level: %s; %w", logLevelName, szerror.ErrSzSdk)
+		return wraperror.Errorf(szerror.ErrSzSdk, "invalid error level: %s", logLevelName)
 	}
 
 	err = client.getLogger().SetLogLevel(logLevelName)
@@ -599,7 +599,7 @@ func (client *Szconfigmanager) SetLogLevel(ctx context.Context, logLevelName str
 		}()
 	}
 
-	return wraperror.Errorf(err, "szconfigmanager.SetLogLevel error: %w", err)
+	return wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 /*
@@ -648,7 +648,7 @@ func (client *Szconfigmanager) UnregisterObserver(ctx context.Context, observer 
 		}
 	}
 
-	return wraperror.Errorf(err, "szconfigmanager.UnregisterObserver error: %w", err)
+	return wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 // ----------------------------------------------------------------------------
@@ -666,7 +666,7 @@ func (client *Szconfigmanager) createConfigFromConfigIDChoreography(
 
 	configDefinition, err := client.getConfig(ctx, configID)
 	if err != nil {
-		return nil, fmt.Errorf("createConfigFromConfigIDChoreography.getConfig error: %w", err)
+		return nil, wraperror.Errorf(err, "getConfig(%d)", configID)
 	}
 
 	return client.CreateConfigFromStringChoreography(ctx, configDefinition)
@@ -682,12 +682,12 @@ func (client *Szconfigmanager) createConfigFromTemplateChoreography(ctx context.
 
 	err = result.Initialize(ctx, client.instanceName, client.settings, client.verboseLogging)
 	if err != nil {
-		return nil, fmt.Errorf("createConfigFromTemplateChoreography.Initialize error: %w", err)
+		return nil, wraperror.Errorf(err, "%s", client.settings)
 	}
 
 	err = result.ImportTemplate(ctx)
 
-	return result, wraperror.Errorf(err, "createConfigFromTemplateChoreography.ImportTemplate error: %w", err)
+	return result, wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 func (client *Szconfigmanager) setDefaultConfigChoreography(
@@ -705,12 +705,12 @@ func (client *Szconfigmanager) setDefaultConfigChoreography(
 
 	result, err = client.registerConfig(ctx, configDefinition, configComment)
 	if err != nil {
-		return 0, fmt.Errorf("setDefaultConfigChoreography.registerConfig error: %w", err)
+		return 0, wraperror.Errorf(err, "registerConfig")
 	}
 
 	err = client.setDefaultConfigID(ctx, result)
 
-	return result, wraperror.Errorf(err, "setDefaultConfigChoreography.setDefaultConfigID error: %w", err)
+	return result, wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 // ----------------------------------------------------------------------------
@@ -931,7 +931,7 @@ func (client *Szconfigmanager) newError(ctx context.Context, errorNumber int, de
 
 	details = append(details, messenger.MessageCode{Value: fmt.Sprintf(ExceptionCodeTemplate, lastExceptionCode)})
 	details = append(details, messenger.MessageReason{Value: lastException})
-	details = append(details, fmt.Errorf("%s; %w", lastException, szerror.ErrSz))
+	details = append(details, wraperror.Errorf(szerror.ErrSz, "exception: %s", lastException))
 	errorMessage := client.getMessenger().NewJSON(errorNumber, details...)
 
 	return szerror.New(lastExceptionCode, errorMessage) //nolint

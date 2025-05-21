@@ -119,7 +119,7 @@ func (client *Szengine) AddRecord(
 		}()
 	}
 
-	return result, wraperror.Errorf(err, "szengine.AddRecord error: %w", err)
+	return result, wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 /*
@@ -152,7 +152,7 @@ func (client *Szengine) CloseExport(ctx context.Context, exportHandle uintptr) e
 		}()
 	}
 
-	return wraperror.Errorf(err, "szengine.CloseExport error: %w", err)
+	return wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 /*
@@ -187,7 +187,7 @@ func (client *Szengine) CountRedoRecords(ctx context.Context) (int64, error) {
 		}()
 	}
 
-	return result, wraperror.Errorf(err, "szengine.CountRedoRecords error: %w", err)
+	return result, wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 /*
@@ -242,7 +242,7 @@ func (client *Szengine) DeleteRecord(
 		}()
 	}
 
-	return result, wraperror.Errorf(err, "szengine.DeleteRecord error: %w", err)
+	return result, wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 /*
@@ -285,7 +285,7 @@ func (client *Szengine) ExportCsvEntityReport(ctx context.Context, csvColumnList
 		}()
 	}
 
-	return result, wraperror.Errorf(err, "szengine.ExportCsvEntityReport error: %w", err)
+	return result, wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 /*
@@ -391,7 +391,7 @@ func (client *Szengine) ExportJSONEntityReport(ctx context.Context, flags int64)
 		}()
 	}
 
-	return result, wraperror.Errorf(err, "szengine.ExportJSONEntityReport error: %w", err)
+	return result, wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 /*
@@ -487,7 +487,7 @@ func (client *Szengine) FetchNext(ctx context.Context, exportHandle uintptr) (st
 		}()
 	}
 
-	return result, wraperror.Errorf(err, "szengine.FetchNext error: %w", err)
+	return result, wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 /*
@@ -531,7 +531,7 @@ func (client *Szengine) FindInterestingEntitiesByEntityID(
 		}()
 	}
 
-	return result, wraperror.Errorf(err, "szengine.FindInterestingEntitiesByEntityID error: %w", err)
+	return result, wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 /*
@@ -580,7 +580,7 @@ func (client *Szengine) FindInterestingEntitiesByRecordID(
 		}()
 	}
 
-	return result, wraperror.Errorf(err, "szengine.FindInterestingEntitiesByRecordID error: %w", err)
+	return result, wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 /*
@@ -652,7 +652,7 @@ func (client *Szengine) FindNetworkByEntityID(
 		}()
 	}
 
-	return result, wraperror.Errorf(err, "szengine.FindNetworkByEntityID error: %w", err)
+	return result, wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 /*
@@ -725,7 +725,7 @@ func (client *Szengine) FindNetworkByRecordID(
 		}()
 	}
 
-	return result, wraperror.Errorf(err, "szengine.FindNetworkByRecordID error: %w", err)
+	return result, wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 /*
@@ -799,7 +799,7 @@ func (client *Szengine) FindPathByEntityID(
 		}()
 	}
 
-	return result, wraperror.Errorf(err, "szengine.FindPathByEntityID error: %w", err)
+	return result, wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 /*
@@ -890,7 +890,7 @@ func (client *Szengine) FindPathByRecordID(
 		}()
 	}
 
-	return result, wraperror.Errorf(err, "szengine.FindPathByRecordID error: %w", err)
+	return result, wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 /*
@@ -924,7 +924,7 @@ func (client *Szengine) GetActiveConfigID(ctx context.Context) (int64, error) {
 		}()
 	}
 
-	return result, wraperror.Errorf(err, "szengine.GetActiveConfigID error: %w", err)
+	return result, wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 /*
@@ -964,7 +964,7 @@ func (client *Szengine) GetEntityByEntityID(ctx context.Context, entityID int64,
 		}()
 	}
 
-	return result, wraperror.Errorf(err, "szengine.GetEntityByEntityID error: %w", err)
+	return result, wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 /*
@@ -1013,7 +1013,7 @@ func (client *Szengine) GetEntityByRecordID(
 		}()
 	}
 
-	return result, wraperror.Errorf(err, "szengine.GetEntityByRecordID error: %w", err)
+	return result, wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 /*
@@ -1061,7 +1061,7 @@ func (client *Szengine) GetRecord(
 		}()
 	}
 
-	return result, wraperror.Errorf(err, "szengine.GetRecord error: %w", err)
+	return result, wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 /*
@@ -1096,7 +1096,7 @@ func (client *Szengine) GetRedoRecord(ctx context.Context) (string, error) {
 		}()
 	}
 
-	return result, wraperror.Errorf(err, "szengine.GetRedoRecord error: %w", err)
+	return result, wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 /*
@@ -1131,7 +1131,7 @@ func (client *Szengine) GetStats(ctx context.Context) (string, error) {
 		}()
 	}
 
-	return result, wraperror.Errorf(err, "szengine.GetStats error: %w", err)
+	return result, wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 /*
@@ -1175,7 +1175,7 @@ func (client *Szengine) GetVirtualEntityByRecordID(
 		}()
 	}
 
-	return result, wraperror.Errorf(err, "szengine.GetVirtualEntityByRecordID error: %w", err)
+	return result, wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 /*
@@ -1214,7 +1214,7 @@ func (client *Szengine) HowEntityByEntityID(ctx context.Context, entityID int64,
 		}()
 	}
 
-	return result, wraperror.Errorf(err, "szengine.HowEntityByEntityID error: %w", err)
+	return result, wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 /*
@@ -1254,7 +1254,7 @@ func (client *Szengine) PreprocessRecord(ctx context.Context, recordDefinition s
 		}()
 	}
 
-	return result, wraperror.Errorf(err, "szengine.PreprocessRecord error: %w", err)
+	return result, wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 /*
@@ -1282,7 +1282,7 @@ func (client *Szengine) PrimeEngine(ctx context.Context) error {
 		}()
 	}
 
-	return wraperror.Errorf(err, "szengine.PrimeEngine error: %w", err)
+	return wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 /*
@@ -1323,7 +1323,7 @@ func (client *Szengine) ProcessRedoRecord(ctx context.Context, redoRecord string
 		}()
 	}
 
-	return result, wraperror.Errorf(err, "szengine.ProcessRedoRecord error: %w", err)
+	return result, wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 /*
@@ -1367,7 +1367,7 @@ func (client *Szengine) ReevaluateEntity(ctx context.Context, entityID int64, fl
 		}()
 	}
 
-	return result, wraperror.Errorf(err, "szengine.ReevaluateEntity error: %w", err)
+	return result, wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 /*
@@ -1418,7 +1418,7 @@ func (client *Szengine) ReevaluateRecord(
 		}()
 	}
 
-	return result, wraperror.Errorf(err, "szengine.ReevaluateRecord error: %w", err)
+	return result, wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 /*
@@ -1468,7 +1468,7 @@ func (client *Szengine) SearchByAttributes(
 		}()
 	}
 
-	return result, wraperror.Errorf(err, "szengine.SearchByAttributes error: %w", err)
+	return result, wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 /*
@@ -1514,7 +1514,7 @@ func (client *Szengine) WhyEntities(
 		}()
 	}
 
-	return result, wraperror.Errorf(err, "szengine.WhyEntities error: %w", err)
+	return result, wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 /*
@@ -1560,7 +1560,7 @@ func (client *Szengine) WhyRecordInEntity(
 		}()
 	}
 
-	return result, wraperror.Errorf(err, "szengine.WhyRecordInEntity error: %w", err)
+	return result, wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 /*
@@ -1624,7 +1624,7 @@ func (client *Szengine) WhyRecords(
 		}()
 	}
 
-	return result, wraperror.Errorf(err, "szengine.WhyRecords error: %w", err)
+	return result, wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 /*
@@ -1678,7 +1678,7 @@ func (client *Szengine) WhySearch(
 		}()
 	}
 
-	return result, wraperror.Errorf(err, "szengine.WhySearch error: %w", err)
+	return result, wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 // ----------------------------------------------------------------------------
@@ -1711,7 +1711,7 @@ func (client *Szengine) Destroy(ctx context.Context) error {
 		}()
 	}
 
-	return wraperror.Errorf(err, "szengine.Destroy error: %w", err)
+	return wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 /*
@@ -1780,7 +1780,7 @@ func (client *Szengine) Initialize(
 		}()
 	}
 
-	return wraperror.Errorf(err, "szengine.Initialize error: %w", err)
+	return wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 /*
@@ -1815,7 +1815,7 @@ func (client *Szengine) RegisterObserver(ctx context.Context, observer observer.
 		}()
 	}
 
-	return wraperror.Errorf(err, "szengine.RegisterObserver error: %w", err)
+	return wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 /*
@@ -1846,7 +1846,7 @@ func (client *Szengine) Reinitialize(ctx context.Context, configID int64) error 
 		}()
 	}
 
-	return wraperror.Errorf(err, "szengine.Reinitialize error: %w", err)
+	return wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 /*
@@ -1867,7 +1867,7 @@ func (client *Szengine) SetLogLevel(ctx context.Context, logLevelName string) er
 	}
 
 	if !logging.IsValidLogLevelName(logLevelName) {
-		return fmt.Errorf("invalid error level: %s; %w", logLevelName, szerror.ErrSzSdk)
+		return wraperror.Errorf(szerror.ErrSzSdk, "invalid error level: %s", logLevelName)
 	}
 
 	err = client.getLogger().SetLogLevel(logLevelName)
@@ -1882,7 +1882,7 @@ func (client *Szengine) SetLogLevel(ctx context.Context, logLevelName string) er
 		}()
 	}
 
-	return wraperror.Errorf(err, "szengine.SetLogLevel error: %w", err)
+	return wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 /*
@@ -1930,7 +1930,7 @@ func (client *Szengine) UnregisterObserver(ctx context.Context, observer observe
 		}
 	}
 
-	return wraperror.Errorf(err, "szengine.UnregisterObserver error: %w", err)
+	return wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 // ----------------------------------------------------------------------------
@@ -3790,7 +3790,7 @@ func (client *Szengine) newError(ctx context.Context, errorNumber int, details .
 
 	details = append(details, messenger.MessageCode{Value: fmt.Sprintf(ExceptionCodeTemplate, lastExceptionCode)})
 	details = append(details, messenger.MessageReason{Value: lastException})
-	details = append(details, fmt.Errorf("%s; %w", lastException, szerror.ErrSz))
+	details = append(details, wraperror.Errorf(szerror.ErrSz, "exception: %s", lastException))
 	errorMessage := client.getMessenger().NewJSON(errorNumber, details...)
 
 	return szerror.New(lastExceptionCode, errorMessage) //nolint

@@ -100,7 +100,7 @@ func (client *Szconfig) AddDataSource(ctx context.Context, dataSourceCode string
 		}()
 	}
 
-	return result, wraperror.Errorf(err, "szconfig.AddDataSource error: %w", err)
+	return result, wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 /*
@@ -140,7 +140,7 @@ func (client *Szconfig) DeleteDataSource(ctx context.Context, dataSourceCode str
 		}()
 	}
 
-	return result, wraperror.Errorf(err, "szconfig.DeleteDataSource error: %w", err)
+	return result, wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 /*
@@ -174,7 +174,7 @@ func (client *Szconfig) Export(ctx context.Context) (string, error) {
 		}()
 	}
 
-	return result, wraperror.Errorf(err, "szconfig.Export error: %w", err)
+	return result, wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 /*
@@ -208,7 +208,7 @@ func (client *Szconfig) GetDataSources(ctx context.Context) (string, error) {
 		}()
 	}
 
-	return result, wraperror.Errorf(err, "szconfig.GetDataSources error: %w", err)
+	return result, wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 // ----------------------------------------------------------------------------
@@ -241,7 +241,7 @@ func (client *Szconfig) Destroy(ctx context.Context) error {
 		}()
 	}
 
-	return wraperror.Errorf(err, "szconfig.Destroy error: %w", err)
+	return wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 /*
@@ -285,7 +285,7 @@ func (client *Szconfig) Import(ctx context.Context, configDefinition string) err
 		}()
 	}
 
-	return wraperror.Errorf(err, "szconfig.Import error: %w", err)
+	return wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 /*
@@ -314,7 +314,7 @@ func (client *Szconfig) ImportTemplate(ctx context.Context) error {
 
 	configDefinition, err = client.importTemplateChoregraphy(ctx)
 	if err != nil {
-		return fmt.Errorf("szconfig.ImportTemplate.importTemplateChoregraphy error: %w", err)
+		return wraperror.Errorf(err, "importTemplateChoregraphy")
 	}
 
 	err = client.importConfigDefinition(ctx, configDefinition)
@@ -326,7 +326,7 @@ func (client *Szconfig) ImportTemplate(ctx context.Context) error {
 		}()
 	}
 
-	return wraperror.Errorf(err, "szconfig.ImportTemplate error: %w", err)
+	return wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 /*
@@ -370,7 +370,7 @@ func (client *Szconfig) Initialize(
 		}()
 	}
 
-	return wraperror.Errorf(err, "szconfig.Initialize error: %w", err)
+	return wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 /*
@@ -405,7 +405,7 @@ func (client *Szconfig) RegisterObserver(ctx context.Context, observer observer.
 		}()
 	}
 
-	return wraperror.Errorf(err, "szconfig.RegisterObserver error: %w", err)
+	return wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 /*
@@ -426,7 +426,7 @@ func (client *Szconfig) SetLogLevel(ctx context.Context, logLevelName string) er
 	}
 
 	if !logging.IsValidLogLevelName(logLevelName) {
-		return fmt.Errorf("invalid error level: %s; %w", logLevelName, szerror.ErrSzSdk)
+		return wraperror.Errorf(szerror.ErrSzSdk, "invalid error level: %s", logLevelName)
 	}
 
 	err = client.getLogger().SetLogLevel(logLevelName)
@@ -441,7 +441,7 @@ func (client *Szconfig) SetLogLevel(ctx context.Context, logLevelName string) er
 		}()
 	}
 
-	return wraperror.Errorf(err, "szconfig.SetLogLevel error: %w", err)
+	return wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 /*
@@ -489,7 +489,7 @@ func (client *Szconfig) UnregisterObserver(ctx context.Context, observer observe
 		}
 	}
 
-	return wraperror.Errorf(err, "szconfig.UnregisterObserver error: %w", err)
+	return wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 /*
@@ -519,7 +519,7 @@ func (client *Szconfig) VerifyConfigDefinition(ctx context.Context, configDefini
 		}()
 	}
 
-	return wraperror.Errorf(err, "szconfig.VerifyConfigDefinition error: %w", err)
+	return wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 // ----------------------------------------------------------------------------
@@ -542,7 +542,7 @@ func (client *Szconfig) addDataSourceChoreography(
 
 	configHandle, err := client.load(ctx, configDefinition)
 	if err != nil {
-		return newConfigDefinition, result, fmt.Errorf("addDataSourceChoreography.load error: %w", err)
+		return newConfigDefinition, result, wraperror.Errorf(err, "load")
 	}
 
 	defer func() {
@@ -551,12 +551,12 @@ func (client *Szconfig) addDataSourceChoreography(
 
 	result, err = client.addDataSource(ctx, configHandle, dataSourceCode)
 	if err != nil {
-		return newConfigDefinition, result, fmt.Errorf("addDataSourceChoreography.addDataSource error: %w", err)
+		return newConfigDefinition, result, wraperror.Errorf(err, "addDataSource(%s)", dataSourceCode)
 	}
 
 	newConfigDefinition, err = client.save(ctx, configHandle)
 	if err != nil {
-		return newConfigDefinition, result, fmt.Errorf("addDataSourceChoreography.save error: %w", err)
+		return newConfigDefinition, result, wraperror.Errorf(err, "save")
 	}
 
 	return newConfigDefinition, result, err
@@ -573,7 +573,7 @@ func (client *Szconfig) importTemplateChoregraphy(ctx context.Context) (string, 
 
 	configHandle, err := client.create(ctx)
 	if err != nil {
-		return resultResponse, fmt.Errorf("importTemplateChoregraphy.create error: %w", err)
+		return resultResponse, wraperror.Errorf(err, "create")
 	}
 
 	defer func() {
@@ -582,7 +582,7 @@ func (client *Szconfig) importTemplateChoregraphy(ctx context.Context) (string, 
 
 	resultResponse, err = client.save(ctx, configHandle)
 	if err != nil {
-		return resultResponse, fmt.Errorf("importTemplateChoregraphy.save error: %w", err)
+		return resultResponse, wraperror.Errorf(err, "save")
 	}
 
 	return resultResponse, err
@@ -604,7 +604,7 @@ func (client *Szconfig) deleteDataSourceChoreography(
 
 	configHandle, err := client.load(ctx, configDefinition)
 	if err != nil {
-		return newConfigDefinition, result, fmt.Errorf("deleteDataSourceChoreography.load error: %w", err)
+		return newConfigDefinition, result, wraperror.Errorf(err, "load")
 	}
 
 	defer func() {
@@ -613,12 +613,12 @@ func (client *Szconfig) deleteDataSourceChoreography(
 
 	err = client.deleteDataSource(ctx, configHandle, dataSourceCode)
 	if err != nil {
-		return newConfigDefinition, result, fmt.Errorf("deleteDataSourceChoreography.deleteDataSource error: %w", err)
+		return newConfigDefinition, result, wraperror.Errorf(err, "deleteDataSource(%s)", dataSourceCode)
 	}
 
 	newConfigDefinition, err = client.save(ctx, configHandle)
 	if err != nil {
-		return newConfigDefinition, result, fmt.Errorf("deleteDataSourceChoreography.save error: %w", err)
+		return newConfigDefinition, result, wraperror.Errorf(err, "save")
 	}
 
 	return newConfigDefinition, result, err
@@ -635,7 +635,7 @@ func (client *Szconfig) getDataSourcesChoreography(ctx context.Context, configDe
 
 	configHandle, err := client.load(ctx, configDefinition)
 	if err != nil {
-		return result, fmt.Errorf("getDataSourcesChoreography.load error: %w", err)
+		return result, wraperror.Errorf(err, "load")
 	}
 
 	defer func() {
@@ -644,7 +644,7 @@ func (client *Szconfig) getDataSourcesChoreography(ctx context.Context, configDe
 
 	result, err = client.listDataSources(ctx, configHandle)
 	if err != nil {
-		return result, fmt.Errorf("getDataSourcesChoreography.listDataSources error: %w", err)
+		return result, wraperror.Errorf(err, "listDataSources")
 	}
 
 	return result, err
@@ -666,7 +666,7 @@ func (client *Szconfig) verifyConfigDefinitionChoreography(
 	var err error
 	configHandle, err := client.load(ctx, configDefinition)
 	if err != nil {
-		return fmt.Errorf("verifyConfigDefinitionChoreography.load error: %w", err)
+		return wraperror.Errorf(err, "load")
 	}
 
 	defer func() {
@@ -675,7 +675,7 @@ func (client *Szconfig) verifyConfigDefinitionChoreography(
 
 	_, err = client.save(ctx, configHandle)
 	if err != nil {
-		return fmt.Errorf("verifyConfigDefinitionChoreography.save error: %w", err)
+		return wraperror.Errorf(err, "save")
 	}
 
 	return err
@@ -924,7 +924,7 @@ func (client *Szconfig) newError(ctx context.Context, errorNumber int, details .
 
 	details = append(details, messenger.MessageCode{Value: fmt.Sprintf(ExceptionCodeTemplate, lastExceptionCode)})
 	details = append(details, messenger.MessageReason{Value: lastException})
-	details = append(details, fmt.Errorf("%s; %w", lastException, szerror.ErrSz))
+	details = append(details, wraperror.Errorf(szerror.ErrSz, "exception: %s", lastException))
 	errorMessage := client.getMessenger().NewJSON(errorNumber, details...)
 
 	return szerror.New(lastExceptionCode, errorMessage) //nolint

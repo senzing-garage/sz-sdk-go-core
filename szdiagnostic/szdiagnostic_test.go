@@ -31,6 +31,7 @@ const (
 	instanceName      = "SzDiagnostic Test"
 	jsonIndentation   = "    "
 	observerOrigin    = "SzDiagnostic observer"
+	originMessage     = "Machine: nn; Task: UnitTest"
 	printResults      = false
 	verboseLogging    = senzing.SzNoLogging
 )
@@ -163,17 +164,15 @@ func TestSzdiagnostic_SetLogLevel_badLogLevelName(test *testing.T) {
 func TestSzdiagnostic_SetObserverOrigin(test *testing.T) {
 	ctx := test.Context()
 	szDiagnostic := getTestObject(test)
-	origin := "Machine: nn; Task: UnitTest"
-	szDiagnostic.SetObserverOrigin(ctx, origin)
+	szDiagnostic.SetObserverOrigin(ctx, originMessage)
 }
 
 func TestSzdiagnostic_GetObserverOrigin(test *testing.T) {
 	ctx := test.Context()
 	szDiagnostic := getTestObject(test)
-	origin := "Machine: nn; Task: UnitTest"
-	szDiagnostic.SetObserverOrigin(ctx, origin)
+	szDiagnostic.SetObserverOrigin(ctx, originMessage)
 	actual := szDiagnostic.GetObserverOrigin(ctx)
-	assert.Equal(test, origin, actual)
+	assert.Equal(test, originMessage, actual)
 }
 
 func TestSzdiagnostic_UnregisterObserver(test *testing.T) {
@@ -374,8 +373,12 @@ func getTestObject(t *testing.T) *szdiagnostic.Szdiagnostic {
 
 func handleError(err error) {
 	if err != nil {
-		safePrintln("Error:", err)
+		outputln("Error:", err)
 	}
+}
+
+func outputln(message ...any) {
+	fmt.Println(message...) //nolint
 }
 
 func panicOnError(err error) {
@@ -395,10 +398,6 @@ func printResult(t *testing.T, title string, result interface{}) {
 	if printResults {
 		t.Logf("%s: %v", title, truncate(fmt.Sprintf("%v", result), defaultTruncation))
 	}
-}
-
-func safePrintln(message ...any) {
-	fmt.Println(message...) //nolint
 }
 
 func truncate(aString string, length int) string {
