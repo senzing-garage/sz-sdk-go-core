@@ -23,6 +23,7 @@ const (
 	defaultTruncation = 76
 	instanceName      = "SzProduct Test"
 	observerOrigin    = "SzProduct observer"
+	originMessage     = "Machine: nn; Task: UnitTest"
 	printResults      = false
 	verboseLogging    = senzing.SzNoLogging
 )
@@ -75,17 +76,15 @@ func TestSzproduct_SetLogLevel_badLogLevelName(test *testing.T) {
 func TestSzproduct_SetObserverOrigin(test *testing.T) {
 	ctx := test.Context()
 	szProduct := getTestObject(test)
-	origin := "Machine: nn; Task: UnitTest"
-	szProduct.SetObserverOrigin(ctx, origin)
+	szProduct.SetObserverOrigin(ctx, originMessage)
 }
 
 func TestSzproduct_GetObserverOrigin(test *testing.T) {
 	ctx := test.Context()
 	szProduct := getTestObject(test)
-	origin := "Machine: nn; Task: UnitTest"
-	szProduct.SetObserverOrigin(ctx, origin)
+	szProduct.SetObserverOrigin(ctx, originMessage)
 	actual := szProduct.GetObserverOrigin(ctx)
-	assert.Equal(test, origin, actual)
+	assert.Equal(test, originMessage, actual)
 }
 
 func TestSzproduct_UnregisterObserver(test *testing.T) {
@@ -216,15 +215,18 @@ func getTestDirectoryPath() string {
 
 func getTestObject(t *testing.T) *szproduct.Szproduct {
 	t.Helper()
-	ctx := t.Context()
 
-	return getSzProduct(ctx)
+	return getSzProduct(t.Context())
 }
 
 func handleError(err error) {
 	if err != nil {
-		safePrintln("Error:", err)
+		outputln("Error:", err)
 	}
+}
+
+func outputln(message ...any) {
+	fmt.Println(message...) //nolint
 }
 
 func panicOnError(err error) {
@@ -244,10 +246,6 @@ func printResult(t *testing.T, title string, result interface{}) {
 	if printResults {
 		t.Logf("%s: %v", title, truncate(fmt.Sprintf("%v", result), defaultTruncation))
 	}
-}
-
-func safePrintln(message ...any) {
-	fmt.Println(message...) //nolint
 }
 
 func truncate(aString string, length int) string {

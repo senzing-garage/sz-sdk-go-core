@@ -138,7 +138,8 @@ linters:
         - '.+/subject\.SimpleSubject$'
     goconst:
       min-occurrences: 5
-      ignore-string-values: ["CUSTOMERS"]
+      ignore-string-values:
+        - "CUSTOMERS"
     ireturn:
       allow:
         - error

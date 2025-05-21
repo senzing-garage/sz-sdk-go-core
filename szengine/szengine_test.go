@@ -40,6 +40,7 @@ const (
 	jsonIndentation     = "    "
 	maxDegrees          = int64(2)
 	observerOrigin      = "SzEngine observer"
+	originMessage       = "Machine: nn; Task: UnitTest"
 	printResults        = false
 	requiredDataSources = senzing.SzNoRequiredDatasources
 	searchAttributes    = `{"NAMES": [{"NAME_TYPE": "PRIMARY", "NAME_LAST": "JOHNSON"}], "SSN_NUMBER": "053-39-3251"}`
@@ -3359,17 +3360,15 @@ func TestSzengine_SetLogLevel_badLogLevelName(test *testing.T) {
 func TestSzengine_SetObserverOrigin(test *testing.T) {
 	ctx := test.Context()
 	szEngine := getTestObject(test)
-	origin := "Machine: nn; Task: UnitTest"
-	szEngine.SetObserverOrigin(ctx, origin)
+	szEngine.SetObserverOrigin(ctx, originMessage)
 }
 
 func TestSzengine_GetObserverOrigin(test *testing.T) {
 	ctx := test.Context()
 	szEngine := getTestObject(test)
-	origin := "Machine: nn; Task: UnitTest"
-	szEngine.SetObserverOrigin(ctx, origin)
+	szEngine.SetObserverOrigin(ctx, originMessage)
 	actual := szEngine.GetObserverOrigin(ctx)
-	assert.Equal(test, origin, actual)
+	assert.Equal(test, originMessage, actual)
 	printActual(test, actual)
 }
 
@@ -3654,8 +3653,12 @@ func getTestObject(t *testing.T) *szengine.Szengine {
 
 func handleError(err error) {
 	if err != nil {
-		safePrintln("Error:", err)
+		outputln("Error:", err)
 	}
+}
+
+func outputln(message ...any) {
+	fmt.Println(message...) //nolint
 }
 
 func panicOnError(err error) {
@@ -3681,10 +3684,6 @@ func printResult(t *testing.T, title string, result interface{}) {
 	if printResults {
 		t.Logf("%s: %v", title, truncate(fmt.Sprintf("%v", result), defaultTruncation))
 	}
-}
-
-func safePrintln(message ...any) {
-	fmt.Println(message...) //nolint
 }
 
 // func ramCheck(test *testing.T, iteration int) {
