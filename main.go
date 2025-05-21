@@ -19,6 +19,8 @@ import (
 	"github.com/senzing-garage/sz-sdk-go/senzing"
 )
 
+const filePermissions = 0o750
+
 // ----------------------------------------------------------------------------
 // Variables
 // ----------------------------------------------------------------------------
@@ -50,7 +52,7 @@ func main() {
 	err = os.RemoveAll(filepath.Clean(testDirectoryPath)) // Cleanup any previous test run.
 	failOnError(5001, err)
 
-	err = os.MkdirAll(filepath.Clean(testDirectoryPath), 0o750) // Recreate the test target directory.
+	err = os.MkdirAll(filepath.Clean(testDirectoryPath), filePermissions) // Recreate the test target directory.
 	failOnError(5002, err)
 
 	// Setup dependencies.
@@ -112,7 +114,7 @@ func demonstrateAddRecord(ctx context.Context, szEngine senzing.SzEngine) (strin
 
 	result, err = szEngine.AddRecord(ctx, dataSourceCode, recordID, jsonData, flags)
 
-	return result, wraperror.Errorf(err, "demonstrateAddRecord error: %w", err)
+	return result, wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 func demonstrateConfigFunctions(ctx context.Context, szAbstractFactory senzing.SzAbstractFactory) {
@@ -189,25 +191,32 @@ func copyDatabase() (string, error) {
 
 	testDirectoryPath := getTestDirectoryPath()
 
-	dbTargetPath, err := filepath.Abs(filepath.Join(testDirectoryPath, "G2C.db"))
+	rawDbTargetPath := filepath.Join(testDirectoryPath, "G2C.db")
+
+	dbTargetPath, err := filepath.Abs(rawDbTargetPath)
 	if err != nil {
-		return result, fmt.Errorf("failed to make target database path (%s) absolute. Error: %w", dbTargetPath, err)
+		return result, wraperror.Errorf(err, "failed to make target database path (%s) absolute", rawDbTargetPath)
 	}
 
 	result = "sqlite3://na:na@nowhere/" + dbTargetPath
 
 	// Copy template file to test directory.
 
-	databaseTemplatePath, err := filepath.Abs(getDatabaseTemplatePath())
+	rawDatabaseTemplatePath := getDatabaseTemplatePath()
+
+	databaseTemplatePath, err := filepath.Abs(rawDatabaseTemplatePath)
 	if err != nil {
-		return result, fmt.Errorf("failed to obtain absolute path to database file (%s): %w",
-			databaseTemplatePath, err)
+		return result, wraperror.Errorf(
+			err,
+			"failed to obtain absolute path to database file (%s)",
+			rawDatabaseTemplatePath,
+		)
 	}
 
 	_, _, err = fileutil.CopyFile(databaseTemplatePath, testDirectoryPath, true) // Copy the SQLite database file.
 	if err != nil {
-		return result, fmt.Errorf("setup failed to copy template database (%v) to target path (%v): %w",
-			databaseTemplatePath, testDirectoryPath, err)
+		return result, wraperror.Errorf(err, "setup failed to copy template database (%s) to target path (%s)",
+			databaseTemplatePath, testDirectoryPath)
 	}
 
 	return result, nil
@@ -228,14 +237,14 @@ func getLogger(ctx context.Context) (logging.Logging, error) {
 	_ = ctx
 	result, err := logging.NewSenzingLogger(9999, Messages)
 
-	return result, wraperror.Errorf(err, "getLogger error: %w", err)
+	return result, wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 func getSettings(databaseURL string) (string, error) {
 	configAttrMap := map[string]string{"databaseUrl": databaseURL}
 	result, err := settings.BuildSimpleSettingsUsingMap(configAttrMap)
 
-	return result, wraperror.Errorf(err, "getSettings error: %w", err)
+	return result, wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 func getTestDirectoryPath() string {

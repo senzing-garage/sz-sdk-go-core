@@ -109,7 +109,7 @@ linters:
     - zerologlint
   disable:
     - gochecknoglobals
-    - mnd
+    # - mnd
     - paralleltest
   exclusions:
     generated: lax
@@ -154,6 +154,16 @@ linters:
         - senzing.SzProduct
     maintidx:
       under: 15
+    mnd:
+      ignored-functions:
+        - '^logger\.Log$'
+        - '^client\.newError$'
+        - '^client\.traceExit$'
+        - '^client\.traceEntry$'
+        - '^notifier\.Notify'
+        - "^failOnError$"
+        - '^logging\.NewSenzingLogger$'
+        - '^big\.NewInt$'
     nlreturn:
       block-size: 2
     tagliatelle:
