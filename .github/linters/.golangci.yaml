@@ -109,6 +109,7 @@ linters:
     - zerologlint
   disable:
     - gochecknoglobals
+    - lll
     - paralleltest
   exclusions:
     generated: lax
