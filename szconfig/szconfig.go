@@ -551,7 +551,7 @@ func (client *Szconfig) addDataSourceChoreography(
 
 	result, err = client.addDataSource(ctx, configHandle, dataSourceCode)
 	if err != nil {
-		return newConfigDefinition, result, wraperror.Errorf(err, "addDataSource(%s)", dataSourceCode)
+		return newConfigDefinition, result, wraperror.Errorf(err, "addDataSource: %s", dataSourceCode)
 	}
 
 	newConfigDefinition, err = client.save(ctx, configHandle)
