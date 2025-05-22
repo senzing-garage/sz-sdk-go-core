@@ -24,6 +24,7 @@ const (
 	instanceName      = "SzProduct Test"
 	observerOrigin    = "SzProduct observer"
 	originMessage     = "Machine: nn; Task: UnitTest"
+	printErrors       = false
 	printResults      = false
 	verboseLogging    = senzing.SzNoLogging
 )
@@ -51,6 +52,7 @@ func TestSzproduct_GetLicense(test *testing.T) {
 	ctx := test.Context()
 	szProduct := getTestObject(test)
 	actual, err := szProduct.GetLicense(ctx)
+	printError(test, err)
 	require.NoError(test, err)
 	printActual(test, actual)
 }
@@ -59,6 +61,7 @@ func TestSzproduct_GetVersion(test *testing.T) {
 	ctx := test.Context()
 	szProduct := getTestObject(test)
 	actual, err := szProduct.GetVersion(ctx)
+	printError(test, err)
 	require.NoError(test, err)
 	printActual(test, actual)
 }
@@ -91,6 +94,7 @@ func TestSzproduct_UnregisterObserver(test *testing.T) {
 	ctx := test.Context()
 	szProduct := getTestObject(test)
 	err := szProduct.UnregisterObserver(ctx, observerSingleton)
+	printError(test, err)
 	require.NoError(test, err)
 }
 
@@ -102,6 +106,7 @@ func TestSzproduct_AsInterface(test *testing.T) {
 	ctx := test.Context()
 	szProduct := getSzProductAsInterface(ctx)
 	actual, err := szProduct.GetLicense(ctx)
+	printError(test, err)
 	require.NoError(test, err)
 	printActual(test, actual)
 }
@@ -111,6 +116,7 @@ func TestSzproduct_Initialize(test *testing.T) {
 	szProduct := &szproduct.Szproduct{}
 	settings := getSettings()
 	err := szProduct.Initialize(ctx, instanceName, settings, verboseLogging)
+	printError(test, err)
 	require.NoError(test, err)
 }
 
@@ -121,6 +127,7 @@ func TestSzproduct_Destroy(test *testing.T) {
 	ctx := test.Context()
 	szProduct := getTestObject(test)
 	err := szProduct.Destroy(ctx)
+	printError(test, err)
 	require.NoError(test, err)
 }
 
@@ -132,6 +139,7 @@ func TestSzproduct_Destroy_withObserver(test *testing.T) {
 	szProductSingleton = nil
 	szProduct := getTestObject(test)
 	err := szProduct.Destroy(ctx)
+	printError(test, err)
 	require.NoError(test, err)
 }
 
@@ -238,6 +246,16 @@ func panicOnError(err error) {
 func printActual(t *testing.T, actual interface{}) {
 	t.Helper()
 	printResult(t, "Actual", actual)
+}
+
+func printError(t *testing.T, err error) {
+	t.Helper()
+
+	if printErrors {
+		if err != nil {
+			t.Logf("Error: %s", err.Error())
+		}
+	}
 }
 
 func printResult(t *testing.T, title string, result interface{}) {

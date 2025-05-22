@@ -28,7 +28,7 @@ const (
 	instanceName      = "SzConfigManager Test"
 	observerOrigin    = "SzConfigManager observer"
 	originMessage     = "Machine: nn; Task: UnitTest"
-	printErrors       = true
+	printErrors       = false
 	printResults      = false
 	verboseLogging    = senzing.SzNoLogging
 )
