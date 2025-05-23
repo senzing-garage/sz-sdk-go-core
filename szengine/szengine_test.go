@@ -938,6 +938,15 @@ func TestSzEngine_FindNetworkByEntityID(test *testing.T) {
 
 func TestSzEngine_FindNetworkByEntityID_badEntityIDs(test *testing.T) {
 	ctx := test.Context()
+	records := []record.Record{
+		truthset.CustomerRecords["1001"],
+		truthset.CustomerRecords["1002"],
+	}
+
+	defer func() { deleteRecords(ctx, records) }()
+
+	addRecords(ctx, records)
+
 	szEngine := getTestObject(test)
 	badEntityID1 := 0
 	badEntityID2 := 1
