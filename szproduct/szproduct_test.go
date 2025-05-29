@@ -22,6 +22,7 @@ import (
 const (
 	defaultTruncation = 76
 	instanceName      = "SzProduct Test"
+	jsonIndentation   = "    "
 	observerOrigin    = "SzProduct observer"
 	originMessage     = "Machine: nn; Task: UnitTest"
 	printErrors       = false

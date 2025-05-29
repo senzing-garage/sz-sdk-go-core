@@ -10,6 +10,8 @@ import (
 	"github.com/senzing-garage/go-logging/logging"
 )
 
+const AllLines = -1
+
 // ----------------------------------------------------------------------------
 // Interface methods - Examples for godoc documentation
 // ----------------------------------------------------------------------------
@@ -32,8 +34,12 @@ func ExampleSzdiagnostic_CheckDatastorePerformance() {
 		handleError(err)
 	}
 
-	fmt.Println(jsonutil.Truncate(result, 2))
-	// Output: {"insertTime":1000,...
+	redactKeys := []string{"numRecordsInserted"}
+	fmt.Println(jsonutil.PrettyPrint(jsonutil.Truncate(result, AllLines, redactKeys...), jsonIndentation))
+	// Output:
+	// {
+	//     "insertTime": 1000
+	// }
 }
 
 func ExampleSzdiagnostic_GetDatastoreInfo() {
@@ -52,8 +58,17 @@ func ExampleSzdiagnostic_GetDatastoreInfo() {
 		handleError(err)
 	}
 
-	fmt.Println(result)
-	// Output: {"dataStores":[{"id":"CORE","type":"sqlite3","location":"nowhere"}]}
+	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
+	// Output:
+	// {
+	//     "dataStores": [
+	//         {
+	//             "id": "CORE",
+	//             "type": "sqlite3",
+	//             "location": "nowhere"
+	//         }
+	//     ]
+	// }
 }
 
 func ExampleSzdiagnostic_GetFeature() {

@@ -25,6 +25,7 @@ const (
 	dataSourceCode    = "GO_TEST"
 	defaultTruncation = 76
 	instanceName      = "SzConfig Test"
+	jsonIndentation   = "    "
 	observerOrigin    = "SzConfig observer"
 	originMessage     = "Machine: nn; Task: UnitTest"
 	printErrors       = false

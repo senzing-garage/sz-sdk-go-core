@@ -26,6 +26,7 @@ import (
 const (
 	defaultTruncation = 76
 	instanceName      = "SzConfigManager Test"
+	jsonIndentation   = "    "
 	observerOrigin    = "SzConfigManager observer"
 	originMessage     = "Machine: nn; Task: UnitTest"
 	printErrors       = false

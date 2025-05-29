@@ -87,8 +87,17 @@ func ExampleSzengine_AddRecord_withInfo() {
 		handleError(err)
 	}
 
-	fmt.Println(result)
-	// Output: {"DATA_SOURCE":"CUSTOMERS","RECORD_ID":"1003","AFFECTED_ENTITIES":[{"ENTITY_ID":100001}]}
+	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
+	// Output:
+	// {
+	//     "DATA_SOURCE": "CUSTOMERS",
+	//     "RECORD_ID": "1003",
+	//     "AFFECTED_ENTITIES": [
+	//         {
+	//             "ENTITY_ID": 100001
+	//         }
+	//     ]
+	// }
 }
 
 func ExampleSzengine_CloseExport() {
@@ -180,8 +189,13 @@ func ExampleSzengine_DeleteRecord_withInfo() {
 		handleError(err)
 	}
 
-	fmt.Println(result)
-	// Output: {"DATA_SOURCE":"CUSTOMERS","RECORD_ID":"1003","AFFECTED_ENTITIES":[]}
+	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
+	// Output:
+	// {
+	//     "DATA_SOURCE": "CUSTOMERS",
+	//     "RECORD_ID": "1003",
+	//     "AFFECTED_ENTITIES": []
+	// }
 }
 
 func ExampleSzengine_ExportCsvEntityReport() {
@@ -339,8 +353,13 @@ func ExampleSzengine_FindInterestingEntitiesByEntityID() {
 		handleError(err)
 	}
 
-	fmt.Println(result)
-	// Output: {"INTERESTING_ENTITIES":{"ENTITIES":[]}}
+	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
+	// Output:
+	// {
+	//     "INTERESTING_ENTITIES": {
+	//         "ENTITIES": []
+	//     }
+	// }
 }
 
 func ExampleSzengine_FindInterestingEntitiesByRecordID() {
@@ -363,8 +382,13 @@ func ExampleSzengine_FindInterestingEntitiesByRecordID() {
 		handleError(err)
 	}
 
-	fmt.Println(result)
-	// Output: {"INTERESTING_ENTITIES":{"ENTITIES":[]}}
+	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
+	// Output:
+	// {
+	//     "INTERESTING_ENTITIES": {
+	//         "ENTITIES": []
+	//     }
+	// }
 }
 
 func ExampleSzengine_FindNetworkByEntityID() {
@@ -391,8 +415,18 @@ func ExampleSzengine_FindNetworkByEntityID() {
 		handleError(err)
 	}
 
-	fmt.Println(result)
-	// Output: {"ENTITY_PATHS":[],"ENTITIES":[{"RESOLVED_ENTITY":{"ENTITY_ID":100001}}]}
+	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
+	// Output:
+	// {
+	//     "ENTITY_PATHS": [],
+	//     "ENTITIES": [
+	//         {
+	//             "RESOLVED_ENTITY": {
+	//                 "ENTITY_ID": 100001
+	//             }
+	//         }
+	//     ]
+	// }
 }
 
 func ExampleSzengine_FindNetworkByEntityID_output() {
@@ -504,8 +538,18 @@ func ExampleSzengine_FindNetworkByRecordID() {
 		handleError(err)
 	}
 
-	fmt.Println(result)
-	// Output: {"ENTITY_PATHS":[],"ENTITIES":[{"RESOLVED_ENTITY":{"ENTITY_ID":100001}}]}
+	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
+	// Output:
+	// {
+	//     "ENTITY_PATHS": [],
+	//     "ENTITIES": [
+	//         {
+	//             "RESOLVED_ENTITY": {
+	//                 "ENTITY_ID": 100001
+	//             }
+	//         }
+	//     ]
+	// }
 }
 
 func ExampleSzengine_FindNetworkByRecordID_output() {
@@ -1298,8 +1342,13 @@ func ExampleSzengine_GetEntityByEntityID() {
 		handleError(err)
 	}
 
-	fmt.Println(result)
-	// Output: {"RESOLVED_ENTITY":{"ENTITY_ID":100001}}
+	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
+	// Output:
+	// {
+	//     "RESOLVED_ENTITY": {
+	//         "ENTITY_ID": 100001
+	//     }
+	// }
 }
 
 func ExampleSzengine_GetEntityByEntityID_output() {
@@ -1513,8 +1562,13 @@ func ExampleSzengine_GetEntityByRecordID() {
 		handleError(err)
 	}
 
-	fmt.Println(result)
-	// Output: {"RESOLVED_ENTITY":{"ENTITY_ID":100001}}
+	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
+	// Output:
+	// {
+	//     "RESOLVED_ENTITY": {
+	//         "ENTITY_ID": 100001
+	//     }
+	// }
 }
 
 func ExampleSzengine_GetEntityByRecordID_output() {
@@ -1728,8 +1782,12 @@ func ExampleSzengine_GetRecord() {
 		handleError(err)
 	}
 
-	fmt.Println(jsonutil.Flatten(jsonutil.Normalize(result)))
-	// Output: {"DATA_SOURCE":"CUSTOMERS","RECORD_ID":"1001"}
+	fmt.Println(jsonutil.PrettyPrint(jsonutil.Flatten(jsonutil.Normalize(result)), jsonIndentation))
+	// Output:
+	// {
+	//     "DATA_SOURCE": "CUSTOMERS",
+	//     "RECORD_ID": "1001"
+	// }
 }
 
 func ExampleSzengine_GetRedoRecord() {
@@ -2065,8 +2123,13 @@ func ExampleSzengine_GetVirtualEntityByRecordID() {
 		handleError(err)
 	}
 
-	fmt.Println(result)
-	// Output: {"RESOLVED_ENTITY":{"ENTITY_ID":100001}}
+	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
+	// Output:
+	// {
+	//     "RESOLVED_ENTITY": {
+	//         "ENTITY_ID": 100001
+	//     }
+	// }
 }
 
 func ExampleSzengine_GetVirtualEntityByRecordID_output() {
@@ -3041,8 +3104,17 @@ func ExampleSzEngine_ProcessRedoRecord_withInfo() {
 		handleError(err)
 	}
 
-	fmt.Println(result)
-	// Output: {"DATA_SOURCE":"CUSTOMERS","RECORD_ID":"1001","AFFECTED_ENTITIES":[{"ENTITY_ID":100001}]}
+	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
+	// Output:
+	// {
+	//     "DATA_SOURCE": "CUSTOMERS",
+	//     "RECORD_ID": "1001",
+	//     "AFFECTED_ENTITIES": [
+	//         {
+	//             "ENTITY_ID": 100001
+	//         }
+	//     ]
+	// }
 }
 
 func ExampleSzengine_ReevaluateEntity() {
@@ -3088,8 +3160,15 @@ func ExampleSzengine_ReevaluateEntity_withInfo() {
 		handleError(err)
 	}
 
-	fmt.Println(result)
-	// Output: {"AFFECTED_ENTITIES":[{"ENTITY_ID":100001}]}
+	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
+	// Output:
+	// {
+	//     "AFFECTED_ENTITIES": [
+	//         {
+	//             "ENTITY_ID": 100001
+	//         }
+	//     ]
+	// }
 }
 
 func ExampleSzengine_ReevaluateRecord() {
@@ -3136,8 +3215,17 @@ func ExampleSzengine_ReevaluateRecord_withInfo() {
 		handleError(err)
 	}
 
-	fmt.Println(result)
-	// Output: {"DATA_SOURCE":"CUSTOMERS","RECORD_ID":"1001","AFFECTED_ENTITIES":[{"ENTITY_ID":100001}]}
+	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
+	// Output:
+	// {
+	//     "DATA_SOURCE": "CUSTOMERS",
+	//     "RECORD_ID": "1001",
+	//     "AFFECTED_ENTITIES": [
+	//         {
+	//             "ENTITY_ID": 100001
+	//         }
+	//     ]
+	// }
 }
 
 func ExampleSzengine_SearchByAttributes() {
