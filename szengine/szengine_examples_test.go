@@ -330,7 +330,7 @@ func ExampleSzengine_FindInterestingEntitiesByEntityID() {
 		handleError(err)
 	}
 
-	entityID := getEntityIDForRecord("CUSTOMERS", "1001")
+	entityID := getEntityIDForRecord(ctx, "CUSTOMERS", "1001")
 
 	flags := senzing.SzNoFlags
 
@@ -378,8 +378,8 @@ func ExampleSzengine_FindNetworkByEntityID() {
 		handleError(err)
 	}
 
-	entityID1 := getEntityIDStringForRecord("CUSTOMERS", "1001")
-	entityID2 := getEntityIDStringForRecord("CUSTOMERS", "1002")
+	entityID1 := getEntityIDStringForRecord(ctx, "CUSTOMERS", "1001")
+	entityID2 := getEntityIDStringForRecord(ctx, "CUSTOMERS", "1002")
 	entityList := `{"ENTITIES": [{"ENTITY_ID": ` + entityID1 + `}, {"ENTITY_ID": ` + entityID2 + `}]}`
 	maxDegrees := int64(2)
 	buildOutDegrees := int64(1)
@@ -647,8 +647,8 @@ func ExampleSzengine_FindPathByEntityID() {
 		handleError(err)
 	}
 
-	startEntityID := getEntityIDForRecord("CUSTOMERS", "1001")
-	endEntityID := getEntityIDForRecord("CUSTOMERS", "1002")
+	startEntityID := getEntityIDForRecord(ctx, "CUSTOMERS", "1001")
+	endEntityID := getEntityIDForRecord(ctx, "CUSTOMERS", "1002")
 
 	maxDegrees := int64(1)
 	avoidEntityIDs := ""
@@ -701,8 +701,8 @@ func ExampleSzengine_FindPathByEntityID_avoiding() {
 		handleError(err)
 	}
 
-	startEntityID := getEntityIDForRecord("CUSTOMERS", "1001")
-	endEntityID := getEntityIDForRecord("CUSTOMERS", "1002")
+	startEntityID := getEntityIDForRecord(ctx, "CUSTOMERS", "1001")
+	endEntityID := getEntityIDForRecord(ctx, "CUSTOMERS", "1002")
 
 	maxDegrees := int64(1)
 	avoidEntityIDs := `{"ENTITIES": [{"ENTITY_ID": 9999}]}`
@@ -755,8 +755,8 @@ func ExampleSzEngine_FindPathByEntityID_avoidingAndIncluding() {
 		handleError(err)
 	}
 
-	startEntityID := getEntityIDForRecord("CUSTOMERS", "1001")
-	endEntityID := getEntityIDForRecord("CUSTOMERS", "1002")
+	startEntityID := getEntityIDForRecord(ctx, "CUSTOMERS", "1001")
+	endEntityID := getEntityIDForRecord(ctx, "CUSTOMERS", "1002")
 
 	maxDegree := int64(1)
 	avoidEntityIDs := `{"ENTITIES": [{"ENTITY_ID": 9999}]}`
@@ -807,8 +807,8 @@ func ExampleSzengine_FindPathByEntityID_including() {
 		handleError(err)
 	}
 
-	startEntityID := getEntityIDForRecord("CUSTOMERS", "1001")
-	endEntityID := getEntityIDForRecord("CUSTOMERS", "1002")
+	startEntityID := getEntityIDForRecord(ctx, "CUSTOMERS", "1001")
+	endEntityID := getEntityIDForRecord(ctx, "CUSTOMERS", "1002")
 
 	maxDegree := int64(1)
 	avoidEntityIDs := ""
@@ -1289,7 +1289,7 @@ func ExampleSzengine_GetEntityByEntityID() {
 		handleError(err)
 	}
 
-	entityID := getEntityIDForRecord("CUSTOMERS", "1001")
+	entityID := getEntityIDForRecord(ctx, "CUSTOMERS", "1001")
 
 	flags := senzing.SzNoFlags
 
@@ -2937,7 +2937,7 @@ func ExampleSzengine_HowEntityByEntityID() {
 		handleError(err)
 	}
 
-	entityID := getEntityIDForRecord("CUSTOMERS", "1001")
+	entityID := getEntityIDForRecord(ctx, "CUSTOMERS", "1001")
 
 	flags := senzing.SzNoFlags
 
@@ -3056,7 +3056,7 @@ func ExampleSzengine_ReevaluateEntity() {
 		handleError(err)
 	}
 
-	entityID := getEntityIDForRecord("CUSTOMERS", "1001")
+	entityID := getEntityIDForRecord(ctx, "CUSTOMERS", "1001")
 
 	flags := senzing.SzWithoutInfo
 
@@ -3080,7 +3080,7 @@ func ExampleSzengine_ReevaluateEntity_withInfo() {
 		handleError(err)
 	}
 
-	entityID := getEntityIDForRecord("CUSTOMERS", "1001")
+	entityID := getEntityIDForRecord(ctx, "CUSTOMERS", "1001")
 	flags := senzing.SzWithInfo
 
 	result, err := szEngine.ReevaluateEntity(ctx, entityID, flags)
@@ -3412,8 +3412,8 @@ func ExampleSzengine_WhyEntities() {
 		handleError(err)
 	}
 
-	entityID1 := getEntityID(truthset.CustomerRecords["1001"])
-	entityID2 := getEntityID(truthset.CustomerRecords["1002"])
+	entityID1 := getEntityID(ctx, truthset.CustomerRecords["1001"])
+	entityID2 := getEntityID(ctx, truthset.CustomerRecords["1002"])
 	flags := senzing.SzNoFlags
 
 	result, err := szEngine.WhyEntities(ctx, entityID1, entityID2, flags)
@@ -6965,7 +6965,7 @@ func ExampleSzengine_WhySearch() {
 	searchProfile := "SEARCH"
 	flags := senzing.SzNoFlags
 
-	entityID := getEntityID(truthset.CustomerRecords["1001"])
+	entityID := getEntityID(ctx, truthset.CustomerRecords["1001"])
 
 	result, err := szEngine.WhySearch(ctx, attributes, entityID, searchProfile, flags)
 	if err != nil {
