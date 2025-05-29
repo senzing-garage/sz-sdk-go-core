@@ -121,8 +121,10 @@ func TestSzproduct_Initialize(test *testing.T) {
 	require.NoError(test, err)
 }
 
-// IMPROVE: Implement TestSzengine_Initialize_error
-// func TestSzproduct_Initialize_error(test *testing.T) {}
+func TestSzproduct_Initialize_error(test *testing.T) {
+	// IMPROVE: Implement TestSzengine_Initialize_error
+	_ = test
+}
 
 func TestSzproduct_Destroy(test *testing.T) {
 	ctx := test.Context()
@@ -132,8 +134,10 @@ func TestSzproduct_Destroy(test *testing.T) {
 	require.NoError(test, err)
 }
 
-// IMPROVE: Implement TestSzengine_Destroy_error
-// func TestSzproduct_Destroy_error(test *testing.T) {}
+func TestSzproduct_Destroy_error(test *testing.T) {
+	// IMPROVE: Implement TestSzengine_Destroy_error
+	_ = test
+}
 
 func TestSzproduct_Destroy_withObserver(test *testing.T) {
 	ctx := test.Context()

@@ -283,8 +283,10 @@ func TestSzconfig_Initialize_badSettings(test *testing.T) {
 	assert.NoError(test, err)
 }
 
-// IMPROVE: Implement TestSzconfig_Initialize_error
-// func TestSzconfig_Initialize_error(test *testing.T) {}
+func TestSzconfig_Initialize_error(test *testing.T) {
+	// IMPROVE: Implement TestSzconfig_Initialize_error
+	_ = test
+}
 
 func TestSzconfig_Initialize_again(test *testing.T) {
 	ctx := test.Context()
@@ -303,8 +305,10 @@ func TestSzconfig_Destroy(test *testing.T) {
 	require.NoError(test, err)
 }
 
-// IMPROVE: Implement TestSzconfig_Destroy_error
-// func TestSzconfig_Destroy_error(test *testing.T) {}
+func TestSzconfig_Destroy_error(test *testing.T) {
+	// IMPROVE: Implement TestSzconfig_Destroy_error
+	_ = test
+}
 
 func TestSzconfig_Destroy_withObserver(test *testing.T) {
 	ctx := test.Context()

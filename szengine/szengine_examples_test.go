@@ -145,59 +145,6 @@ func ExampleSzengine_CountRedoRecords() {
 	// Output: 4
 }
 
-func ExampleSzengine_DeleteRecord() {
-	// For more information, visit
-	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
-	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
-
-	szEngine, err := szAbstractFactory.CreateEngine(ctx)
-	if err != nil {
-		handleError(err)
-	}
-
-	dataSourceCode := "CUSTOMERS"
-	recordID := "1003"
-	flags := senzing.SzWithoutInfo
-
-	result, err := szEngine.DeleteRecord(ctx, dataSourceCode, recordID, flags)
-	if err != nil {
-		handleError(err)
-	}
-
-	fmt.Println(result)
-	// Output:
-}
-
-func ExampleSzengine_DeleteRecord_withInfo() {
-	// For more information, visit
-	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
-	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
-
-	szEngine, err := szAbstractFactory.CreateEngine(ctx)
-	if err != nil {
-		handleError(err)
-	}
-
-	dataSourceCode := "CUSTOMERS"
-	recordID := "1003"
-	flags := senzing.SzWithInfo
-
-	result, err := szEngine.DeleteRecord(ctx, dataSourceCode, recordID, flags)
-	if err != nil {
-		handleError(err)
-	}
-
-	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
-	// Output:
-	// {
-	//     "DATA_SOURCE": "CUSTOMERS",
-	//     "RECORD_ID": "1003",
-	//     "AFFECTED_ENTITIES": []
-	// }
-}
-
 func ExampleSzengine_ExportCsvEntityReport() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
@@ -3108,118 +3055,7 @@ func ExampleSzEngine_ProcessRedoRecord_withInfo() {
 	// Output:
 	// {
 	//     "DATA_SOURCE": "CUSTOMERS",
-	//     "RECORD_ID": "1001",
-	//     "AFFECTED_ENTITIES": [
-	//         {
-	//             "ENTITY_ID": 100001
-	//         }
-	//     ]
-	// }
-}
-
-func ExampleSzengine_ReevaluateEntity() {
-	// For more information, visit
-	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
-	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
-
-	szEngine, err := szAbstractFactory.CreateEngine(ctx)
-	if err != nil {
-		handleError(err)
-	}
-
-	entityID := getEntityIDForRecord(ctx, "CUSTOMERS", "1001")
-
-	flags := senzing.SzWithoutInfo
-
-	result, err := szEngine.ReevaluateEntity(ctx, entityID, flags)
-	if err != nil {
-		handleError(err)
-	}
-
-	fmt.Println(result)
-	// Output:
-}
-
-func ExampleSzengine_ReevaluateEntity_withInfo() {
-	// For more information, visit
-	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
-	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
-
-	szEngine, err := szAbstractFactory.CreateEngine(ctx)
-	if err != nil {
-		handleError(err)
-	}
-
-	entityID := getEntityIDForRecord(ctx, "CUSTOMERS", "1001")
-	flags := senzing.SzWithInfo
-
-	result, err := szEngine.ReevaluateEntity(ctx, entityID, flags)
-	if err != nil {
-		handleError(err)
-	}
-
-	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
-	// Output:
-	// {
-	//     "AFFECTED_ENTITIES": [
-	//         {
-	//             "ENTITY_ID": 100001
-	//         }
-	//     ]
-	// }
-}
-
-func ExampleSzengine_ReevaluateRecord() {
-	// For more information, visit
-	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
-	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
-
-	szEngine, err := szAbstractFactory.CreateEngine(ctx)
-	if err != nil {
-		handleError(err)
-	}
-
-	dataSourceCode := "CUSTOMERS"
-	recordID := "1001"
-	flags := senzing.SzWithoutInfo
-
-	result, err := szEngine.ReevaluateRecord(ctx, dataSourceCode, recordID, flags)
-	if err != nil {
-		handleError(err)
-	}
-
-	fmt.Println(result)
-	// Output:
-}
-
-func ExampleSzengine_ReevaluateRecord_withInfo() {
-	// For more information, visit
-	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
-	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
-
-	szEngine, err := szAbstractFactory.CreateEngine(ctx)
-	if err != nil {
-		handleError(err)
-	}
-
-	dataSourceCode := "CUSTOMERS"
-	recordID := "1001"
-	flags := senzing.SzWithInfo
-
-	result, err := szEngine.ReevaluateRecord(ctx, dataSourceCode, recordID, flags)
-	if err != nil {
-		handleError(err)
-	}
-
-	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
-	// Output:
-	// {
-	//     "DATA_SOURCE": "CUSTOMERS",
-	//     "RECORD_ID": "1001",
+	//     "RECORD_ID": "1002",
 	//     "AFFECTED_ENTITIES": [
 	//         {
 	//             "ENTITY_ID": 100001
@@ -3248,13 +3084,13 @@ func ExampleSzengine_SearchByAttributes() {
 		handleError(err)
 	}
 
+	redactKeys := []string{"FIRST_SEEN_DT", "LAST_SEEN_DT"}
 	fmt.Println(
 		jsonutil.PrettyPrint(
 			jsonutil.Flatten(
 				jsonutil.Redact(
 					jsonutil.Flatten(jsonutil.NormalizeAndSort(result)),
-					"FIRST_SEEN_DT",
-					"LAST_SEEN_DT",
+					redactKeys...,
 				),
 			), jsonIndentation))
 	// Output:
@@ -3296,13 +3132,13 @@ func ExampleSzEngine_SearchByAttributes_searchProfile() {
 		handleError(err)
 	}
 
+	redactKeys := []string{"FIRST_SEEN_DT", "LAST_SEEN_DT"}
 	fmt.Println(
 		jsonutil.PrettyPrint(
 			jsonutil.Flatten(
 				jsonutil.Redact(
 					jsonutil.Flatten(jsonutil.NormalizeAndSort(result)),
-					"FIRST_SEEN_DT",
-					"LAST_SEEN_DT",
+					redactKeys...,
 				),
 			), jsonIndentation))
 	// Output:
@@ -5280,8 +5116,8 @@ func ExampleSzengine_WhyRecordInEntity() {
 	//                 }
 	//             ],
 	//             "MATCH_INFO": {
-	//                 "WHY_KEY": "+NAME+DOB+PHONE",
-	//                 "WHY_ERRULE_CODE": "CNAME_CFF_CEXCL",
+	//                 "WHY_KEY": "+NAME+DOB+PHONE+EMAIL",
+	//                 "WHY_ERRULE_CODE": "SF1_SNAME_CFF_CSTAB",
 	//                 "MATCH_LEVEL_CODE": "RESOLVED"
 	//             }
 	//         }
@@ -7081,6 +6917,174 @@ func ExampleSzengine_WhySearch() {
 	//             }
 	//         }
 	//     ]
+	// }
+}
+
+// ----------------------------------------------------------------------------
+// Interface methods - Destructive, so order needs to be maintained
+// ----------------------------------------------------------------------------
+
+func ExampleSzengine_ReevaluateEntity() {
+	// For more information, visit
+	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
+	ctx := context.TODO()
+	szAbstractFactory := getSzAbstractFactory(ctx)
+
+	szEngine, err := szAbstractFactory.CreateEngine(ctx)
+	if err != nil {
+		handleError(err)
+	}
+
+	entityID := getEntityIDForRecord(ctx, "CUSTOMERS", "1001")
+
+	flags := senzing.SzWithoutInfo
+
+	result, err := szEngine.ReevaluateEntity(ctx, entityID, flags)
+	if err != nil {
+		handleError(err)
+	}
+
+	fmt.Println(result)
+	// Output:
+}
+
+func ExampleSzengine_ReevaluateEntity_withInfo() {
+	// For more information, visit
+	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
+	ctx := context.TODO()
+	szAbstractFactory := getSzAbstractFactory(ctx)
+
+	szEngine, err := szAbstractFactory.CreateEngine(ctx)
+	if err != nil {
+		handleError(err)
+	}
+
+	entityID := getEntityIDForRecord(ctx, "CUSTOMERS", "1001")
+	flags := senzing.SzWithInfo
+
+	result, err := szEngine.ReevaluateEntity(ctx, entityID, flags)
+	if err != nil {
+		handleError(err)
+	}
+
+	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
+	// Output:
+	// {
+	//     "AFFECTED_ENTITIES": [
+	//         {
+	//             "ENTITY_ID": 100001
+	//         }
+	//     ]
+	// }
+}
+
+func ExampleSzengine_ReevaluateRecord() {
+	// For more information, visit
+	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
+	ctx := context.TODO()
+	szAbstractFactory := getSzAbstractFactory(ctx)
+
+	szEngine, err := szAbstractFactory.CreateEngine(ctx)
+	if err != nil {
+		handleError(err)
+	}
+
+	dataSourceCode := "CUSTOMERS"
+	recordID := "1001"
+	flags := senzing.SzWithoutInfo
+
+	result, err := szEngine.ReevaluateRecord(ctx, dataSourceCode, recordID, flags)
+	if err != nil {
+		handleError(err)
+	}
+
+	fmt.Println(result)
+	// Output:
+}
+
+func ExampleSzengine_ReevaluateRecord_withInfo() {
+	// For more information, visit
+	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
+	ctx := context.TODO()
+	szAbstractFactory := getSzAbstractFactory(ctx)
+
+	szEngine, err := szAbstractFactory.CreateEngine(ctx)
+	if err != nil {
+		handleError(err)
+	}
+
+	dataSourceCode := "CUSTOMERS"
+	recordID := "1001"
+	flags := senzing.SzWithInfo
+
+	result, err := szEngine.ReevaluateRecord(ctx, dataSourceCode, recordID, flags)
+	if err != nil {
+		handleError(err)
+	}
+
+	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
+	// Output:
+	// {
+	//     "DATA_SOURCE": "CUSTOMERS",
+	//     "RECORD_ID": "1001",
+	//     "AFFECTED_ENTITIES": [
+	//         {
+	//             "ENTITY_ID": 100001
+	//         }
+	//     ]
+	// }
+}
+
+func ExampleSzengine_DeleteRecord() {
+	// For more information, visit
+	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
+	ctx := context.TODO()
+	szAbstractFactory := getSzAbstractFactory(ctx)
+
+	szEngine, err := szAbstractFactory.CreateEngine(ctx)
+	if err != nil {
+		handleError(err)
+	}
+
+	dataSourceCode := "CUSTOMERS"
+	recordID := "1003"
+	flags := senzing.SzWithoutInfo
+
+	result, err := szEngine.DeleteRecord(ctx, dataSourceCode, recordID, flags)
+	if err != nil {
+		handleError(err)
+	}
+
+	fmt.Println(result)
+	// Output:
+}
+
+func ExampleSzengine_DeleteRecord_withInfo() {
+	// For more information, visit
+	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
+	ctx := context.TODO()
+	szAbstractFactory := getSzAbstractFactory(ctx)
+
+	szEngine, err := szAbstractFactory.CreateEngine(ctx)
+	if err != nil {
+		handleError(err)
+	}
+
+	dataSourceCode := "CUSTOMERS"
+	recordID := "1003"
+	flags := senzing.SzWithInfo
+
+	result, err := szEngine.DeleteRecord(ctx, dataSourceCode, recordID, flags)
+	if err != nil {
+		handleError(err)
+	}
+
+	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
+	// Output:
+	// {
+	//     "DATA_SOURCE": "CUSTOMERS",
+	//     "RECORD_ID": "1003",
+	//     "AFFECTED_ENTITIES": []
 	// }
 }
 

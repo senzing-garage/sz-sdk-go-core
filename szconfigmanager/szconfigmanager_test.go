@@ -411,8 +411,10 @@ func TestSzconfigmanager_Initialize(test *testing.T) {
 	require.NoError(test, err)
 }
 
-// IMPROVE: Implement TestSzconfigmanager_Initialize_error
-// func TestSzconfigmanager_Initialize_error(test *testing.T) {}
+func TestSzconfigmanager_Initialize_error(test *testing.T) {
+	// IMPROVE: Implement TestSzconfigmanager_Initialize_error
+	_ = test
+}
 
 func TestSzconfigmanager_Destroy(test *testing.T) {
 	ctx := test.Context()
@@ -431,8 +433,10 @@ func TestSzconfigmanager_Destroy_withObserver(test *testing.T) {
 	require.NoError(test, err)
 }
 
-// IMPROVE: Implement TestSzconfigmanager_Destroy_error
-// func TestSzconfigmanager_Destroy_error(test *testing.T) {}
+func TestSzconfigmanager_Destroy_error(test *testing.T) {
+	// IMPROVE: Implement TestSzconfigmanager_Destroy_error
+	_ = test
+}
 
 // ----------------------------------------------------------------------------
 // Internal functions

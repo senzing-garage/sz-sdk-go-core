@@ -231,8 +231,10 @@ func TestSzdiagnostic_Initialize_withConfigId(test *testing.T) {
 	require.NoError(test, err)
 }
 
-// IMPROVE: Implement TestSzdiagnostic_Initialize_withConfigId_badConfigID
-// func TestSzdiagnostic_Initialize_withConfigId_badConfigID(test *testing.T) {}
+func TestSzdiagnostic_Initialize_withConfigId_badConfigID(test *testing.T) {
+	// IMPROVE: Implement TestSzdiagnostic_Initialize_withConfigId_badConfigID
+	_ = test
+}
 
 func TestSzdiagnostic_Reinitialize(test *testing.T) {
 	ctx := test.Context()
@@ -244,8 +246,10 @@ func TestSzdiagnostic_Reinitialize(test *testing.T) {
 	require.NoError(test, err)
 }
 
-// IMPROVE: Implement TestSzdiagnostic_Reinitialize_error
-// func TestSzdiagnostic_Reinitialize_error(test *testing.T) {}
+func TestSzdiagnostic_Reinitialize_error(test *testing.T) {
+	// IMPROVE: Implement TestSzdiagnostic_Reinitialize_error
+	_ = test
+}
 
 func TestSzdiagnostic_Destroy(test *testing.T) {
 	ctx := test.Context()
@@ -265,8 +269,10 @@ func TestSzdiagnostic_Destroy_withObserver(test *testing.T) {
 	require.NoError(test, err)
 }
 
-// IMPROVE: Implement TestSzdiagnostic_Destroy_error
-// func TestSzdiagnostic_Destroy_error(test *testing.T) {}
+func TestSzdiagnostic_Destroy_error(test *testing.T) {
+	// IMPROVE: Implement TestSzdiagnostic_Destroy_error
+	_ = test
+}
 
 // ----------------------------------------------------------------------------
 // Internal functions

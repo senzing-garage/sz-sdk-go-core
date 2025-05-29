@@ -60,7 +60,7 @@ func ExampleSzconfig_DeleteDataSource() {
 		handleError(err)
 	}
 
-	dataSourceCode := "TEST"
+	dataSourceCode := "GO_TEST"
 
 	result, err := szConfig.DeleteDataSource(ctx, dataSourceCode)
 	if err != nil {

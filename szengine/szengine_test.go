@@ -485,8 +485,10 @@ func TestSzEngine_ExportJSONEntityReport_65536(test *testing.T) {
 	require.Greater(test, len(jsonEntityReport), 65536)
 }
 
-// IMPROVE: Implement TestSzEngine_ExportJSONEntityReport_error
-// func TestSzEngine_ExportJSONEntityReport_error(test *testing.T) {}
+func TestSzEngine_ExportJSONEntityReport_error(test *testing.T) {
+	// IMPROVE: Implement TestSzEngine_ExportJSONEntityReport_error
+	_ = test
+}
 
 func TestSzEngine_ExportJSONEntityReportIterator(test *testing.T) {
 	ctx := test.Context()
@@ -1524,8 +1526,10 @@ func TestSzEngine_Initialize(test *testing.T) {
 	require.NoError(test, err)
 }
 
-// IMPROVE: Implement TestSzEngine_Initialize_error
-// func TestSzEngine_Initialize_error(test *testing.T) {}
+func TestSzEngine_Initialize_error(test *testing.T) {
+	// IMPROVE: Implement TestSzEngine_Initialize_error
+	_ = test
+}
 
 func TestSzEngine_Initialize_withConfigID(test *testing.T) {
 	ctx := test.Context()
@@ -1538,8 +1542,10 @@ func TestSzEngine_Initialize_withConfigID(test *testing.T) {
 	require.NoError(test, err)
 }
 
-// IMPROVE: Implement TestSzEngine_Initialize_withConfigID_error
-// func TestSzEngine_Initialize_withConfigID_error(test *testing.T) {}
+func TestSzEngine_Initialize_withConfigID_error(test *testing.T) {
+	// IMPROVE: Implement TestSzEngine_Initialize_withConfigID_error
+	_ = test
+}
 
 func TestSzEngine_Reinitialize(test *testing.T) {
 	ctx := test.Context()
@@ -1552,8 +1558,10 @@ func TestSzEngine_Reinitialize(test *testing.T) {
 	require.NoError(test, err)
 }
 
-// IMPROVE: Implement TestSzEngine_Reinitialize_badConfigID
-// func TestSzEngine_Reinitialize_badConfigID(test *testing.T) {}
+func TestSzEngine_Reinitialize_badConfigID(test *testing.T) {
+	// IMPROVE: Implement TestSzEngine_Reinitialize_badConfigID
+	_ = test
+}
 
 func TestSzEngine_Destroy(test *testing.T) {
 	ctx := test.Context()
@@ -1563,8 +1571,10 @@ func TestSzEngine_Destroy(test *testing.T) {
 	require.NoError(test, err)
 }
 
-// IMPROVE: Implement TestSzEngine_Destroy_error
-// func TestSzEngine_Destroy_error(test *testing.T) {}
+func TestSzEngine_Destroy_error(test *testing.T) {
+	// IMPROVE: Implement TestSzEngine_Destroy_error
+	_ = test
+}
 
 func TestSzEngine_Destroy_withObserver(test *testing.T) {
 	ctx := test.Context()
@@ -2392,7 +2402,7 @@ func getTestCasesForFindNetworkByEntityID() []TestMetadataForFindNetworkByEntity
 		{
 			name:      "badEntityIDs",
 			entityIDs: badEntityIDsFunc,
-			// IMPROVE:
+			// IMPROVE: Shouldn't this error?
 		},
 		{
 			name:               "badMaxDegrees",
