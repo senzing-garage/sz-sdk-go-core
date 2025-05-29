@@ -4,11 +4,11 @@ go 1.24
 
 require (
 	github.com/aquilax/truncate v1.0.1
-	github.com/senzing-garage/go-helpers v0.6.13-0.20250527200054-6a9954f0cc6e
+	github.com/senzing-garage/go-helpers v0.6.13-0.20250529172703-8bac79c8d2f9
 	github.com/senzing-garage/go-logging v1.5.3
 	github.com/senzing-garage/go-messaging v1.5.3
 	github.com/senzing-garage/go-observing v0.3.5
-	github.com/senzing-garage/sz-sdk-go v0.15.3
+	github.com/senzing-garage/sz-sdk-go v0.15.4
 	github.com/stretchr/testify v1.10.0
 )
 

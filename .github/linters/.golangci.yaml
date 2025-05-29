@@ -137,6 +137,31 @@ linters:
     exhaustruct:
       exclude:
         - '.+/subject\.SimpleSubject$'
+        - '.+/szengine_test\.GetEntityByRecordIDResponse$'
+        - '.+/szengine_test\.TestMetadataForAddRecord$'
+        - '.+/szengine_test\.TestMetadataForDeleteRecord$'
+        - '.+/szengine_test\.TestMetadataForFindInterestingEntitiesByEntityID$'
+        - '.+/szengine_test\.TestMetadataForFindInterestingEntitiesByRecordID$'
+        - '.+/szengine_test\.TestMetadataForFindNetworkByEntityID$'
+        - '.+/szengine_test\.TestMetadataForFindNetworkByRecordID$'
+        - '.+/szengine_test\.TestMetadataForFindPathByEntityID$'
+        - '.+/szengine_test\.TestMetadataForFindPathByRecordID$'
+        - '.+/szengine_test\.TestMetadataForGetEntityByEntityID$'
+        - '.+/szengine_test\.TestMetadataForGetEntityByRecordID$'
+        - '.+/szengine_test\.TestMetadataForGetRecord$'
+        - '.+/szengine_test\.TestMetadataForGetVirtualEntityByRecordID$'
+        - '.+/szengine_test\.TestMetadataForHowEntityByEntityID$'
+        - '.+/szengine_test\.TestMetadataForPreprocessRecord$'
+        - '.+/szengine_test\.TestMetadataForProcessRedoRecord$'
+        - '.+/szengine_test\.TestMetadataForReevaluateEntity$'
+        - '.+/szengine_test\.TestMetadataForReevaluateRecord$'
+        - '.+/szengine_test\.TestMetadataForSearchByAttributes$'
+        - '.+/szengine_test\.TestMetadataForWhyEntities$'
+        - '.+/szengine_test\.TestMetadataForWhyRecordInEntity$'
+        - '.+/szengine_test\.TestMetadataForWhyRecords$'
+        - '.+/szengine_test\.TestMetadataForWhySearch$'
+    funlen:
+      lines: 100
     goconst:
       min-occurrences: 5
       ignore-string-values:
