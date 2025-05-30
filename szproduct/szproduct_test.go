@@ -53,18 +53,16 @@ func TestSzproduct_GetLicense(test *testing.T) {
 	ctx := test.Context()
 	szProduct := getTestObject(test)
 	actual, err := szProduct.GetLicense(ctx)
-	printError(test, err)
+	printDebug(test, err, actual)
 	require.NoError(test, err)
-	printActual(test, actual)
 }
 
 func TestSzproduct_GetVersion(test *testing.T) {
 	ctx := test.Context()
 	szProduct := getTestObject(test)
 	actual, err := szProduct.GetVersion(ctx)
-	printError(test, err)
+	printDebug(test, err, actual)
 	require.NoError(test, err)
-	printActual(test, actual)
 }
 
 // ----------------------------------------------------------------------------
@@ -95,7 +93,7 @@ func TestSzproduct_UnregisterObserver(test *testing.T) {
 	ctx := test.Context()
 	szProduct := getTestObject(test)
 	err := szProduct.UnregisterObserver(ctx, observerSingleton)
-	printError(test, err)
+	printDebug(test, err)
 	require.NoError(test, err)
 }
 
@@ -107,9 +105,8 @@ func TestSzproduct_AsInterface(test *testing.T) {
 	ctx := test.Context()
 	szProduct := getSzProductAsInterface(ctx)
 	actual, err := szProduct.GetLicense(ctx)
-	printError(test, err)
+	printDebug(test, err, actual)
 	require.NoError(test, err)
-	printActual(test, actual)
 }
 
 func TestSzproduct_Initialize(test *testing.T) {
@@ -117,7 +114,7 @@ func TestSzproduct_Initialize(test *testing.T) {
 	szProduct := &szproduct.Szproduct{}
 	settings := getSettings()
 	err := szProduct.Initialize(ctx, instanceName, settings, verboseLogging)
-	printError(test, err)
+	printDebug(test, err)
 	require.NoError(test, err)
 }
 
@@ -130,7 +127,7 @@ func TestSzproduct_Destroy(test *testing.T) {
 	ctx := test.Context()
 	szProduct := getTestObject(test)
 	err := szProduct.Destroy(ctx)
-	printError(test, err)
+	printDebug(test, err)
 	require.NoError(test, err)
 }
 
@@ -144,7 +141,7 @@ func TestSzproduct_Destroy_withObserver(test *testing.T) {
 	szProductSingleton = nil
 	szProduct := getTestObject(test)
 	err := szProduct.Destroy(ctx)
-	printError(test, err)
+	printDebug(test, err)
 	require.NoError(test, err)
 }
 
@@ -251,6 +248,15 @@ func panicOnError(err error) {
 func printActual(t *testing.T, actual interface{}) {
 	t.Helper()
 	printResult(t, "Actual", actual)
+}
+
+func printDebug(t *testing.T, err error, items ...any) {
+	t.Helper()
+	printError(t, err)
+
+	for item := range items {
+		printActual(t, item)
+	}
 }
 
 func printError(t *testing.T, err error) {

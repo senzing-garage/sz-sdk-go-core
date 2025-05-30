@@ -49,19 +49,18 @@ func TestSzAbstractFactory_CreateConfigManager(test *testing.T) {
 	defer func() { require.NoError(test, szAbstractFactory.Destroy(ctx)) }()
 
 	szConfigManager, err := szAbstractFactory.CreateConfigManager(ctx)
-	printError(test, err)
+	printDebug(test, err, szConfigManager)
 	require.NoError(test, err)
 	configList, err := szConfigManager.GetConfigs(ctx)
-	printError(test, err)
+	printDebug(test, err, configList)
 	require.NoError(test, err)
-	printActual(test, configList)
 }
 
 func TestSzAbstractFactory_CreateConfigManager_BadConfig(test *testing.T) {
 	ctx := test.Context()
 	szAbstractFactory := getTestObjectBadConfig(test)
-	_, err := szAbstractFactory.CreateConfigManager(ctx)
-	printError(test, err)
+	actual, err := szAbstractFactory.CreateConfigManager(ctx)
+	printDebug(test, err, actual)
 	require.ErrorIs(test, err, szerror.ErrSz)
 
 	expectedErr := `{"function":"szabstractfactory.(*Szabstractfactory).CreateConfigManager","error":{"function":"szconfigmanager.(*Szconfigmanager).Initialize","error":{"id":"SZSDK60024006","reason":"SENZ0018|Could not process initialization settings"}}}`
@@ -75,19 +74,18 @@ func TestSzAbstractFactory_CreateDiagnostic(test *testing.T) {
 	defer func() { require.NoError(test, szAbstractFactory.Destroy(ctx)) }()
 
 	szDiagnostic, err := szAbstractFactory.CreateDiagnostic(ctx)
-	printError(test, err)
+	printDebug(test, err, szDiagnostic)
 	require.NoError(test, err)
 	result, err := szDiagnostic.CheckDatastorePerformance(ctx, 1)
-	printError(test, err)
+	printDebug(test, err, result)
 	require.NoError(test, err)
-	printActual(test, result)
 }
 
 func TestSzAbstractFactory_CreateDiagnostic_BadConfig(test *testing.T) {
 	ctx := test.Context()
 	szAbstractFactory := getTestObjectBadConfig(test)
-	_, err := szAbstractFactory.CreateDiagnostic(ctx)
-	printError(test, err)
+	actual, err := szAbstractFactory.CreateDiagnostic(ctx)
+	printDebug(test, err, actual)
 	require.ErrorIs(test, err, szerror.ErrSz)
 
 	expectedErr := `{"function":"szabstractfactory.(*Szabstractfactory).CreateDiagnostic","error":{"function":"szdiagnostic.(*Szdiagnostic).Initialize","error":{"id":"SZSDK60034005","reason":"SENZ0018|Could not process initialization settings"}}}`
@@ -101,19 +99,18 @@ func TestSzAbstractFactory_CreateEngine(test *testing.T) {
 	defer func() { require.NoError(test, szAbstractFactory.Destroy(ctx)) }()
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
-	printError(test, err)
+	printDebug(test, err, szEngine)
 	require.NoError(test, err)
 	stats, err := szEngine.GetStats(ctx)
-	printError(test, err)
+	printDebug(test, err, stats)
 	require.NoError(test, err)
-	printActual(test, stats)
 }
 
 func TestSzAbstractFactory_CreateEngine_BadConfig(test *testing.T) {
 	ctx := test.Context()
 	szAbstractFactory := getTestObjectBadConfig(test)
-	_, err := szAbstractFactory.CreateEngine(ctx)
-	printError(test, err)
+	actual, err := szAbstractFactory.CreateEngine(ctx)
+	printDebug(test, err, actual)
 	require.ErrorIs(test, err, szerror.ErrSz)
 
 	expectedErr := `{"function":"szabstractfactory.(*Szabstractfactory).CreateEngine","error":{"function":"szengine.(*Szengine).Initialize","error":{"id":"SZSDK60044041","reason":"SENZ0018|Could not process initialization settings"}}}`
@@ -127,19 +124,18 @@ func TestSzAbstractFactory_CreateProduct(test *testing.T) {
 	defer func() { require.NoError(test, szAbstractFactory.Destroy(ctx)) }()
 
 	szProduct, err := szAbstractFactory.CreateProduct(ctx)
-	printError(test, err)
+	printDebug(test, err, szProduct)
 	require.NoError(test, err)
 	version, err := szProduct.GetVersion(ctx)
-	printError(test, err)
+	printDebug(test, err, version)
 	require.NoError(test, err)
-	printActual(test, version)
 }
 
 func TestSzAbstractFactory_CreateProduct_BadConfig(test *testing.T) {
 	ctx := test.Context()
 	szAbstractFactory := getTestObjectBadConfig(test)
-	_, err := szAbstractFactory.CreateProduct(ctx)
-	printError(test, err)
+	actual, err := szAbstractFactory.CreateProduct(ctx)
+	printDebug(test, err, actual)
 	require.ErrorIs(test, err, szerror.ErrSz)
 
 	expectedErr := `{"function":"szabstractfactory.(*Szabstractfactory).CreateProduct","error":{"function":"szproduct.(*Szproduct).Initialize","error":{"id":"SZSDK60064002","reason":"SENZ0018|Could not process initialization settings"}}}`
@@ -159,20 +155,20 @@ func TestSzAbstractFactory_Reinitialize(test *testing.T) {
 
 	defer func() { require.NoError(test, szAbstractFactory.Destroy(ctx)) }()
 
-	_, err := szAbstractFactory.CreateDiagnostic(ctx)
-	printError(test, err)
+	actual, err := szAbstractFactory.CreateDiagnostic(ctx)
+	printDebug(test, err, actual)
 	require.NoError(test, err)
-	_, err = szAbstractFactory.CreateEngine(ctx)
-	printError(test, err)
+	actual2, err := szAbstractFactory.CreateEngine(ctx)
+	printDebug(test, err, actual2)
 	require.NoError(test, err)
 	szConfigManager, err := szAbstractFactory.CreateConfigManager(ctx)
-	printError(test, err)
+	printDebug(test, err, szConfigManager)
 	require.NoError(test, err)
 	configID, err := szConfigManager.GetDefaultConfigID(ctx)
-	printError(test, err)
+	printDebug(test, err, configID)
 	require.NoError(test, err)
 	err = szAbstractFactory.Reinitialize(ctx, configID)
-	printError(test, err)
+	printDebug(test, err)
 	require.NoError(test, err)
 }
 
@@ -275,6 +271,15 @@ func panicOnError(err error) {
 func printActual(t *testing.T, actual interface{}) {
 	t.Helper()
 	printResult(t, "Actual", actual)
+}
+
+func printDebug(t *testing.T, err error, items ...any) {
+	t.Helper()
+	printError(t, err)
+
+	for item := range items {
+		printActual(t, item)
+	}
 }
 
 func printError(t *testing.T, err error) {
