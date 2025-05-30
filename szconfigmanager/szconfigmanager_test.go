@@ -73,7 +73,7 @@ func TestSzconfigmanager_CreateConfigFromConfigID(test *testing.T) {
 	ctx := test.Context()
 	szConfigManager := getTestObject(test)
 	configID, err1 := szConfigManager.GetDefaultConfigID(ctx)
-	printError(test, err1)
+	printDebug(test, err1)
 	require.NoError(test, err1)
 
 	actual, err := szConfigManager.CreateConfigFromConfigID(ctx, configID)
@@ -225,13 +225,13 @@ func TestSzconfigmanager_ReplaceDefaultConfigID(test *testing.T) {
 	ctx := test.Context()
 	szConfigManager := getTestObject(test)
 	currentDefaultConfigID, err1 := szConfigManager.GetDefaultConfigID(ctx)
-	printError(test, err1)
+	printDebug(test, err1)
 	require.NoError(test, err1)
 
 	// IMPROVE: This is kind of a cheater.
 
 	newDefaultConfigID, err2 := szConfigManager.GetDefaultConfigID(ctx)
-	printError(test, err2)
+	printDebug(test, err2)
 	require.NoError(test, err2)
 
 	err := szConfigManager.ReplaceDefaultConfigID(ctx, currentDefaultConfigID, newDefaultConfigID)
@@ -547,40 +547,21 @@ func panicOnError(err error) {
 	}
 }
 
-func printActual(t *testing.T, actual interface{}) {
-	t.Helper()
-	printResult(t, "Actual", actual)
-}
-
 func printDebug(t *testing.T, err error, items ...any) {
-	t.Helper()
-	printError(t, err)
-
-	for item := range items {
-		printActual(t, item)
-	}
-}
-
-func printError(t *testing.T, err error) {
 	t.Helper()
 
 	if printErrors {
 		if err != nil {
-			t.Logf("Error: %s", err.Error())
+			t.Logf("Error: %s\n", err.Error())
 		}
 	}
-}
-
-func printResult(t *testing.T, title string, result interface{}) {
-	t.Helper()
 
 	if printResults {
-		t.Logf("%s: %v", title, truncate(fmt.Sprintf("%v", result), defaultTruncation))
+		for _, item := range items {
+			outLine := truncator.Truncate(fmt.Sprintf("%v", item), defaultTruncation, "...", truncator.PositionEnd)
+			t.Logf("Result: %s\n", outLine)
+		}
 	}
-}
-
-func truncate(aString string, length int) string {
-	return truncator.Truncate(aString, length, "...", truncator.PositionEnd)
 }
 
 // ----------------------------------------------------------------------------

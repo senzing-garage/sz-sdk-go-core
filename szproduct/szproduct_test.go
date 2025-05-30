@@ -245,40 +245,21 @@ func panicOnError(err error) {
 	}
 }
 
-func printActual(t *testing.T, actual interface{}) {
-	t.Helper()
-	printResult(t, "Actual", actual)
-}
-
 func printDebug(t *testing.T, err error, items ...any) {
-	t.Helper()
-	printError(t, err)
-
-	for item := range items {
-		printActual(t, item)
-	}
-}
-
-func printError(t *testing.T, err error) {
 	t.Helper()
 
 	if printErrors {
 		if err != nil {
-			t.Logf("Error: %s", err.Error())
+			t.Logf("Error: %s\n", err.Error())
 		}
 	}
-}
-
-func printResult(t *testing.T, title string, result interface{}) {
-	t.Helper()
 
 	if printResults {
-		t.Logf("%s: %v", title, truncate(fmt.Sprintf("%v", result), defaultTruncation))
+		for _, item := range items {
+			outLine := truncator.Truncate(fmt.Sprintf("%v", item), defaultTruncation, "...", truncator.PositionEnd)
+			t.Logf("Result: %s\n", outLine)
+		}
 	}
-}
-
-func truncate(aString string, length int) string {
-	return truncator.Truncate(aString, length, "...", truncator.PositionEnd)
 }
 
 // ----------------------------------------------------------------------------
