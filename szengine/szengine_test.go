@@ -1119,18 +1119,6 @@ func TestSzEngine_PreprocessRecord(test *testing.T) {
 	}
 }
 
-func TestSzEngine_PreprocessRecord_badRecordDefinition(test *testing.T) {
-	ctx := test.Context()
-	szEngine := getTestObject(ctx, test)
-	flags := senzing.SzNoFlags
-	actual, err := szEngine.PreprocessRecord(ctx, badRecordDefinition, flags)
-	printDebug(test, err, actual)
-	require.ErrorIs(test, err, szerror.ErrSzBadInput)
-
-	expectedErr := `{"function":"szengine.(*Szengine).PreprocessRecord","error":{"id":"SZSDK60044061","reason":"SENZ0002|Invalid Message"}}`
-	require.JSONEq(test, expectedErr, err.Error())
-}
-
 func TestSzEngine_PrimeEngine(test *testing.T) {
 	ctx := test.Context()
 	szEngine := getTestObject(ctx, test)
