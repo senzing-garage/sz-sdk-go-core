@@ -22,8 +22,10 @@ import (
 const (
 	defaultTruncation = 76
 	instanceName      = "SzProduct Test"
+	jsonIndentation   = "    "
 	observerOrigin    = "SzProduct observer"
 	originMessage     = "Machine: nn; Task: UnitTest"
+	printErrors       = false
 	printResults      = false
 	verboseLogging    = senzing.SzNoLogging
 )
@@ -51,16 +53,16 @@ func TestSzproduct_GetLicense(test *testing.T) {
 	ctx := test.Context()
 	szProduct := getTestObject(test)
 	actual, err := szProduct.GetLicense(ctx)
+	printDebug(test, err, actual)
 	require.NoError(test, err)
-	printActual(test, actual)
 }
 
 func TestSzproduct_GetVersion(test *testing.T) {
 	ctx := test.Context()
 	szProduct := getTestObject(test)
 	actual, err := szProduct.GetVersion(ctx)
+	printDebug(test, err, actual)
 	require.NoError(test, err)
-	printActual(test, actual)
 }
 
 // ----------------------------------------------------------------------------
@@ -91,6 +93,7 @@ func TestSzproduct_UnregisterObserver(test *testing.T) {
 	ctx := test.Context()
 	szProduct := getTestObject(test)
 	err := szProduct.UnregisterObserver(ctx, observerSingleton)
+	printDebug(test, err)
 	require.NoError(test, err)
 }
 
@@ -102,8 +105,8 @@ func TestSzproduct_AsInterface(test *testing.T) {
 	ctx := test.Context()
 	szProduct := getSzProductAsInterface(ctx)
 	actual, err := szProduct.GetLicense(ctx)
+	printDebug(test, err, actual)
 	require.NoError(test, err)
-	printActual(test, actual)
 }
 
 func TestSzproduct_Initialize(test *testing.T) {
@@ -111,27 +114,34 @@ func TestSzproduct_Initialize(test *testing.T) {
 	szProduct := &szproduct.Szproduct{}
 	settings := getSettings()
 	err := szProduct.Initialize(ctx, instanceName, settings, verboseLogging)
+	printDebug(test, err)
 	require.NoError(test, err)
 }
 
-// IMPROVE: Implement TestSzengine_Initialize_error
-// func TestSzproduct_Initialize_error(test *testing.T) {}
+func TestSzproduct_Initialize_error(test *testing.T) {
+	// IMPROVE: Implement TestSzengine_Initialize_error
+	_ = test
+}
 
 func TestSzproduct_Destroy(test *testing.T) {
 	ctx := test.Context()
 	szProduct := getTestObject(test)
 	err := szProduct.Destroy(ctx)
+	printDebug(test, err)
 	require.NoError(test, err)
 }
 
-// IMPROVE: Implement TestSzengine_Destroy_error
-// func TestSzproduct_Destroy_error(test *testing.T) {}
+func TestSzproduct_Destroy_error(test *testing.T) {
+	// IMPROVE: Implement TestSzengine_Destroy_error
+	_ = test
+}
 
 func TestSzproduct_Destroy_withObserver(test *testing.T) {
 	ctx := test.Context()
 	szProductSingleton = nil
 	szProduct := getTestObject(test)
 	err := szProduct.Destroy(ctx)
+	printDebug(test, err)
 	require.NoError(test, err)
 }
 
@@ -235,21 +245,21 @@ func panicOnError(err error) {
 	}
 }
 
-func printActual(t *testing.T, actual interface{}) {
+func printDebug(t *testing.T, err error, items ...any) {
 	t.Helper()
-	printResult(t, "Actual", actual)
-}
 
-func printResult(t *testing.T, title string, result interface{}) {
-	t.Helper()
+	if printErrors {
+		if err != nil {
+			t.Logf("Error: %s\n", err.Error())
+		}
+	}
 
 	if printResults {
-		t.Logf("%s: %v", title, truncate(fmt.Sprintf("%v", result), defaultTruncation))
+		for _, item := range items {
+			outLine := truncator.Truncate(fmt.Sprintf("%v", item), defaultTruncation, "...", truncator.PositionEnd)
+			t.Logf("Result: %s\n", outLine)
+		}
 	}
-}
-
-func truncate(aString string, length int) string {
-	return truncator.Truncate(aString, length, "...", truncator.PositionEnd)
 }
 
 // ----------------------------------------------------------------------------

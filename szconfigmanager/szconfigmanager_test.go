@@ -26,8 +26,10 @@ import (
 const (
 	defaultTruncation = 76
 	instanceName      = "SzConfigManager Test"
+	jsonIndentation   = "    "
 	observerOrigin    = "SzConfigManager observer"
 	originMessage     = "Machine: nn; Task: UnitTest"
+	printErrors       = false
 	printResults      = false
 	verboseLogging    = senzing.SzNoLogging
 )
@@ -71,18 +73,23 @@ func TestSzconfigmanager_CreateConfigFromConfigID(test *testing.T) {
 	ctx := test.Context()
 	szConfigManager := getTestObject(test)
 	configID, err1 := szConfigManager.GetDefaultConfigID(ctx)
+	printDebug(test, err1)
 	require.NoError(test, err1)
 
 	actual, err := szConfigManager.CreateConfigFromConfigID(ctx, configID)
+	printDebug(test, err, actual)
 	require.NoError(test, err)
-	printActual(test, actual)
 }
 
 func TestSzconfigmanager_CreateConfigFromConfigID_badConfigID(test *testing.T) {
 	ctx := test.Context()
 	szConfigManager := getTestObject(test)
 	actual, err := szConfigManager.CreateConfigFromConfigID(ctx, badConfigID)
+	printDebug(test, err, actual)
 	require.ErrorIs(test, err, szerror.ErrSzConfiguration)
+
+	expectedErr := `{"function":"szconfigmanager.(*Szconfigmanager).CreateConfigFromConfigID","error":{"function":"szconfigmanager.(*Szconfigmanager).createConfigFromConfigIDChoreography","text":"getConfig(0)","error":{"id":"SZSDK60024003","reason":"SENZ7221|No engine configuration registered with data ID [0]."}}}`
+	require.JSONEq(test, expectedErr, err.Error())
 	assert.Nil(test, actual)
 }
 
@@ -90,7 +97,11 @@ func TestSzconfigmanager_CreateConfigFromConfigID_nilConfigID(test *testing.T) {
 	ctx := test.Context()
 	szConfigManager := getTestObject(test)
 	actual, err := szConfigManager.CreateConfigFromConfigID(ctx, nilConfigID)
+	printDebug(test, err, actual)
 	require.ErrorIs(test, err, szerror.ErrSzConfiguration)
+
+	expectedErr := `{"function":"szconfigmanager.(*Szconfigmanager).CreateConfigFromConfigID","error":{"function":"szconfigmanager.(*Szconfigmanager).createConfigFromConfigIDChoreography","text":"getConfig(0)","error":{"id":"SZSDK60024003","reason":"SENZ7221|No engine configuration registered with data ID [0]."}}}`
+	require.JSONEq(test, expectedErr, err.Error())
 	assert.Nil(test, actual)
 }
 
@@ -98,20 +109,36 @@ func TestSzconfigmanager_CreateConfigFromString(test *testing.T) {
 	ctx := test.Context()
 	szConfigManager := getTestObject(test)
 	szConfig, err := szConfigManager.CreateConfigFromTemplate(ctx)
+	printDebug(test, err, szConfig)
 	require.NoError(test, err)
 	configDefinition, err := szConfig.Export(ctx)
+	printDebug(test, err, configDefinition)
 	require.NoError(test, err)
 	szConfig2, err := szConfigManager.CreateConfigFromString(ctx, configDefinition)
+	printDebug(test, err, szConfig2)
 	require.NoError(test, err)
 	configDefinition2, err := szConfig2.Export(ctx)
+	printDebug(test, err, configDefinition2)
 	require.NoError(test, err)
 	assert.JSONEq(test, configDefinition, configDefinition2)
+}
+
+func TestSzconfigmanager_CreateConfigFromString_badConfigDefinition(test *testing.T) {
+	ctx := test.Context()
+	szConfigManager := getTestObject(test)
+	actual, err := szConfigManager.CreateConfigFromString(ctx, badConfigDefinition)
+	printDebug(test, err, actual)
+	require.ErrorIs(test, err, szerror.ErrSzBadInput)
+
+	expectedErr := `{"function":"szconfigmanager.(*Szconfigmanager).CreateConfigFromString","error":{"function":"szconfigmanager.(*Szconfigmanager).CreateConfigFromStringChoreography","text":"VerifyConfigDefinition","error":{"function":"szconfig.(*Szconfig).VerifyConfigDefinition","error":{"function":"szconfig.(*Szconfig).verifyConfigDefinitionChoreography","text":"load","error":{"id":"SZSDK60014009","reason":"SENZ3121|JSON Parsing Failure [code=1,offset=2]"}}}}}`
+	require.JSONEq(test, expectedErr, err.Error())
 }
 
 func TestSzconfigmanager_CreateConfigFromTemplate(test *testing.T) {
 	ctx := test.Context()
 	szConfigManager := getTestObject(test)
 	actual, err := szConfigManager.CreateConfigFromTemplate(ctx)
+	printDebug(test, err, actual)
 	require.NoError(test, err)
 	assert.NotEmpty(test, actual)
 }
@@ -120,16 +147,16 @@ func TestSzconfigmanager_GetConfigs(test *testing.T) {
 	ctx := test.Context()
 	szConfigManager := getTestObject(test)
 	actual, err := szConfigManager.GetConfigs(ctx)
+	printDebug(test, err, actual)
 	require.NoError(test, err)
-	printActual(test, actual)
 }
 
 func TestSzconfigmanager_GetDefaultConfigID(test *testing.T) {
 	ctx := test.Context()
 	szConfigManager := getTestObject(test)
 	actual, err := szConfigManager.GetDefaultConfigID(ctx)
+	printDebug(test, err, actual)
 	require.NoError(test, err)
-	printActual(test, actual)
 }
 
 func TestSzconfigmanager_RegisterConfig(test *testing.T) {
@@ -137,18 +164,21 @@ func TestSzconfigmanager_RegisterConfig(test *testing.T) {
 	szConfigManager := getTestObject(test)
 	now := time.Now()
 	szConfig, err := szConfigManager.CreateConfigFromTemplate(ctx)
+	printDebug(test, err, szConfig)
 	require.NoError(test, err)
 
 	dataSourceCode := "GO_TEST_" + strconv.FormatInt(now.Unix(), baseTen)
-	_, err = szConfig.AddDataSource(ctx, dataSourceCode)
+	actual, err := szConfig.AddDataSource(ctx, dataSourceCode)
+	printDebug(test, err, actual)
 	require.NoError(test, err)
 	configDefinition, err := szConfig.Export(ctx)
+	printDebug(test, err, configDefinition)
 	require.NoError(test, err)
 
 	configComment := fmt.Sprintf("szconfigmanager_test at %s", now.UTC())
-	actual, err := szConfigManager.RegisterConfig(ctx, configDefinition, configComment)
+	actual2, err := szConfigManager.RegisterConfig(ctx, configDefinition, configComment)
+	printDebug(test, err, actual2)
 	require.NoError(test, err)
-	printActual(test, actual)
 }
 
 func TestSzconfigmanager_RegisterConfig_badConfigDefinition(test *testing.T) {
@@ -156,8 +186,12 @@ func TestSzconfigmanager_RegisterConfig_badConfigDefinition(test *testing.T) {
 	szConfigManager := getTestObject(test)
 	now := time.Now()
 	configComment := fmt.Sprintf("szconfigmanager_test at %s", now.UTC())
-	_, err := szConfigManager.RegisterConfig(ctx, badConfigDefinition, configComment)
+	actual, err := szConfigManager.RegisterConfig(ctx, badConfigDefinition, configComment)
+	printDebug(test, err, actual)
 	require.ErrorIs(test, err, szerror.ErrSzConfiguration)
+
+	expectedErr := `{"function":"szconfigmanager.(*Szconfigmanager).RegisterConfig","error":{"id":"SZSDK60024001","reason":"SENZ0028|Invalid JSON config document"}}`
+	require.JSONEq(test, expectedErr, err.Error())
 }
 
 func TestSzconfigmanager_RegisterConfig_nilConfigDefinition(test *testing.T) {
@@ -165,34 +199,43 @@ func TestSzconfigmanager_RegisterConfig_nilConfigDefinition(test *testing.T) {
 	szConfigManager := getTestObject(test)
 	now := time.Now()
 	configComment := fmt.Sprintf("szconfigmanager_test at %s", now.UTC())
-	_, err := szConfigManager.RegisterConfig(ctx, nilConfigDefinition, configComment)
+	actual, err := szConfigManager.RegisterConfig(ctx, nilConfigDefinition, configComment)
+	printDebug(test, err, actual)
 	require.ErrorIs(test, err, szerror.ErrSzConfiguration)
+
+	expectedErr := `{"function":"szconfigmanager.(*Szconfigmanager).RegisterConfig","error":{"id":"SZSDK60024001","reason":"SENZ0028|Invalid JSON config document"}}`
+	require.JSONEq(test, expectedErr, err.Error())
 }
 
 func TestSzconfigmanager_RegisterConfig_nilConfigComment(test *testing.T) {
 	ctx := test.Context()
 	szConfigManager := getTestObject(test)
 	szConfig, err := szConfigManager.CreateConfigFromTemplate(ctx)
+	printDebug(test, err, szConfig)
 	require.NoError(test, err)
 	configDefinition, err := szConfig.Export(ctx)
+	printDebug(test, err, configDefinition)
 	require.NoError(test, err)
 	actual, err := szConfigManager.RegisterConfig(ctx, configDefinition, nilConfigComment)
+	printDebug(test, err, actual)
 	require.NoError(test, err)
-	printActual(test, actual)
 }
 
 func TestSzconfigmanager_ReplaceDefaultConfigID(test *testing.T) {
 	ctx := test.Context()
 	szConfigManager := getTestObject(test)
 	currentDefaultConfigID, err1 := szConfigManager.GetDefaultConfigID(ctx)
+	printDebug(test, err1)
 	require.NoError(test, err1)
 
 	// IMPROVE: This is kind of a cheater.
 
 	newDefaultConfigID, err2 := szConfigManager.GetDefaultConfigID(ctx)
+	printDebug(test, err2)
 	require.NoError(test, err2)
 
 	err := szConfigManager.ReplaceDefaultConfigID(ctx, currentDefaultConfigID, newDefaultConfigID)
+	printDebug(test, err)
 	require.NoError(test, err)
 }
 
@@ -200,36 +243,56 @@ func TestSzconfigmanager_ReplaceDefaultConfigID_badCurrentDefaultConfigID(test *
 	ctx := test.Context()
 	szConfigManager := getTestObject(test)
 	newDefaultConfigID, err := szConfigManager.GetDefaultConfigID(ctx)
+	printDebug(test, err, newDefaultConfigID)
 	require.NoError(test, err)
 	err = szConfigManager.ReplaceDefaultConfigID(ctx, badCurrentDefaultConfigID, newDefaultConfigID)
+	printDebug(test, err)
 	require.ErrorIs(test, err, szerror.ErrSzReplaceConflict)
+
+	expectedErr := `{"function":"szconfigmanager.(*Szconfigmanager).ReplaceDefaultConfigID","error":{"id":"SZSDK60024007","reason":"SENZ7245|Current configuration ID does not match specified data ID [0]."}}`
+	require.JSONEq(test, expectedErr, err.Error())
 }
 
 func TestSzconfigmanager_ReplaceDefaultConfigID_badNewDefaultConfigID(test *testing.T) {
 	ctx := test.Context()
 	szConfigManager := getTestObject(test)
 	currentDefaultConfigID, err := szConfigManager.GetDefaultConfigID(ctx)
+	printDebug(test, err, currentDefaultConfigID)
 	require.NoError(test, err)
 	err = szConfigManager.ReplaceDefaultConfigID(ctx, currentDefaultConfigID, badNewDefaultConfigID)
+	printDebug(test, err)
 	require.ErrorIs(test, err, szerror.ErrSzConfiguration)
+
+	expectedErr := `{"function":"szconfigmanager.(*Szconfigmanager).ReplaceDefaultConfigID","error":{"id":"SZSDK60024007","reason":"SENZ7221|No engine configuration registered with data ID [0]."}}`
+	require.JSONEq(test, expectedErr, err.Error())
 }
 
 func TestSzconfigmanager_ReplaceDefaultConfigID_nilCurrentDefaultConfigID(test *testing.T) {
 	ctx := test.Context()
 	szConfigManager := getTestObject(test)
 	newDefaultConfigID, err := szConfigManager.GetDefaultConfigID(ctx)
+	printDebug(test, err, newDefaultConfigID)
 	require.NoError(test, err)
 	err = szConfigManager.ReplaceDefaultConfigID(ctx, nilCurrentDefaultConfigID, newDefaultConfigID)
+	printDebug(test, err)
 	require.ErrorIs(test, err, szerror.ErrSzReplaceConflict)
+
+	expectedErr := `{"function":"szconfigmanager.(*Szconfigmanager).ReplaceDefaultConfigID","error":{"id":"SZSDK60024007","reason":"SENZ7245|Current configuration ID does not match specified data ID [0]."}}`
+	require.JSONEq(test, expectedErr, err.Error())
 }
 
 func TestSzconfigmanager_ReplaceDefaultConfigID_nilNewDefaultConfigID(test *testing.T) {
 	ctx := test.Context()
 	szConfigManager := getTestObject(test)
 	currentDefaultConfigID, err := szConfigManager.GetDefaultConfigID(ctx)
+	printDebug(test, err, currentDefaultConfigID)
 	require.NoError(test, err)
 	err = szConfigManager.ReplaceDefaultConfigID(ctx, currentDefaultConfigID, nilNewDefaultConfigID)
+	printDebug(test, err)
 	require.ErrorIs(test, err, szerror.ErrSzConfiguration)
+
+	expectedErr := `{"function":"szconfigmanager.(*Szconfigmanager).ReplaceDefaultConfigID","error":{"id":"SZSDK60024007","reason":"SENZ7221|No engine configuration registered with data ID [0]."}}`
+	require.JSONEq(test, expectedErr, err.Error())
 }
 
 func TestSzconfigmanager_SetDefaultConfig(test *testing.T) {
@@ -237,16 +300,21 @@ func TestSzconfigmanager_SetDefaultConfig(test *testing.T) {
 	now := time.Now()
 	szConfigManager := getTestObject(test)
 	defaultConfigID, err := szConfigManager.GetDefaultConfigID(ctx)
+	printDebug(test, err, defaultConfigID)
 	require.NoError(test, err)
 	szConfig, err := szConfigManager.CreateConfigFromConfigID(ctx, defaultConfigID)
+	printDebug(test, err, szConfig)
 	require.NoError(test, err)
 
 	dataSourceCode := "GO_TEST_" + strconv.FormatInt(now.Unix(), baseTen)
-	_, err = szConfig.AddDataSource(ctx, dataSourceCode)
+	actual, err := szConfig.AddDataSource(ctx, dataSourceCode)
+	printDebug(test, err, actual)
 	require.NoError(test, err)
 	configDefintion, err := szConfig.Export(ctx)
+	printDebug(test, err, configDefintion)
 	require.NoError(test, err)
 	configID, err := szConfigManager.SetDefaultConfig(ctx, configDefintion, "Added "+dataSourceCode)
+	printDebug(test, err, configID)
 	require.NoError(test, err)
 	require.NotZero(test, configID)
 }
@@ -255,8 +323,10 @@ func TestSzconfigmanager_SetDefaultConfigID(test *testing.T) {
 	ctx := test.Context()
 	szConfigManager := getTestObject(test)
 	configID, err := szConfigManager.GetDefaultConfigID(ctx)
+	printDebug(test, err, configID)
 	require.NoError(test, err)
 	err = szConfigManager.SetDefaultConfigID(ctx, configID)
+	printDebug(test, err)
 	require.NoError(test, err)
 }
 
@@ -264,14 +334,22 @@ func TestSzconfigmanager_SetDefaultConfigID_badConfigID(test *testing.T) {
 	ctx := test.Context()
 	szConfigManager := getTestObject(test)
 	err := szConfigManager.SetDefaultConfigID(ctx, badConfigID)
+	printDebug(test, err)
 	require.ErrorIs(test, err, szerror.ErrSzConfiguration)
+
+	expectedErr := `{"function":"szconfigmanager.(*Szconfigmanager).SetDefaultConfigID","error":{"id":"SZSDK60024008","reason":"SENZ7221|No engine configuration registered with data ID [0]."}}`
+	require.JSONEq(test, expectedErr, err.Error())
 }
 
 func TestSzconfigmanager_SetDefaultConfigID_nilConfigID(test *testing.T) {
 	ctx := test.Context()
 	szConfigManager := getTestObject(test)
 	err := szConfigManager.SetDefaultConfigID(ctx, nilConfigID)
+	printDebug(test, err)
 	require.ErrorIs(test, err, szerror.ErrSzConfiguration)
+
+	expectedErr := `{"function":"szconfigmanager.(*Szconfigmanager).SetDefaultConfigID","error":{"id":"SZSDK60024008","reason":"SENZ7221|No engine configuration registered with data ID [0]."}}`
+	require.JSONEq(test, expectedErr, err.Error())
 }
 
 // ----------------------------------------------------------------------------
@@ -302,6 +380,7 @@ func TestSzconfigmanager_UnregisterObserver(test *testing.T) {
 	ctx := test.Context()
 	szConfigManager := getTestObject(test)
 	err := szConfigManager.UnregisterObserver(ctx, observerSingleton)
+	printDebug(test, err)
 	require.NoError(test, err)
 }
 
@@ -313,8 +392,8 @@ func TestSzconfigmanager_AsInterface(test *testing.T) {
 	ctx := test.Context()
 	szConfigManager := getSzConfigManagerAsInterface(ctx)
 	actual, err := szConfigManager.GetConfigs(ctx)
+	printDebug(test, err, actual)
 	require.NoError(test, err)
-	printActual(test, actual)
 }
 
 func TestSzconfigmanager_Initialize(test *testing.T) {
@@ -322,16 +401,20 @@ func TestSzconfigmanager_Initialize(test *testing.T) {
 	szConfigManager := getTestObject(test)
 	settings := getSettings()
 	err := szConfigManager.Initialize(ctx, instanceName, settings, verboseLogging)
+	printDebug(test, err)
 	require.NoError(test, err)
 }
 
-// IMPROVE: Implement TestSzconfigmanager_Initialize_error
-// func TestSzconfigmanager_Initialize_error(test *testing.T) {}
+func TestSzconfigmanager_Initialize_error(test *testing.T) {
+	// IMPROVE: Implement TestSzconfigmanager_Initialize_error
+	_ = test
+}
 
 func TestSzconfigmanager_Destroy(test *testing.T) {
 	ctx := test.Context()
 	szConfigManager := getTestObject(test)
 	err := szConfigManager.Destroy(ctx)
+	printDebug(test, err)
 	require.NoError(test, err)
 }
 
@@ -340,11 +423,14 @@ func TestSzconfigmanager_Destroy_withObserver(test *testing.T) {
 	szConfigManagerSingleton = nil
 	szConfigManager := getTestObject(test)
 	err := szConfigManager.Destroy(ctx)
+	printDebug(test, err)
 	require.NoError(test, err)
 }
 
-// IMPROVE: Implement TestSzconfigmanager_Destroy_error
-// func TestSzconfigmanager_Destroy_error(test *testing.T) {}
+func TestSzconfigmanager_Destroy_error(test *testing.T) {
+	// IMPROVE: Implement TestSzconfigmanager_Destroy_error
+	_ = test
+}
 
 // ----------------------------------------------------------------------------
 // Internal functions
@@ -461,21 +547,21 @@ func panicOnError(err error) {
 	}
 }
 
-func printActual(t *testing.T, actual interface{}) {
+func printDebug(t *testing.T, err error, items ...any) {
 	t.Helper()
-	printResult(t, "Actual", actual)
-}
 
-func printResult(t *testing.T, title string, result interface{}) {
-	t.Helper()
+	if printErrors {
+		if err != nil {
+			t.Logf("Error: %s\n", err.Error())
+		}
+	}
 
 	if printResults {
-		t.Logf("%s: %v", title, truncate(fmt.Sprintf("%v", result), defaultTruncation))
+		for _, item := range items {
+			outLine := truncator.Truncate(fmt.Sprintf("%v", item), defaultTruncation, "...", truncator.PositionEnd)
+			t.Logf("Result: %s\n", outLine)
+		}
 	}
-}
-
-func truncate(aString string, length int) string {
-	return truncator.Truncate(aString, length, "...", truncator.PositionEnd)
 }
 
 // ----------------------------------------------------------------------------

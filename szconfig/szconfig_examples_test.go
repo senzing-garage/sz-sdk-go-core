@@ -37,8 +37,11 @@ func ExampleSzconfig_AddDataSource() {
 		handleError(err)
 	}
 
-	fmt.Println(result)
-	// Output: {"DSRC_ID":1001}
+	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
+	// Output:
+	// {
+	//     "DSRC_ID": 1001
+	// }
 }
 
 func ExampleSzconfig_DeleteDataSource() {
@@ -57,7 +60,7 @@ func ExampleSzconfig_DeleteDataSource() {
 		handleError(err)
 	}
 
-	dataSourceCode := "TEST"
+	dataSourceCode := "GO_TEST"
 
 	result, err := szConfig.DeleteDataSource(ctx, dataSourceCode)
 	if err != nil {
@@ -114,8 +117,20 @@ func ExampleSzconfig_GetDataSources() {
 		handleError(err)
 	}
 
-	fmt.Println(result)
-	// Output: {"DATA_SOURCES":[{"DSRC_ID":1,"DSRC_CODE":"TEST"},{"DSRC_ID":2,"DSRC_CODE":"SEARCH"}]}
+	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
+	// Output:
+	// {
+	//     "DATA_SOURCES": [
+	//         {
+	//             "DSRC_ID": 1,
+	//             "DSRC_CODE": "TEST"
+	//         },
+	//         {
+	//             "DSRC_ID": 2,
+	//             "DSRC_CODE": "SEARCH"
+	//         }
+	//     ]
+	// }
 }
 
 // ----------------------------------------------------------------------------

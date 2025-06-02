@@ -10,6 +10,8 @@ import (
 	"github.com/senzing-garage/go-logging/logging"
 )
 
+const AllLines = -1
+
 // ----------------------------------------------------------------------------
 // Interface methods - Examples for godoc documentation
 // ----------------------------------------------------------------------------
@@ -30,8 +32,17 @@ func ExampleSzproduct_GetLicense() {
 		handleError(err)
 	}
 
-	fmt.Println(jsonutil.Truncate(result, 4))
-	// Output: {"billing":"YEARLY","contract":"Senzing Public Test License","customer":"Senzing Public Test License",...
+	redactKeys := []string{"issueDate", "expireDate", "BUILD_VERSION"}
+	fmt.Println(jsonutil.PrettyPrint(jsonutil.Truncate(result, AllLines, redactKeys...), jsonIndentation))
+	// Output:
+	// {
+	//     "billing": "YEARLY",
+	//     "contract": "Senzing Public Test License",
+	//     "customer": "Senzing Public Test License",
+	//     "licenseLevel": "STANDARD",
+	//     "licenseType": "EVAL (Solely for non-productive use)",
+	//     "recordLimit": 50000
+	// }
 }
 
 func ExampleSzproduct_GetVersion() {
@@ -50,8 +61,21 @@ func ExampleSzproduct_GetVersion() {
 		handleError(err)
 	}
 
-	fmt.Println(truncate(result, 43))
-	// Output: {"PRODUCT_NAME":"Senzing SDK","VERSION":...
+	redactKeys := []string{"BUILD_DATE", "BUILD_NUMBER", "BUILD_VERSION"}
+	fmt.Println(jsonutil.PrettyPrint(jsonutil.Truncate(result, AllLines, redactKeys...), jsonIndentation))
+	// Output:
+	// {
+	//     "COMPATIBILITY_VERSION": {
+	//         "CONFIG_VERSION": "11"
+	//     },
+	//     "PRODUCT_NAME": "Senzing SDK",
+	//     "SCHEMA_VERSION": {
+	//         "ENGINE_SCHEMA_VERSION": "4.0",
+	//         "MAXIMUM_REQUIRED_SCHEMA_VERSION": "4.99",
+	//         "MINIMUM_REQUIRED_SCHEMA_VERSION": "4.0"
+	//     },
+	//     "VERSION": "4.0.0"
+	// }
 }
 
 // ----------------------------------------------------------------------------

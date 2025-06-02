@@ -32,6 +32,7 @@ const (
 	jsonIndentation   = "    "
 	observerOrigin    = "SzDiagnostic observer"
 	originMessage     = "Machine: nn; Task: UnitTest"
+	printErrors       = false
 	printResults      = false
 	verboseLogging    = senzing.SzNoLogging
 )
@@ -71,32 +72,32 @@ func TestSzdiagnostic_CheckDatastorePerformance(test *testing.T) {
 	szDiagnostic := getTestObject(test)
 	secondsToRun := 1
 	actual, err := szDiagnostic.CheckDatastorePerformance(ctx, secondsToRun)
+	printDebug(test, err, actual)
 	require.NoError(test, err)
-	printActual(test, actual)
 }
 
 func TestSzdiagnostic_CheckDatastorePerformance_badSecondsToRun(test *testing.T) {
 	ctx := test.Context()
 	szDiagnostic := getTestObject(test)
 	actual, err := szDiagnostic.CheckDatastorePerformance(ctx, badSecondsToRun)
+	printDebug(test, err, actual)
 	require.NoError(test, err)
-	printActual(test, actual)
 }
 
 func TestSzdiagnostic_CheckDatastorePerformance_nilSecondsToRun(test *testing.T) {
 	ctx := test.Context()
 	szDiagnostic := getTestObject(test)
 	actual, err := szDiagnostic.CheckDatastorePerformance(ctx, nilSecondsToRun)
+	printDebug(test, err, actual)
 	require.NoError(test, err)
-	printActual(test, actual)
 }
 
 func TestSzdiagnostic_GetDatastoreInfo(test *testing.T) {
 	ctx := test.Context()
 	szDiagnostic := getTestObject(test)
 	actual, err := szDiagnostic.GetDatastoreInfo(ctx)
+	printDebug(test, err, actual)
 	require.NoError(test, err)
-	printActual(test, actual)
 }
 
 func TestSzdiagnostic_GetFeature(test *testing.T) {
@@ -112,8 +113,8 @@ func TestSzdiagnostic_GetFeature(test *testing.T) {
 	szDiagnostic := getTestObject(test)
 	featureID := int64(1)
 	actual, err := szDiagnostic.GetFeature(ctx, featureID)
+	printDebug(test, err, actual)
 	require.NoError(test, err)
-	printActual(test, actual)
 }
 
 func TestSzdiagnostic_GetFeature_badFeatureID(test *testing.T) {
@@ -128,8 +129,11 @@ func TestSzdiagnostic_GetFeature_badFeatureID(test *testing.T) {
 
 	szDiagnostic := getTestObject(test)
 	actual, err := szDiagnostic.GetFeature(ctx, badFeatureID)
+	printDebug(test, err, actual)
 	require.ErrorIs(test, err, szerror.ErrSz)
-	printActual(test, actual)
+
+	expectedErr := `{"function":"szdiagnostic.(*Szdiagnostic).GetFeature","error":{"id":"SZSDK60034004","reason":"SENZ0057|Unknown feature ID value '-1'"}}`
+	require.JSONEq(test, expectedErr, err.Error())
 }
 
 func TestSzdiagnostic_GetFeature_nilFeatureID(test *testing.T) {
@@ -144,8 +148,11 @@ func TestSzdiagnostic_GetFeature_nilFeatureID(test *testing.T) {
 
 	szDiagnostic := getTestObject(test)
 	actual, err := szDiagnostic.GetFeature(ctx, nilFeatureID)
+	printDebug(test, err, actual)
 	require.ErrorIs(test, err, szerror.ErrSz)
-	printActual(test, actual)
+
+	expectedErr := `{"function":"szdiagnostic.(*Szdiagnostic).GetFeature","error":{"id":"SZSDK60034004","reason":"SENZ0057|Unknown feature ID value '0'"}}`
+	require.JSONEq(test, expectedErr, err.Error())
 }
 
 // PurgeRepository is tested in szdiagnostic_examples_test.go
@@ -179,6 +186,7 @@ func TestSzdiagnostic_UnregisterObserver(test *testing.T) {
 	ctx := test.Context()
 	szDiagnostic := getTestObject(test)
 	err := szDiagnostic.UnregisterObserver(ctx, observerSingleton)
+	printDebug(test, err)
 	require.NoError(test, err)
 }
 
@@ -191,8 +199,8 @@ func TestSzdiagnostic_AsInterface(test *testing.T) {
 	szDiagnostic := getSzDiagnosticAsInterface(ctx)
 	secondsToRun := 1
 	actual, err := szDiagnostic.CheckDatastorePerformance(ctx, secondsToRun)
+	printDebug(test, err, actual)
 	require.NoError(test, err)
-	printActual(test, actual)
 }
 
 func TestSzdiagnostic_Initialize(test *testing.T) {
@@ -201,6 +209,7 @@ func TestSzdiagnostic_Initialize(test *testing.T) {
 	settings := getSettings()
 	configID := senzing.SzInitializeWithDefaultConfiguration
 	err := szDiagnostic.Initialize(ctx, instanceName, settings, configID, verboseLogging)
+	printDebug(test, err)
 	require.NoError(test, err)
 }
 
@@ -210,11 +219,14 @@ func TestSzdiagnostic_Initialize_withConfigId(test *testing.T) {
 	settings := getSettings()
 	configID := getDefaultConfigID()
 	err := szDiagnostic.Initialize(ctx, instanceName, settings, configID, verboseLogging)
+	printDebug(test, err)
 	require.NoError(test, err)
 }
 
-// IMPROVE: Implement TestSzdiagnostic_Initialize_withConfigId_badConfigID
-// func TestSzdiagnostic_Initialize_withConfigId_badConfigID(test *testing.T) {}
+func TestSzdiagnostic_Initialize_withConfigId_badConfigID(test *testing.T) {
+	// IMPROVE: Implement TestSzdiagnostic_Initialize_withConfigId_badConfigID
+	_ = test
+}
 
 func TestSzdiagnostic_Reinitialize(test *testing.T) {
 	ctx := test.Context()
@@ -222,17 +234,21 @@ func TestSzdiagnostic_Reinitialize(test *testing.T) {
 	szDiagnostic := getTestObject(test)
 	configID := getDefaultConfigID()
 	err := szDiagnostic.Reinitialize(ctx, configID)
+	printDebug(test, err)
 	require.NoError(test, err)
 }
 
-// IMPROVE: Implement TestSzdiagnostic_Reinitialize_error
-// func TestSzdiagnostic_Reinitialize_error(test *testing.T) {}
+func TestSzdiagnostic_Reinitialize_error(test *testing.T) {
+	// IMPROVE: Implement TestSzdiagnostic_Reinitialize_error
+	_ = test
+}
 
 func TestSzdiagnostic_Destroy(test *testing.T) {
 	ctx := test.Context()
 	szDiagnosticSingleton = nil
 	szDiagnostic := getTestObject(test)
 	err := szDiagnostic.Destroy(ctx)
+	printDebug(test, err)
 	require.NoError(test, err)
 }
 
@@ -241,11 +257,14 @@ func TestSzdiagnostic_Destroy_withObserver(test *testing.T) {
 	szDiagnosticSingleton = nil
 	szDiagnostic := getTestObject(test)
 	err := szDiagnostic.Destroy(ctx)
+	printDebug(test, err)
 	require.NoError(test, err)
 }
 
-// IMPROVE: Implement TestSzdiagnostic_Destroy_error
-// func TestSzdiagnostic_Destroy_error(test *testing.T) {}
+func TestSzdiagnostic_Destroy_error(test *testing.T) {
+	// IMPROVE: Implement TestSzdiagnostic_Destroy_error
+	_ = test
+}
 
 // ----------------------------------------------------------------------------
 // Internal functions
@@ -387,21 +406,21 @@ func panicOnError(err error) {
 	}
 }
 
-func printActual(t *testing.T, actual interface{}) {
+func printDebug(t *testing.T, err error, items ...any) {
 	t.Helper()
-	printResult(t, "Actual", actual)
-}
 
-func printResult(t *testing.T, title string, result interface{}) {
-	t.Helper()
+	if printErrors {
+		if err != nil {
+			t.Logf("Error: %s\n", err.Error())
+		}
+	}
 
 	if printResults {
-		t.Logf("%s: %v", title, truncate(fmt.Sprintf("%v", result), defaultTruncation))
+		for _, item := range items {
+			outLine := truncator.Truncate(fmt.Sprintf("%v", item), defaultTruncation, "...", truncator.PositionEnd)
+			t.Logf("Result: %s\n", outLine)
+		}
 	}
-}
-
-func truncate(aString string, length int) string {
-	return truncator.Truncate(aString, length, "...", truncator.PositionEnd)
 }
 
 // ----------------------------------------------------------------------------
