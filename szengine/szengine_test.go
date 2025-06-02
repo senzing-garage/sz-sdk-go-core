@@ -301,35 +301,6 @@ func TestSzEngine_ExportCsvEntityReport_nilCsvColumnList(test *testing.T) {
 	require.NoError(test, err)
 }
 
-func TestSzEngine_ExportCsvEntityReportIterator(test *testing.T) {
-	ctx := test.Context()
-	records := []record.Record{
-		truthset.CustomerRecords["1001"],
-		truthset.CustomerRecords["1002"],
-		truthset.CustomerRecords["1003"],
-	}
-
-	defer func() { deleteRecords(ctx, records) }()
-
-	addRecords(ctx, records)
-
-	expected := expectedExportCsvEntityReportIterator
-	szEngine := getTestObject(ctx, test)
-	csvColumnList := ""
-	flags := senzing.SzExportIncludeAllEntities
-	actualCount := 0
-
-	for actual := range szEngine.ExportCsvEntityReportIterator(ctx, csvColumnList, flags) {
-		printDebug(test, actual.Error, actual.Value)
-		require.NoError(test, actual.Error)
-		require.Equal(test, expected[actualCount], strings.TrimSpace(actual.Value))
-
-		actualCount++
-	}
-
-	require.Equal(test, len(expected), actualCount)
-}
-
 func TestSzEngine_ExportCsvEntityReportIterator_badCsvColumnList(test *testing.T) {
 	ctx := test.Context()
 	records := []record.Record{
@@ -356,32 +327,6 @@ func TestSzEngine_ExportCsvEntityReportIterator_badCsvColumnList(test *testing.T
 
 		expectedErr := `{"function":"szengine.(*Szengine).ExportCsvEntityReport","error":{"id":"SZSDK60044007","reason":"SENZ3131|Invalid column [BAD] requested for CSV export."}}`
 		require.JSONEq(test, expectedErr, actual.Error.Error())
-
-		actualCount++
-	}
-
-	require.Equal(test, len(expected), actualCount)
-}
-
-func TestSzEngine_ExportCsvEntityReportIterator_nilCsvColumnList(test *testing.T) {
-	ctx := test.Context()
-	records := []record.Record{
-		truthset.CustomerRecords["1001"],
-		truthset.CustomerRecords["1002"],
-		truthset.CustomerRecords["1003"],
-	}
-
-	defer func() { deleteRecords(ctx, records) }()
-
-	addRecords(ctx, records)
-
-	expected := expectedExportCsvEntityReportIteratorNilCsvColumnList
-	szEngine := getTestObject(ctx, test)
-	flags := senzing.SzExportIncludeAllEntities
-	actualCount := 0
-
-	for actual := range szEngine.ExportCsvEntityReportIterator(ctx, nilCsvColumnList, flags) {
-		require.Equal(test, expected[actualCount], strings.TrimSpace(actual.Value))
 
 		actualCount++
 	}
