@@ -22,3 +22,5 @@ var expectedExportCsvEntityReportIteratorNilCsvColumnList = []string{
 	`100019,0,"RESOLVED","+NAME+DOB+PHONE","CUSTOMERS","1002"`,
 	`100019,0,"RESOLVED","+NAME+DOB+EMAIL","CUSTOMERS","1003"`,
 }
+
+var expectedRedoRecordCount = int64(0)
