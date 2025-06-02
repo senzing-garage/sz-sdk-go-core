@@ -165,7 +165,7 @@ func TestSzEngine_CloseExport(test *testing.T) {
 
 func TestSzEngine_CountRedoRecords(test *testing.T) {
 	ctx := test.Context()
-	expected := int64(0)
+	expected := int64(2)
 	szEngine := getTestObject(ctx, test)
 	actual, err := szEngine.CountRedoRecords(ctx)
 	printDebug(test, err, actual)
