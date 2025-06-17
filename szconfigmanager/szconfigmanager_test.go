@@ -143,10 +143,10 @@ func TestSzconfigmanager_CreateConfigFromTemplate(test *testing.T) {
 	assert.NotEmpty(test, actual)
 }
 
-func TestSzconfigmanager_GetConfigs(test *testing.T) {
+func TestSzconfigmanager_GetConfigRegistry(test *testing.T) {
 	ctx := test.Context()
 	szConfigManager := getTestObject(test)
-	actual, err := szConfigManager.GetConfigs(ctx)
+	actual, err := szConfigManager.GetConfigRegistry(ctx)
 	printDebug(test, err, actual)
 	require.NoError(test, err)
 }
@@ -391,7 +391,7 @@ func TestSzconfigmanager_UnregisterObserver(test *testing.T) {
 func TestSzconfigmanager_AsInterface(test *testing.T) {
 	ctx := test.Context()
 	szConfigManager := getSzConfigManagerAsInterface(ctx)
-	actual, err := szConfigManager.GetConfigs(ctx)
+	actual, err := szConfigManager.GetConfigRegistry(ctx)
 	printDebug(test, err, actual)
 	require.NoError(test, err)
 }

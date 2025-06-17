@@ -51,7 +51,7 @@ func TestSzAbstractFactory_CreateConfigManager(test *testing.T) {
 	szConfigManager, err := szAbstractFactory.CreateConfigManager(ctx)
 	printDebug(test, err, szConfigManager)
 	require.NoError(test, err)
-	configList, err := szConfigManager.GetConfigs(ctx)
+	configList, err := szConfigManager.GetConfigRegistry(ctx)
 	printDebug(test, err, configList)
 	require.NoError(test, err)
 }
