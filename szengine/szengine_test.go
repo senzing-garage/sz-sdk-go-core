@@ -163,15 +163,6 @@ func TestSzEngine_CloseExport(test *testing.T) {
 	_ = test
 }
 
-func TestSzEngine_FIXME(test *testing.T) {
-	ctx := test.Context()
-	szEngine := getTestObject(ctx, test)
-	actual, err := szEngine.
-		printDebug(test, err, actual)
-	require.NoError(test, err)
-	require.Equal(test, expectedRedoRecordCount, actual)
-}
-
 func TestSzEngine_CountRedoRecords(test *testing.T) {
 	ctx := test.Context()
 	szEngine := getTestObject(ctx, test)
