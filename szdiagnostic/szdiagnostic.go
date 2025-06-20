@@ -135,6 +135,7 @@ func (client *Szdiagnostic) GetDatastoreInfo(ctx context.Context) (string, error
 
 /*
 Method GetFeature is experimental/internal for Senzing support use only.
+
 Not recommended for use.
 
 Input
@@ -174,6 +175,7 @@ func (client *Szdiagnostic) GetFeature(ctx context.Context, featureID int64) (st
 
 /*
 Method PurgeRepository purges all entity data in the entire repository.
+
 WARNING: This removes every record in the Senzing datastore.
 This is a destructive method that cannot be undone.
 Before calling purgeRepository(), all programs using Senzing MUST be terminated.
@@ -209,6 +211,7 @@ func (client *Szdiagnostic) PurgeRepository(ctx context.Context) error {
 
 /*
 Method Destroy will destroy and perform cleanup for the Senzing SzDiagnostic object.
+
 It should be called after all other calls are complete.
 
 Input
@@ -253,6 +256,7 @@ func (client *Szdiagnostic) GetObserverOrigin(ctx context.Context) string {
 
 /*
 Method Initialize initializes the SzDiagnostic object.
+
 It must be called prior to any other calls.
 
 Input
@@ -539,6 +543,7 @@ func (client *Szdiagnostic) getFeature(ctx context.Context, featureID int64) (st
 
 /*
 Method init method the Senzing SzDiagnostic object.
+
 It must be called prior to any other calls.
 
 Input
@@ -576,6 +581,7 @@ func (client *Szdiagnostic) init(
 
 /*
 Method initWithConfigID initializes the Senzing SzDiagnostic object with a non-default configuration ID.
+
 It must be called prior to any other calls.
 
 Input

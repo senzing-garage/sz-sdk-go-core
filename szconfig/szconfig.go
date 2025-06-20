@@ -217,6 +217,7 @@ func (client *Szconfig) GetDataSources(ctx context.Context) (string, error) {
 
 /*
 Method Destroy will destroy and perform cleanup for the Senzing Szconfig object.
+
 It should be called after all other calls are complete.
 
 Input
@@ -290,6 +291,7 @@ func (client *Szconfig) Import(ctx context.Context, configDefinition string) err
 
 /*
 Method ImportTemplate retrieves a Senzing configuration from the default template.
+
 The default template is the Senzing configuration JSON document file,
 g2config.json, located in the PIPELINE.RESOURCEPATH path.
 
@@ -331,6 +333,7 @@ func (client *Szconfig) ImportTemplate(ctx context.Context) error {
 
 /*
 Method Initialize initializes the Senzing Szconfig object.
+
 It must be called prior to any other calls.
 
 Input
@@ -494,6 +497,7 @@ func (client *Szconfig) UnregisterObserver(ctx context.Context, observer observe
 
 /*
 Method VerifyConfigDefinition determines if the Senzing configuration JSON document is syntactically correct.
+
 If no error is returned, the JSON document is valid.
 
 Input

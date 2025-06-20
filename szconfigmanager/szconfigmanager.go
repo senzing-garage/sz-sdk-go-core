@@ -136,6 +136,7 @@ func (client *Szconfigmanager) CreateConfigFromString(
 
 /*
 Method CreateConfigFromTemplate creates a new SzConfig instance from the template configuration defintion.
+
 This document is found in a file on the gRPC server at PIPELINE.RESOURCEPATH/templates/g2config.json
 
 Input
@@ -205,6 +206,7 @@ func (client *Szconfigmanager) GetConfigRegistry(ctx context.Context) (string, e
 
 /*
 Method GetDefaultConfigID gets the default configuration for the repository.
+
 Note: this may not be the currently active in-memory configuration.
 See [Szconfigmanager.SetDefaultConfigID] and [Szconfigmanager.ReplaceDefaultConfigID] for more details.
 
@@ -285,6 +287,7 @@ func (client *Szconfigmanager) RegisterConfig(
 
 /*
 Method ReplaceDefaultConfigID replaces the existing default configuration ID with a new configuration ID.
+
 Similar to the [Szconfigmanager.SetDefaultConfigID] method,
 method ReplaceDefaultConfigID sets which Senzing configuration JSON document
 is used when initializing or reinitializing the system.
@@ -330,6 +333,7 @@ func (client *Szconfigmanager) ReplaceDefaultConfigID(
 
 /*
 Method SetDefaultConfig registers a configuration with the repository and sets its ID as the default for the repository.
+
 It sets which Senzing configuration JSON document
 is used when initializing or reinitializing the system.
 Note that calling the SetDefaultConfig method does not affect the currently
@@ -377,6 +381,7 @@ func (client *Szconfigmanager) SetDefaultConfig(
 
 /*
 Method SetDefaultConfigID sets the default configuration ID.
+
 It sets which Senzing configuration JSON document identifier
 is used when initializing or reinitializing the system.
 Note that calling the SetDefaultConfigID method does not affect the currently
@@ -444,6 +449,7 @@ func (client *Szconfigmanager) CreateConfigFromStringChoreography(
 
 /*
 Method Destroy will destroy and perform cleanup for the Senzing SzConfigMgr object.
+
 It should be called after all other calls are complete.
 
 Input
@@ -491,6 +497,7 @@ func (client *Szconfigmanager) GetObserverOrigin(ctx context.Context) string {
 
 /*
 Method Initialize initializes the Senzing SzConfigMgr object.
+
 It must be called prior to any other calls.
 
 Input

@@ -133,6 +133,7 @@ func (client *Szproduct) GetVersion(ctx context.Context) (string, error) {
 
 /*
 Method Destroy will destroy and perform cleanup for the Senzing SzProduct object.
+
 It should be called after all other calls are complete.
 
 Input
@@ -181,6 +182,7 @@ func (client *Szproduct) GetObserverOrigin(ctx context.Context) string {
 
 /*
 Method Initialize initializes the Senzing SzProduct object.
+
 It must be called prior to any other calls.
 
 Input
