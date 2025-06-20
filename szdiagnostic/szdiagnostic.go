@@ -62,7 +62,7 @@ const (
 // ----------------------------------------------------------------------------
 
 /*
-Method CheckDatastorePerformance runs performance tests on the Senzing datastore.
+Method CheckDatastorePerformance conducts a rudimentary datastore test to gauge I/O performance.
 
 Input
   - ctx: A context to control lifecycle.
@@ -99,7 +99,7 @@ func (client *Szdiagnostic) CheckDatastorePerformance(ctx context.Context, secon
 }
 
 /*
-Method GetDatastoreInfo returns information about the Senzing datastore.
+Method GetDatastoreInfo returns overview information about the datastore.
 
 Input
   - ctx: A context to control lifecycle.
@@ -134,7 +134,7 @@ func (client *Szdiagnostic) GetDatastoreInfo(ctx context.Context) (string, error
 }
 
 /*
-Method GetFeature is an experimental method that returns diagnostic information of a feature.
+Method GetFeature is experimental/internal for Senzing support use only.
 Not recommended for use.
 
 Input
@@ -173,7 +173,8 @@ func (client *Szdiagnostic) GetFeature(ctx context.Context, featureID int64) (st
 }
 
 /*
-WARNING: Method PurgeRepository removes every record in the Senzing datastore.
+Method PurgeRepository purges all entity data in the entire repository.
+WARNING: This removes every record in the Senzing datastore.
 This is a destructive method that cannot be undone.
 Before calling purgeRepository(), all programs using Senzing MUST be terminated.
 

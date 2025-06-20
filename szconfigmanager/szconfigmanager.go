@@ -62,7 +62,7 @@ const (
 // ----------------------------------------------------------------------------
 
 /*
-Method CreateConfigFromConfigID retrieves a specific Senzing configuration JSON document from the Senzing datastore.
+Method CreateConfigFromConfigID creates a new SzConfig instance for a configuration ID.
 
 Input
   - ctx: A context to control lifecycle.
@@ -97,7 +97,7 @@ func (client *Szconfigmanager) CreateConfigFromConfigID(ctx context.Context, con
 }
 
 /*
-Method CreateConfigFromString creates an SzConfig from the submitted Senzing configuration JSON document.
+Method CreateConfigFromString creates a new SzConfig instance from a configuration definition.
 
 Input
   - ctx: A context to control lifecycle.
@@ -135,7 +135,7 @@ func (client *Szconfigmanager) CreateConfigFromString(
 }
 
 /*
-Method CreateConfigFromTemplate creates an SzConfig from the template Senzing configuration JSON document.
+Method CreateConfigFromTemplate creates a new SzConfig instance from the template configuration defintion.
 This document is found in a file on the gRPC server at PIPELINE.RESOURCEPATH/templates/g2config.json
 
 Input
@@ -170,7 +170,7 @@ func (client *Szconfigmanager) CreateConfigFromTemplate(ctx context.Context) (se
 }
 
 /*
-Method GetConfigRegistry retrieves a list of Senzing configuration JSON documents from the Senzing datastore.
+Method GetConfigRegistry gets the configuration registry.
 
 Input
   - ctx: A context to control lifecycle.
@@ -204,8 +204,7 @@ func (client *Szconfigmanager) GetConfigRegistry(ctx context.Context) (string, e
 }
 
 /*
-Method GetDefaultConfigID retrieves the default Senzing configuration JSON
-document identifier from the Senzing datastore.
+Method GetDefaultConfigID gets the default configuration for the repository.
 Note: this may not be the currently active in-memory configuration.
 See [Szconfigmanager.SetDefaultConfigID] and [Szconfigmanager.ReplaceDefaultConfigID] for more details.
 
@@ -241,7 +240,7 @@ func (client *Szconfigmanager) GetDefaultConfigID(ctx context.Context) (int64, e
 }
 
 /*
-Method RegisterConfig adds a Senzing configuration JSON document to the Senzing datastore.
+Method RegisterConfig registers a configuration defintion with the repository.
 
 Input
   - ctx: A context to control lifecycle.
@@ -285,6 +284,7 @@ func (client *Szconfigmanager) RegisterConfig(
 }
 
 /*
+Method ReplaceDefaultConfigID replaces the existing default configuration ID with a new configuration ID.
 Similar to the [Szconfigmanager.SetDefaultConfigID] method,
 method ReplaceDefaultConfigID sets which Senzing configuration JSON document
 is used when initializing or reinitializing the system.
@@ -329,7 +329,8 @@ func (client *Szconfigmanager) ReplaceDefaultConfigID(
 }
 
 /*
-Method SetDefaultConfig sets which Senzing configuration JSON document
+Method SetDefaultConfig registers a configuration with the repository and sets its ID as the default for the repository.
+It sets which Senzing configuration JSON document
 is used when initializing or reinitializing the system.
 Note that calling the SetDefaultConfig method does not affect the currently
 running in-memory configuration.
@@ -375,7 +376,8 @@ func (client *Szconfigmanager) SetDefaultConfig(
 }
 
 /*
-Method SetDefaultConfigID sets which Senzing configuration JSON document identifier
+Method SetDefaultConfigID sets the default configuration ID.
+It sets which Senzing configuration JSON document identifier
 is used when initializing or reinitializing the system.
 Note that calling the SetDefaultConfigID method does not affect the currently
 running in-memory configuration.

@@ -62,7 +62,7 @@ const (
 // ----------------------------------------------------------------------------
 
 /*
-Method AddRecord adds a record into the Senzing datastore.
+Method AddRecord loads a record into the repository.
 The unique identifier of a record is the [dataSourceCode, recordID] compound key.
 If the unique identifier does not exist in the Senzing datastore, a new record definition is created in the
 Senzing datastore.
@@ -123,7 +123,8 @@ func (client *Szengine) AddRecord(
 }
 
 /*
-Method CloseExport closes the exported document created by [Szengine.ExportJSONEntityReport] or
+Method CloseExport closes an export handle of a previous export operation.
+It closes the exported document created by [Szengine.ExportJSONEntityReport] or
 [Szengine.ExportCsvEntityReport].
 It is part of the ExportXxxEntityReport(), [Szengine.FetchNext], CloseExport lifecycle of a list of entities to export.
 CloseExport is idempotent; an exportHandle may be closed multiple times.
@@ -156,8 +157,7 @@ func (client *Szengine) CloseExport(ctx context.Context, exportHandle uintptr) e
 }
 
 /*
-Method CountRedoRecords returns the number of records needing re-evaluation.
-These are often called "redo records".
+Method CountRedoRecords gets the number of redo records pending processing.
 
 Input
   - ctx: A context to control lifecycle.
@@ -191,7 +191,7 @@ func (client *Szengine) CountRedoRecords(ctx context.Context) (int64, error) {
 }
 
 /*
-Method DeleteRecord deletes a record from the Senzing datastore.
+Method DeleteRecord deletes a record from the repository.
 The unique identifier of a record is the [dataSourceCode, recordID] compound key.
 DeleteRecord() is idempotent.
 Multiple calls to delete the same unique identifier will all succeed,
@@ -246,7 +246,7 @@ func (client *Szengine) DeleteRecord(
 }
 
 /*
-Method ExportCsvEntityReport initializes a cursor over a CSV document of exported entities.
+Method ExportCsvEntityReport initiates an export of entity data in CSV format.
 It is part of the ExportCsvEntityReport, [Szengine.FetchNext], [Szengine.CloseExport] lifecycle
 of a list of entities to export.
 The first exported line is the CSV header.
@@ -356,7 +356,7 @@ func (client *Szengine) ExportCsvEntityReportIterator(
 }
 
 /*
-Method ExportJSONEntityReport initializes a cursor over a JSON document of exported entities.
+Method ExportJSONEntityReport initiates an export of entity data in JSON format.
 It is part of the ExportJSONEntityReport, [Szengine.FetchNext], [Szengine.CloseExport] lifecycle
 of a list of entities to export.
 
@@ -454,7 +454,7 @@ func (client *Szengine) ExportJSONEntityReportIterator(ctx context.Context, flag
 }
 
 /*
-Method FetchNext is used to scroll through an exported JSON or CSV document.
+Method FetchNext fetches the next line of entity data from an open export operation.
 It is part of the [Szengine.ExportJSONEntityReport] or [Szengine.ExportCsvEntityReport], FetchNext,
 [Szengine.CloseExport] lifecycle of a list of exported entities.
 
@@ -584,7 +584,7 @@ func (client *Szengine) FindInterestingEntitiesByRecordID(
 }
 
 /*
-Method FindNetworkByEntityID finds a network of entities surrounding a requested set of entities.
+Method FindNetworkByEntityID discovers a network of entity relationships among entities based on entity IDs.
 This includes the requested entities, paths between them, and relations to other nearby entities.
 The size and character of the returned network can be modified by input parameters.
 
@@ -656,8 +656,7 @@ func (client *Szengine) FindNetworkByEntityID(
 }
 
 /*
-Method FindNetworkByRecordID finds a network of entities surrounding a requested set of entities identified
-by record keys.
+Method FindNetworkByRecordID discovers a network of entity relationships among entities based on record IDs.
 This includes the requested entities, paths between them, and relations to other nearby entities.
 The size and character of the returned network can be modified by input parameters.
 
@@ -729,7 +728,7 @@ func (client *Szengine) FindNetworkByRecordID(
 }
 
 /*
-Method FindPathByEntityID finds a relationship path between two entities.
+Method FindPathByEntityID searches for an entity relationship path between two entities based on entity IDs.
 Paths are found using known relationships with other entities.
 The path can be modified by input parameters.
 
@@ -803,7 +802,7 @@ func (client *Szengine) FindPathByEntityID(
 }
 
 /*
-Method FindPathByRecordID finds a relationship path between two entities identified by record keys.
+Method FindPathByRecordID searches for an entity relationship path between two entities based on record IDs.
 Paths are found using known relationships with other entities.
 The path can be modified by input parameters.
 
@@ -894,7 +893,7 @@ func (client *Szengine) FindPathByRecordID(
 }
 
 /*
-Method GetActiveConfigID returns the Senzing configuration JSON document identifier.
+Method GetActiveConfigID gets the currently active configuration ID.
 
 Input
   - ctx: A context to control lifecycle.
@@ -928,7 +927,7 @@ func (client *Szengine) GetActiveConfigID(ctx context.Context) (int64, error) {
 }
 
 /*
-Method GetEntityByEntityID returns information about a resolved identity.
+Method GetEntityByEntityID retrieves information about an entity based on entity ID.
 
 Input
   - ctx: A context to control lifecycle.
@@ -968,8 +967,7 @@ func (client *Szengine) GetEntityByEntityID(ctx context.Context, entityID int64,
 }
 
 /*
-Method GetEntityByRecordID returns information about a resolved entity identified by a record
-which is a member of the entity.
+Method GetEntityByRecordID retrieves information about an entity based on record ID.
 
 Input
   - ctx: A context to control lifecycle.
@@ -1017,7 +1015,7 @@ func (client *Szengine) GetEntityByRecordID(
 }
 
 /*
-Method GetRecord returns a JSON document containing a single record from the Senzing datastore.
+Method GetRecord gets the record definition for a record.
 
 Input
   - ctx: A context to control lifecycle.
@@ -1065,7 +1063,7 @@ func (client *Szengine) GetRecord(
 }
 
 /*
-Method GetRedoRecord returns the next maintenance record from the Senzing datastore.
+Method GetRedoRecord retrieves a pending redo record from the reevaluation queue.
 Usually, [Szengine.ProcessRedoRecord] is called to process the maintenance record retrieved by GetRedoRecord.
 
 Input
@@ -1100,7 +1098,7 @@ func (client *Szengine) GetRedoRecord(ctx context.Context) (string, error) {
 }
 
 /*
-Method GetStats retrieves workload statistics for the current process.
+Method GetStats gets the internal engine workload statistics for the current process.
 These statistics are automatically reset after each call.
 
 Input
@@ -1135,7 +1133,7 @@ func (client *Szengine) GetStats(ctx context.Context) (string, error) {
 }
 
 /*
-Method GetVirtualEntityByRecordID describes a hypothetical entity based on a list of records.
+Method GetVirtualEntityByRecordID describes what an entity would look like for a given set of records.
 
 Input
   - ctx: A context to control lifecycle.
@@ -1179,7 +1177,7 @@ func (client *Szengine) GetVirtualEntityByRecordID(
 }
 
 /*
-Method HowEntityByEntityID explains how an entity was constructed from its constituent records.
+Method HowEntityByEntityID describes how an entity was constructed from its constituent records.
 
 Input
   - ctx: A context to control lifecycle.
@@ -1218,7 +1216,7 @@ func (client *Szengine) HowEntityByEntityID(ctx context.Context, entityID int64,
 }
 
 /*
-Method PreprocessRecord tests adding a record into the Senzing datastore.
+Method PreprocessRecord describes the features resulting from the hypothetical load of a record.
 
 Input
   - ctx: A context to control lifecycle.
@@ -1258,7 +1256,7 @@ func (client *Szengine) PreprocessRecord(ctx context.Context, recordDefinition s
 }
 
 /*
-Method PrimeEngine pre-initializes some of the heavier weight internal resources of the Senzing engine.
+Method PrimeEngine pre-loads engine resources to reduce latency of initial entity resolution processing.
 
 Input
   - ctx: A context to control lifecycle.
@@ -1422,8 +1420,7 @@ func (client *Szengine) ReevaluateRecord(
 }
 
 /*
-Method SearchByAttributes retrieves entity data based on entity attributes
-and an optional search profile.
+Method SearchByAttributes searches for entities that match or relate to the provided attributes.
 
 Input
   - ctx: A context to control lifecycle.
@@ -1472,7 +1469,7 @@ func (client *Szengine) SearchByAttributes(
 }
 
 /*
-Method WhyEntities explains the ways in which two entities are related to each other.
+Method WhyEntities describes the ways two entities relate to each other.
 
 Input
   - ctx: A context to control lifecycle.
@@ -1518,7 +1515,7 @@ func (client *Szengine) WhyEntities(
 }
 
 /*
-Method WhyRecordInEntity explains why a record belongs to its resolved entitiy.
+Method WhyRecordInEntity describes why a record is in its respective entity.
 
 Input
   - ctx: A context to control lifecycle.
@@ -1564,7 +1561,7 @@ func (client *Szengine) WhyRecordInEntity(
 }
 
 /*
-Method WhyRecords describes ways in which two records are related to each other.
+Method WhyRecords describes the ways two records relate to each other.
 
 Input
   - ctx: A context to control lifecycle.
@@ -1628,7 +1625,7 @@ func (client *Szengine) WhyRecords(
 }
 
 /*
-Method WhySearch ...
+Method WhySearch describes why an entity did not match or relate to a set of search attributes.
 
 Input
   - ctx: A context to control lifecycle.

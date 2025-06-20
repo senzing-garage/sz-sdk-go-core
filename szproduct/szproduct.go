@@ -60,7 +60,7 @@ const (
 // ----------------------------------------------------------------------------
 
 /*
-Method GetLicense retrieves information about the license used by the Senzing API.
+Method GetLicense gets the product license details.
 
 Input
   - ctx: A context to control lifecycle.
@@ -94,7 +94,7 @@ func (client *Szproduct) GetLicense(ctx context.Context) (string, error) {
 }
 
 /*
-Method GetVersion returns the Senzing API version information.
+Method GetVersion gets the product version details.
 
 Input
   - ctx: A context to control lifecycle.

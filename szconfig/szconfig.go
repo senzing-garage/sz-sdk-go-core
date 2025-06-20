@@ -61,7 +61,7 @@ const (
 // ----------------------------------------------------------------------------
 
 /*
-Method AddDataSource adds a new data source to the Senzing configuration.
+Method AddDataSource adds a new data source to this instance.
 
 Input
   - ctx: A context to control lifecycle.
@@ -104,7 +104,7 @@ func (client *Szconfig) AddDataSource(ctx context.Context, dataSourceCode string
 }
 
 /*
-Method DeleteDataSource removes a data source from the Senzing configuration.
+Method DeleteDataSource deletes a data source from this instance.
 
 Input
   - ctx: A context to control lifecycle.
@@ -144,7 +144,7 @@ func (client *Szconfig) DeleteDataSource(ctx context.Context, dataSourceCode str
 }
 
 /*
-Method Export retrieves the Senzing configuration JSON document.
+Method Export retrieves the configuration definition for this instance.
 
 Input
   - ctx: A context to control lifecycle.
@@ -178,7 +178,7 @@ func (client *Szconfig) Export(ctx context.Context) (string, error) {
 }
 
 /*
-Method GetDataSources returns a JSON document containing data sources defined in the Senzing configuration.
+Method GetDataSources gets the data sources for this instance.
 
 Input
   - ctx: A context to control lifecycle.
