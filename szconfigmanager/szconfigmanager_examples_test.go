@@ -199,7 +199,7 @@ func ExampleSzconfigmanager_ReplaceDefaultConfigID() {
 
 	dataSourceCodes := []string{"TEST_DATASOURCE"}
 	for _, dataSource := range dataSourceCodes {
-		_, err = szConfig.AddDataSource(ctx, dataSource)
+		_, err = szConfig.RegisterDataSource(ctx, dataSource)
 		if err != nil {
 			handleError(err)
 		}
@@ -247,7 +247,7 @@ func ExampleSzconfigmanager_SetDefaultConfig() {
 
 	dataSourceCode := "GO_TEST"
 
-	_, err = szConfig.AddDataSource(ctx, dataSourceCode)
+	_, err = szConfig.RegisterDataSource(ctx, dataSourceCode)
 	if err != nil {
 		handleError(err)
 	}

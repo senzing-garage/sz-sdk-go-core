@@ -76,7 +76,7 @@ func TestSzAbstractFactory_CreateDiagnostic(test *testing.T) {
 	szDiagnostic, err := szAbstractFactory.CreateDiagnostic(ctx)
 	printDebug(test, err, szDiagnostic)
 	require.NoError(test, err)
-	result, err := szDiagnostic.CheckDatastorePerformance(ctx, 1)
+	result, err := szDiagnostic.CheckRepositoryPerformance(ctx, 1)
 	printDebug(test, err, result)
 	require.NoError(test, err)
 }
@@ -360,7 +360,7 @@ func setupSenzingConfiguration() error {
 
 	dataSourceCodes := []string{"CUSTOMERS", "REFERENCE", "WATCHLIST"}
 	for _, dataSourceCode := range dataSourceCodes {
-		_, err := szConfig.AddDataSource(ctx, dataSourceCode)
+		_, err := szConfig.RegisterDataSource(ctx, dataSourceCode)
 		panicOnError(err)
 	}
 

@@ -233,7 +233,7 @@ func TestSzEngine_ExportCsvEntityReport(test *testing.T) {
 	exportHandle, err := szEngine.ExportCsvEntityReport(ctx, csvColumnList, flags)
 
 	defer func() {
-		err := szEngine.CloseExport(ctx, exportHandle)
+		err := szEngine.CloseExportReport(ctx, exportHandle)
 		require.NoError(test, err)
 	}()
 
@@ -266,7 +266,7 @@ func TestSzEngine_ExportCsvEntityReport_badCsvColumnList(test *testing.T) {
 	exportHandle, err := szEngine.ExportCsvEntityReport(ctx, badCsvColumnList, flags)
 
 	defer func() {
-		err := szEngine.CloseExport(ctx, exportHandle)
+		err := szEngine.CloseExportReport(ctx, exportHandle)
 		require.ErrorIs(test, err, szerror.ErrSz)
 	}()
 
@@ -292,7 +292,7 @@ func TestSzEngine_ExportCsvEntityReport_nilCsvColumnList(test *testing.T) {
 	exportHandle, err := szEngine.ExportCsvEntityReport(ctx, nilCsvColumnList, flags)
 
 	defer func() {
-		err := szEngine.CloseExport(ctx, exportHandle)
+		err := szEngine.CloseExportReport(ctx, exportHandle)
 		require.NoError(test, err)
 	}()
 
@@ -415,7 +415,7 @@ func TestSzEngine_ExportJSONEntityReport(test *testing.T) {
 	exportHandle, err := szEngine.ExportJSONEntityReport(ctx, flags)
 
 	defer func() {
-		err := szEngine.CloseExport(ctx, exportHandle)
+		err := szEngine.CloseExportReport(ctx, exportHandle)
 		require.NoError(test, err)
 	}()
 
@@ -458,7 +458,7 @@ func TestSzEngine_ExportJSONEntityReport_65536(test *testing.T) {
 	aHandle, err := szEngine.ExportJSONEntityReport(ctx, flags)
 
 	defer func() {
-		err := szEngine.CloseExport(ctx, aHandle)
+		err := szEngine.CloseExportReport(ctx, aHandle)
 		require.NoError(test, err)
 	}()
 
@@ -1872,7 +1872,7 @@ func setupSenzingConfiguration() error {
 
 	dataSourceCodes := []string{"CUSTOMERS", "REFERENCE", "WATCHLIST"}
 	for _, dataSourceCode := range dataSourceCodes {
-		_, err := szConfig.AddDataSource(ctx, dataSourceCode)
+		_, err := szConfig.RegisterDataSource(ctx, dataSourceCode)
 		panicOnError(err)
 	}
 

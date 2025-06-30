@@ -67,35 +67,35 @@ var (
 // Interface methods - test
 // ----------------------------------------------------------------------------
 
-func TestSzdiagnostic_CheckDatastorePerformance(test *testing.T) {
+func TestSzdiagnostic_CheckRepositoryPerformance(test *testing.T) {
 	ctx := test.Context()
 	szDiagnostic := getTestObject(test)
 	secondsToRun := 1
-	actual, err := szDiagnostic.CheckDatastorePerformance(ctx, secondsToRun)
+	actual, err := szDiagnostic.CheckRepositoryPerformance(ctx, secondsToRun)
 	printDebug(test, err, actual)
 	require.NoError(test, err)
 }
 
-func TestSzdiagnostic_CheckDatastorePerformance_badSecondsToRun(test *testing.T) {
+func TestSzdiagnostic_CheckRepositoryPerformance_badSecondsToRun(test *testing.T) {
 	ctx := test.Context()
 	szDiagnostic := getTestObject(test)
-	actual, err := szDiagnostic.CheckDatastorePerformance(ctx, badSecondsToRun)
+	actual, err := szDiagnostic.CheckRepositoryPerformance(ctx, badSecondsToRun)
 	printDebug(test, err, actual)
 	require.NoError(test, err)
 }
 
-func TestSzdiagnostic_CheckDatastorePerformance_nilSecondsToRun(test *testing.T) {
+func TestSzdiagnostic_CheckRepositoryPerformance_nilSecondsToRun(test *testing.T) {
 	ctx := test.Context()
 	szDiagnostic := getTestObject(test)
-	actual, err := szDiagnostic.CheckDatastorePerformance(ctx, nilSecondsToRun)
+	actual, err := szDiagnostic.CheckRepositoryPerformance(ctx, nilSecondsToRun)
 	printDebug(test, err, actual)
 	require.NoError(test, err)
 }
 
-func TestSzdiagnostic_GetDatastoreInfo(test *testing.T) {
+func TestSzdiagnostic_GetRepositoryInfo(test *testing.T) {
 	ctx := test.Context()
 	szDiagnostic := getTestObject(test)
-	actual, err := szDiagnostic.GetDatastoreInfo(ctx)
+	actual, err := szDiagnostic.GetRepositoryInfo(ctx)
 	printDebug(test, err, actual)
 	require.NoError(test, err)
 }
@@ -198,7 +198,7 @@ func TestSzdiagnostic_AsInterface(test *testing.T) {
 	ctx := test.Context()
 	szDiagnostic := getSzDiagnosticAsInterface(ctx)
 	secondsToRun := 1
-	actual, err := szDiagnostic.CheckDatastorePerformance(ctx, secondsToRun)
+	actual, err := szDiagnostic.CheckRepositoryPerformance(ctx, secondsToRun)
 	printDebug(test, err, actual)
 	require.NoError(test, err)
 }
@@ -493,7 +493,7 @@ func setupSenzingConfiguration() error {
 
 	dataSourceCodes := []string{"CUSTOMERS", "REFERENCE", "WATCHLIST"}
 	for _, dataSourceCode := range dataSourceCodes {
-		_, err := szConfig.AddDataSource(ctx, dataSourceCode)
+		_, err := szConfig.RegisterDataSource(ctx, dataSourceCode)
 		panicOnError(err)
 	}
 

@@ -62,10 +62,10 @@ const (
 // ----------------------------------------------------------------------------
 
 /*
-Method AddRecord adds a record into the Senzing datastore.
+Method AddRecord adds a record into the Senzing repository.
 The unique identifier of a record is the [dataSourceCode, recordID] compound key.
-If the unique identifier does not exist in the Senzing datastore, a new record definition is created in the
-Senzing datastore.
+If the unique identifier does not exist in the Senzing repository, a new record definition is created in the
+Senzing repository.
 If the unique identifier already exists, the new record definition will replace the old record definition.
 If the record definition contains JSON keys of `DATA_SOURCE` and/or `RECORD_ID`, they must match the values of `
 dataSourceCode` and `recordID`.
@@ -74,7 +74,7 @@ Input
   - ctx: A context to control lifecycle.
   - dataSourceCode: Identifies the provenance of the data.
   - recordID: The unique identifier within the records of the same data source.
-  - recordDefinition: A JSON document containing the record to be added to the Senzing datastore.
+  - recordDefinition: A JSON document containing the record to be added to the Senzing repository.
   - flags: Flags used to control information returned.
 
 Output
@@ -123,9 +123,10 @@ func (client *Szengine) AddRecord(
 }
 
 /*
-Method CloseExport closes the exported document created by [Szengine.ExportJSONEntityReport] or
+Method CloseExportReport closes the exported document created by [Szengine.ExportJSONEntityReport] or
 [Szengine.ExportCsvEntityReport].
-It is part of the ExportXxxEntityReport(), [Szengine.FetchNext], CloseExport lifecycle of a list of entities to export.
+It is part of the ExportXxxEntityReport(), [Szengine.FetchNext], CloseExportReport lifecycle of a list of entities
+to export.
 CloseExport is idempotent; an exportHandle may be closed multiple times.
 
 Input
@@ -133,7 +134,7 @@ Input
   - exportHandle: A handle created by [Szengine.ExportJSONEntityReport] or [Szengine.ExportCsvEntityReport]
     that is to be closed.
 */
-func (client *Szengine) CloseExport(ctx context.Context, exportHandle uintptr) error {
+func (client *Szengine) CloseExportReport(ctx context.Context, exportHandle uintptr) error {
 	var err error
 
 	if client.isTrace {
@@ -191,11 +192,11 @@ func (client *Szengine) CountRedoRecords(ctx context.Context) (int64, error) {
 }
 
 /*
-Method DeleteRecord deletes a record from the Senzing datastore.
+Method DeleteRecord deletes a record from the Senzing repository.
 The unique identifier of a record is the [dataSourceCode, recordID] compound key.
 DeleteRecord() is idempotent.
 Multiple calls to delete the same unique identifier will all succeed,
-even if the unique identifier is not present in the Senzing datastore.
+even if the unique identifier is not present in the Senzing repository.
 
 Input
   - ctx: A context to control lifecycle.
@@ -334,7 +335,7 @@ func (client *Szengine) ExportCsvEntityReportIterator(
 		}
 
 		defer func() {
-			err = client.CloseExport(ctx, reportHandle)
+			err = client.CloseExportReport(ctx, reportHandle)
 			if err != nil {
 				panic(err) // IMPROVE:  Something better than panic(err)?
 			}
@@ -434,7 +435,7 @@ func (client *Szengine) ExportJSONEntityReportIterator(ctx context.Context, flag
 		}
 
 		defer func() {
-			err = client.CloseExport(ctx, reportHandle)
+			err = client.CloseExportReport(ctx, reportHandle)
 			if err != nil {
 				panic(err) // IMPROVE:  Something better than panic(err)?
 			}
@@ -1017,7 +1018,7 @@ func (client *Szengine) GetEntityByRecordID(
 }
 
 /*
-Method GetRecord returns a JSON document containing a single record from the Senzing datastore.
+Method GetRecord returns a JSON document containing a single record from the Senzing repository.
 
 Input
   - ctx: A context to control lifecycle.
@@ -1065,7 +1066,7 @@ func (client *Szengine) GetRecord(
 }
 
 /*
-Method GetRedoRecord returns the next maintenance record from the Senzing datastore.
+Method GetRedoRecord returns the next maintenance record from the Senzing repository.
 Usually, [Szengine.ProcessRedoRecord] is called to process the maintenance record retrieved by GetRedoRecord.
 
 Input
@@ -1218,11 +1219,11 @@ func (client *Szengine) HowEntityByEntityID(ctx context.Context, entityID int64,
 }
 
 /*
-Method PreprocessRecord tests adding a record into the Senzing datastore.
+Method PreprocessRecord tests adding a record into the Senzing repository.
 
 Input
   - ctx: A context to control lifecycle.
-  - recordDefinition: A JSON document containing the record to be tested against the Senzing datastore.
+  - recordDefinition: A JSON document containing the record to be tested against the Senzing repository.
   - flags: Flags used to control information returned.
 
 Output
@@ -1938,13 +1939,13 @@ func (client *Szengine) UnregisterObserver(ctx context.Context, observer observe
 // ----------------------------------------------------------------------------
 
 /*
-Method addRecord adds a record into the Senzing datastore.
+Method addRecord adds a record into the Senzing repository.
 
 Input
   - ctx: A context to control lifecycle.
   - dataSourceCode: Identifies the provenance of the data.
   - recordID: The unique identifier within the records of the same data source.
-  - recordDefinition: A JSON document containing the record to be added to the Senzing datastore.
+  - recordDefinition: A JSON document containing the record to be added to the Senzing repository.
 */
 func (client *Szengine) addRecord(
 	ctx context.Context,
@@ -1978,13 +1979,13 @@ func (client *Szengine) addRecord(
 }
 
 /*
-Method addRecordWithInfo adds a record into the Senzing datastore and returns information on the affected entities.
+Method addRecordWithInfo adds a record into the Senzing repository and returns information on the affected entities.
 
 Input
   - ctx: A context to control lifecycle.
   - dataSourceCode: Identifies the provenance of the data.
   - recordID: The unique identifier within the records of the same data source.
-  - recordDefinition: A JSON document containing the record to be added to the Senzing datastore.
+  - recordDefinition: A JSON document containing the record to be added to the Senzing repository.
   - flags: Flags used to control information returned.
 
 Output
@@ -2060,7 +2061,7 @@ func (client *Szengine) countRedoRecords(ctx context.Context) (int64, error) {
 }
 
 /*
-Method deleteRecord deletes a record from the Senzing datastore.
+Method deleteRecord deletes a record from the Senzing repository.
 
 Input
   - ctx: A context to control lifecycle.
@@ -2090,7 +2091,7 @@ func (client *Szengine) deleteRecord(ctx context.Context, dataSourceCode string,
 }
 
 /*
-Method deleteRecordWithInfo deletes a record from the Senzing datastore and returns information
+Method deleteRecordWithInfo deletes a record from the Senzing repository and returns information
 on the affected entities.
 
 Input
@@ -3111,12 +3112,12 @@ func (client *Szengine) primeEngine(ctx context.Context) error {
 }
 
 /*
-Method preprocessRecord tests adding a record into the Senzing datastore and returns information
+Method preprocessRecord tests adding a record into the Senzing repository and returns information
 on the affected entities.
 
 Input
   - ctx: A context to control lifecycle.
-  - recordDefinition: A JSON document containing the record to be added to the Senzing datastore.
+  - recordDefinition: A JSON document containing the record to be added to the Senzing repository.
   - flags: Flags used to control information returned.
 
 Output
@@ -3370,7 +3371,7 @@ It extends SearchByAttributes() by adding output control flags.
 
 Input
   - ctx: A context to control lifecycle.
-  - attributes: A JSON document containing the record to be added to the Senzing datastore.
+  - attributes: A JSON document containing the record to be added to the Senzing repository.
   - flags: Flags used to control information returned.
 
 Output
@@ -3398,7 +3399,7 @@ It extends searchByAttributesV2() by adding a search profile parameter.
 
 Input
   - ctx: A context to control lifecycle.
-  - jsonData: A JSON document containing the record to be added to the Senzing datastore.
+  - jsonData: A JSON document containing the record to be added to the Senzing repository.
   - flags: Flags used to control information returned.
 
 Output
