@@ -82,7 +82,7 @@ func (client *Szconfig) GetDataSourceRegistry(ctx context.Context) (string, erro
 		defer func() { client.traceExit(16, result, err, time.Since(entryTime)) }()
 	}
 
-	result, err = client.getDataSourcesChoreography(ctx, client.configDefinition)
+	result, err = client.getDataSourceRegistryChoreography(ctx, client.configDefinition)
 
 	if client.observers != nil {
 		go func() {
@@ -153,7 +153,7 @@ func (client *Szconfig) RegisterDataSource(ctx context.Context, dataSourceCode s
 		}()
 	}
 
-	configDefinition, result, err := client.addDataSourceChoreography(ctx, client.configDefinition, dataSourceCode)
+	configDefinition, result, err := client.registerDataSourceChoreography(ctx, client.configDefinition, dataSourceCode)
 	if err == nil {
 		client.configDefinition = configDefinition
 	}
@@ -194,7 +194,11 @@ func (client *Szconfig) UnregisterDataSource(ctx context.Context, dataSourceCode
 		defer func() { client.traceExit(10, dataSourceCode, err, time.Since(entryTime)) }()
 	}
 
-	configDefinition, result, err := client.deleteDataSourceChoreography(ctx, client.configDefinition, dataSourceCode)
+	configDefinition, result, err := client.unregisterDataSourceChoreography(
+		ctx,
+		client.configDefinition,
+		dataSourceCode,
+	)
 	if err == nil {
 		client.configDefinition = configDefinition
 	}
@@ -526,7 +530,7 @@ func (client *Szconfig) VerifyConfigDefinition(ctx context.Context, configDefini
 // Private methods
 // ----------------------------------------------------------------------------
 
-func (client *Szconfig) addDataSourceChoreography(
+func (client *Szconfig) registerDataSourceChoreography(
 	ctx context.Context,
 	configDefinition string,
 	dataSourceCode string,
@@ -549,9 +553,9 @@ func (client *Szconfig) addDataSourceChoreography(
 		err = client.close(ctx, configHandle)
 	}()
 
-	result, err = client.addDataSource(ctx, configHandle, dataSourceCode)
+	result, err = client.registerDataSource(ctx, configHandle, dataSourceCode)
 	if err != nil {
-		return newConfigDefinition, result, wraperror.Errorf(err, "addDataSource: %s", dataSourceCode)
+		return newConfigDefinition, result, wraperror.Errorf(err, "registerDataSource: %s", dataSourceCode)
 	}
 
 	newConfigDefinition, err = client.save(ctx, configHandle)
@@ -588,7 +592,7 @@ func (client *Szconfig) importTemplateChoregraphy(ctx context.Context) (string, 
 	return resultResponse, err
 }
 
-func (client *Szconfig) deleteDataSourceChoreography(
+func (client *Szconfig) unregisterDataSourceChoreography(
 	ctx context.Context,
 	configDefinition string,
 	dataSourceCode string,
@@ -611,9 +615,9 @@ func (client *Szconfig) deleteDataSourceChoreography(
 		err = client.close(ctx, configHandle)
 	}()
 
-	err = client.deleteDataSource(ctx, configHandle, dataSourceCode)
+	err = client.unregisterDataSource(ctx, configHandle, dataSourceCode)
 	if err != nil {
-		return newConfigDefinition, result, wraperror.Errorf(err, "deleteDataSource(%s)", dataSourceCode)
+		return newConfigDefinition, result, wraperror.Errorf(err, "unregisterDataSource(%s)", dataSourceCode)
 	}
 
 	newConfigDefinition, err = client.save(ctx, configHandle)
@@ -624,7 +628,10 @@ func (client *Szconfig) deleteDataSourceChoreography(
 	return newConfigDefinition, result, err
 }
 
-func (client *Szconfig) getDataSourcesChoreography(ctx context.Context, configDefinition string) (string, error) {
+func (client *Szconfig) getDataSourceRegistryChoreography(
+	ctx context.Context,
+	configDefinition string,
+) (string, error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 
@@ -685,7 +692,7 @@ func (client *Szconfig) verifyConfigDefinitionChoreography(
 // Private methods for calling the Senzing C API
 // ----------------------------------------------------------------------------
 
-func (client *Szconfig) addDataSource(
+func (client *Szconfig) registerDataSource(
 	ctx context.Context,
 	configHandle uintptr,
 	dataSourceCode string,
@@ -749,7 +756,7 @@ func (client *Szconfig) create(ctx context.Context) (uintptr, error) {
 	return resultResponse, err
 }
 
-func (client *Szconfig) deleteDataSource(ctx context.Context, configHandle uintptr, dataSourceCode string) error {
+func (client *Szconfig) unregisterDataSource(ctx context.Context, configHandle uintptr, dataSourceCode string) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 

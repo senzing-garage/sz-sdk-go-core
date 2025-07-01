@@ -156,7 +156,7 @@ func TestSzEngine_AddRecord(test *testing.T) {
 	}
 }
 
-func TestSzEngine_CloseExport(test *testing.T) {
+func TestSzEngine_CloseExportReport(test *testing.T) {
 	// Tested in:
 	//  - TestSzEngine_ExportCsvEntityReport
 	//  - TestSzEngine_ExportJSONEntityReport
@@ -1080,9 +1080,9 @@ func TestSzEngine_HowEntityByEntityID(test *testing.T) {
 	}
 }
 
-func TestSzEngine_PreprocessRecord(test *testing.T) {
+func TestSzEngine_GetRecordPreview(test *testing.T) {
 	ctx := test.Context()
-	testCases := getTestCasesForPreprocessRecord()
+	testCases := getTestCasesForGetRecordPreview()
 
 	for _, testCase := range testCases {
 		test.Run(testCase.name, func(test *testing.T) {
@@ -1103,7 +1103,7 @@ func TestSzEngine_PreprocessRecord(test *testing.T) {
 
 			// Test.
 
-			actual, err := szEngine.PreprocessRecord(ctx,
+			actual, err := szEngine.GetRecordPreview(ctx,
 				xString(testCase.recordDefinition, record1001.JSON),
 				xInt64(testCase.flags, senzing.SzRecordDefaultFlags))
 			printDebug(test, err, actual)
@@ -2034,7 +2034,7 @@ type TestMetadataForHowEntityByEntityID struct {
 	name               string
 }
 
-type TestMetadataForPreprocessRecord struct {
+type TestMetadataForGetRecordPreview struct {
 	expectedErr        error
 	expectedErrMessage string
 	flags              int64
@@ -2721,12 +2721,12 @@ func getTestCasesForHowEntityByEntityID() []TestMetadataForHowEntityByEntityID {
 	return result
 }
 
-func getTestCasesForPreprocessRecord() []TestMetadataForPreprocessRecord {
-	result := []TestMetadataForPreprocessRecord{
+func getTestCasesForGetRecordPreview() []TestMetadataForGetRecordPreview {
+	result := []TestMetadataForGetRecordPreview{
 		{
 			name:               "badRecordDefinition",
 			expectedErr:        szerror.ErrSzBadInput,
-			expectedErrMessage: `{"function":"szengine.(*Szengine).PreprocessRecord","error":{"id":"SZSDK60044061","reason":"SENZ0002|Invalid Message"}}`,
+			expectedErrMessage: `{"function":"szengine.(*Szengine).GetRecordPreview","error":{"id":"SZSDK60044061","reason":"SENZ0002|Invalid Message"}}`,
 			recordDefinition:   badRecordDefinition,
 		},
 		{

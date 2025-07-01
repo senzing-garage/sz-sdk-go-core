@@ -2960,7 +2960,7 @@ func ExampleSzengine_HowEntityByEntityID() {
 	// Output: {"HOW_RESULTS":{"FINAL_STATE":{"NEED_REEVALUATION":0,"VIRTUAL_ENTITIES":[...
 }
 
-func ExampleSzengine_PreprocessRecord() {
+func ExampleSzengine_GetRecordPreview() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
@@ -2974,7 +2974,7 @@ func ExampleSzengine_PreprocessRecord() {
 	recordDefinition := `{"DATA_SOURCE": "CUSTOMERS", "RECORD_ID": "1001", "RECORD_TYPE": "PERSON", "PRIMARY_NAME_LAST": "Smith", "PRIMARY_NAME_FIRST": "Robert", "DATE_OF_BIRTH": "12/11/1978", "ADDR_TYPE": "MAILING", "ADDR_LINE1": "123 Main Street, Las Vegas NV 89132", "PHONE_TYPE": "HOME", "PHONE_NUMBER": "702-919-1300", "EMAIL_ADDRESS": "bsmith@work.com", "DATE": "1/2/18", "STATUS": "Active", "AMOUNT": "100"}`
 	flags := senzing.SzNoFlags
 
-	result, err := szEngine.PreprocessRecord(ctx, recordDefinition, flags)
+	result, err := szEngine.GetRecordPreview(ctx, recordDefinition, flags)
 	if err != nil {
 		handleError(err)
 	}

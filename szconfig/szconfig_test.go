@@ -78,7 +78,7 @@ func TestSzconfig_RegisterDataSource_badDataSourceCode(test *testing.T) {
 	printDebug(test, err, actual)
 	require.ErrorIs(test, err, szerror.ErrSzBadInput)
 
-	expectedErr := `{"function":"szconfig.(*Szconfig).RegisterDataSource","error":{"function":"szconfig.(*Szconfig).addDataSourceChoreography","text":"addDataSource: \n\tGO_TEST","error":{"id":"SZSDK60014001","reason":"SENZ3121|JSON Parsing Failure [code=12,offset=15]"}}}`
+	expectedErr := `{"function":"szconfig.(*Szconfig).RegisterDataSource","error":{"function":"szconfig.(*Szconfig).registerDataSourceChoreography","text":"registerDataSource: \n\tGO_TEST","error":{"id":"SZSDK60014001","reason":"SENZ3121|JSON Parsing Failure [code=12,offset=15]"}}}`
 	require.JSONEq(test, expectedErr, err.Error())
 }
 
@@ -89,7 +89,7 @@ func TestSzconfig_RegisterDataSource_nilDataSourceCode(test *testing.T) {
 	printDebug(test, err, actual)
 	require.ErrorIs(test, err, szerror.ErrSzBadInput)
 
-	expectedErr := `{"function":"szconfig.(*Szconfig).RegisterDataSource","error":{"function":"szconfig.(*Szconfig).addDataSourceChoreography","text":"addDataSource: ","error":{"id":"SZSDK60014001","reason":"SENZ7313|A non-empty value for [DSRC_CODE] must be specified."}}}`
+	expectedErr := `{"function":"szconfig.(*Szconfig).RegisterDataSource","error":{"function":"szconfig.(*Szconfig).registerDataSourceChoreography","text":"registerDataSource: ","error":{"id":"SZSDK60014001","reason":"SENZ7313|A non-empty value for [DSRC_CODE] must be specified."}}}`
 	require.JSONEq(test, expectedErr, err.Error())
 }
 
@@ -120,7 +120,7 @@ func TestSzconfig_UnregisterDataSource_badDataSourceCode(test *testing.T) {
 	printDebug(test, err, actual)
 	require.ErrorIs(test, err, szerror.ErrSzBadInput)
 
-	expectedErr := `{"function":"szconfig.(*Szconfig).UnregisterDataSource","error":{"function":"szconfig.(*Szconfig).deleteDataSourceChoreography","text":"deleteDataSource(\n\tGO_TEST)","error":{"id":"SZSDK60014004","reason":"SENZ3121|JSON Parsing Failure [code=12,offset=15]"}}}`
+	expectedErr := `{"function":"szconfig.(*Szconfig).UnregisterDataSource","error":{"function":"szconfig.(*Szconfig).unregisterDataSourceChoreography","text":"unregisterDataSource(\n\tGO_TEST)","error":{"id":"SZSDK60014004","reason":"SENZ3121|JSON Parsing Failure [code=12,offset=15]"}}}`
 	require.JSONEq(test, expectedErr, err.Error())
 }
 
@@ -131,7 +131,7 @@ func TestSzconfig_UnregisterDataSource_nilDataSourceCode(test *testing.T) {
 	printDebug(test, err, actual)
 	require.ErrorIs(test, err, szerror.ErrSzBadInput)
 
-	expectedErr := `{"function":"szconfig.(*Szconfig).UnregisterDataSource","error":{"function":"szconfig.(*Szconfig).deleteDataSourceChoreography","text":"deleteDataSource()","error":{"id":"SZSDK60014004","reason":"SENZ7313|A non-empty value for [DSRC_CODE] must be specified."}}}`
+	expectedErr := `{"function":"szconfig.(*Szconfig).UnregisterDataSource","error":{"function":"szconfig.(*Szconfig).unregisterDataSourceChoreography","text":"unregisterDataSource()","error":{"id":"SZSDK60014004","reason":"SENZ7313|A non-empty value for [DSRC_CODE] must be specified."}}}`
 	require.JSONEq(test, expectedErr, err.Error())
 }
 
