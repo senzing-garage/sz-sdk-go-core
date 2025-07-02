@@ -301,7 +301,7 @@ func setupSenzingConfiguration() error {
 	dataSourceCodes := []string{"CUSTOMERS", "REFERENCE", "WATCHLIST"}
 	for _, dataSourceCode := range dataSourceCodes {
 		_, _, err := captureStdoutReturningString(func() (string, error) {
-			return szConfig.AddDataSource(ctx, dataSourceCode)
+			return szConfig.RegisterDataSource(ctx, dataSourceCode)
 		})
 		panicOnError(err)
 	}

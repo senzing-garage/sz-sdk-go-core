@@ -16,7 +16,7 @@ const AllLines = -1
 // Interface methods - Examples for godoc documentation
 // ----------------------------------------------------------------------------
 
-func ExampleSzdiagnostic_CheckDatastorePerformance() {
+func ExampleSzdiagnostic_CheckRepositoryPerformance() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
 	ctx := context.TODO()
@@ -29,7 +29,7 @@ func ExampleSzdiagnostic_CheckDatastorePerformance() {
 
 	secondsToRun := 1
 
-	result, err := szDiagnostic.CheckDatastorePerformance(ctx, secondsToRun)
+	result, err := szDiagnostic.CheckRepositoryPerformance(ctx, secondsToRun)
 	if err != nil {
 		handleError(err)
 	}
@@ -39,35 +39,6 @@ func ExampleSzdiagnostic_CheckDatastorePerformance() {
 	// Output:
 	// {
 	//     "insertTime": 1000
-	// }
-}
-
-func ExampleSzdiagnostic_GetDatastoreInfo() {
-	// For more information, visit
-	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
-	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
-
-	szDiagnostic, err := szAbstractFactory.CreateDiagnostic(ctx)
-	if err != nil {
-		handleError(err)
-	}
-
-	result, err := szDiagnostic.GetDatastoreInfo(ctx)
-	if err != nil {
-		handleError(err)
-	}
-
-	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
-	// Output:
-	// {
-	//     "dataStores": [
-	//         {
-	//             "id": "CORE",
-	//             "type": "sqlite3",
-	//             "location": "nowhere"
-	//         }
-	//     ]
 	// }
 }
 
@@ -118,6 +89,35 @@ func ExampleSzdiagnostic_GetFeature() {
 	//         {
 	//             "FELEM_CODE": "TOKENIZED_NM",
 	//             "FELEM_VALUE": "ROBERT|SMITH"
+	//         }
+	//     ]
+	// }
+}
+
+func ExampleSzdiagnostic_GetRepositoryInfo() {
+	// For more information, visit
+	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
+	ctx := context.TODO()
+	szAbstractFactory := getSzAbstractFactory(ctx)
+
+	szDiagnostic, err := szAbstractFactory.CreateDiagnostic(ctx)
+	if err != nil {
+		handleError(err)
+	}
+
+	result, err := szDiagnostic.GetRepositoryInfo(ctx)
+	if err != nil {
+		handleError(err)
+	}
+
+	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
+	// Output:
+	// {
+	//     "dataStores": [
+	//         {
+	//             "id": "CORE",
+	//             "type": "sqlite3",
+	//             "location": "nowhere"
 	//         }
 	//     ]
 	// }

@@ -156,7 +156,7 @@ func TestSzEngine_AddRecord(test *testing.T) {
 	}
 }
 
-func TestSzEngine_CloseExport(test *testing.T) {
+func TestSzEngine_CloseExportReport(test *testing.T) {
 	// Tested in:
 	//  - TestSzEngine_ExportCsvEntityReport
 	//  - TestSzEngine_ExportJSONEntityReport
@@ -233,7 +233,7 @@ func TestSzEngine_ExportCsvEntityReport(test *testing.T) {
 	exportHandle, err := szEngine.ExportCsvEntityReport(ctx, csvColumnList, flags)
 
 	defer func() {
-		err := szEngine.CloseExport(ctx, exportHandle)
+		err := szEngine.CloseExportReport(ctx, exportHandle)
 		require.NoError(test, err)
 	}()
 
@@ -266,7 +266,7 @@ func TestSzEngine_ExportCsvEntityReport_badCsvColumnList(test *testing.T) {
 	exportHandle, err := szEngine.ExportCsvEntityReport(ctx, badCsvColumnList, flags)
 
 	defer func() {
-		err := szEngine.CloseExport(ctx, exportHandle)
+		err := szEngine.CloseExportReport(ctx, exportHandle)
 		require.ErrorIs(test, err, szerror.ErrSz)
 	}()
 
@@ -292,7 +292,7 @@ func TestSzEngine_ExportCsvEntityReport_nilCsvColumnList(test *testing.T) {
 	exportHandle, err := szEngine.ExportCsvEntityReport(ctx, nilCsvColumnList, flags)
 
 	defer func() {
-		err := szEngine.CloseExport(ctx, exportHandle)
+		err := szEngine.CloseExportReport(ctx, exportHandle)
 		require.NoError(test, err)
 	}()
 
@@ -415,7 +415,7 @@ func TestSzEngine_ExportJSONEntityReport(test *testing.T) {
 	exportHandle, err := szEngine.ExportJSONEntityReport(ctx, flags)
 
 	defer func() {
-		err := szEngine.CloseExport(ctx, exportHandle)
+		err := szEngine.CloseExportReport(ctx, exportHandle)
 		require.NoError(test, err)
 	}()
 
@@ -458,7 +458,7 @@ func TestSzEngine_ExportJSONEntityReport_65536(test *testing.T) {
 	aHandle, err := szEngine.ExportJSONEntityReport(ctx, flags)
 
 	defer func() {
-		err := szEngine.CloseExport(ctx, aHandle)
+		err := szEngine.CloseExportReport(ctx, aHandle)
 		require.NoError(test, err)
 	}()
 
@@ -1080,9 +1080,9 @@ func TestSzEngine_HowEntityByEntityID(test *testing.T) {
 	}
 }
 
-func TestSzEngine_PreprocessRecord(test *testing.T) {
+func TestSzEngine_GetRecordPreview(test *testing.T) {
 	ctx := test.Context()
-	testCases := getTestCasesForPreprocessRecord()
+	testCases := getTestCasesForGetRecordPreview()
 
 	for _, testCase := range testCases {
 		test.Run(testCase.name, func(test *testing.T) {
@@ -1103,7 +1103,7 @@ func TestSzEngine_PreprocessRecord(test *testing.T) {
 
 			// Test.
 
-			actual, err := szEngine.PreprocessRecord(ctx,
+			actual, err := szEngine.GetRecordPreview(ctx,
 				xString(testCase.recordDefinition, record1001.JSON),
 				xInt64(testCase.flags, senzing.SzRecordDefaultFlags))
 			printDebug(test, err, actual)
@@ -1872,7 +1872,7 @@ func setupSenzingConfiguration() error {
 
 	dataSourceCodes := []string{"CUSTOMERS", "REFERENCE", "WATCHLIST"}
 	for _, dataSourceCode := range dataSourceCodes {
-		_, err := szConfig.AddDataSource(ctx, dataSourceCode)
+		_, err := szConfig.RegisterDataSource(ctx, dataSourceCode)
 		panicOnError(err)
 	}
 
@@ -2034,7 +2034,7 @@ type TestMetadataForHowEntityByEntityID struct {
 	name               string
 }
 
-type TestMetadataForPreprocessRecord struct {
+type TestMetadataForGetRecordPreview struct {
 	expectedErr        error
 	expectedErrMessage string
 	flags              int64
@@ -2721,12 +2721,12 @@ func getTestCasesForHowEntityByEntityID() []TestMetadataForHowEntityByEntityID {
 	return result
 }
 
-func getTestCasesForPreprocessRecord() []TestMetadataForPreprocessRecord {
-	result := []TestMetadataForPreprocessRecord{
+func getTestCasesForGetRecordPreview() []TestMetadataForGetRecordPreview {
+	result := []TestMetadataForGetRecordPreview{
 		{
 			name:               "badRecordDefinition",
 			expectedErr:        szerror.ErrSzBadInput,
-			expectedErrMessage: `{"function":"szengine.(*Szengine).PreprocessRecord","error":{"id":"SZSDK60044061","reason":"SENZ0002|Invalid Message"}}`,
+			expectedErrMessage: `{"function":"szengine.(*Szengine).GetRecordPreview","error":{"id":"SZSDK60044061","reason":"SENZ0002|Invalid Message"}}`,
 			recordDefinition:   badRecordDefinition,
 		},
 		{

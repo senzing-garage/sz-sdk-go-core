@@ -35,13 +35,13 @@ Prefixes:
 
 ### senzing-60010001
 
-- Trace the entering of `szconfig.AddDataSource`
-- See `AddDataSource` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig.go>
+- Trace the entering of `szconfig.RegisterDataSource`
+- See `RegisterDataSource` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig.go>
 
 ### senzing-60010002
 
-- Trace the exiting of `szconfig.AddDataSource`
-- See `AddDataSource` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig.go>
+- Trace the exiting of `szconfig.RegisterDataSource`
+- See `RegisterDataSource` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig.go>
 
 ### senzing-60010003
 
@@ -75,13 +75,13 @@ Prefixes:
 
 ### senzing-60010009
 
-- Trace the entering of `szconfig.DeleteDataSource`
-- See `DeleteDataSource` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig.go>
+- Trace the entering of `szconfig.UnregisterDataSource`
+- See `UnregisterDataSource` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig.go>
 
 ### senzing-60010010
 
-- Trace the exiting of `szconfig.DeleteDataSource`
-- See `DeleteDataSource` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig.go>
+- Trace the exiting of `szconfig.UnregisterDataSource`
+- See `UnregisterDataSource` in <https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig.go>
 
 ### senzing-60010011
 

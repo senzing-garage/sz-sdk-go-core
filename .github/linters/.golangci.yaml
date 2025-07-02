@@ -105,7 +105,7 @@ linters:
     - wastedassign
     - whitespace
     - wrapcheck
-    - wsl
+    - wsl_v5
     - zerologlint
   disable:
     - gochecknoglobals
@@ -151,7 +151,7 @@ linters:
         - '.+/szengine_test\.TestMetadataForGetRecord$'
         - '.+/szengine_test\.TestMetadataForGetVirtualEntityByRecordID$'
         - '.+/szengine_test\.TestMetadataForHowEntityByEntityID$'
-        - '.+/szengine_test\.TestMetadataForPreprocessRecord$'
+        - '.+/szengine_test\.TestMetadataForGetRecordPreview$'
         - '.+/szengine_test\.TestMetadataForProcessRedoRecord$'
         - '.+/szengine_test\.TestMetadataForReevaluateEntity$'
         - '.+/szengine_test\.TestMetadataForReevaluateRecord$'

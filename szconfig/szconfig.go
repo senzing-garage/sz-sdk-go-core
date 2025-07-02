@@ -61,82 +61,33 @@ const (
 // ----------------------------------------------------------------------------
 
 /*
-Method AddDataSource adds a new data source to the Senzing configuration.
+Method GetDataSourceRegistry returns a JSON document containing data sources defined in the Senzing configuration.
 
 Input
   - ctx: A context to control lifecycle.
-  - dataSourceCode: Unique identifier of the data source (e.g. "TEST_DATASOURCE").
 
 Output
-  - A JSON document listing the newly created data source.
+  - A JSON document listing data sources in the in-memory configuration.
 */
-func (client *Szconfig) AddDataSource(ctx context.Context, dataSourceCode string) (string, error) {
+func (client *Szconfig) GetDataSourceRegistry(ctx context.Context) (string, error) {
 	var (
 		err    error
 		result string
 	)
 
 	if client.isTrace {
-		client.traceEntry(1, dataSourceCode)
+		client.traceEntry(15)
 
 		entryTime := time.Now()
-		defer func() {
-			client.traceExit(2, dataSourceCode, result, err, time.Since(entryTime))
-		}()
+		defer func() { client.traceExit(16, result, err, time.Since(entryTime)) }()
 	}
 
-	configDefinition, result, err := client.addDataSourceChoreography(ctx, client.configDefinition, dataSourceCode)
-	if err == nil {
-		client.configDefinition = configDefinition
-	}
+	result, err = client.getDataSourceRegistryChoreography(ctx, client.configDefinition)
 
 	if client.observers != nil {
 		go func() {
-			details := map[string]string{
-				"dataSourceCode": dataSourceCode,
-				"return":         result,
-			}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8001, err, details)
-		}()
-	}
-
-	return result, wraperror.Errorf(err, wraperror.NoMessage)
-}
-
-/*
-Method DeleteDataSource removes a data source from the Senzing configuration.
-
-Input
-  - ctx: A context to control lifecycle.
-  - dataSourceCode: Unique identifier of the data source (e.g. "TEST_DATASOURCE").
-
-Output
-  - A JSON document listing the newly created data source. Currently an empty string.
-*/
-func (client *Szconfig) DeleteDataSource(ctx context.Context, dataSourceCode string) (string, error) {
-	var (
-		err    error
-		result string
-	)
-
-	if client.isTrace {
-		client.traceEntry(9, dataSourceCode)
-
-		entryTime := time.Now()
-		defer func() { client.traceExit(10, dataSourceCode, err, time.Since(entryTime)) }()
-	}
-
-	configDefinition, result, err := client.deleteDataSourceChoreography(ctx, client.configDefinition, dataSourceCode)
-	if err == nil {
-		client.configDefinition = configDefinition
-	}
-
-	if client.observers != nil {
-		go func() {
-			details := map[string]string{
-				"dataSourceCode": dataSourceCode,
-			}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8004, err, details)
+			details := map[string]string{}
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8008, err, details)
 		}()
 	}
 
@@ -178,33 +129,86 @@ func (client *Szconfig) Export(ctx context.Context) (string, error) {
 }
 
 /*
-Method GetDataSources returns a JSON document containing data sources defined in the Senzing configuration.
+Method RegisterDataSource adds a new data source to the Senzing configuration.
 
 Input
   - ctx: A context to control lifecycle.
+  - dataSourceCode: Unique identifier of the data source (e.g. "TEST_DATASOURCE").
 
 Output
-  - A JSON document listing data sources in the in-memory configuration.
+  - A JSON document listing the newly created data source.
 */
-func (client *Szconfig) GetDataSources(ctx context.Context) (string, error) {
+func (client *Szconfig) RegisterDataSource(ctx context.Context, dataSourceCode string) (string, error) {
 	var (
 		err    error
 		result string
 	)
 
 	if client.isTrace {
-		client.traceEntry(15)
+		client.traceEntry(1, dataSourceCode)
 
 		entryTime := time.Now()
-		defer func() { client.traceExit(16, result, err, time.Since(entryTime)) }()
+		defer func() {
+			client.traceExit(2, dataSourceCode, result, err, time.Since(entryTime))
+		}()
 	}
 
-	result, err = client.getDataSourcesChoreography(ctx, client.configDefinition)
+	configDefinition, result, err := client.registerDataSourceChoreography(ctx, client.configDefinition, dataSourceCode)
+	if err == nil {
+		client.configDefinition = configDefinition
+	}
 
 	if client.observers != nil {
 		go func() {
-			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8008, err, details)
+			details := map[string]string{
+				"dataSourceCode": dataSourceCode,
+				"return":         result,
+			}
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8001, err, details)
+		}()
+	}
+
+	return result, wraperror.Errorf(err, wraperror.NoMessage)
+}
+
+/*
+Method UnregisterDataSource removes a data source from the Senzing configuration.
+
+Input
+  - ctx: A context to control lifecycle.
+  - dataSourceCode: Unique identifier of the data source (e.g. "TEST_DATASOURCE").
+
+Output
+  - A JSON document listing the newly created data source. Currently an empty string.
+*/
+func (client *Szconfig) UnregisterDataSource(ctx context.Context, dataSourceCode string) (string, error) {
+	var (
+		err    error
+		result string
+	)
+
+	if client.isTrace {
+		client.traceEntry(9, dataSourceCode)
+
+		entryTime := time.Now()
+		defer func() { client.traceExit(10, dataSourceCode, err, time.Since(entryTime)) }()
+	}
+
+	configDefinition, result, err := client.unregisterDataSourceChoreography(
+		ctx,
+		client.configDefinition,
+		dataSourceCode,
+	)
+	if err == nil {
+		client.configDefinition = configDefinition
+	}
+
+	if client.observers != nil {
+		go func() {
+			details := map[string]string{
+				"dataSourceCode": dataSourceCode,
+			}
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8004, err, details)
 		}()
 	}
 
@@ -526,7 +530,7 @@ func (client *Szconfig) VerifyConfigDefinition(ctx context.Context, configDefini
 // Private methods
 // ----------------------------------------------------------------------------
 
-func (client *Szconfig) addDataSourceChoreography(
+func (client *Szconfig) registerDataSourceChoreography(
 	ctx context.Context,
 	configDefinition string,
 	dataSourceCode string,
@@ -549,9 +553,9 @@ func (client *Szconfig) addDataSourceChoreography(
 		err = client.close(ctx, configHandle)
 	}()
 
-	result, err = client.addDataSource(ctx, configHandle, dataSourceCode)
+	result, err = client.registerDataSource(ctx, configHandle, dataSourceCode)
 	if err != nil {
-		return newConfigDefinition, result, wraperror.Errorf(err, "addDataSource: %s", dataSourceCode)
+		return newConfigDefinition, result, wraperror.Errorf(err, "registerDataSource: %s", dataSourceCode)
 	}
 
 	newConfigDefinition, err = client.save(ctx, configHandle)
@@ -588,7 +592,7 @@ func (client *Szconfig) importTemplateChoregraphy(ctx context.Context) (string, 
 	return resultResponse, err
 }
 
-func (client *Szconfig) deleteDataSourceChoreography(
+func (client *Szconfig) unregisterDataSourceChoreography(
 	ctx context.Context,
 	configDefinition string,
 	dataSourceCode string,
@@ -611,9 +615,9 @@ func (client *Szconfig) deleteDataSourceChoreography(
 		err = client.close(ctx, configHandle)
 	}()
 
-	err = client.deleteDataSource(ctx, configHandle, dataSourceCode)
+	err = client.unregisterDataSource(ctx, configHandle, dataSourceCode)
 	if err != nil {
-		return newConfigDefinition, result, wraperror.Errorf(err, "deleteDataSource(%s)", dataSourceCode)
+		return newConfigDefinition, result, wraperror.Errorf(err, "unregisterDataSource(%s)", dataSourceCode)
 	}
 
 	newConfigDefinition, err = client.save(ctx, configHandle)
@@ -624,7 +628,10 @@ func (client *Szconfig) deleteDataSourceChoreography(
 	return newConfigDefinition, result, err
 }
 
-func (client *Szconfig) getDataSourcesChoreography(ctx context.Context, configDefinition string) (string, error) {
+func (client *Szconfig) getDataSourceRegistryChoreography(
+	ctx context.Context,
+	configDefinition string,
+) (string, error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 
@@ -685,7 +692,7 @@ func (client *Szconfig) verifyConfigDefinitionChoreography(
 // Private methods for calling the Senzing C API
 // ----------------------------------------------------------------------------
 
-func (client *Szconfig) addDataSource(
+func (client *Szconfig) registerDataSource(
 	ctx context.Context,
 	configHandle uintptr,
 	dataSourceCode string,
@@ -749,7 +756,7 @@ func (client *Szconfig) create(ctx context.Context) (uintptr, error) {
 	return resultResponse, err
 }
 
-func (client *Szconfig) deleteDataSource(ctx context.Context, configHandle uintptr, dataSourceCode string) error {
+func (client *Szconfig) unregisterDataSource(ctx context.Context, configHandle uintptr, dataSourceCode string) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 

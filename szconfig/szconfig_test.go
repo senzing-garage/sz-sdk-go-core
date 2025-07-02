@@ -63,75 +63,75 @@ var (
 // Interface methods
 // ----------------------------------------------------------------------------
 
-func TestSzconfig_AddDataSource(test *testing.T) {
+func TestSzconfig_RegisterDataSource(test *testing.T) {
 	ctx := test.Context()
 	szConfig := getTestObject(test)
-	actual, err := szConfig.AddDataSource(ctx, dataSourceCode)
+	actual, err := szConfig.RegisterDataSource(ctx, dataSourceCode)
 	printDebug(test, err, actual)
 	require.NoError(test, err)
 }
 
-func TestSzconfig_AddDataSource_badDataSourceCode(test *testing.T) {
+func TestSzconfig_RegisterDataSource_badDataSourceCode(test *testing.T) {
 	ctx := test.Context()
 	szConfig := getTestObject(test)
-	actual, err := szConfig.AddDataSource(ctx, badDataSourceCode)
+	actual, err := szConfig.RegisterDataSource(ctx, badDataSourceCode)
 	printDebug(test, err, actual)
 	require.ErrorIs(test, err, szerror.ErrSzBadInput)
 
-	expectedErr := `{"function":"szconfig.(*Szconfig).AddDataSource","error":{"function":"szconfig.(*Szconfig).addDataSourceChoreography","text":"addDataSource: \n\tGO_TEST","error":{"id":"SZSDK60014001","reason":"SENZ3121|JSON Parsing Failure [code=12,offset=15]"}}}`
+	expectedErr := `{"function":"szconfig.(*Szconfig).RegisterDataSource","error":{"function":"szconfig.(*Szconfig).registerDataSourceChoreography","text":"registerDataSource: \n\tGO_TEST","error":{"id":"SZSDK60014001","reason":"SENZ3121|JSON Parsing Failure [code=12,offset=15]"}}}`
 	require.JSONEq(test, expectedErr, err.Error())
 }
 
-func TestSzconfig_AddDataSource_nilDataSourceCode(test *testing.T) {
+func TestSzconfig_RegisterDataSource_nilDataSourceCode(test *testing.T) {
 	ctx := test.Context()
 	szConfig := getTestObject(test)
-	actual, err := szConfig.AddDataSource(ctx, nilDataSourceCode)
+	actual, err := szConfig.RegisterDataSource(ctx, nilDataSourceCode)
 	printDebug(test, err, actual)
 	require.ErrorIs(test, err, szerror.ErrSzBadInput)
 
-	expectedErr := `{"function":"szconfig.(*Szconfig).AddDataSource","error":{"function":"szconfig.(*Szconfig).addDataSourceChoreography","text":"addDataSource: ","error":{"id":"SZSDK60014001","reason":"SENZ7313|A non-empty value for [DSRC_CODE] must be specified."}}}`
+	expectedErr := `{"function":"szconfig.(*Szconfig).RegisterDataSource","error":{"function":"szconfig.(*Szconfig).registerDataSourceChoreography","text":"registerDataSource: ","error":{"id":"SZSDK60014001","reason":"SENZ7313|A non-empty value for [DSRC_CODE] must be specified."}}}`
 	require.JSONEq(test, expectedErr, err.Error())
 }
 
-func TestSzconfig_DeleteDataSource(test *testing.T) {
+func TestSzconfig_UnregisterDataSource(test *testing.T) {
 	ctx := test.Context()
 	szConfig := getTestObject(test)
-	actual, err := szConfig.GetDataSources(ctx)
+	actual, err := szConfig.GetDataSourceRegistry(ctx)
 	printDebug(test, err, actual)
 	require.NoError(test, err)
 
-	_, _ = szConfig.AddDataSource(ctx, dataSourceCode)
-	actual, err = szConfig.GetDataSources(ctx)
+	_, _ = szConfig.RegisterDataSource(ctx, dataSourceCode)
+	actual, err = szConfig.GetDataSourceRegistry(ctx)
 	printDebug(test, err, actual)
 	require.NoError(test, err)
 
-	_, err = szConfig.DeleteDataSource(ctx, dataSourceCode)
+	_, err = szConfig.UnregisterDataSource(ctx, dataSourceCode)
 	printDebug(test, err, actual)
 	require.NoError(test, err)
-	actual, err = szConfig.GetDataSources(ctx)
+	actual, err = szConfig.GetDataSourceRegistry(ctx)
 	printDebug(test, err, actual)
 	require.NoError(test, err)
 }
 
-func TestSzconfig_DeleteDataSource_badDataSourceCode(test *testing.T) {
+func TestSzconfig_UnregisterDataSource_badDataSourceCode(test *testing.T) {
 	ctx := test.Context()
 	szConfig := getTestObject(test)
-	actual, err := szConfig.DeleteDataSource(ctx, badDataSourceCode)
+	actual, err := szConfig.UnregisterDataSource(ctx, badDataSourceCode)
 	printDebug(test, err, actual)
 	require.ErrorIs(test, err, szerror.ErrSzBadInput)
 
-	expectedErr := `{"function":"szconfig.(*Szconfig).DeleteDataSource","error":{"function":"szconfig.(*Szconfig).deleteDataSourceChoreography","text":"deleteDataSource(\n\tGO_TEST)","error":{"id":"SZSDK60014004","reason":"SENZ3121|JSON Parsing Failure [code=12,offset=15]"}}}`
+	expectedErr := `{"function":"szconfig.(*Szconfig).UnregisterDataSource","error":{"function":"szconfig.(*Szconfig).unregisterDataSourceChoreography","text":"unregisterDataSource(\n\tGO_TEST)","error":{"id":"SZSDK60014004","reason":"SENZ3121|JSON Parsing Failure [code=12,offset=15]"}}}`
 	require.JSONEq(test, expectedErr, err.Error())
 }
 
-func TestSzconfig_DeleteDataSource_nilDataSourceCode(test *testing.T) {
+func TestSzconfig_UnregisterDataSource_nilDataSourceCode(test *testing.T) {
 	ctx := test.Context()
 	szConfig := getTestObject(test)
-	actual, err := szConfig.DeleteDataSource(ctx, nilDataSourceCode)
+	actual, err := szConfig.UnregisterDataSource(ctx, nilDataSourceCode)
 	printDebug(test, err, actual)
 	require.ErrorIs(test, err, szerror.ErrSzBadInput)
 
-	expectedErr := `{"function":"szconfig.(*Szconfig).DeleteDataSource","error":{"function":"szconfig.(*Szconfig).deleteDataSourceChoreography","text":"deleteDataSource()","error":{"id":"SZSDK60014004","reason":"SENZ7313|A non-empty value for [DSRC_CODE] must be specified."}}}`
+	expectedErr := `{"function":"szconfig.(*Szconfig).UnregisterDataSource","error":{"function":"szconfig.(*Szconfig).unregisterDataSourceChoreography","text":"unregisterDataSource()","error":{"id":"SZSDK60014004","reason":"SENZ7313|A non-empty value for [DSRC_CODE] must be specified."}}}`
 	require.JSONEq(test, expectedErr, err.Error())
 }
 
@@ -143,10 +143,10 @@ func TestSzconfig_Export(test *testing.T) {
 	require.NoError(test, err)
 }
 
-func TestSzconfig_GetDataSources(test *testing.T) {
+func TestSzconfig_GetDataSourceRegistry(test *testing.T) {
 	ctx := test.Context()
 	szConfig := getTestObject(test)
-	actual, err := szConfig.GetDataSources(ctx)
+	actual, err := szConfig.GetDataSourceRegistry(ctx)
 	printDebug(test, err, actual)
 	require.NoError(test, err)
 }
@@ -253,7 +253,7 @@ func TestSzconfig_UnregisterObserver(test *testing.T) {
 func TestSzconfig_AsInterface(test *testing.T) {
 	ctx := test.Context()
 	szConfig := getSzConfigAsInterface(ctx)
-	actual, err := szConfig.GetDataSources(ctx)
+	actual, err := szConfig.GetDataSourceRegistry(ctx)
 	printDebug(test, err, actual)
 	require.NoError(test, err)
 }
