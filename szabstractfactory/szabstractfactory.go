@@ -2,6 +2,7 @@ package szabstractfactory
 
 import (
 	"context"
+	"sync"
 
 	"github.com/senzing-garage/go-helpers/wraperror"
 	"github.com/senzing-garage/sz-sdk-go-core/szconfigmanager"
@@ -17,14 +18,15 @@ Szabstractfactory is an implementation of the [senzing.SzAbstractFactory] interf
 [senzing.SzAbstractFactory]: https://pkg.go.dev/github.com/senzing-garage/sz-sdk-go/senzing#SzAbstractFactory
 */
 type Szabstractfactory struct {
-	ConfigID                     int64
-	InstanceName                 string
-	Settings                     string
-	VerboseLogging               int64
-	isSzconfigmanagerInitialized bool
-	isSzdiagnosticInitialized    bool
-	isSzengineInitialized        bool
-	isSzproductInitialized       bool
+	ConfigID     int64
+	InstanceName string
+	Settings     string
+	// szConfigManagerCounter int
+	szDiagnosticCounter int
+	szEngineCounter     int
+	// szProductCounter       int
+	VerboseLogging int64
+	mutex          sync.Mutex
 }
 
 // ----------------------------------------------------------------------------
@@ -44,9 +46,12 @@ Output
 func (factory *Szabstractfactory) CreateConfigManager(ctx context.Context) (senzing.SzConfigManager, error) {
 	var err error
 
+	factory.mutex.Lock()
+	defer factory.mutex.Unlock()
+
 	result := &szconfigmanager.Szconfigmanager{}
 	err = result.Initialize(ctx, factory.InstanceName, factory.Settings, factory.VerboseLogging)
-	factory.isSzconfigmanagerInitialized = true
+	// factory.szConfigManagerCounter++
 
 	return result, wraperror.Errorf(err, wraperror.NoMessage)
 }
@@ -64,9 +69,12 @@ Output
 func (factory *Szabstractfactory) CreateDiagnostic(ctx context.Context) (senzing.SzDiagnostic, error) {
 	var err error
 
+	factory.mutex.Lock()
+	defer factory.mutex.Unlock()
+
 	result := &szdiagnostic.Szdiagnostic{}
 	err = result.Initialize(ctx, factory.InstanceName, factory.Settings, factory.ConfigID, factory.VerboseLogging)
-	factory.isSzdiagnosticInitialized = true
+	factory.szDiagnosticCounter++
 
 	return result, wraperror.Errorf(err, wraperror.NoMessage)
 }
@@ -84,9 +92,12 @@ Output
 func (factory *Szabstractfactory) CreateEngine(ctx context.Context) (senzing.SzEngine, error) {
 	var err error
 
+	factory.mutex.Lock()
+	defer factory.mutex.Unlock()
+
 	result := &szengine.Szengine{}
 	err = result.Initialize(ctx, factory.InstanceName, factory.Settings, factory.ConfigID, factory.VerboseLogging)
-	factory.isSzengineInitialized = true
+	factory.szEngineCounter++
 
 	return result, wraperror.Errorf(err, wraperror.NoMessage)
 }
@@ -104,9 +115,12 @@ Output
 func (factory *Szabstractfactory) CreateProduct(ctx context.Context) (senzing.SzProduct, error) {
 	var err error
 
+	factory.mutex.Lock()
+	defer factory.mutex.Unlock()
+
 	result := &szproduct.Szproduct{}
 	err = result.Initialize(ctx, factory.InstanceName, factory.Settings, factory.VerboseLogging)
-	factory.isSzproductInitialized = true
+	// factory.szProductCounter++
 
 	return result, wraperror.Errorf(err, wraperror.NoMessage)
 }
@@ -120,6 +134,9 @@ Input
 */
 func (factory *Szabstractfactory) Destroy(ctx context.Context) error {
 	var err error
+
+	factory.mutex.Lock()
+	defer factory.mutex.Unlock()
 
 	err = factory.destroySzConfigmanager(ctx)
 	if err != nil {
@@ -155,9 +172,12 @@ Input
 func (factory *Szabstractfactory) Reinitialize(ctx context.Context, configID int64) error {
 	var err error
 
+	factory.mutex.Lock()
+	defer factory.mutex.Unlock()
+
 	factory.ConfigID = configID
 
-	if factory.isSzdiagnosticInitialized {
+	if factory.szDiagnosticCounter > 0 {
 		szDiagnostic := &szdiagnostic.Szdiagnostic{}
 
 		err = szDiagnostic.Reinitialize(ctx, configID)
@@ -166,7 +186,7 @@ func (factory *Szabstractfactory) Reinitialize(ctx context.Context, configID int
 		}
 	}
 
-	if factory.isSzengineInitialized {
+	if factory.szEngineCounter > 0 {
 		szEngine := &szengine.Szengine{}
 
 		err = szEngine.Reinitialize(ctx, configID)
@@ -185,16 +205,27 @@ func (factory *Szabstractfactory) Reinitialize(ctx context.Context, configID int
 func (factory *Szabstractfactory) destroySzConfigmanager(ctx context.Context) error {
 	var err error
 
-	if factory.isSzconfigmanagerInitialized {
-		szConfigmanager := &szconfigmanager.Szconfigmanager{}
+	szConfigmanager := &szconfigmanager.Szconfigmanager{}
 
+	for {
 		err = szConfigmanager.Destroy(ctx)
 		if err != nil {
-			return wraperror.Errorf(err, "Destroy")
+			break
 		}
-
-		factory.isSzconfigmanagerInitialized = false
 	}
+
+	// if factory.szConfigManagerCounter > 0 {
+	// 	szConfigmanager := &szconfigmanager.Szconfigmanager{}
+
+	// 	for range factory.szConfigManagerCounter {
+	// 		err = szConfigmanager.Destroy(ctx)
+	// 		if err != nil {
+	// 			return wraperror.Errorf(err, "Destroy")
+	// 		}
+	// 	}
+
+	// 	factory.szConfigManagerCounter = 0
+	// }
 
 	return nil
 }
@@ -202,16 +233,29 @@ func (factory *Szabstractfactory) destroySzConfigmanager(ctx context.Context) er
 func (factory *Szabstractfactory) destroySzDiagnostic(ctx context.Context) error {
 	var err error
 
-	if factory.isSzdiagnosticInitialized {
-		szDiagnostic := &szdiagnostic.Szdiagnostic{}
+	szDiagnostic := &szdiagnostic.Szdiagnostic{}
 
+	for {
 		err = szDiagnostic.Destroy(ctx)
 		if err != nil {
-			return wraperror.Errorf(err, "Destroy")
+			break
 		}
-
-		factory.isSzdiagnosticInitialized = false
 	}
+
+	factory.szDiagnosticCounter = 0
+
+	// if factory.szDiagnosticCounter > 0 {
+	// 	szDiagnostic := &szdiagnostic.Szdiagnostic{}
+
+	// 	for range factory.szDiagnosticCounter {
+	// 		err = szDiagnostic.Destroy(ctx)
+	// 		if err != nil {
+	// 			return wraperror.Errorf(err, "Destroy")
+	// 		}
+	// 	}
+
+	// 	factory.szDiagnosticCounter = 0
+	// }
 
 	return nil
 }
@@ -219,16 +263,29 @@ func (factory *Szabstractfactory) destroySzDiagnostic(ctx context.Context) error
 func (factory *Szabstractfactory) destroySzEngine(ctx context.Context) error {
 	var err error
 
-	if factory.isSzengineInitialized {
-		szEngine := &szengine.Szengine{}
+	szEngine := &szengine.Szengine{}
 
+	for {
 		err = szEngine.Destroy(ctx)
 		if err != nil {
-			return wraperror.Errorf(err, "Destroy")
+			break
 		}
-
-		factory.isSzengineInitialized = false
 	}
+
+	factory.szEngineCounter = 0
+
+	// if factory.szEngineCounter > 0 {
+	// 	szEngine := &szengine.Szengine{}
+
+	// 	for range factory.szEngineCounter {
+	// 		err = szEngine.Destroy(ctx)
+	// 		if err != nil {
+	// 			return wraperror.Errorf(err, "Destroy")
+	// 		}
+	// 	}
+
+	// 	factory.szEngineCounter = 0
+	// }
 
 	return nil
 }
@@ -236,16 +293,27 @@ func (factory *Szabstractfactory) destroySzEngine(ctx context.Context) error {
 func (factory *Szabstractfactory) destroySzProduct(ctx context.Context) error {
 	var err error
 
-	if factory.isSzproductInitialized {
-		szProduct := &szproduct.Szproduct{}
+	szProduct := &szproduct.Szproduct{}
 
+	for {
 		err = szProduct.Destroy(ctx)
 		if err != nil {
-			return wraperror.Errorf(err, "Destroy")
+			break
 		}
-
-		factory.isSzproductInitialized = false
 	}
+
+	// if factory.szProductCounter > 0 {
+	// 	szProduct := &szproduct.Szproduct{}
+
+	// 	for range factory.szProductCounter {
+	// 		err = szProduct.Destroy(ctx)
+	// 		if err != nil {
+	// 			return wraperror.Errorf(err, "Destroy")
+	// 		}
+	// 	}
+
+	// 	factory.szProductCounter = 0
+	// }
 
 	return nil
 }

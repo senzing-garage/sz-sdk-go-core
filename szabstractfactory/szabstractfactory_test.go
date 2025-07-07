@@ -14,6 +14,9 @@ import (
 	"github.com/senzing-garage/sz-sdk-go-core/szabstractfactory"
 	"github.com/senzing-garage/sz-sdk-go-core/szconfig"
 	"github.com/senzing-garage/sz-sdk-go-core/szconfigmanager"
+	"github.com/senzing-garage/sz-sdk-go-core/szdiagnostic"
+	"github.com/senzing-garage/sz-sdk-go-core/szengine"
+	"github.com/senzing-garage/sz-sdk-go-core/szproduct"
 	"github.com/senzing-garage/sz-sdk-go/senzing"
 	"github.com/senzing-garage/sz-sdk-go/szerror"
 	"github.com/stretchr/testify/require"
@@ -147,6 +150,90 @@ func TestSzAbstractFactory_Destroy(test *testing.T) {
 	szAbstractFactory := getTestObject(test)
 
 	defer func() { require.NoError(test, szAbstractFactory.Destroy(ctx)) }()
+}
+
+func TestSzAbstractFactory_Destroy_SzConfigManager(test *testing.T) {
+	ctx := test.Context()
+	szAbstractFactory := getTestObject(test)
+
+	szConfigManager1, err := szAbstractFactory.CreateConfigManager(ctx)
+	require.NoError(test, err)
+	szConfigManagerCore1, ok := szConfigManager1.(*szconfigmanager.Szconfigmanager)
+	require.True(test, ok)
+	szConfigManagerCore1.Destroy(ctx)
+
+	szConfigManager2, err := szAbstractFactory.CreateConfigManager(ctx)
+	require.NoError(test, err)
+	szConfigManagerCore2, ok := szConfigManager2.(*szconfigmanager.Szconfigmanager)
+	require.True(test, ok)
+	szConfigManagerCore2.Destroy(ctx)
+
+	require.NoError(test, szAbstractFactory.Destroy(ctx))
+}
+
+func TestSzAbstractFactory_Destroy_SzDiagnostic(test *testing.T) {
+	ctx := test.Context()
+	szAbstractFactory := getTestObject(test)
+
+	szDiagnostic1, err := szAbstractFactory.CreateDiagnostic(ctx)
+	require.NoError(test, err)
+	szDiagnosticCore1, ok := szDiagnostic1.(*szdiagnostic.Szdiagnostic)
+	require.True(test, ok)
+	szDiagnosticCore1.Destroy(ctx)
+
+	szDiagnostic2, err := szAbstractFactory.CreateDiagnostic(ctx)
+	require.NoError(test, err)
+	szDiagnosticCore2, ok := szDiagnostic2.(*szdiagnostic.Szdiagnostic)
+	require.True(test, ok)
+	szDiagnosticCore2.Destroy(ctx)
+
+	require.NoError(test, szAbstractFactory.Destroy(ctx))
+}
+
+func TestSzAbstractFactory_Destroy_SzEngine(test *testing.T) {
+	ctx := test.Context()
+	szAbstractFactory := getTestObject(test)
+
+	szEngine1, err := szAbstractFactory.CreateEngine(ctx)
+	require.NoError(test, err)
+	szEngineCore1, ok := szEngine1.(*szengine.Szengine)
+	require.True(test, ok)
+	szEngineCore1.Destroy(ctx)
+
+	szEngine2, err := szAbstractFactory.CreateEngine(ctx)
+	require.NoError(test, err)
+	szEngineCore2, ok := szEngine2.(*szengine.Szengine)
+	require.True(test, ok)
+	szEngineCore2.Destroy(ctx)
+
+	require.NoError(test, szAbstractFactory.Destroy(ctx))
+	// require.NoError(test, szAbstractFactory.Destroy(ctx))
+	// require.NoError(test, szAbstractFactory.Destroy(ctx))
+
+	// szEngine3, err := szAbstractFactory.CreateEngine(ctx)
+	// require.NoError(test, err)
+	// szEngineCore3, ok := szEngine3.(*szengine.Szengine)
+	// require.True(test, ok)
+	// szEngineCore3.Destroy(ctx)
+}
+
+func TestSzAbstractFactory_Destroy_SzProduct(test *testing.T) {
+	ctx := test.Context()
+	szAbstractFactory := getTestObject(test)
+
+	szProduct1, err := szAbstractFactory.CreateProduct(ctx)
+	require.NoError(test, err)
+	szProductCore1, ok := szProduct1.(*szproduct.Szproduct)
+	require.True(test, ok)
+	szProductCore1.Destroy(ctx)
+
+	szProduct2, err := szAbstractFactory.CreateProduct(ctx)
+	require.NoError(test, err)
+	szProductCore2, ok := szProduct2.(*szproduct.Szproduct)
+	require.True(test, ok)
+	szProductCore2.Destroy(ctx)
+
+	require.NoError(test, szAbstractFactory.Destroy(ctx))
 }
 
 func TestSzAbstractFactory_Reinitialize(test *testing.T) {
