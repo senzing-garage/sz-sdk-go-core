@@ -738,7 +738,7 @@ func (client *Szconfigmanager) registerConfig(
 
 	defer C.free(unsafe.Pointer(configCommentForC))
 
-	result := C.SzConfigMgr_addConfig_helper(configDefinitionForC, configCommentForC)
+	result := C.SzConfigMgr_registerConfig_helper(configDefinitionForC, configCommentForC)
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4001, configDefinition, configComment, result.returnCode, result)
 	}
@@ -792,7 +792,7 @@ func (client *Szconfigmanager) getConfigList(ctx context.Context) (string, error
 		resultResponse string
 	)
 
-	result := C.SzConfigMgr_getConfigList_helper()
+	result := C.SzConfigMgr_getConfigRegistry_helper()
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4004, result.returnCode, result)
 	}

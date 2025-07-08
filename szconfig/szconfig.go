@@ -711,7 +711,7 @@ func (client *Szconfig) registerDataSource(
 
 	defer C.free(unsafe.Pointer(dataSourceDefinitionForC))
 
-	result := C.SzConfig_addDataSource_helper(C.uintptr_t(configHandle), dataSourceDefinitionForC)
+	result := C.SzConfig_registerDataSource_helper(C.uintptr_t(configHandle), dataSourceDefinitionForC)
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4001, configHandle, dataSourceCode, result.returnCode, result)
 	}
@@ -768,7 +768,7 @@ func (client *Szconfig) unregisterDataSource(ctx context.Context, configHandle u
 
 	defer C.free(unsafe.Pointer(dataSourceDefinitionForC))
 
-	result := C.SzConfig_deleteDataSource_helper(C.uintptr_t(configHandle), dataSourceDefinitionForC)
+	result := C.SzConfig_unregisterDataSource_helper(C.uintptr_t(configHandle), dataSourceDefinitionForC)
 	if result != noError {
 		err = client.newError(ctx, 4004, configHandle, dataSourceCode, result)
 	}
@@ -804,7 +804,7 @@ func (client *Szconfig) save(ctx context.Context, configHandle uintptr) (string,
 		resultResponse string
 	)
 
-	result := C.SzConfig_save_helper(C.uintptr_t(configHandle))
+	result := C.SzConfig_export_helper(C.uintptr_t(configHandle))
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4010, configHandle, result.returnCode, result)
 	}
@@ -825,7 +825,7 @@ func (client *Szconfig) listDataSources(ctx context.Context, configHandle uintpt
 		resultResponse string
 	)
 
-	result := C.SzConfig_listDataSources_helper(C.uintptr_t(configHandle))
+	result := C.SzConfig_getDataSourceRegistry_helper(C.uintptr_t(configHandle))
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4008, configHandle, result.returnCode)
 	}

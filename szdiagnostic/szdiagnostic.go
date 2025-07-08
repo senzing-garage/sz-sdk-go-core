@@ -468,7 +468,7 @@ func (client *Szdiagnostic) checkRepositoryPerformance(ctx context.Context, seco
 		resultResponse string
 	)
 
-	result := C.SzDiagnostic_checkDatastorePerformance_helper(C.int64_t(secondsToRun))
+	result := C.SzDiagnostic_checkRepositoryPerformance_helper(C.int64_t(secondsToRun))
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4001, secondsToRun, result.returnCode)
 	}
@@ -503,7 +503,7 @@ func (client *Szdiagnostic) getRepositoryInfo(ctx context.Context) (string, erro
 		resultResponse string
 	)
 
-	result := C.SzDiagnostic_getDatastoreInfo_helper()
+	result := C.SzDiagnostic_getRepositoryInfo_helper()
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4003, result.returnCode)
 	}

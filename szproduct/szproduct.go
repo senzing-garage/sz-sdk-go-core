@@ -371,7 +371,7 @@ func (client *Szproduct) license(ctx context.Context) (string, error) {
 
 	_ = ctx
 
-	result := C.SzProduct_license()
+	result := C.SzProduct_getLicense()
 	resultResponse = C.GoString(result)
 
 	return resultResponse, err
@@ -388,7 +388,7 @@ func (client *Szproduct) version(ctx context.Context) (string, error) {
 
 	_ = ctx
 
-	result := C.SzProduct_version()
+	result := C.SzProduct_getVersion()
 	resultResponse = C.GoString(result)
 
 	return resultResponse, err
