@@ -18,15 +18,15 @@ Szabstractfactory is an implementation of the [senzing.SzAbstractFactory] interf
 [senzing.SzAbstractFactory]: https://pkg.go.dev/github.com/senzing-garage/sz-sdk-go/senzing#SzAbstractFactory
 */
 type Szabstractfactory struct {
-	ConfigID     int64
-	InstanceName string
-	Settings     string
-	// szConfigManagerCounter int
-	szDiagnosticCounter int
-	szEngineCounter     int
-	// szProductCounter       int
-	VerboseLogging int64
-	mutex          sync.Mutex
+	ConfigID               int64
+	InstanceName           string
+	Settings               string
+	szConfigManagerCounter int
+	szDiagnosticCounter    int
+	szEngineCounter        int
+	szProductCounter       int
+	VerboseLogging         int64
+	mutex                  sync.Mutex
 }
 
 // ----------------------------------------------------------------------------
@@ -49,9 +49,16 @@ func (factory *Szabstractfactory) CreateConfigManager(ctx context.Context) (senz
 	factory.mutex.Lock()
 	defer factory.mutex.Unlock()
 
+	if factory.isInitialState() {
+		err = factory.destroy(ctx)
+		if err != nil {
+			return nil, wraperror.Errorf(err, "Unable to Destroy existing objects")
+		}
+	}
+
 	result := &szconfigmanager.Szconfigmanager{}
 	err = result.Initialize(ctx, factory.InstanceName, factory.Settings, factory.VerboseLogging)
-	// factory.szConfigManagerCounter++
+	factory.szConfigManagerCounter++
 
 	return result, wraperror.Errorf(err, wraperror.NoMessage)
 }
@@ -71,6 +78,13 @@ func (factory *Szabstractfactory) CreateDiagnostic(ctx context.Context) (senzing
 
 	factory.mutex.Lock()
 	defer factory.mutex.Unlock()
+
+	if factory.isInitialState() {
+		err = factory.destroy(ctx)
+		if err != nil {
+			return nil, wraperror.Errorf(err, "Unable to Destroy existing objects")
+		}
+	}
 
 	result := &szdiagnostic.Szdiagnostic{}
 	err = result.Initialize(ctx, factory.InstanceName, factory.Settings, factory.ConfigID, factory.VerboseLogging)
@@ -95,6 +109,13 @@ func (factory *Szabstractfactory) CreateEngine(ctx context.Context) (senzing.SzE
 	factory.mutex.Lock()
 	defer factory.mutex.Unlock()
 
+	if factory.isInitialState() {
+		err = factory.destroy(ctx)
+		if err != nil {
+			return nil, wraperror.Errorf(err, "Unable to Destroy existing objects")
+		}
+	}
+
 	result := &szengine.Szengine{}
 	err = result.Initialize(ctx, factory.InstanceName, factory.Settings, factory.ConfigID, factory.VerboseLogging)
 	factory.szEngineCounter++
@@ -118,9 +139,16 @@ func (factory *Szabstractfactory) CreateProduct(ctx context.Context) (senzing.Sz
 	factory.mutex.Lock()
 	defer factory.mutex.Unlock()
 
+	if factory.isInitialState() {
+		err = factory.destroy(ctx)
+		if err != nil {
+			return nil, wraperror.Errorf(err, "Unable to Destroy existing objects")
+		}
+	}
+
 	result := &szproduct.Szproduct{}
 	err = result.Initialize(ctx, factory.InstanceName, factory.Settings, factory.VerboseLogging)
-	// factory.szProductCounter++
+	factory.szProductCounter++
 
 	return result, wraperror.Errorf(err, wraperror.NoMessage)
 }
@@ -138,24 +166,9 @@ func (factory *Szabstractfactory) Destroy(ctx context.Context) error {
 	factory.mutex.Lock()
 	defer factory.mutex.Unlock()
 
-	err = factory.destroySzConfigmanager(ctx)
+	err = factory.destroy(ctx)
 	if err != nil {
-		return wraperror.Errorf(err, "SzConfigmanager")
-	}
-
-	err = factory.destroySzDiagnostic(ctx)
-	if err != nil {
-		return wraperror.Errorf(err, "SzDiagnostic")
-	}
-
-	err = factory.destroySzEngine(ctx)
-	if err != nil {
-		return wraperror.Errorf(err, "SzEngine")
-	}
-
-	err = factory.destroySzProduct(ctx)
-	if err != nil {
-		return wraperror.Errorf(err, "SzProduct")
+		return wraperror.Errorf(err, "destroy")
 	}
 
 	return nil
@@ -202,6 +215,39 @@ func (factory *Szabstractfactory) Reinitialize(ctx context.Context, configID int
 // Private methods
 // ----------------------------------------------------------------------------
 
+/*
+Method Destroy will destroy and perform cleanup for the Senzing objects created by the AbstractFactory.
+It should be called after all other calls are complete.
+
+Input
+  - ctx: A context to control lifecycle.
+*/
+func (factory *Szabstractfactory) destroy(ctx context.Context) error {
+	var err error
+
+	err = factory.destroySzConfigmanager(ctx)
+	if err != nil {
+		return wraperror.Errorf(err, "SzConfigmanager")
+	}
+
+	err = factory.destroySzDiagnostic(ctx)
+	if err != nil {
+		return wraperror.Errorf(err, "SzDiagnostic")
+	}
+
+	err = factory.destroySzEngine(ctx)
+	if err != nil {
+		return wraperror.Errorf(err, "SzEngine")
+	}
+
+	err = factory.destroySzProduct(ctx)
+	if err != nil {
+		return wraperror.Errorf(err, "SzProduct")
+	}
+
+	return nil
+}
+
 func (factory *Szabstractfactory) destroySzConfigmanager(ctx context.Context) error {
 	var err error
 
@@ -214,18 +260,7 @@ func (factory *Szabstractfactory) destroySzConfigmanager(ctx context.Context) er
 		}
 	}
 
-	// if factory.szConfigManagerCounter > 0 {
-	// 	szConfigmanager := &szconfigmanager.Szconfigmanager{}
-
-	// 	for range factory.szConfigManagerCounter {
-	// 		err = szConfigmanager.Destroy(ctx)
-	// 		if err != nil {
-	// 			return wraperror.Errorf(err, "Destroy")
-	// 		}
-	// 	}
-
-	// 	factory.szConfigManagerCounter = 0
-	// }
+	factory.szConfigManagerCounter = 0
 
 	return nil
 }
@@ -244,19 +279,6 @@ func (factory *Szabstractfactory) destroySzDiagnostic(ctx context.Context) error
 
 	factory.szDiagnosticCounter = 0
 
-	// if factory.szDiagnosticCounter > 0 {
-	// 	szDiagnostic := &szdiagnostic.Szdiagnostic{}
-
-	// 	for range factory.szDiagnosticCounter {
-	// 		err = szDiagnostic.Destroy(ctx)
-	// 		if err != nil {
-	// 			return wraperror.Errorf(err, "Destroy")
-	// 		}
-	// 	}
-
-	// 	factory.szDiagnosticCounter = 0
-	// }
-
 	return nil
 }
 
@@ -274,19 +296,6 @@ func (factory *Szabstractfactory) destroySzEngine(ctx context.Context) error {
 
 	factory.szEngineCounter = 0
 
-	// if factory.szEngineCounter > 0 {
-	// 	szEngine := &szengine.Szengine{}
-
-	// 	for range factory.szEngineCounter {
-	// 		err = szEngine.Destroy(ctx)
-	// 		if err != nil {
-	// 			return wraperror.Errorf(err, "Destroy")
-	// 		}
-	// 	}
-
-	// 	factory.szEngineCounter = 0
-	// }
-
 	return nil
 }
 
@@ -302,18 +311,13 @@ func (factory *Szabstractfactory) destroySzProduct(ctx context.Context) error {
 		}
 	}
 
-	// if factory.szProductCounter > 0 {
-	// 	szProduct := &szproduct.Szproduct{}
-
-	// 	for range factory.szProductCounter {
-	// 		err = szProduct.Destroy(ctx)
-	// 		if err != nil {
-	// 			return wraperror.Errorf(err, "Destroy")
-	// 		}
-	// 	}
-
-	// 	factory.szProductCounter = 0
-	// }
+	factory.szProductCounter = 0
 
 	return nil
+}
+
+func (factory *Szabstractfactory) isInitialState() bool {
+	total := factory.szConfigManagerCounter + factory.szDiagnosticCounter + factory.szEngineCounter + factory.szProductCounter
+	result := total == 0
+	return result
 }

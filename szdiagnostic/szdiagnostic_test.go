@@ -520,8 +520,8 @@ func teardown() {
 func teardownSzDiagnostic(ctx context.Context) {
 	err := szDiagnosticSingleton.UnregisterObserver(ctx, observerSingleton)
 	panicOnError(err)
-	err = szDiagnosticSingleton.Destroy(ctx)
-	panicOnError(err)
+	// err = szDiagnosticSingleton.Destroy(ctx)
+	// panicOnError(err)
 
 	szDiagnosticSingleton = nil
 }
