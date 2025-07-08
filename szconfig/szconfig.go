@@ -116,7 +116,7 @@ func (client *Szconfig) Export(ctx context.Context) (string, error) {
 		defer func() { client.traceExit(14, result, err, time.Since(entryTime)) }()
 	}
 
-	result, err = client.export(ctx)
+	result = client.configDefinition
 
 	if client.observers != nil {
 		go func() {
@@ -558,7 +558,7 @@ func (client *Szconfig) registerDataSourceChoreography(
 		return newConfigDefinition, result, wraperror.Errorf(err, "registerDataSource: %s", dataSourceCode)
 	}
 
-	newConfigDefinition, err = client.save(ctx, configHandle)
+	newConfigDefinition, err = client.export(ctx, configHandle)
 	if err != nil {
 		return newConfigDefinition, result, wraperror.Errorf(err, "save")
 	}
@@ -584,7 +584,7 @@ func (client *Szconfig) importTemplateChoregraphy(ctx context.Context) (string, 
 		err = client.close(ctx, configHandle)
 	}()
 
-	resultResponse, err = client.save(ctx, configHandle)
+	resultResponse, err = client.export(ctx, configHandle)
 	if err != nil {
 		return resultResponse, wraperror.Errorf(err, "save")
 	}
@@ -620,7 +620,7 @@ func (client *Szconfig) unregisterDataSourceChoreography(
 		return newConfigDefinition, result, wraperror.Errorf(err, "unregisterDataSource(%s)", dataSourceCode)
 	}
 
-	newConfigDefinition, err = client.save(ctx, configHandle)
+	newConfigDefinition, err = client.export(ctx, configHandle)
 	if err != nil {
 		return newConfigDefinition, result, wraperror.Errorf(err, "save")
 	}
@@ -649,7 +649,7 @@ func (client *Szconfig) getDataSourceRegistryChoreography(
 		err = client.close(ctx, configHandle)
 	}()
 
-	result, err = client.listDataSources(ctx, configHandle)
+	result, err = client.getDataSourceRegistry(ctx, configHandle)
 	if err != nil {
 		return result, wraperror.Errorf(err, "listDataSources")
 	}
@@ -680,7 +680,7 @@ func (client *Szconfig) verifyConfigDefinitionChoreography(
 		err = client.close(ctx, configHandle)
 	}()
 
-	_, err = client.save(ctx, configHandle)
+	_, err = client.export(ctx, configHandle)
 	if err != nil {
 		return wraperror.Errorf(err, "save")
 	}
@@ -776,11 +776,6 @@ func (client *Szconfig) unregisterDataSource(ctx context.Context, configHandle u
 	return err
 }
 
-func (client *Szconfig) export(ctx context.Context) (string, error) {
-	_ = ctx
-	return client.configDefinition, nil
-}
-
 func (client *Szconfig) destroy(ctx context.Context) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -795,7 +790,7 @@ func (client *Szconfig) destroy(ctx context.Context) error {
 	return err
 }
 
-func (client *Szconfig) save(ctx context.Context, configHandle uintptr) (string, error) {
+func (client *Szconfig) export(ctx context.Context, configHandle uintptr) (string, error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 
@@ -816,7 +811,7 @@ func (client *Szconfig) save(ctx context.Context, configHandle uintptr) (string,
 	return resultResponse, err
 }
 
-func (client *Szconfig) listDataSources(ctx context.Context, configHandle uintptr) (string, error) {
+func (client *Szconfig) getDataSourceRegistry(ctx context.Context, configHandle uintptr) (string, error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 

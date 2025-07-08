@@ -191,7 +191,7 @@ func (client *Szconfigmanager) GetConfigRegistry(ctx context.Context) (string, e
 		defer func() { client.traceExit(10, result, err, time.Since(entryTime)) }()
 	}
 
-	result, err = client.getConfigList(ctx)
+	result, err = client.getConfigRegistry(ctx)
 
 	if client.observers != nil {
 		go func() {
@@ -783,7 +783,7 @@ func (client *Szconfigmanager) getConfig(ctx context.Context, configID int64) (s
 	return resultResponse, err
 }
 
-func (client *Szconfigmanager) getConfigList(ctx context.Context) (string, error) {
+func (client *Szconfigmanager) getConfigRegistry(ctx context.Context) (string, error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 
