@@ -81,7 +81,7 @@ func (client *Szproduct) GetLicense(ctx context.Context) (string, error) {
 		defer func() { client.traceExit(10, result, err, time.Since(entryTime)) }()
 	}
 
-	result, err = client.license(ctx)
+	result, err = client.getLicense(ctx)
 
 	if client.observers != nil {
 		go func() {
@@ -115,7 +115,7 @@ func (client *Szproduct) GetVersion(ctx context.Context) (string, error) {
 		defer func() { client.traceExit(12, result, err, time.Since(entryTime)) }()
 	}
 
-	result, err = client.version(ctx)
+	result, err = client.getVersion(ctx)
 
 	if client.observers != nil {
 		go func() {
@@ -360,7 +360,7 @@ func (client *Szproduct) destroy(ctx context.Context) error {
 	return err
 }
 
-func (client *Szproduct) license(ctx context.Context) (string, error) {
+func (client *Szproduct) getLicense(ctx context.Context) (string, error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 
@@ -371,13 +371,13 @@ func (client *Szproduct) license(ctx context.Context) (string, error) {
 
 	_ = ctx
 
-	result := C.SzProduct_license()
+	result := C.SzProduct_getLicense()
 	resultResponse = C.GoString(result)
 
 	return resultResponse, err
 }
 
-func (client *Szproduct) version(ctx context.Context) (string, error) {
+func (client *Szproduct) getVersion(ctx context.Context) (string, error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 
@@ -388,7 +388,7 @@ func (client *Szproduct) version(ctx context.Context) (string, error) {
 
 	_ = ctx
 
-	result := C.SzProduct_version()
+	result := C.SzProduct_getVersion()
 	resultResponse = C.GoString(result)
 
 	return resultResponse, err

@@ -195,7 +195,7 @@ Prefixes:
 
 ### senzing-60014001
 
-- Call to `SzConfig_addDataSource()` failed.
+- Call to `SzConfig_registerDataSource()` failed.
 
 ### senzing-60014002
 
@@ -207,7 +207,7 @@ Prefixes:
 
 ### senzing-60014004
 
-- Call to `SzConfig_deleteDataSource()` failed.
+- Call to `SzConfig_unregisterDataSource()` failed.
 
 ### senzing-60014005
 
@@ -223,7 +223,7 @@ Prefixes:
 
 ### senzing-60014008
 
-- Call to `SzConfig_listDataSources()` failed.
+- Call to `SzConfig_getDataSourceRegistry()` failed.
 
 ### senzing-60014009
 
@@ -231,4 +231,4 @@ Prefixes:
 
 ### senzing-60014010
 
-- Call to `SzConfig_save()` failed.
+- Call to `SzConfig_export()` failed.

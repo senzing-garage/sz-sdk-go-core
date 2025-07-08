@@ -2036,7 +2036,7 @@ func (client *Szengine) closeExportReport(ctx context.Context, exportHandle uint
 
 	var err error
 
-	result := C.Sz_closeExport_helper(C.uintptr_t(exportHandle))
+	result := C.Sz_closeExportReport_helper(C.uintptr_t(exportHandle))
 	if result != noError {
 		err = client.newError(ctx, 4003, exportHandle, result)
 	}
@@ -3136,7 +3136,7 @@ func (client *Szengine) getRecordPreview(ctx context.Context, recordDefinition s
 
 	defer C.free(unsafe.Pointer(recordDefinitionForC))
 
-	result := C.Sz_preprocessRecord_helper(recordDefinitionForC, C.int64_t(flags))
+	result := C.Sz_getRecordPreview_helper(recordDefinitionForC, C.int64_t(flags))
 	if result.returnCode != noError {
 		err = client.newError(ctx, 4061, recordDefinition, flags, result.returnCode)
 	}

@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning].
 
 -
 
+## [0.9.9] - 2025-07-08
+
+### Changed in 0.9.9
+
+- Migrate to changes in C binary function names
+
 ## [0.9.8] - 2025-07-02
 
 ### Changed in 0.9.8
