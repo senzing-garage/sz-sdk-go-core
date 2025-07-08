@@ -50,10 +50,7 @@ func (factory *Szabstractfactory) CreateConfigManager(ctx context.Context) (senz
 	defer factory.mutex.Unlock()
 
 	if factory.isInitialState() {
-		err = factory.destroy(ctx)
-		if err != nil {
-			return nil, wraperror.Errorf(err, "Unable to Destroy existing objects")
-		}
+		factory.destroy(ctx)
 	}
 
 	result := &szconfigmanager.Szconfigmanager{}
@@ -80,10 +77,7 @@ func (factory *Szabstractfactory) CreateDiagnostic(ctx context.Context) (senzing
 	defer factory.mutex.Unlock()
 
 	if factory.isInitialState() {
-		err = factory.destroy(ctx)
-		if err != nil {
-			return nil, wraperror.Errorf(err, "Unable to Destroy existing objects")
-		}
+		factory.destroy(ctx)
 	}
 
 	result := &szdiagnostic.Szdiagnostic{}
@@ -110,10 +104,7 @@ func (factory *Szabstractfactory) CreateEngine(ctx context.Context) (senzing.SzE
 	defer factory.mutex.Unlock()
 
 	if factory.isInitialState() {
-		err = factory.destroy(ctx)
-		if err != nil {
-			return nil, wraperror.Errorf(err, "Unable to Destroy existing objects")
-		}
+		factory.destroy(ctx)
 	}
 
 	result := &szengine.Szengine{}
@@ -140,10 +131,7 @@ func (factory *Szabstractfactory) CreateProduct(ctx context.Context) (senzing.Sz
 	defer factory.mutex.Unlock()
 
 	if factory.isInitialState() {
-		err = factory.destroy(ctx)
-		if err != nil {
-			return nil, wraperror.Errorf(err, "Unable to Destroy existing objects")
-		}
+		factory.destroy(ctx)
 	}
 
 	result := &szproduct.Szproduct{}
@@ -166,12 +154,9 @@ func (factory *Szabstractfactory) Destroy(ctx context.Context) error {
 	factory.mutex.Lock()
 	defer factory.mutex.Unlock()
 
-	err = factory.destroy(ctx)
-	if err != nil {
-		return wraperror.Errorf(err, "destroy")
-	}
+	factory.destroy(ctx)
 
-	return nil
+	return wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 /*
@@ -222,33 +207,14 @@ It should be called after all other calls are complete.
 Input
   - ctx: A context to control lifecycle.
 */
-func (factory *Szabstractfactory) destroy(ctx context.Context) error {
-	var err error
-
-	err = factory.destroySzConfigmanager(ctx)
-	if err != nil {
-		return wraperror.Errorf(err, "SzConfigmanager")
-	}
-
-	err = factory.destroySzDiagnostic(ctx)
-	if err != nil {
-		return wraperror.Errorf(err, "SzDiagnostic")
-	}
-
-	err = factory.destroySzEngine(ctx)
-	if err != nil {
-		return wraperror.Errorf(err, "SzEngine")
-	}
-
-	err = factory.destroySzProduct(ctx)
-	if err != nil {
-		return wraperror.Errorf(err, "SzProduct")
-	}
-
-	return nil
+func (factory *Szabstractfactory) destroy(ctx context.Context) {
+	factory.destroySzConfigmanager(ctx)
+	factory.destroySzDiagnostic(ctx)
+	factory.destroySzEngine(ctx)
+	factory.destroySzProduct(ctx)
 }
 
-func (factory *Szabstractfactory) destroySzConfigmanager(ctx context.Context) error {
+func (factory *Szabstractfactory) destroySzConfigmanager(ctx context.Context) {
 	var err error
 
 	szConfigmanager := &szconfigmanager.Szconfigmanager{}
@@ -261,11 +227,9 @@ func (factory *Szabstractfactory) destroySzConfigmanager(ctx context.Context) er
 	}
 
 	factory.szConfigManagerCounter = 0
-
-	return nil
 }
 
-func (factory *Szabstractfactory) destroySzDiagnostic(ctx context.Context) error {
+func (factory *Szabstractfactory) destroySzDiagnostic(ctx context.Context) {
 	var err error
 
 	szDiagnostic := &szdiagnostic.Szdiagnostic{}
@@ -278,11 +242,9 @@ func (factory *Szabstractfactory) destroySzDiagnostic(ctx context.Context) error
 	}
 
 	factory.szDiagnosticCounter = 0
-
-	return nil
 }
 
-func (factory *Szabstractfactory) destroySzEngine(ctx context.Context) error {
+func (factory *Szabstractfactory) destroySzEngine(ctx context.Context) {
 	var err error
 
 	szEngine := &szengine.Szengine{}
@@ -295,11 +257,9 @@ func (factory *Szabstractfactory) destroySzEngine(ctx context.Context) error {
 	}
 
 	factory.szEngineCounter = 0
-
-	return nil
 }
 
-func (factory *Szabstractfactory) destroySzProduct(ctx context.Context) error {
+func (factory *Szabstractfactory) destroySzProduct(ctx context.Context) {
 	var err error
 
 	szProduct := &szproduct.Szproduct{}
@@ -312,12 +272,11 @@ func (factory *Szabstractfactory) destroySzProduct(ctx context.Context) error {
 	}
 
 	factory.szProductCounter = 0
-
-	return nil
 }
 
 func (factory *Szabstractfactory) isInitialState() bool {
 	total := factory.szConfigManagerCounter + factory.szDiagnosticCounter + factory.szEngineCounter + factory.szProductCounter
 	result := total == 0
+
 	return result
 }

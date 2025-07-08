@@ -158,15 +158,21 @@ func TestSzAbstractFactory_Destroy_SzConfigManager(test *testing.T) {
 
 	szConfigManager1, err := szAbstractFactory.CreateConfigManager(ctx)
 	require.NoError(test, err)
-	szConfigManagerCore1, ok := szConfigManager1.(*szconfigmanager.Szconfigmanager)
-	require.True(test, ok)
-	szConfigManagerCore1.Destroy(ctx)
+
+	szConfigManagerCore1, isOK := szConfigManager1.(*szconfigmanager.Szconfigmanager)
+	require.True(test, isOK)
+
+	err = szConfigManagerCore1.Destroy(ctx)
+	require.NoError(test, err)
 
 	szConfigManager2, err := szAbstractFactory.CreateConfigManager(ctx)
 	require.NoError(test, err)
-	szConfigManagerCore2, ok := szConfigManager2.(*szconfigmanager.Szconfigmanager)
-	require.True(test, ok)
-	szConfigManagerCore2.Destroy(ctx)
+
+	szConfigManagerCore2, isOK := szConfigManager2.(*szconfigmanager.Szconfigmanager)
+	require.True(test, isOK)
+
+	err = szConfigManagerCore2.Destroy(ctx)
+	require.NoError(test, err)
 
 	require.NoError(test, szAbstractFactory.Destroy(ctx))
 }
@@ -177,15 +183,21 @@ func TestSzAbstractFactory_Destroy_SzDiagnostic(test *testing.T) {
 
 	szDiagnostic1, err := szAbstractFactory.CreateDiagnostic(ctx)
 	require.NoError(test, err)
-	szDiagnosticCore1, ok := szDiagnostic1.(*szdiagnostic.Szdiagnostic)
-	require.True(test, ok)
-	szDiagnosticCore1.Destroy(ctx)
+
+	szDiagnosticCore1, isOK := szDiagnostic1.(*szdiagnostic.Szdiagnostic)
+	require.True(test, isOK)
+
+	err = szDiagnosticCore1.Destroy(ctx)
+	require.NoError(test, err)
 
 	szDiagnostic2, err := szAbstractFactory.CreateDiagnostic(ctx)
 	require.NoError(test, err)
-	szDiagnosticCore2, ok := szDiagnostic2.(*szdiagnostic.Szdiagnostic)
-	require.True(test, ok)
-	szDiagnosticCore2.Destroy(ctx)
+
+	szDiagnosticCore2, isOK := szDiagnostic2.(*szdiagnostic.Szdiagnostic)
+	require.True(test, isOK)
+
+	err = szDiagnosticCore2.Destroy(ctx)
+	require.NoError(test, err)
 
 	require.NoError(test, szAbstractFactory.Destroy(ctx))
 }
@@ -196,15 +208,21 @@ func TestSzAbstractFactory_Destroy_SzEngine(test *testing.T) {
 
 	szEngine1, err := szAbstractFactory.CreateEngine(ctx)
 	require.NoError(test, err)
-	szEngineCore1, ok := szEngine1.(*szengine.Szengine)
-	require.True(test, ok)
-	szEngineCore1.Destroy(ctx)
+
+	szEngineCore1, isOK := szEngine1.(*szengine.Szengine)
+	require.True(test, isOK)
+
+	err = szEngineCore1.Destroy(ctx)
+	require.NoError(test, err)
 
 	szEngine2, err := szAbstractFactory.CreateEngine(ctx)
 	require.NoError(test, err)
-	szEngineCore2, ok := szEngine2.(*szengine.Szengine)
-	require.True(test, ok)
-	szEngineCore2.Destroy(ctx)
+
+	szEngineCore2, isOK := szEngine2.(*szengine.Szengine)
+	require.True(test, isOK)
+
+	err = szEngineCore2.Destroy(ctx)
+	require.NoError(test, err)
 
 	require.NoError(test, szAbstractFactory.Destroy(ctx))
 	// require.NoError(test, szAbstractFactory.Destroy(ctx))
@@ -223,15 +241,21 @@ func TestSzAbstractFactory_Destroy_SzProduct(test *testing.T) {
 
 	szProduct1, err := szAbstractFactory.CreateProduct(ctx)
 	require.NoError(test, err)
-	szProductCore1, ok := szProduct1.(*szproduct.Szproduct)
-	require.True(test, ok)
-	szProductCore1.Destroy(ctx)
+
+	szProductCore1, isOK := szProduct1.(*szproduct.Szproduct)
+	require.True(test, isOK)
+
+	err = szProductCore1.Destroy(ctx)
+	require.NoError(test, err)
 
 	szProduct2, err := szAbstractFactory.CreateProduct(ctx)
 	require.NoError(test, err)
-	szProductCore2, ok := szProduct2.(*szproduct.Szproduct)
-	require.True(test, ok)
-	szProductCore2.Destroy(ctx)
+
+	szProductCore2, isOK := szProduct2.(*szproduct.Szproduct)
+	require.True(test, isOK)
+
+	err = szProductCore2.Destroy(ctx)
+	require.NoError(test, err)
 
 	require.NoError(test, szAbstractFactory.Destroy(ctx))
 }
