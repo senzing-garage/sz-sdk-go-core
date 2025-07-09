@@ -283,12 +283,78 @@ func TestSzAbstractFactory_Reinitialize(test *testing.T) {
 	require.NoError(test, err)
 }
 
+func TestSzAbstractFactory_MultiAbstractFactory(test *testing.T) {
+	ctx := test.Context()
+	szAbstractFactory := getTestObject(test)
+	// defer func() { require.NoError(test, szAbstractFactory.Destroy(ctx)) }()
+
+	szDiagnostic1, err := szAbstractFactory.CreateDiagnostic(ctx)
+	require.NoError(test, err)
+
+	info1, err := szDiagnostic1.GetRepositoryInfo(ctx)
+	require.NoError(test, err)
+	test.Logf(">>>>>> info1: %s\n", info1)
+
+	err = szAbstractFactory.Destroy(ctx)
+	require.NoError(test, err)
+
+	szAbstractFactory2 := getSecondSzAbstractFactory(ctx)
+	defer func() { require.NoError(test, szAbstractFactory2.Destroy(ctx)) }()
+
+	szDiagnostic2, err := szAbstractFactory2.CreateDiagnostic(ctx)
+	require.NoError(test, err)
+
+	info2, err := szDiagnostic2.GetRepositoryInfo(ctx)
+	require.NoError(test, err)
+	test.Logf(">>>>>> info2: %s\n", info2)
+
+	info3, err := szDiagnostic1.GetRepositoryInfo(ctx)
+	require.NoError(test, err)
+	test.Logf(">>>>>> info3: %s\n", info3)
+
+}
+
 // ----------------------------------------------------------------------------
 // Internal functions
 // ----------------------------------------------------------------------------
 
 func getDatabaseTemplatePath() string {
 	return filepath.FromSlash("../testdata/sqlite/G2C.db")
+}
+
+func getSecondSzAbstractFactory(ctx context.Context) senzing.SzAbstractFactory {
+	var result senzing.SzAbstractFactory
+
+	_ = ctx
+	settings := getSecondSettings()
+	result = &szabstractfactory.Szabstractfactory{
+		ConfigID:       senzing.SzInitializeWithDefaultConfiguration,
+		InstanceName:   instanceName,
+		Settings:       settings,
+		VerboseLogging: verboseLogging,
+	}
+
+	return result
+}
+
+func getSecondSettings() string {
+	var result string
+
+	// Determine Database URL.
+
+	testDirectoryPath := getTestDirectoryPath()
+	dbTargetPath, err := filepath.Abs(filepath.Join(testDirectoryPath, "G2C2.db"))
+	panicOnError(err)
+
+	databaseURL := "sqlite://na:na@nowhere2/" + dbTargetPath
+
+	// Create Senzing engine configuration JSON.
+
+	configAttrMap := map[string]string{"databaseUrl": databaseURL}
+	result, err = settings.BuildSimpleSettingsUsingMap(configAttrMap)
+	panicOnError(err)
+
+	return result
 }
 
 func getSettings() string {
@@ -346,7 +412,7 @@ func getSzAbstractFactoryBadConfig(ctx context.Context) senzing.SzAbstractFactor
 }
 
 func getTestDirectoryPath() string {
-	return filepath.FromSlash("../target/test/szconfig")
+	return filepath.FromSlash("../target/test/szabstractfactory")
 }
 
 func getTestObject(t *testing.T) senzing.SzAbstractFactory {
@@ -431,6 +497,12 @@ func setupDatabase() {
 	// Copy template file to test directory.
 
 	_, _, err = fileutil.CopyFile(databaseTemplatePath, testDirectoryPath, true) // Copy the SQLite database file.
+	panicOnError(err)
+	_, _, err = fileutil.CopyFile(
+		databaseTemplatePath,
+		testDirectoryPath+"/G2C2.db",
+		true,
+	) // Copy the SQLite database file.
 	panicOnError(err)
 }
 
