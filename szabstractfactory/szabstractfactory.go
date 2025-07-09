@@ -20,13 +20,14 @@ Szabstractfactory is an implementation of the [senzing.SzAbstractFactory] interf
 type Szabstractfactory struct {
 	ConfigID               int64
 	InstanceName           string
+	isClosed               bool
+	mutex                  sync.Mutex
 	Settings               string
 	szConfigManagerCounter int
 	szDiagnosticCounter    int
 	szEngineCounter        int
 	szProductCounter       int
 	VerboseLogging         int64
-	mutex                  sync.Mutex
 }
 
 // ----------------------------------------------------------------------------
@@ -44,16 +45,23 @@ Output
   - An SzConfigManager object.
 */
 func (factory *Szabstractfactory) CreateConfigManager(ctx context.Context) (senzing.SzConfigManager, error) {
-	var err error
+	var (
+		err    error
+		result *szconfigmanager.Szconfigmanager
+	)
 
 	factory.mutex.Lock()
 	defer factory.mutex.Unlock()
+
+	if factory.isClosed {
+		return result, wraperror.Errorf(err, "SzAbstractFactory is closed")
+	}
 
 	if factory.isInitialState() {
 		factory.destroy(ctx)
 	}
 
-	result := &szconfigmanager.Szconfigmanager{}
+	result = &szconfigmanager.Szconfigmanager{}
 	err = result.Initialize(ctx, factory.InstanceName, factory.Settings, factory.VerboseLogging)
 	factory.szConfigManagerCounter++
 
@@ -71,16 +79,23 @@ Output
   - An SzDiagnostic object.
 */
 func (factory *Szabstractfactory) CreateDiagnostic(ctx context.Context) (senzing.SzDiagnostic, error) {
-	var err error
+	var (
+		err    error
+		result *szdiagnostic.Szdiagnostic
+	)
 
 	factory.mutex.Lock()
 	defer factory.mutex.Unlock()
+
+	if factory.isClosed {
+		return result, wraperror.Errorf(err, "SzAbstractFactory is closed")
+	}
 
 	if factory.isInitialState() {
 		factory.destroy(ctx)
 	}
 
-	result := &szdiagnostic.Szdiagnostic{}
+	result = &szdiagnostic.Szdiagnostic{}
 	err = result.Initialize(ctx, factory.InstanceName, factory.Settings, factory.ConfigID, factory.VerboseLogging)
 	factory.szDiagnosticCounter++
 
@@ -98,16 +113,23 @@ Output
   - An SzEngine object.
 */
 func (factory *Szabstractfactory) CreateEngine(ctx context.Context) (senzing.SzEngine, error) {
-	var err error
+	var (
+		err    error
+		result *szengine.Szengine
+	)
 
 	factory.mutex.Lock()
 	defer factory.mutex.Unlock()
+
+	if factory.isClosed {
+		return result, wraperror.Errorf(err, "SzAbstractFactory is closed")
+	}
 
 	if factory.isInitialState() {
 		factory.destroy(ctx)
 	}
 
-	result := &szengine.Szengine{}
+	result = &szengine.Szengine{}
 	err = result.Initialize(ctx, factory.InstanceName, factory.Settings, factory.ConfigID, factory.VerboseLogging)
 	factory.szEngineCounter++
 
@@ -125,20 +147,44 @@ Output
   - An SzProduct object.
 */
 func (factory *Szabstractfactory) CreateProduct(ctx context.Context) (senzing.SzProduct, error) {
-	var err error
+	var (
+		err    error
+		result *szproduct.Szproduct
+	)
 
 	factory.mutex.Lock()
 	defer factory.mutex.Unlock()
+
+	if factory.isClosed {
+		return result, wraperror.Errorf(err, "SzAbstractFactory is closed")
+	}
 
 	if factory.isInitialState() {
 		factory.destroy(ctx)
 	}
 
-	result := &szproduct.Szproduct{}
+	result = &szproduct.Szproduct{}
 	err = result.Initialize(ctx, factory.InstanceName, factory.Settings, factory.VerboseLogging)
 	factory.szProductCounter++
 
 	return result, wraperror.Errorf(err, wraperror.NoMessage)
+}
+
+/*
+Method Close prevents factory from creating objects.
+
+Input
+  - ctx: A context to control lifecycle.
+*/
+func (factory *Szabstractfactory) Close(ctx context.Context) error {
+	var err error
+
+	factory.mutex.Lock()
+	defer factory.mutex.Unlock()
+
+	factory.isClosed = true
+
+	return wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 /*
