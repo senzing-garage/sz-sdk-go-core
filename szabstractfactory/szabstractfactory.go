@@ -18,16 +18,17 @@ Szabstractfactory is an implementation of the [senzing.SzAbstractFactory] interf
 [senzing.SzAbstractFactory]: https://pkg.go.dev/github.com/senzing-garage/sz-sdk-go/senzing#SzAbstractFactory
 */
 type Szabstractfactory struct {
-	ConfigID               int64
-	InstanceName           string
-	isClosed               bool
-	mutex                  sync.Mutex
-	Settings               string
-	szConfigManagerCounter int
-	szDiagnosticCounter    int
-	szEngineCounter        int
-	szProductCounter       int
-	VerboseLogging         int64
+	ConfigID     int64
+	InstanceName string
+	isDestroyed  bool
+	mutex        sync.Mutex
+	once         sync.Once
+	Settings     string
+	// szConfigManagerCounter int
+	// szDiagnosticCounter    int
+	// szEngineCounter        int
+	// szProductCounter       int
+	VerboseLogging int64
 }
 
 // ----------------------------------------------------------------------------
@@ -53,17 +54,29 @@ func (factory *Szabstractfactory) CreateConfigManager(ctx context.Context) (senz
 	factory.mutex.Lock()
 	defer factory.mutex.Unlock()
 
-	if factory.isClosed {
-		return result, wraperror.Errorf(err, "SzAbstractFactory is closed")
+	if factory.isDestroyed {
+		return result, wraperror.Errorf(err, "SzAbstractFactory is destroyed")
 	}
 
-	if factory.isInitialState() {
-		factory.destroy(ctx)
+	factory.once.Do(func() {
+		err = factory.verifyNoSenzingObjects(ctx)
+	})
+
+	if err != nil {
+		factory.once = sync.Once{}
+		return result, wraperror.Errorf(
+			err,
+			"Must destroy prior Senzing objects before creating with this AbstractFactory [SzConfigManager]",
+		)
 	}
+
+	// if factory.isInitialState() {
+	// 	factory.destroy(ctx)
+	// }
 
 	result = &szconfigmanager.Szconfigmanager{}
 	err = result.Initialize(ctx, factory.InstanceName, factory.Settings, factory.VerboseLogging)
-	factory.szConfigManagerCounter++
+	// factory.szConfigManagerCounter++
 
 	return result, wraperror.Errorf(err, wraperror.NoMessage)
 }
@@ -87,17 +100,29 @@ func (factory *Szabstractfactory) CreateDiagnostic(ctx context.Context) (senzing
 	factory.mutex.Lock()
 	defer factory.mutex.Unlock()
 
-	if factory.isClosed {
-		return result, wraperror.Errorf(err, "SzAbstractFactory is closed")
+	if factory.isDestroyed {
+		return result, wraperror.Errorf(err, "SzAbstractFactory is destroyed")
 	}
 
-	if factory.isInitialState() {
-		factory.destroy(ctx)
+	factory.once.Do(func() {
+		err = factory.verifyNoSenzingObjects(ctx)
+	})
+
+	if err != nil {
+		factory.once = sync.Once{}
+		return result, wraperror.Errorf(
+			err,
+			"Must destroy prior Senzing objects before creating with this AbstractFactory [SzDiagnostic]",
+		)
 	}
+
+	// if factory.isInitialState() {
+	// 	factory.destroy(ctx)
+	// }
 
 	result = &szdiagnostic.Szdiagnostic{}
 	err = result.Initialize(ctx, factory.InstanceName, factory.Settings, factory.ConfigID, factory.VerboseLogging)
-	factory.szDiagnosticCounter++
+	// factory.szDiagnosticCounter++
 
 	return result, wraperror.Errorf(err, wraperror.NoMessage)
 }
@@ -121,17 +146,29 @@ func (factory *Szabstractfactory) CreateEngine(ctx context.Context) (senzing.SzE
 	factory.mutex.Lock()
 	defer factory.mutex.Unlock()
 
-	if factory.isClosed {
-		return result, wraperror.Errorf(err, "SzAbstractFactory is closed")
+	if factory.isDestroyed {
+		return result, wraperror.Errorf(err, "SzAbstractFactory is destroyed")
 	}
 
-	if factory.isInitialState() {
-		factory.destroy(ctx)
+	factory.once.Do(func() {
+		err = factory.verifyNoSenzingObjects(ctx)
+	})
+
+	if err != nil {
+		factory.once = sync.Once{}
+		return result, wraperror.Errorf(
+			err,
+			"Must destroy prior Senzing objects before creating with this AbstractFactory [SzEngine]",
+		)
 	}
+
+	// if factory.isInitialState() {
+	// 	factory.destroy(ctx)
+	// }
 
 	result = &szengine.Szengine{}
 	err = result.Initialize(ctx, factory.InstanceName, factory.Settings, factory.ConfigID, factory.VerboseLogging)
-	factory.szEngineCounter++
+	// factory.szEngineCounter++
 
 	return result, wraperror.Errorf(err, wraperror.NoMessage)
 }
@@ -155,17 +192,29 @@ func (factory *Szabstractfactory) CreateProduct(ctx context.Context) (senzing.Sz
 	factory.mutex.Lock()
 	defer factory.mutex.Unlock()
 
-	if factory.isClosed {
-		return result, wraperror.Errorf(err, "SzAbstractFactory is closed")
+	if factory.isDestroyed {
+		return result, wraperror.Errorf(err, "SzAbstractFactory is destroyed")
 	}
 
-	if factory.isInitialState() {
-		factory.destroy(ctx)
+	factory.once.Do(func() {
+		err = factory.verifyNoSenzingObjects(ctx)
+	})
+
+	if err != nil {
+		factory.once = sync.Once{}
+		return result, wraperror.Errorf(
+			err,
+			"Must destroy prior Senzing objects before creating with this AbstractFactory [SzProduct]",
+		)
 	}
+
+	// if factory.isInitialState() {
+	// 	factory.destroy(ctx)
+	// }
 
 	result = &szproduct.Szproduct{}
 	err = result.Initialize(ctx, factory.InstanceName, factory.Settings, factory.VerboseLogging)
-	factory.szProductCounter++
+	// factory.szProductCounter++
 
 	return result, wraperror.Errorf(err, wraperror.NoMessage)
 }
@@ -176,16 +225,16 @@ Method Close prevents factory from creating objects.
 Input
   - ctx: A context to control lifecycle.
 */
-func (factory *Szabstractfactory) Close(ctx context.Context) error {
-	var err error
+// func (factory *Szabstractfactory) Close(ctx context.Context) error {
+// 	var err error
 
-	factory.mutex.Lock()
-	defer factory.mutex.Unlock()
+// 	factory.mutex.Lock()
+// 	defer factory.mutex.Unlock()
 
-	factory.isClosed = true
+// 	factory.isClosed = true
 
-	return wraperror.Errorf(err, wraperror.NoMessage)
-}
+// 	return wraperror.Errorf(err, wraperror.NoMessage)
+// }
 
 /*
 Method Destroy prevents factory from creating objects and invalidates objects previously created.
@@ -200,8 +249,12 @@ func (factory *Szabstractfactory) Destroy(ctx context.Context) error {
 	factory.mutex.Lock()
 	defer factory.mutex.Unlock()
 
+	if factory.isDestroyed {
+		return wraperror.Errorf(err, "SzAbstractFactory is already destroyed")
+	}
+
 	factory.destroy(ctx)
-	factory.isClosed = true
+	factory.isDestroyed = true
 
 	return wraperror.Errorf(err, wraperror.NoMessage)
 }
@@ -222,22 +275,26 @@ func (factory *Szabstractfactory) Reinitialize(ctx context.Context, configID int
 
 	factory.ConfigID = configID
 
-	if factory.szDiagnosticCounter > 0 {
-		szDiagnostic := &szdiagnostic.Szdiagnostic{}
+	if !factory.isDestroyed {
 
-		err = szDiagnostic.Reinitialize(ctx, configID)
-		if err != nil {
-			return wraperror.Errorf(err, "szDiagnostic.Reinitialize(%d)", configID)
+		// TODO:  Check that instances exist.
+
+		if factory.szDiagnosticExists(ctx) {
+			szDiagnostic := &szdiagnostic.Szdiagnostic{}
+			err = szDiagnostic.Reinitialize(ctx, configID)
+			if err != nil {
+				return wraperror.Errorf(err, "szDiagnostic.Reinitialize(%d)", configID)
+			}
 		}
-	}
 
-	if factory.szEngineCounter > 0 {
-		szEngine := &szengine.Szengine{}
-
-		err = szEngine.Reinitialize(ctx, configID)
-		if err != nil {
-			return wraperror.Errorf(err, "szEngine.Reinitialize(%d)", configID)
+		if factory.szEngineExists(ctx) {
+			szEngine := &szengine.Szengine{}
+			err = szEngine.Reinitialize(ctx, configID)
+			if err != nil {
+				return wraperror.Errorf(err, "szEngine.Reinitialize(%d)", configID)
+			}
 		}
+
 	}
 
 	return wraperror.Errorf(err, wraperror.NoMessage)
@@ -248,7 +305,7 @@ func (factory *Szabstractfactory) Reinitialize(ctx context.Context, configID int
 // ----------------------------------------------------------------------------
 
 /*
-Method Destroy will destroy and perform cleanup for the Senzing objects created by the AbstractFactory.
+Method destroy will destroy and perform cleanup for the Senzing objects created by the AbstractFactory.
 It should be called after all other calls are complete.
 
 Input
@@ -273,7 +330,7 @@ func (factory *Szabstractfactory) destroySzConfigmanager(ctx context.Context) {
 		}
 	}
 
-	factory.szConfigManagerCounter = 0
+	// factory.szConfigManagerCounter = 0
 }
 
 func (factory *Szabstractfactory) destroySzDiagnostic(ctx context.Context) {
@@ -288,7 +345,7 @@ func (factory *Szabstractfactory) destroySzDiagnostic(ctx context.Context) {
 		}
 	}
 
-	factory.szDiagnosticCounter = 0
+	// factory.szDiagnosticCounter = 0
 }
 
 func (factory *Szabstractfactory) destroySzEngine(ctx context.Context) {
@@ -303,7 +360,7 @@ func (factory *Szabstractfactory) destroySzEngine(ctx context.Context) {
 		}
 	}
 
-	factory.szEngineCounter = 0
+	// factory.szEngineCounter = 0
 }
 
 func (factory *Szabstractfactory) destroySzProduct(ctx context.Context) {
@@ -318,12 +375,82 @@ func (factory *Szabstractfactory) destroySzProduct(ctx context.Context) {
 		}
 	}
 
-	factory.szProductCounter = 0
+	// factory.szProductCounter = 0
 }
 
-func (factory *Szabstractfactory) isInitialState() bool {
-	total := factory.szConfigManagerCounter + factory.szDiagnosticCounter + factory.szEngineCounter + factory.szProductCounter
-	result := total == 0
+// func (factory *Szabstractfactory) isInitialState() bool {
+// 	total := factory.szConfigManagerCounter + factory.szDiagnosticCounter + factory.szEngineCounter + factory.szProductCounter
+// 	result := total == 0
 
-	return result
+// 	return result
+// }
+
+/*
+Method verifyNoSenzingObjects determines if any Senzing objects are registered with the
+underlying C binaries.
+
+A returned error signifies that there are still objects registered with the Senzing engine, et al.
+*/
+func (factory *Szabstractfactory) verifyNoSenzingObjects(ctx context.Context) error {
+	var err error
+
+	if factory.szConfigManagerExists(ctx) {
+		return wraperror.Errorf(
+			errForPackage,
+			"Must call Destroy() on prior SzAbstractFactory before creating new SzAbstractFactory [SzConfigManager].",
+		)
+	}
+
+	if factory.szDiagnosticExists(ctx) {
+		return wraperror.Errorf(
+			errForPackage,
+			"Must call Destroy() on prior SzAbstractFactory before creating new SzAbstractFactory [SzDiagnostic].",
+		)
+	}
+
+	if factory.szEngineExists(ctx) {
+		return wraperror.Errorf(
+			errForPackage,
+			"Must call Destroy() on prior SzAbstractFactory before creating new SzAbstractFactory [SzEngine].",
+		)
+	}
+
+	if factory.szProductExists(ctx) {
+		return wraperror.Errorf(
+			errForPackage,
+			"Must call Destroy() on prior SzAbstractFactory before creating new SzAbstractFactory [SzProduct].",
+		)
+	}
+
+	return err
+}
+
+func (factory *Szabstractfactory) szConfigManagerExists(ctx context.Context) bool {
+	_ = ctx
+	szConfigManager := &szconfigmanager.Szconfigmanager{}
+	_, err := szConfigManager.GetDefaultConfigID(ctx)
+	return err == nil
+}
+
+func (factory *Szabstractfactory) szDiagnosticExists(ctx context.Context) bool {
+	_ = ctx
+	szDiagnostic := &szdiagnostic.Szdiagnostic{}
+	_, err := szDiagnostic.GetRepositoryInfo(ctx)
+	return err == nil
+}
+
+func (factory *Szabstractfactory) szEngineExists(ctx context.Context) bool {
+	_ = ctx
+	szEngine := &szengine.Szengine{}
+	_, err := szEngine.GetActiveConfigID(ctx)
+	return err == nil
+}
+
+func (factory *Szabstractfactory) szProductExists(ctx context.Context) bool {
+	_ = ctx
+
+	// TODO: Figure out how to determine this.
+	// IMPROVE:  Is there a way to check for the existence
+
+	return false
 }
