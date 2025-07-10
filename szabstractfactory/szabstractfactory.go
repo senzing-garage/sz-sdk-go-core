@@ -188,7 +188,7 @@ func (factory *Szabstractfactory) Close(ctx context.Context) error {
 }
 
 /*
-Method Destroy will destroy and perform cleanup for the Senzing objects created by the AbstractFactory.
+Method Destroy prevents factory from creating objects and invalidates objects previously created.
 It should be called after all other calls are complete.
 
 Input
@@ -201,6 +201,7 @@ func (factory *Szabstractfactory) Destroy(ctx context.Context) error {
 	defer factory.mutex.Unlock()
 
 	factory.destroy(ctx)
+	factory.isClosed = true
 
 	return wraperror.Errorf(err, wraperror.NoMessage)
 }
