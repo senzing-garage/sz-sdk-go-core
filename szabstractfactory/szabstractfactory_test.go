@@ -295,7 +295,7 @@ func TestSzAbstractFactory_Reinitialize(test *testing.T) {
 	require.NoError(test, err)
 }
 
-func TestSzAbstractFactory_MultiAbstractFactory_PreventSecondAbstractFactory_SzConfigManager(test *testing.T) {
+func TestSzAbstractFactory_Multi_PreventSecondAbstractFactory_SzConfigManager(test *testing.T) {
 	ctx := test.Context()
 
 	// First AbstractFactory without Destroy.
@@ -315,7 +315,7 @@ func TestSzAbstractFactory_MultiAbstractFactory_PreventSecondAbstractFactory_SzC
 	require.Error(test, err, "AbstractFactory2 should not create objects")
 }
 
-func TestSzAbstractFactory_MultiAbstractFactory_PreventSecondAbstractFactory_SzDiagnostic(test *testing.T) {
+func TestSzAbstractFactory_Multi_PreventSecondAbstractFactory_SzDiagnostic(test *testing.T) {
 	ctx := test.Context()
 
 	// First AbstractFactory without Destroy.
@@ -336,7 +336,7 @@ func TestSzAbstractFactory_MultiAbstractFactory_PreventSecondAbstractFactory_SzD
 	require.Error(test, err, "AbstractFactory2 should not create objects")
 }
 
-func TestSzAbstractFactory_MultiAbstractFactory_PreventSecondAbstractFactory_SzEngine(test *testing.T) {
+func TestSzAbstractFactory_Multi_PreventSecondAbstractFactory_SzEngine(test *testing.T) {
 	ctx := test.Context()
 
 	// First AbstractFactory without Destroy.
@@ -356,7 +356,7 @@ func TestSzAbstractFactory_MultiAbstractFactory_PreventSecondAbstractFactory_SzE
 	require.Error(test, err, "AbstractFactory2 should not create objects")
 }
 
-func TestSzAbstractFactory_MultiAbstractFactory_PreventSecondAbstractFactory_withRetry(test *testing.T) {
+func TestSzAbstractFactory_Multi_PreventSecondAbstractFactory_withRetry(test *testing.T) {
 	ctx := test.Context()
 
 	// First AbstractFactory without Destroy.
@@ -390,7 +390,7 @@ func TestSzAbstractFactory_MultiAbstractFactory_PreventSecondAbstractFactory_wit
 
 }
 
-func TestSzAbstractFactory_MultiAbstractFactory_OrphanedObject(test *testing.T) {
+func TestSzAbstractFactory_Multi_OrphanedObject(test *testing.T) {
 	ctx := test.Context()
 
 	// First AbstractFactory with Destroy.
@@ -425,7 +425,7 @@ func TestSzAbstractFactory_MultiAbstractFactory_OrphanedObject(test *testing.T) 
 	require.Equal(test, location2, extractLocation(info3))
 }
 
-func TestSzAbstractFactory_MultiAbstractFactory_OrphanedObject_Destroyed(test *testing.T) {
+func TestSzAbstractFactory_Multi_OrphanedObject_Destroyed(test *testing.T) {
 	ctx := test.Context()
 
 	// First AbstractFactory with Destroy.

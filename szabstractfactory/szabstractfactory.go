@@ -18,16 +18,12 @@ Szabstractfactory is an implementation of the [senzing.SzAbstractFactory] interf
 [senzing.SzAbstractFactory]: https://pkg.go.dev/github.com/senzing-garage/sz-sdk-go/senzing#SzAbstractFactory
 */
 type Szabstractfactory struct {
-	ConfigID     int64
-	InstanceName string
-	isDestroyed  bool
-	mutex        sync.Mutex
-	once         sync.Once
-	Settings     string
-	// szConfigManagerCounter int
-	// szDiagnosticCounter    int
-	// szEngineCounter        int
-	// szProductCounter       int
+	ConfigID       int64
+	InstanceName   string
+	isDestroyed    bool
+	mutex          sync.Mutex
+	once           sync.Once
+	Settings       string
 	VerboseLogging int64
 }
 
@@ -70,13 +66,8 @@ func (factory *Szabstractfactory) CreateConfigManager(ctx context.Context) (senz
 		)
 	}
 
-	// if factory.isInitialState() {
-	// 	factory.destroy(ctx)
-	// }
-
 	result = &szconfigmanager.Szconfigmanager{}
 	err = result.Initialize(ctx, factory.InstanceName, factory.Settings, factory.VerboseLogging)
-	// factory.szConfigManagerCounter++
 
 	return result, wraperror.Errorf(err, wraperror.NoMessage)
 }
@@ -116,13 +107,8 @@ func (factory *Szabstractfactory) CreateDiagnostic(ctx context.Context) (senzing
 		)
 	}
 
-	// if factory.isInitialState() {
-	// 	factory.destroy(ctx)
-	// }
-
 	result = &szdiagnostic.Szdiagnostic{}
 	err = result.Initialize(ctx, factory.InstanceName, factory.Settings, factory.ConfigID, factory.VerboseLogging)
-	// factory.szDiagnosticCounter++
 
 	return result, wraperror.Errorf(err, wraperror.NoMessage)
 }
@@ -162,13 +148,8 @@ func (factory *Szabstractfactory) CreateEngine(ctx context.Context) (senzing.SzE
 		)
 	}
 
-	// if factory.isInitialState() {
-	// 	factory.destroy(ctx)
-	// }
-
 	result = &szengine.Szengine{}
 	err = result.Initialize(ctx, factory.InstanceName, factory.Settings, factory.ConfigID, factory.VerboseLogging)
-	// factory.szEngineCounter++
 
 	return result, wraperror.Errorf(err, wraperror.NoMessage)
 }
@@ -208,33 +189,11 @@ func (factory *Szabstractfactory) CreateProduct(ctx context.Context) (senzing.Sz
 		)
 	}
 
-	// if factory.isInitialState() {
-	// 	factory.destroy(ctx)
-	// }
-
 	result = &szproduct.Szproduct{}
 	err = result.Initialize(ctx, factory.InstanceName, factory.Settings, factory.VerboseLogging)
-	// factory.szProductCounter++
 
 	return result, wraperror.Errorf(err, wraperror.NoMessage)
 }
-
-/*
-Method Close prevents factory from creating objects.
-
-Input
-  - ctx: A context to control lifecycle.
-*/
-// func (factory *Szabstractfactory) Close(ctx context.Context) error {
-// 	var err error
-
-// 	factory.mutex.Lock()
-// 	defer factory.mutex.Unlock()
-
-// 	factory.isClosed = true
-
-// 	return wraperror.Errorf(err, wraperror.NoMessage)
-// }
 
 /*
 Method Destroy prevents factory from creating objects and invalidates objects previously created.
@@ -329,8 +288,6 @@ func (factory *Szabstractfactory) destroySzConfigmanager(ctx context.Context) {
 			break
 		}
 	}
-
-	// factory.szConfigManagerCounter = 0
 }
 
 func (factory *Szabstractfactory) destroySzDiagnostic(ctx context.Context) {
@@ -344,8 +301,6 @@ func (factory *Szabstractfactory) destroySzDiagnostic(ctx context.Context) {
 			break
 		}
 	}
-
-	// factory.szDiagnosticCounter = 0
 }
 
 func (factory *Szabstractfactory) destroySzEngine(ctx context.Context) {
@@ -359,8 +314,6 @@ func (factory *Szabstractfactory) destroySzEngine(ctx context.Context) {
 			break
 		}
 	}
-
-	// factory.szEngineCounter = 0
 }
 
 func (factory *Szabstractfactory) destroySzProduct(ctx context.Context) {
@@ -374,16 +327,37 @@ func (factory *Szabstractfactory) destroySzProduct(ctx context.Context) {
 			break
 		}
 	}
-
-	// factory.szProductCounter = 0
 }
 
-// func (factory *Szabstractfactory) isInitialState() bool {
-// 	total := factory.szConfigManagerCounter + factory.szDiagnosticCounter + factory.szEngineCounter + factory.szProductCounter
-// 	result := total == 0
+func (factory *Szabstractfactory) szConfigManagerExists(ctx context.Context) bool {
+	_ = ctx
+	szConfigManager := &szconfigmanager.Szconfigmanager{}
+	_, err := szConfigManager.GetDefaultConfigID(ctx)
+	return err == nil
+}
 
-// 	return result
-// }
+func (factory *Szabstractfactory) szDiagnosticExists(ctx context.Context) bool {
+	_ = ctx
+	szDiagnostic := &szdiagnostic.Szdiagnostic{}
+	_, err := szDiagnostic.GetRepositoryInfo(ctx)
+	return err == nil
+}
+
+func (factory *Szabstractfactory) szEngineExists(ctx context.Context) bool {
+	_ = ctx
+	szEngine := &szengine.Szengine{}
+	_, err := szEngine.GetActiveConfigID(ctx)
+	return err == nil
+}
+
+func (factory *Szabstractfactory) szProductExists(ctx context.Context) bool {
+	_ = ctx
+
+	// TODO: Figure out how to determine this.
+	// IMPROVE:  Is there a way to check for the existence
+
+	return false
+}
 
 /*
 Method verifyNoSenzingObjects determines if any Senzing objects are registered with the
@@ -423,34 +397,4 @@ func (factory *Szabstractfactory) verifyNoSenzingObjects(ctx context.Context) er
 	}
 
 	return err
-}
-
-func (factory *Szabstractfactory) szConfigManagerExists(ctx context.Context) bool {
-	_ = ctx
-	szConfigManager := &szconfigmanager.Szconfigmanager{}
-	_, err := szConfigManager.GetDefaultConfigID(ctx)
-	return err == nil
-}
-
-func (factory *Szabstractfactory) szDiagnosticExists(ctx context.Context) bool {
-	_ = ctx
-	szDiagnostic := &szdiagnostic.Szdiagnostic{}
-	_, err := szDiagnostic.GetRepositoryInfo(ctx)
-	return err == nil
-}
-
-func (factory *Szabstractfactory) szEngineExists(ctx context.Context) bool {
-	_ = ctx
-	szEngine := &szengine.Szengine{}
-	_, err := szEngine.GetActiveConfigID(ctx)
-	return err == nil
-}
-
-func (factory *Szabstractfactory) szProductExists(ctx context.Context) bool {
-	_ = ctx
-
-	// TODO: Figure out how to determine this.
-	// IMPROVE:  Is there a way to check for the existence
-
-	return false
 }
