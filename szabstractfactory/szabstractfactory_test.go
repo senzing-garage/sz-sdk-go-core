@@ -24,11 +24,11 @@ import (
 )
 
 type DataStores struct {
-	Location string `json:"location"`
+	Location string `json:"location"` //nolint
 }
 
 type GetRepositoryInfoResponse struct {
-	DataStores []DataStores `json:"dataStores"`
+	DataStores []DataStores `json:"dataStores"` //nolint
 }
 
 const (
@@ -310,7 +310,9 @@ func TestSzAbstractFactory_Multi_PreventSecondAbstractFactory_SzConfigManager(te
 	// Second AbstractFactory should fail.
 
 	szAbstractFactory2 := getSzAbstractFactoryByLocation(ctx, location2)
+
 	defer func() { require.NoError(test, szAbstractFactory2.Destroy(ctx)) }()
+
 	_, err = szAbstractFactory2.CreateConfigManager(ctx)
 	require.Error(test, err, "AbstractFactory2 should not create objects")
 }
@@ -331,7 +333,9 @@ func TestSzAbstractFactory_Multi_PreventSecondAbstractFactory_SzDiagnostic(test 
 	// Second AbstractFactory should fail.
 
 	szAbstractFactory2 := getSzAbstractFactoryByLocation(ctx, location2)
+
 	defer func() { require.NoError(test, szAbstractFactory2.Destroy(ctx)) }()
+
 	_, err = szAbstractFactory2.CreateDiagnostic(ctx)
 	require.Error(test, err, "AbstractFactory2 should not create objects")
 }
@@ -351,7 +355,9 @@ func TestSzAbstractFactory_Multi_PreventSecondAbstractFactory_SzEngine(test *tes
 	// Second AbstractFactory should fail.
 
 	szAbstractFactory2 := getSzAbstractFactoryByLocation(ctx, location2)
+
 	defer func() { require.NoError(test, szAbstractFactory2.Destroy(ctx)) }()
+
 	_, err = szAbstractFactory2.CreateConfigManager(ctx)
 	require.Error(test, err, "AbstractFactory2 should not create objects")
 }
@@ -372,7 +378,9 @@ func TestSzAbstractFactory_Multi_PreventSecondAbstractFactory_withRetry(test *te
 	// Second AbstractFactory should fail.
 
 	szAbstractFactory2 := getSzAbstractFactoryByLocation(ctx, location2)
+
 	defer func() { require.NoError(test, szAbstractFactory2.Destroy(ctx)) }()
+
 	_, err = szAbstractFactory2.CreateDiagnostic(ctx)
 	require.Error(test, err, "AbstractFactory2 should not create objects")
 
@@ -384,10 +392,11 @@ func TestSzAbstractFactory_Multi_PreventSecondAbstractFactory_withRetry(test *te
 	// Second AbstractFactory should fail.
 
 	szAbstractFactory2 = getSzAbstractFactoryByLocation(ctx, location2)
+
 	defer func() { require.NoError(test, szAbstractFactory2.Destroy(ctx)) }()
+
 	_, err = szAbstractFactory2.CreateDiagnostic(ctx)
 	require.NoError(test, err, "AbstractFactory2 should create objects")
-
 }
 
 func TestSzAbstractFactory_Multi_OrphanedObject(test *testing.T) {
@@ -409,6 +418,7 @@ func TestSzAbstractFactory_Multi_OrphanedObject(test *testing.T) {
 	// Second AbstractFactory with deferred Destroy.
 
 	szAbstractFactory2 := getSzAbstractFactoryByLocation(ctx, location2)
+
 	defer func() { require.NoError(test, szAbstractFactory2.Destroy(ctx)) }()
 
 	szDiagnostic2, err := szAbstractFactory2.CreateDiagnostic(ctx)
@@ -468,6 +478,7 @@ func extractLocation(location string) string {
 	getRepositoryInfoResponse := GetRepositoryInfoResponse{}
 	err := json.Unmarshal([]byte(location), &getRepositoryInfoResponse)
 	panicOnError(err)
+
 	return getRepositoryInfoResponse.DataStores[0].Location
 }
 

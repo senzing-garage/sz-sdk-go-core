@@ -60,6 +60,7 @@ func (factory *Szabstractfactory) CreateConfigManager(ctx context.Context) (senz
 
 	if err != nil {
 		factory.once = sync.Once{}
+
 		return result, wraperror.Errorf(
 			err,
 			"Must destroy prior Senzing objects before creating with this AbstractFactory [SzConfigManager]",
@@ -101,6 +102,7 @@ func (factory *Szabstractfactory) CreateDiagnostic(ctx context.Context) (senzing
 
 	if err != nil {
 		factory.once = sync.Once{}
+
 		return result, wraperror.Errorf(
 			err,
 			"Must destroy prior Senzing objects before creating with this AbstractFactory [SzDiagnostic]",
@@ -142,6 +144,7 @@ func (factory *Szabstractfactory) CreateEngine(ctx context.Context) (senzing.SzE
 
 	if err != nil {
 		factory.once = sync.Once{}
+
 		return result, wraperror.Errorf(
 			err,
 			"Must destroy prior Senzing objects before creating with this AbstractFactory [SzEngine]",
@@ -183,6 +186,7 @@ func (factory *Szabstractfactory) CreateProduct(ctx context.Context) (senzing.Sz
 
 	if err != nil {
 		factory.once = sync.Once{}
+
 		return result, wraperror.Errorf(
 			err,
 			"Must destroy prior Senzing objects before creating with this AbstractFactory [SzProduct]",
@@ -208,10 +212,6 @@ func (factory *Szabstractfactory) Destroy(ctx context.Context) error {
 	factory.mutex.Lock()
 	defer factory.mutex.Unlock()
 
-	if factory.isDestroyed {
-		return wraperror.Errorf(err, "SzAbstractFactory is already destroyed")
-	}
-
 	factory.destroy(ctx)
 	factory.isDestroyed = true
 
@@ -234,26 +234,26 @@ func (factory *Szabstractfactory) Reinitialize(ctx context.Context, configID int
 
 	factory.ConfigID = configID
 
-	if !factory.isDestroyed {
+	if factory.isDestroyed {
+		return wraperror.Errorf(errForPackage, "SzAbstractFactory is destroyed")
+	}
 
-		// TODO:  Check that instances exist.
+	if factory.szDiagnosticExists(ctx) {
+		szDiagnostic := &szdiagnostic.Szdiagnostic{}
 
-		if factory.szDiagnosticExists(ctx) {
-			szDiagnostic := &szdiagnostic.Szdiagnostic{}
-			err = szDiagnostic.Reinitialize(ctx, configID)
-			if err != nil {
-				return wraperror.Errorf(err, "szDiagnostic.Reinitialize(%d)", configID)
-			}
+		err = szDiagnostic.Reinitialize(ctx, configID)
+		if err != nil {
+			return wraperror.Errorf(err, "szDiagnostic.Reinitialize(%d)", configID)
 		}
+	}
 
-		if factory.szEngineExists(ctx) {
-			szEngine := &szengine.Szengine{}
-			err = szEngine.Reinitialize(ctx, configID)
-			if err != nil {
-				return wraperror.Errorf(err, "szEngine.Reinitialize(%d)", configID)
-			}
+	if factory.szEngineExists(ctx) {
+		szEngine := &szengine.Szengine{}
+
+		err = szEngine.Reinitialize(ctx, configID)
+		if err != nil {
+			return wraperror.Errorf(err, "szEngine.Reinitialize(%d)", configID)
 		}
-
 	}
 
 	return wraperror.Errorf(err, wraperror.NoMessage)
@@ -333,6 +333,7 @@ func (factory *Szabstractfactory) szConfigManagerExists(ctx context.Context) boo
 	_ = ctx
 	szConfigManager := &szconfigmanager.Szconfigmanager{}
 	_, err := szConfigManager.GetDefaultConfigID(ctx)
+
 	return err == nil
 }
 
@@ -340,6 +341,7 @@ func (factory *Szabstractfactory) szDiagnosticExists(ctx context.Context) bool {
 	_ = ctx
 	szDiagnostic := &szdiagnostic.Szdiagnostic{}
 	_, err := szDiagnostic.GetRepositoryInfo(ctx)
+
 	return err == nil
 }
 
@@ -347,14 +349,14 @@ func (factory *Szabstractfactory) szEngineExists(ctx context.Context) bool {
 	_ = ctx
 	szEngine := &szengine.Szengine{}
 	_, err := szEngine.GetActiveConfigID(ctx)
+
 	return err == nil
 }
 
 func (factory *Szabstractfactory) szProductExists(ctx context.Context) bool {
 	_ = ctx
 
-	// TODO: Figure out how to determine this.
-	// IMPROVE:  Is there a way to check for the existence
+	// TODO: Is there a way to check for the existence.
 
 	return false
 }
