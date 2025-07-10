@@ -389,11 +389,44 @@ func TestSzAbstractFactory_Multi_PreventSecondAbstractFactory_withRetry(test *te
 	err = szAbstractFactory1.Destroy(ctx)
 	require.NoError(test, err)
 
-	// Second AbstractFactory should fail.
+	// Second AbstractFactory should succeed.
 
 	szAbstractFactory2 = getSzAbstractFactoryByLocation(ctx, location2)
 
 	defer func() { require.NoError(test, szAbstractFactory2.Destroy(ctx)) }()
+
+	_, err = szAbstractFactory2.CreateDiagnostic(ctx)
+	require.NoError(test, err, "AbstractFactory2 should create objects")
+}
+
+func TestSzAbstractFactory_Multi_PreventSecondAbstractFactory_withRetryOnSameAbstractFactory(test *testing.T) {
+	ctx := test.Context()
+
+	// First AbstractFactory without Destroy.
+
+	szAbstractFactory1 := getSzAbstractFactoryByLocation(ctx, location1)
+	szDiagnostic1, err := szAbstractFactory1.CreateDiagnostic(ctx)
+	require.NoError(test, err)
+
+	info1, err := szDiagnostic1.GetRepositoryInfo(ctx)
+	require.NoError(test, err)
+	require.Equal(test, location1, extractLocation(info1), "AbstractFactory1 ")
+
+	// Second AbstractFactory should fail.
+
+	szAbstractFactory2 := getSzAbstractFactoryByLocation(ctx, location2)
+
+	defer func() { require.NoError(test, szAbstractFactory2.Destroy(ctx)) }()
+
+	_, err = szAbstractFactory2.CreateDiagnostic(ctx)
+	require.Error(test, err, "AbstractFactory2 should not create objects")
+
+	// Destroy the first AbstractFactory.
+
+	err = szAbstractFactory1.Destroy(ctx)
+	require.NoError(test, err)
+
+	// Second AbstractFactory should now succeed.
 
 	_, err = szAbstractFactory2.CreateDiagnostic(ctx)
 	require.NoError(test, err, "AbstractFactory2 should create objects")
