@@ -149,7 +149,6 @@ func ExampleSzengine_ExportCsvEntityReport() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-
 	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
