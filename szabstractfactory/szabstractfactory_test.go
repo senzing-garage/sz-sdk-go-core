@@ -301,6 +301,7 @@ func TestSzAbstractFactory_Multi_CreateAll(test *testing.T) {
 	// First AbstractFactory without Destroy (it's deferred).
 
 	szAbstractFactory1 := getSzAbstractFactoryByLocation(ctx, location1)
+
 	defer func() { require.NoError(test, szAbstractFactory1.Destroy(ctx)) }()
 
 	_, err = szAbstractFactory1.CreateConfigManager(ctx)
@@ -313,6 +314,7 @@ func TestSzAbstractFactory_Multi_CreateAll(test *testing.T) {
 	require.NoError(test, err, "szAbstractFactory1 should create a SzProduct")
 
 	szAbstractFactory2 := getSzAbstractFactoryByLocation(ctx, location2)
+
 	defer func() { require.NoError(test, szAbstractFactory2.Destroy(ctx)) }()
 
 	_, err = szAbstractFactory2.CreateConfigManager(ctx)
@@ -346,6 +348,7 @@ func TestSzAbstractFactory_Multi_PreventAdditionalAbstractFactories(test *testin
 	// First AbstractFactory without Destroy (it's deferred).
 
 	szAbstractFactory1 := getSzAbstractFactoryByLocation(ctx, location1)
+
 	defer func() { require.NoError(test, szAbstractFactory1.Destroy(ctx)) }()
 
 	szConfigManager1, err := szAbstractFactory1.CreateConfigManager(ctx)
@@ -357,6 +360,7 @@ func TestSzAbstractFactory_Multi_PreventAdditionalAbstractFactories(test *testin
 	// Second AbstractFactory should fail.
 
 	szAbstractFactory2 := getSzAbstractFactoryByLocation(ctx, location2)
+
 	defer func() { require.NoError(test, szAbstractFactory2.Destroy(ctx)) }()
 
 	_, err = szAbstractFactory2.CreateConfigManager(ctx)
@@ -371,6 +375,7 @@ func TestSzAbstractFactory_Multi_PreventAdditionalAbstractFactories(test *testin
 	// Third AbstractFactory should fail.
 
 	szAbstractFactory3 := getSzAbstractFactoryByLocation(ctx, location3)
+
 	defer func() { require.NoError(test, szAbstractFactory3.Destroy(ctx)) }()
 
 	_, err = szAbstractFactory3.CreateConfigManager(ctx)
@@ -392,6 +397,7 @@ func TestSzAbstractFactory_Multi_PreventSecondAbstractFactory_withRetry(test *te
 	// First AbstractFactory without Destroy (it's deferred).
 
 	szAbstractFactory1 := getSzAbstractFactoryByLocation(ctx, location1)
+
 	defer func() { require.NoError(test, szAbstractFactory1.Destroy(ctx)) }()
 
 	szDiagnostic1, err := szAbstractFactory1.CreateDiagnostic(ctx)
@@ -435,6 +441,7 @@ func TestSzAbstractFactory_Multi_PreventSecondAbstractFactory_withRetry(test *te
 	// Try a third AbstractFactory.
 
 	szAbstractFactory3 := getSzAbstractFactoryByLocation(ctx, location3)
+
 	defer func() { require.NoError(test, szAbstractFactory3.Destroy(ctx)) }()
 
 	_, err = szAbstractFactory3.CreateDiagnostic(ctx)
@@ -450,9 +457,11 @@ func TestSzAbstractFactory_Multi_DestroyViaSecondAbstractFactory(test *testing.T
 	// Create AbstractFactories.
 
 	szAbstractFactory1 := getSzAbstractFactoryByLocation(ctx, location1)
+
 	defer func() { require.NoError(test, szAbstractFactory1.Destroy(ctx)) }()
 
 	szAbstractFactory2 := getSzAbstractFactoryByLocation(ctx, location2)
+
 	defer func() { require.NoError(test, szAbstractFactory2.Destroy(ctx)) }()
 
 	// Get object from szAbstractFactory1.
@@ -504,7 +513,9 @@ func TestSzAbstractFactory_Multi_OrphanedObject(test *testing.T) {
 	// Second AbstractFactory with deferred Destroy.
 
 	szAbstractFactory2 := getSzAbstractFactoryByLocation(ctx, location2)
+
 	defer func() { require.NoError(test, szAbstractFactory2.Destroy(ctx)) }()
+
 	szDiagnostic2, err := szAbstractFactory2.CreateDiagnostic(ctx)
 	require.NoError(test, err)
 

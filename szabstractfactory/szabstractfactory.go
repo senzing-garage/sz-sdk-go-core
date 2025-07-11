@@ -374,7 +374,7 @@ func (factory *Szabstractfactory) szEngineExists(ctx context.Context) bool {
 func (factory *Szabstractfactory) szProductExists(ctx context.Context) bool {
 	_ = ctx
 
-	// TODO: Is there a way to check for the existence.
+	// IMPROVE: Is there a way to check for the existence.
 
 	return false
 }
