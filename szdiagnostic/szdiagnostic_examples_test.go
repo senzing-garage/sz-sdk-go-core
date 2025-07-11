@@ -20,7 +20,6 @@ func ExampleSzdiagnostic_CheckRepositoryPerformance() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
 	ctx := context.TODO()
-
 	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	szDiagnostic, err := szAbstractFactory.CreateDiagnostic(ctx)
@@ -47,7 +46,6 @@ func ExampleSzdiagnostic_GetFeature() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
 	ctx := context.TODO()
-
 	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	szDiagnostic, err := szAbstractFactory.CreateDiagnostic(ctx)
@@ -100,7 +98,6 @@ func ExampleSzdiagnostic_GetRepositoryInfo() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
 	ctx := context.TODO()
-
 	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	szDiagnostic, err := szAbstractFactory.CreateDiagnostic(ctx)
@@ -130,7 +127,6 @@ func ExampleSzdiagnostic_PurgeRepository() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
 	ctx := context.TODO()
-
 	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	szDiagnostic, err := szAbstractFactory.CreateDiagnostic(ctx)
