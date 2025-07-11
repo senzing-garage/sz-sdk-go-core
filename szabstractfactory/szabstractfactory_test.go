@@ -293,6 +293,10 @@ func TestSzAbstractFactory_Reinitialize(test *testing.T) {
 	require.NoError(test, err)
 }
 
+/*
+Verify that all object can be created and subsequent SzAbstractFactories cannot create
+objects until the first SzAbstractFactory is destroyed.
+*/
 func TestSzAbstractFactory_Multi_CreateAll(test *testing.T) {
 	var err error
 
@@ -313,6 +317,8 @@ func TestSzAbstractFactory_Multi_CreateAll(test *testing.T) {
 	_, err = szAbstractFactory1.CreateProduct(ctx)
 	require.NoError(test, err, "szAbstractFactory1 should create a SzProduct")
 
+	// Second AbstractFactory doesn't created objects while first AbstractFactory is active.
+
 	szAbstractFactory2 := getSzAbstractFactoryByLocation(ctx, location2)
 
 	defer func() { require.NoError(test, szAbstractFactory2.Destroy(ctx)) }()
@@ -326,8 +332,12 @@ func TestSzAbstractFactory_Multi_CreateAll(test *testing.T) {
 	_, err = szAbstractFactory2.CreateProduct(ctx)
 	require.Error(test, err, "szAbstractFactory2 should not create a SzProduct")
 
+	// First AbstractFactory is destroyed.
+
 	err = szAbstractFactory1.Destroy(ctx)
 	require.NoError(test, err)
+
+	// Now second AbstractFactory can create objects.
 
 	_, err = szAbstractFactory2.CreateConfigManager(ctx)
 	require.NoError(test, err, "szAbstractFactory2 should create a SzConfigManager")
