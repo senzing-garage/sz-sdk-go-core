@@ -20,7 +20,7 @@ Szabstractfactory is an implementation of the [senzing.SzAbstractFactory] interf
 type Szabstractfactory struct {
 	ConfigID       int64
 	InstanceName   string
-	isDestroyed    bool
+	isClosed       bool
 	mutex          sync.Mutex
 	once           sync.Once
 	Settings       string
@@ -50,8 +50,8 @@ func (factory *Szabstractfactory) CreateConfigManager(ctx context.Context) (senz
 	factory.mutex.Lock()
 	defer factory.mutex.Unlock()
 
-	if factory.isDestroyed {
-		return result, wraperror.Errorf(err, "SzAbstractFactory is destroyed")
+	if factory.isClosed {
+		return result, wraperror.Errorf(errForPackage, "SzAbstractFactory is closed")
 	}
 
 	factory.once.Do(func() {
@@ -92,8 +92,8 @@ func (factory *Szabstractfactory) CreateDiagnostic(ctx context.Context) (senzing
 	factory.mutex.Lock()
 	defer factory.mutex.Unlock()
 
-	if factory.isDestroyed {
-		return result, wraperror.Errorf(err, "SzAbstractFactory is destroyed")
+	if factory.isClosed {
+		return result, wraperror.Errorf(errForPackage, "SzAbstractFactory is closed")
 	}
 
 	factory.once.Do(func() {
@@ -134,8 +134,8 @@ func (factory *Szabstractfactory) CreateEngine(ctx context.Context) (senzing.SzE
 	factory.mutex.Lock()
 	defer factory.mutex.Unlock()
 
-	if factory.isDestroyed {
-		return result, wraperror.Errorf(err, "SzAbstractFactory is destroyed")
+	if factory.isClosed {
+		return result, wraperror.Errorf(errForPackage, "SzAbstractFactory is closed")
 	}
 
 	factory.once.Do(func() {
@@ -176,8 +176,8 @@ func (factory *Szabstractfactory) CreateProduct(ctx context.Context) (senzing.Sz
 	factory.mutex.Lock()
 	defer factory.mutex.Unlock()
 
-	if factory.isDestroyed {
-		return result, wraperror.Errorf(err, "SzAbstractFactory is destroyed")
+	if factory.isClosed {
+		return result, wraperror.Errorf(errForPackage, "SzAbstractFactory is closed")
 	}
 
 	factory.once.Do(func() {
@@ -213,7 +213,29 @@ func (factory *Szabstractfactory) Destroy(ctx context.Context) error {
 	defer factory.mutex.Unlock()
 
 	factory.destroy(ctx)
-	factory.isDestroyed = true
+	factory.isClosed = true
+
+	return wraperror.Errorf(err, wraperror.NoMessage)
+}
+
+/*
+Method DestroyWithoutClosing invalidates objects previously created, but allows new objects to be created.
+
+This is rarely used.
+It is used to "clean up" after a prior SzAbstractFactory has gone out of scope before its Destroy() method
+was called.
+Normally the prior SzAbstractFactory's Destroy() method should have been called.
+
+Input
+  - ctx: A context to control lifecycle.
+*/
+func (factory *Szabstractfactory) DestroyWithoutClosing(ctx context.Context) error {
+	var err error
+
+	factory.mutex.Lock()
+	defer factory.mutex.Unlock()
+
+	factory.destroy(ctx)
 
 	return wraperror.Errorf(err, wraperror.NoMessage)
 }
@@ -233,10 +255,6 @@ func (factory *Szabstractfactory) Reinitialize(ctx context.Context, configID int
 	defer factory.mutex.Unlock()
 
 	factory.ConfigID = configID
-
-	if factory.isDestroyed {
-		return wraperror.Errorf(errForPackage, "SzAbstractFactory is destroyed")
-	}
 
 	if factory.szDiagnosticExists(ctx) {
 		szDiagnostic := &szdiagnostic.Szdiagnostic{}

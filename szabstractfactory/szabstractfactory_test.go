@@ -237,14 +237,12 @@ func TestSzAbstractFactory_Destroy_SzEngine(test *testing.T) {
 	require.NoError(test, err)
 
 	require.NoError(test, szAbstractFactory.Destroy(ctx))
-	// require.NoError(test, szAbstractFactory.Destroy(ctx))
-	// require.NoError(test, szAbstractFactory.Destroy(ctx))
 
-	// szEngine3, err := szAbstractFactory.CreateEngine(ctx)
-	// require.NoError(test, err)
-	// szEngineCore3, ok := szEngine3.(*szengine.Szengine)
-	// require.True(test, ok)
-	// szEngineCore3.Destroy(ctx)
+	require.NoError(test, szAbstractFactory.Destroy(ctx))
+	require.NoError(test, szAbstractFactory.Destroy(ctx))
+
+	_, err = szAbstractFactory.CreateEngine(ctx)
+	require.Error(test, err)
 }
 
 func TestSzAbstractFactory_Destroy_SzProduct(test *testing.T) {
@@ -295,12 +293,17 @@ func TestSzAbstractFactory_Reinitialize(test *testing.T) {
 	require.NoError(test, err)
 }
 
-func TestSzAbstractFactory_Multi_PreventSecondAbstractFactory_SzConfigManager(test *testing.T) {
+/*
+Verify that a second and third SzAbstractFactories are disabled if the first SzAbstractFactory is active.
+*/
+func TestSzAbstractFactory_Multi_PreventAdditionalAbstractFactories(test *testing.T) {
 	ctx := test.Context()
 
-	// First AbstractFactory without Destroy.
+	// First AbstractFactory without Destroy (it's deferred).
 
 	szAbstractFactory1 := getSzAbstractFactoryByLocation(ctx, location1)
+	defer func() { require.NoError(test, szAbstractFactory1.Destroy(ctx)) }()
+
 	szConfigManager1, err := szAbstractFactory1.CreateConfigManager(ctx)
 	require.NoError(test, err)
 
@@ -310,64 +313,43 @@ func TestSzAbstractFactory_Multi_PreventSecondAbstractFactory_SzConfigManager(te
 	// Second AbstractFactory should fail.
 
 	szAbstractFactory2 := getSzAbstractFactoryByLocation(ctx, location2)
-
 	defer func() { require.NoError(test, szAbstractFactory2.Destroy(ctx)) }()
 
 	_, err = szAbstractFactory2.CreateConfigManager(ctx)
-	require.Error(test, err, "AbstractFactory2 should not create objects")
-}
-
-func TestSzAbstractFactory_Multi_PreventSecondAbstractFactory_SzDiagnostic(test *testing.T) {
-	ctx := test.Context()
-
-	// First AbstractFactory without Destroy.
-
-	szAbstractFactory1 := getSzAbstractFactoryByLocation(ctx, location1)
-	szDiagnostic1, err := szAbstractFactory1.CreateDiagnostic(ctx)
-	require.NoError(test, err)
-
-	info1, err := szDiagnostic1.GetRepositoryInfo(ctx)
-	require.NoError(test, err)
-	require.Equal(test, location1, extractLocation(info1), "AbstractFactory1 ")
-
-	// Second AbstractFactory should fail.
-
-	szAbstractFactory2 := getSzAbstractFactoryByLocation(ctx, location2)
-
-	defer func() { require.NoError(test, szAbstractFactory2.Destroy(ctx)) }()
-
+	require.Error(test, err, "AbstractFactory2 should not create a SzConfigManager")
 	_, err = szAbstractFactory2.CreateDiagnostic(ctx)
-	require.Error(test, err, "AbstractFactory2 should not create objects")
+	require.Error(test, err, "AbstractFactory2 should not create a SzDiagnostic")
+	_, err = szAbstractFactory2.CreateEngine(ctx)
+	require.Error(test, err, "AbstractFactory2 should not create a SzEngine")
+	_, err = szAbstractFactory2.CreateProduct(ctx)
+	require.Error(test, err, "AbstractFactory2 should not create a SzProduct")
+
+	// Third AbstractFactory should fail.
+
+	szAbstractFactory3 := getSzAbstractFactoryByLocation(ctx, location3)
+	defer func() { require.NoError(test, szAbstractFactory3.Destroy(ctx)) }()
+
+	_, err = szAbstractFactory3.CreateConfigManager(ctx)
+	require.Error(test, err, "szAbstractFactory3 should not create a SzConfigManager")
+	_, err = szAbstractFactory3.CreateDiagnostic(ctx)
+	require.Error(test, err, "szAbstractFactory3 should not create a SzDiagnostic")
+	_, err = szAbstractFactory3.CreateEngine(ctx)
+	require.Error(test, err, "szAbstractFactory3 should not create a SzEngine")
+	_, err = szAbstractFactory3.CreateProduct(ctx)
+	require.Error(test, err, "szAbstractFactory3 should not create a SzProduct")
 }
 
-func TestSzAbstractFactory_Multi_PreventSecondAbstractFactory_SzEngine(test *testing.T) {
-	ctx := test.Context()
-
-	// First AbstractFactory without Destroy.
-
-	szAbstractFactory1 := getSzAbstractFactoryByLocation(ctx, location1)
-	szEngine1, err := szAbstractFactory1.CreateEngine(ctx)
-	require.NoError(test, err)
-
-	_, err = szEngine1.CountRedoRecords(ctx)
-	require.NoError(test, err)
-
-	// Second AbstractFactory should fail.
-
-	szAbstractFactory2 := getSzAbstractFactoryByLocation(ctx, location2)
-
-	defer func() { require.NoError(test, szAbstractFactory2.Destroy(ctx)) }()
-
-	_, err = szAbstractFactory2.CreateConfigManager(ctx)
-	require.Error(test, err, "AbstractFactory2 should not create objects")
-}
-
+/*
+Verify that a second SzAbstractFactory works after the first SzAbstractFactory has been destroyed.
+*/
 func TestSzAbstractFactory_Multi_PreventSecondAbstractFactory_withRetry(test *testing.T) {
 	ctx := test.Context()
 
-	// First AbstractFactory without Destroy.
+	// First AbstractFactory without Destroy (it's deferred).
 
 	szAbstractFactory1 := getSzAbstractFactoryByLocation(ctx, location1)
+	defer func() { require.NoError(test, szAbstractFactory1.Destroy(ctx)) }()
+
 	szDiagnostic1, err := szAbstractFactory1.CreateDiagnostic(ctx)
 	require.NoError(test, err)
 
@@ -381,8 +363,14 @@ func TestSzAbstractFactory_Multi_PreventSecondAbstractFactory_withRetry(test *te
 
 	defer func() { require.NoError(test, szAbstractFactory2.Destroy(ctx)) }()
 
+	_, err = szAbstractFactory2.CreateConfigManager(ctx)
+	require.Error(test, err, "AbstractFactory2 should not create a SzConfigManager")
 	_, err = szAbstractFactory2.CreateDiagnostic(ctx)
-	require.Error(test, err, "AbstractFactory2 should not create objects")
+	require.Error(test, err, "AbstractFactory2 should not create a SzDiagnostic")
+	_, err = szAbstractFactory2.CreateEngine(ctx)
+	require.Error(test, err, "AbstractFactory2 should not create a SzEngine")
+	_, err = szAbstractFactory2.CreateProduct(ctx)
+	require.Error(test, err, "AbstractFactory2 should not create a SzProduct")
 
 	// Destroy the first AbstractFactory.
 
@@ -391,47 +379,68 @@ func TestSzAbstractFactory_Multi_PreventSecondAbstractFactory_withRetry(test *te
 
 	// Second AbstractFactory should succeed.
 
-	szAbstractFactory2 = getSzAbstractFactoryByLocation(ctx, location2)
-
-	defer func() { require.NoError(test, szAbstractFactory2.Destroy(ctx)) }()
-
+	_, err = szAbstractFactory2.CreateConfigManager(ctx)
+	require.NoError(test, err, "AbstractFactory2 should create a SzConfigManager")
 	_, err = szAbstractFactory2.CreateDiagnostic(ctx)
-	require.NoError(test, err, "AbstractFactory2 should create objects")
+	require.NoError(test, err, "AbstractFactory2 should create a SzDiagnostic")
+	_, err = szAbstractFactory2.CreateEngine(ctx)
+	require.NoError(test, err, "AbstractFactory2 should create a SzEngine")
+	_, err = szAbstractFactory2.CreateProduct(ctx)
+	require.NoError(test, err, "AbstractFactory2 should create a SzProduct")
+
+	// Try a third AbstractFactory.
+
+	szAbstractFactory3 := getSzAbstractFactoryByLocation(ctx, location3)
+	defer func() { require.NoError(test, szAbstractFactory3.Destroy(ctx)) }()
+
+	_, err = szAbstractFactory3.CreateDiagnostic(ctx)
+	require.Error(test, err, "AbstractFactory3 should not create objects")
 }
 
-func TestSzAbstractFactory_Multi_PreventSecondAbstractFactory_withRetryOnSameAbstractFactory(test *testing.T) {
+/*
+Verify a Destroy can be called from any SzAbstractFactory.
+*/
+func TestSzAbstractFactory_Multi_DestroyViaSecondAbstractFactory(test *testing.T) {
 	ctx := test.Context()
 
-	// First AbstractFactory without Destroy.
+	// Create AbstractFactories.
 
 	szAbstractFactory1 := getSzAbstractFactoryByLocation(ctx, location1)
-	szDiagnostic1, err := szAbstractFactory1.CreateDiagnostic(ctx)
-	require.NoError(test, err)
-
-	info1, err := szDiagnostic1.GetRepositoryInfo(ctx)
-	require.NoError(test, err)
-	require.Equal(test, location1, extractLocation(info1), "AbstractFactory1 ")
-
-	// Second AbstractFactory should fail.
+	defer func() { require.NoError(test, szAbstractFactory1.Destroy(ctx)) }()
 
 	szAbstractFactory2 := getSzAbstractFactoryByLocation(ctx, location2)
-
 	defer func() { require.NoError(test, szAbstractFactory2.Destroy(ctx)) }()
 
+	// Get object from szAbstractFactory1.
+
+	szDiagnostic1, err := szAbstractFactory1.CreateDiagnostic(ctx)
+	require.NoError(test, err)
+	info1, err := szDiagnostic1.GetRepositoryInfo(ctx)
+	require.NoError(test, err)
+	require.Equal(test, location1, extractLocation(info1), "AbstractFactory1")
+
+	// Try to get object from szAbstractFactory2.
+
 	_, err = szAbstractFactory2.CreateDiagnostic(ctx)
-	require.Error(test, err, "AbstractFactory2 should not create objects")
+	require.Error(test, err, "AbstractFactory2 should create not objects")
 
-	// Destroy the first AbstractFactory.
+	// Destroy via the second AbstractFactory.
 
-	err = szAbstractFactory1.Destroy(ctx)
+	err = szAbstractFactory2.DestroyWithoutClosing(ctx)
 	require.NoError(test, err)
 
-	// Second AbstractFactory should now succeed.
+	// Try to get object from szAbstractFactory2, again.
 
-	_, err = szAbstractFactory2.CreateDiagnostic(ctx)
-	require.NoError(test, err, "AbstractFactory2 should create objects")
+	szDiagnostic2, err := szAbstractFactory2.CreateDiagnostic(ctx)
+	require.NoError(test, err)
+	info2, err := szDiagnostic2.GetRepositoryInfo(ctx)
+	require.NoError(test, err)
+	require.Equal(test, location2, extractLocation(info2), "AbstractFactory2")
 }
 
+/*
+Verify that an "orphaned" Senzing object inherits the configuration of the current SzAbstractFactory.
+*/
 func TestSzAbstractFactory_Multi_OrphanedObject(test *testing.T) {
 	ctx := test.Context()
 
@@ -451,9 +460,7 @@ func TestSzAbstractFactory_Multi_OrphanedObject(test *testing.T) {
 	// Second AbstractFactory with deferred Destroy.
 
 	szAbstractFactory2 := getSzAbstractFactoryByLocation(ctx, location2)
-
 	defer func() { require.NoError(test, szAbstractFactory2.Destroy(ctx)) }()
-
 	szDiagnostic2, err := szAbstractFactory2.CreateDiagnostic(ctx)
 	require.NoError(test, err)
 
@@ -468,6 +475,9 @@ func TestSzAbstractFactory_Multi_OrphanedObject(test *testing.T) {
 	require.Equal(test, location2, extractLocation(info3))
 }
 
+/*
+Verify that an "orphaned" Senzing object errors when all SzAbstractFactorie have been destroyed.
+*/
 func TestSzAbstractFactory_Multi_OrphanedObject_Destroyed(test *testing.T) {
 	ctx := test.Context()
 
