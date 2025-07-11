@@ -521,6 +521,7 @@ func teardown() {
 func teardownSzDiagnostic(ctx context.Context) {
 	err := szDiagnosticSingleton.UnregisterObserver(ctx, observerSingleton)
 	panicOnError(err)
+
 	_ = szDiagnosticSingleton.Destroy(ctx)
 
 	szDiagnosticSingleton = nil
@@ -529,6 +530,7 @@ func teardownSzDiagnostic(ctx context.Context) {
 func teardownSzEngine(ctx context.Context) {
 	err := szEngineSingleton.UnregisterObserver(ctx, observerSingleton)
 	panicOnError(err)
+
 	_ = szEngineSingleton.Destroy(ctx)
 
 	szEngineSingleton = nil

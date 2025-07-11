@@ -16,8 +16,6 @@ func ExampleSzabstractfactory_CreateConfigManager() {
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
 
-	// defer func() { handleError(szAbstractFactory.Destroy(ctx)) }()
-
 	szConfigManager, err := szAbstractFactory.CreateConfigManager(ctx)
 	if err != nil {
 		handleError(err)
@@ -32,8 +30,6 @@ func ExampleSzabstractfactory_CreateDiagnostic() {
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szabstractfactory/szabstractfactory_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
-
-	// defer func() { handleError(szAbstractFactory.Destroy(ctx)) }()
 
 	szDiagnostic, err := szAbstractFactory.CreateDiagnostic(ctx)
 	if err != nil {
@@ -50,8 +46,6 @@ func ExampleSzabstractfactory_CreateEngine() {
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
 
-	// defer func() { handleError(szAbstractFactory.Destroy(ctx)) }()
-
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
@@ -66,8 +60,6 @@ func ExampleSzabstractfactory_CreateProduct() {
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szabstractfactory/szabstractfactory_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
-
-	// defer func() { handleError(szAbstractFactory.Destroy(ctx)) }()
 
 	szProduct, err := szAbstractFactory.CreateProduct(ctx)
 	if err != nil {
@@ -96,8 +88,6 @@ func ExampleSzabstractfactory_Reinitialize() {
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szabstractfactory/szabstractfactory_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
-
-	// defer func() { handleError(szAbstractFactory.Destroy(ctx)) }()
 
 	szConfigManager, err := szAbstractFactory.CreateConfigManager(ctx)
 	if err != nil {
