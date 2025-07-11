@@ -293,6 +293,50 @@ func TestSzAbstractFactory_Reinitialize(test *testing.T) {
 	require.NoError(test, err)
 }
 
+func TestSzAbstractFactory_Multi_CreateAll(test *testing.T) {
+	var err error
+
+	ctx := test.Context()
+
+	// First AbstractFactory without Destroy (it's deferred).
+
+	szAbstractFactory1 := getSzAbstractFactoryByLocation(ctx, location1)
+	defer func() { require.NoError(test, szAbstractFactory1.Destroy(ctx)) }()
+
+	_, err = szAbstractFactory1.CreateConfigManager(ctx)
+	require.NoError(test, err, "szAbstractFactory1 should create a SzConfigManager")
+	_, err = szAbstractFactory1.CreateDiagnostic(ctx)
+	require.NoError(test, err, "szAbstractFactory1 should create a SzDiagnostic")
+	_, err = szAbstractFactory1.CreateEngine(ctx)
+	require.NoError(test, err, "szAbstractFactory1 should create a SzEngine")
+	_, err = szAbstractFactory1.CreateProduct(ctx)
+	require.NoError(test, err, "szAbstractFactory1 should create a SzProduct")
+
+	szAbstractFactory2 := getSzAbstractFactoryByLocation(ctx, location2)
+	defer func() { require.NoError(test, szAbstractFactory2.Destroy(ctx)) }()
+
+	_, err = szAbstractFactory2.CreateConfigManager(ctx)
+	require.Error(test, err, "szAbstractFactory2 should not create a SzConfigManager")
+	_, err = szAbstractFactory2.CreateDiagnostic(ctx)
+	require.Error(test, err, "szAbstractFactory2 should not create a SzDiagnostic")
+	_, err = szAbstractFactory2.CreateEngine(ctx)
+	require.Error(test, err, "szAbstractFactory2 should not create a SzEngine")
+	_, err = szAbstractFactory2.CreateProduct(ctx)
+	require.Error(test, err, "szAbstractFactory2 should not create a SzProduct")
+
+	err = szAbstractFactory1.Destroy(ctx)
+	require.NoError(test, err)
+
+	_, err = szAbstractFactory2.CreateConfigManager(ctx)
+	require.NoError(test, err, "szAbstractFactory2 should create a SzConfigManager")
+	_, err = szAbstractFactory2.CreateDiagnostic(ctx)
+	require.NoError(test, err, "szAbstractFactory2 should create a SzDiagnostic")
+	_, err = szAbstractFactory2.CreateEngine(ctx)
+	require.NoError(test, err, "szAbstractFactory2 should create a SzEngine")
+	_, err = szAbstractFactory2.CreateProduct(ctx)
+	require.NoError(test, err, "szAbstractFactory2 should create a SzProduct")
+}
+
 /*
 Verify that a second and third SzAbstractFactories are disabled if the first SzAbstractFactory is active.
 */
