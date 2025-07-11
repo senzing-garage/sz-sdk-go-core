@@ -14,7 +14,7 @@ func ExampleSzabstractfactory_CreateConfigManager() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szabstractfactory/szabstractfactory_examples_test.go
 	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
+	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	defer func() { handleError(szAbstractFactory.Destroy(ctx)) }()
 
@@ -31,7 +31,7 @@ func ExampleSzabstractfactory_CreateDiagnostic() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szabstractfactory/szabstractfactory_examples_test.go
 	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
+	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	defer func() { handleError(szAbstractFactory.Destroy(ctx)) }()
 
@@ -48,7 +48,7 @@ func ExampleSzabstractfactory_CreateEngine() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szabstractfactory/szabstractfactory_examples_test.go
 	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
+	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	defer func() { handleError(szAbstractFactory.Destroy(ctx)) }()
 
@@ -65,7 +65,7 @@ func ExampleSzabstractfactory_CreateProduct() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szabstractfactory/szabstractfactory_examples_test.go
 	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
+	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	defer func() { handleError(szAbstractFactory.Destroy(ctx)) }()
 
@@ -82,7 +82,7 @@ func ExampleSzabstractfactory_Destroy() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szabstractfactory/szabstractfactory_examples_test.go
 	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
+	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	err := szAbstractFactory.Destroy(ctx)
 	if err != nil {
@@ -95,7 +95,7 @@ func ExampleSzabstractfactory_Reinitialize() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szabstractfactory/szabstractfactory_examples_test.go
 	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
+	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	defer func() { handleError(szAbstractFactory.Destroy(ctx)) }()
 

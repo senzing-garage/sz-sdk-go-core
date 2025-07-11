@@ -306,7 +306,7 @@ func TestSzAbstractFactory_Multi_CreateAll(test *testing.T) {
 
 	// First AbstractFactory without Destroy (it's deferred).
 
-	szAbstractFactory1 := getSzAbstractFactoryByLocation(ctx, location1)
+	szAbstractFactory1 := createSzAbstractFactoryByLocation(ctx, location1)
 
 	defer func() { require.NoError(test, szAbstractFactory1.Destroy(ctx)) }()
 
@@ -321,7 +321,7 @@ func TestSzAbstractFactory_Multi_CreateAll(test *testing.T) {
 
 	// Second AbstractFactory doesn't created objects while first AbstractFactory is active.
 
-	szAbstractFactory2 := getSzAbstractFactoryByLocation(ctx, location2)
+	szAbstractFactory2 := createSzAbstractFactoryByLocation(ctx, location2)
 
 	defer func() { require.NoError(test, szAbstractFactory2.Destroy(ctx)) }()
 
@@ -359,7 +359,7 @@ func TestSzAbstractFactory_Multi_PreventAdditionalAbstractFactories(test *testin
 
 	// First AbstractFactory without Destroy (it's deferred).
 
-	szAbstractFactory1 := getSzAbstractFactoryByLocation(ctx, location1)
+	szAbstractFactory1 := createSzAbstractFactoryByLocation(ctx, location1)
 
 	defer func() { require.NoError(test, szAbstractFactory1.Destroy(ctx)) }()
 
@@ -371,7 +371,7 @@ func TestSzAbstractFactory_Multi_PreventAdditionalAbstractFactories(test *testin
 
 	// Second AbstractFactory should fail.
 
-	szAbstractFactory2 := getSzAbstractFactoryByLocation(ctx, location2)
+	szAbstractFactory2 := createSzAbstractFactoryByLocation(ctx, location2)
 
 	defer func() { require.NoError(test, szAbstractFactory2.Destroy(ctx)) }()
 
@@ -386,7 +386,7 @@ func TestSzAbstractFactory_Multi_PreventAdditionalAbstractFactories(test *testin
 
 	// Third AbstractFactory should fail.
 
-	szAbstractFactory3 := getSzAbstractFactoryByLocation(ctx, location3)
+	szAbstractFactory3 := createSzAbstractFactoryByLocation(ctx, location3)
 
 	defer func() { require.NoError(test, szAbstractFactory3.Destroy(ctx)) }()
 
@@ -408,7 +408,7 @@ func TestSzAbstractFactory_Multi_PreventSecondAbstractFactory_withRetry(test *te
 
 	// First AbstractFactory without Destroy (it's deferred).
 
-	szAbstractFactory1 := getSzAbstractFactoryByLocation(ctx, location1)
+	szAbstractFactory1 := createSzAbstractFactoryByLocation(ctx, location1)
 
 	defer func() { require.NoError(test, szAbstractFactory1.Destroy(ctx)) }()
 
@@ -421,7 +421,7 @@ func TestSzAbstractFactory_Multi_PreventSecondAbstractFactory_withRetry(test *te
 
 	// Second AbstractFactory should fail.
 
-	szAbstractFactory2 := getSzAbstractFactoryByLocation(ctx, location2)
+	szAbstractFactory2 := createSzAbstractFactoryByLocation(ctx, location2)
 
 	defer func() { require.NoError(test, szAbstractFactory2.Destroy(ctx)) }()
 
@@ -452,7 +452,7 @@ func TestSzAbstractFactory_Multi_PreventSecondAbstractFactory_withRetry(test *te
 
 	// Try a third AbstractFactory.
 
-	szAbstractFactory3 := getSzAbstractFactoryByLocation(ctx, location3)
+	szAbstractFactory3 := createSzAbstractFactoryByLocation(ctx, location3)
 
 	defer func() { require.NoError(test, szAbstractFactory3.Destroy(ctx)) }()
 
@@ -468,11 +468,11 @@ func TestSzAbstractFactory_Multi_DestroyViaSecondAbstractFactory(test *testing.T
 
 	// Create AbstractFactories.
 
-	szAbstractFactory1 := getSzAbstractFactoryByLocation(ctx, location1)
+	szAbstractFactory1 := createSzAbstractFactoryByLocation(ctx, location1)
 
 	defer func() { require.NoError(test, szAbstractFactory1.Destroy(ctx)) }()
 
-	szAbstractFactory2 := getSzAbstractFactoryByLocation(ctx, location2)
+	szAbstractFactory2 := createSzAbstractFactoryByLocation(ctx, location2)
 
 	defer func() { require.NoError(test, szAbstractFactory2.Destroy(ctx)) }()
 
@@ -511,7 +511,10 @@ func TestSzAbstractFactory_Multi_OrphanedObject(test *testing.T) {
 
 	// First AbstractFactory with Destroy.
 
-	szAbstractFactory1 := getSzAbstractFactoryByLocation(ctx, location1)
+	szAbstractFactory1 := createSzAbstractFactoryByLocation(ctx, location1)
+
+	defer func() { require.NoError(test, szAbstractFactory1.Destroy(ctx)) }()
+
 	szDiagnostic1, err := szAbstractFactory1.CreateDiagnostic(ctx)
 	require.NoError(test, err)
 
@@ -524,7 +527,7 @@ func TestSzAbstractFactory_Multi_OrphanedObject(test *testing.T) {
 
 	// Second AbstractFactory with deferred Destroy.
 
-	szAbstractFactory2 := getSzAbstractFactoryByLocation(ctx, location2)
+	szAbstractFactory2 := createSzAbstractFactoryByLocation(ctx, location2)
 
 	defer func() { require.NoError(test, szAbstractFactory2.Destroy(ctx)) }()
 
@@ -550,7 +553,10 @@ func TestSzAbstractFactory_Multi_OrphanedObject_Destroyed(test *testing.T) {
 
 	// First AbstractFactory with Destroy.
 
-	szAbstractFactory1 := getSzAbstractFactoryByLocation(ctx, location1)
+	szAbstractFactory1 := createSzAbstractFactoryByLocation(ctx, location1)
+
+	defer func() { require.NoError(test, szAbstractFactory1.Destroy(ctx)) }()
+
 	szDiagnostic1, err := szAbstractFactory1.CreateDiagnostic(ctx)
 	require.NoError(test, err)
 
@@ -563,7 +569,10 @@ func TestSzAbstractFactory_Multi_OrphanedObject_Destroyed(test *testing.T) {
 
 	// Second AbstractFactory with Destroy.
 
-	szAbstractFactory2 := getSzAbstractFactoryByLocation(ctx, location2)
+	szAbstractFactory2 := createSzAbstractFactoryByLocation(ctx, location2)
+
+	defer func() { require.NoError(test, szAbstractFactory2.Destroy(ctx)) }()
+
 	szDiagnostic2, err := szAbstractFactory2.CreateDiagnostic(ctx)
 	require.NoError(test, err)
 
@@ -580,20 +589,30 @@ func TestSzAbstractFactory_Multi_OrphanedObject_Destroyed(test *testing.T) {
 	require.Error(test, err)
 }
 
+/*
+Verify that an orphaned Senzing object picks up a new configuration.
+*/
 func TestSzAbstractFactory_Multi_Reinitialize_implicitly(test *testing.T) {
 	ctx := test.Context()
 	now := time.Now()
 	timeSuffix := strconv.FormatInt(now.Unix(), baseTen)
+	dataSourceCode := "GO_TEST_" + timeSuffix
+	recordID := "RECORD_ID_" + timeSuffix
+	recordDefinition := `{"DATA_SOURCE": "` + dataSourceCode + `", "RECORD_ID": "` + recordID + `", "RECORD_TYPE": "PERSON", "PRIMARY_NAME_LAST": "Smith", "PRIMARY_NAME_FIRST": "Bob", "DATE_OF_BIRTH": "11/12/1978", "ADDR_TYPE": "HOME", "ADDR_LINE1": "1515 Adela Lane", "ADDR_CITY": "Las Vegas", "ADDR_STATE": "NV", "ADDR_POSTAL_CODE": "89111", "PHONE_TYPE": "MOBILE", "PHONE_NUMBER": "702-919-1300", "DATE": "3/10/17", "STATUS": "Inactive", "AMOUNT": "200"}`
 
-	szAbstractFactory1 := getSzAbstractFactoryByLocation(ctx, location1)
+	// Create AbstractFactories.
+
+	szAbstractFactory1 := createSzAbstractFactoryByLocation(ctx, location1)
+
 	defer func() { require.NoError(test, szAbstractFactory1.Destroy(ctx)) }()
 
-	szAbstractFactory2 := getSzAbstractFactoryByLocation(ctx, location2)
+	szAbstractFactory2 := createSzAbstractFactoryByLocation(ctx, location2)
+
 	defer func() { require.NoError(test, szAbstractFactory2.Destroy(ctx)) }()
 
 	// Get Senzing objects from AbstractFactory1.
 
-	szConfigManager, err := szAbstractFactory1.CreateConfigManager(ctx)
+	szConfigManager1, err := szAbstractFactory1.CreateConfigManager(ctx)
 	require.NoError(test, err)
 
 	szEngine1, err := szAbstractFactory1.CreateEngine(ctx)
@@ -601,43 +620,40 @@ func TestSzAbstractFactory_Multi_Reinitialize_implicitly(test *testing.T) {
 
 	// Add data source to Senzing configuration.
 
-	configID, err := szConfigManager.GetDefaultConfigID(ctx)
+	configID, err := szConfigManager1.GetDefaultConfigID(ctx)
 	require.NoError(test, err)
 
-	szConfig, err := szConfigManager.CreateConfigFromConfigID(ctx, configID)
+	szConfig, err := szConfigManager1.CreateConfigFromConfigID(ctx, configID)
 	require.NoError(test, err)
 
-	dataSourceCode := "GO_TEST_" + timeSuffix
 	_, err = szConfig.RegisterDataSource(ctx, dataSourceCode)
 	require.NoError(test, err)
 
 	configDefinition, err := szConfig.Export(ctx)
 	require.NoError(test, err)
 
-	newConfigID, err := szConfigManager.RegisterConfig(ctx, configDefinition, "Add "+dataSourceCode)
+	newConfigID, err := szConfigManager1.RegisterConfig(ctx, configDefinition, "Add "+dataSourceCode)
 	require.NoError(test, err)
 
-	err = szConfigManager.ReplaceDefaultConfigID(ctx, configID, newConfigID)
+	err = szConfigManager1.ReplaceDefaultConfigID(ctx, configID, newConfigID)
 	require.NoError(test, err)
 
-	// Inserting record before reinitializing should fail.
+	// Inserting record before reinitializing should fail because it hasn't been reinitialized.
 
-	recordID := "RECORD_ID_" + timeSuffix
-	recordDefinition := `{"DATA_SOURCE": "` + dataSourceCode + `", "RECORD_ID": "` + recordID + `", "RECORD_TYPE": "PERSON", "PRIMARY_NAME_LAST": "Smith", "PRIMARY_NAME_FIRST": "Bob", "DATE_OF_BIRTH": "11/12/1978", "ADDR_TYPE": "HOME", "ADDR_LINE1": "1515 Adela Lane", "ADDR_CITY": "Las Vegas", "ADDR_STATE": "NV", "ADDR_POSTAL_CODE": "89111", "PHONE_TYPE": "MOBILE", "PHONE_NUMBER": "702-919-1300", "DATE": "3/10/17", "STATUS": "Inactive", "AMOUNT": "200"}`
 	_, err = szEngine1.AddRecord(ctx, dataSourceCode, recordID, recordDefinition, senzing.SzNoFlags)
 	require.Error(test, err)
 
-	// Get SzEngine2 fails because first AbstractFactory hasn't been destroyed.
+	// Get SzEngine2 fails because AbstractFactory1 hasn't been destroyed.
 
 	_, err = szAbstractFactory2.CreateEngine(ctx)
 	require.Error(test, err)
 
-	// Reinitialize implicitly by creating second AbstractFactory.
+	// Destroy AbstractFactory1 to allow AbstractFactory2 to create Senzing objects.
 
 	err = szAbstractFactory1.Destroy(ctx)
 	require.NoError(test, err)
 
-	// Orphaned szEngine fails because first AbstractFactory is destroyed.
+	// Orphaned szEngine fails because AbstractFactory1 is destroyed.
 
 	_, err = szEngine1.AddRecord(ctx, dataSourceCode, recordID, recordDefinition, senzing.SzNoFlags)
 	require.Error(test, err)
@@ -647,7 +663,7 @@ func TestSzAbstractFactory_Multi_Reinitialize_implicitly(test *testing.T) {
 	_, err = szAbstractFactory2.CreateEngine(ctx)
 	require.NoError(test, err)
 
-	// Orphaned szEngine now works with the settings of AbstractFactory2.
+	// Orphaned szEngine1 succeeds with the settings of AbstractFactory2.
 
 	_, err = szEngine1.AddRecord(ctx, dataSourceCode, recordID, recordDefinition, senzing.SzNoFlags)
 	require.NoError(test, err)
@@ -656,6 +672,43 @@ func TestSzAbstractFactory_Multi_Reinitialize_implicitly(test *testing.T) {
 // ----------------------------------------------------------------------------
 // Internal functions
 // ----------------------------------------------------------------------------
+
+func createSzAbstractFactory(ctx context.Context) senzing.SzAbstractFactory {
+	result := createSzAbstractFactoryByLocation(ctx, location1)
+	_ = result.DestroyWithoutClosing(ctx)
+
+	return result
+}
+
+func createSzAbstractFactoryByLocation(ctx context.Context, location string) senzing.SzAbstractFactory {
+	var result senzing.SzAbstractFactory
+
+	_ = ctx
+	settings := getSettings(location)
+	result = &szabstractfactory.Szabstractfactory{
+		ConfigID:       senzing.SzInitializeWithDefaultConfiguration,
+		InstanceName:   instanceName,
+		Settings:       settings,
+		VerboseLogging: verboseLogging,
+	}
+
+	return result
+}
+
+func createSzAbstractFactoryBadConfig(ctx context.Context) senzing.SzAbstractFactory {
+	var result senzing.SzAbstractFactory
+
+	_ = ctx
+	settings := getSettingsBadConfig()
+	result = &szabstractfactory.Szabstractfactory{
+		ConfigID:       senzing.SzInitializeWithDefaultConfiguration,
+		InstanceName:   instanceName,
+		Settings:       settings,
+		VerboseLogging: verboseLogging,
+	}
+
+	return result
+}
 
 func extractLocation(location string) string {
 	getRepositoryInfoResponse := GetRepositoryInfoResponse{}
@@ -693,40 +746,6 @@ func getSettingsBadConfig() string {
 	return badSettings
 }
 
-func getSzAbstractFactory(ctx context.Context) senzing.SzAbstractFactory {
-	return getSzAbstractFactoryByLocation(ctx, location1)
-}
-
-func getSzAbstractFactoryByLocation(ctx context.Context, location string) senzing.SzAbstractFactory {
-	var result senzing.SzAbstractFactory
-
-	_ = ctx
-	settings := getSettings(location)
-	result = &szabstractfactory.Szabstractfactory{
-		ConfigID:       senzing.SzInitializeWithDefaultConfiguration,
-		InstanceName:   instanceName,
-		Settings:       settings,
-		VerboseLogging: verboseLogging,
-	}
-
-	return result
-}
-
-func getSzAbstractFactoryBadConfig(ctx context.Context) senzing.SzAbstractFactory {
-	var result senzing.SzAbstractFactory
-
-	_ = ctx
-	settings := getSettingsBadConfig()
-	result = &szabstractfactory.Szabstractfactory{
-		ConfigID:       senzing.SzInitializeWithDefaultConfiguration,
-		InstanceName:   instanceName,
-		Settings:       settings,
-		VerboseLogging: verboseLogging,
-	}
-
-	return result
-}
-
 func getTestDirectoryPath() string {
 	return filepath.FromSlash("../target/test/szabstractfactory")
 }
@@ -735,14 +754,14 @@ func getTestObject(t *testing.T) senzing.SzAbstractFactory {
 	t.Helper()
 	ctx := t.Context()
 
-	return getSzAbstractFactory(ctx)
+	return createSzAbstractFactory(ctx)
 }
 
 func getTestObjectBadConfig(t *testing.T) senzing.SzAbstractFactory {
 	t.Helper()
 	ctx := t.Context()
 
-	return getSzAbstractFactoryBadConfig(ctx)
+	return createSzAbstractFactoryBadConfig(ctx)
 }
 
 func handleError(err error) {

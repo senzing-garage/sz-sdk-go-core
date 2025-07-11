@@ -18,7 +18,8 @@ func ExampleSzconfigmanager_CreateConfigFromConfigID() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfigmanager/szconfigmanager_examples_test.go
 	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
+
+	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	szConfigManager, err := szAbstractFactory.CreateConfigManager(ctx)
 	if err != nil {
@@ -48,7 +49,8 @@ func ExampleSzconfigmanager_CreateConfigFromString() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfigmanager/szconfigmanager_examples_test.go
 	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
+
+	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	szConfigManager, err := szAbstractFactory.CreateConfigManager(ctx)
 	if err != nil {
@@ -83,7 +85,8 @@ func ExampleSzconfigmanager_CreateConfigFromTemplate() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfigmanager/szconfigmanager_examples_test.go
 	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
+
+	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	szConfigManager, err := szAbstractFactory.CreateConfigManager(ctx)
 	if err != nil {
@@ -108,7 +111,8 @@ func ExampleSzconfigmanager_GetConfigRegistry() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfigmanager/szconfigmanager_examples_test.go
 	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
+
+	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	szConfigManager, err := szAbstractFactory.CreateConfigManager(ctx)
 	if err != nil {
@@ -128,7 +132,8 @@ func ExampleSzconfigmanager_GetDefaultConfigID() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfigmanager/szconfigmanager_examples_test.go
 	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
+
+	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	szConfigManager, err := szAbstractFactory.CreateConfigManager(ctx)
 	if err != nil {
@@ -148,7 +153,8 @@ func ExampleSzconfigmanager_RegisterConfig() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfigmanager/szconfigmanager_examples_test.go
 	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
+
+	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	szConfigManager, err := szAbstractFactory.CreateConfigManager(ctx)
 	if err != nil {
@@ -180,7 +186,8 @@ func ExampleSzconfigmanager_ReplaceDefaultConfigID() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfigmanager/szconfigmanager_examples_test.go
 	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
+
+	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	szConfigManager, err := szAbstractFactory.CreateConfigManager(ctx)
 	if err != nil {
@@ -228,7 +235,8 @@ func ExampleSzconfigmanager_SetDefaultConfig() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfigmanager/szconfigmanager_examples_test.go
 	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
+
+	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	szConfigManager, err := szAbstractFactory.CreateConfigManager(ctx)
 	if err != nil {
@@ -272,7 +280,8 @@ func ExampleSzconfigmanager_SetDefaultConfigID() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfigmanager/szconfigmanager_examples_test.go
 	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
+
+	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	szConfigManager, err := szAbstractFactory.CreateConfigManager(ctx)
 	if err != nil {

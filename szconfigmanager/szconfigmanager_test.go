@@ -436,6 +436,22 @@ func TestSzconfigmanager_Destroy_error(test *testing.T) {
 // Internal functions
 // ----------------------------------------------------------------------------
 
+func createSzAbstractFactory(ctx context.Context) senzing.SzAbstractFactory {
+	var result senzing.SzAbstractFactory
+
+	_ = ctx
+	settings := getSettings()
+	result = &szabstractfactory.Szabstractfactory{
+		ConfigID:       senzing.SzInitializeWithDefaultConfiguration,
+		InstanceName:   instanceName,
+		Settings:       settings,
+		VerboseLogging: verboseLogging,
+	}
+	_ = result.DestroyWithoutClosing(ctx)
+
+	return result
+}
+
 func getDatabaseTemplatePath() string {
 	return filepath.FromSlash("../testdata/sqlite/G2C.db")
 }
@@ -456,21 +472,6 @@ func getSettings() string {
 	configAttrMap := map[string]string{"databaseUrl": databaseURL}
 	result, err = settings.BuildSimpleSettingsUsingMap(configAttrMap)
 	panicOnError(err)
-
-	return result
-}
-
-func getSzAbstractFactory(ctx context.Context) senzing.SzAbstractFactory {
-	var result senzing.SzAbstractFactory
-
-	_ = ctx
-	settings := getSettings()
-	result = &szabstractfactory.Szabstractfactory{
-		ConfigID:       senzing.SzInitializeWithDefaultConfiguration,
-		InstanceName:   instanceName,
-		Settings:       settings,
-		VerboseLogging: verboseLogging,
-	}
 
 	return result
 }
@@ -673,8 +674,8 @@ func teardownSzConfigManager(ctx context.Context) {
 	if szConfigManagerSingleton != nil {
 		err := szConfigManagerSingleton.UnregisterObserver(ctx, observerSingleton)
 		panicOnError(err)
-		err = szConfigManagerSingleton.Destroy(ctx)
-		panicOnError(err)
+
+		_ = szConfigManagerSingleton.Destroy(ctx)
 
 		szConfigManagerSingleton = nil
 	}
