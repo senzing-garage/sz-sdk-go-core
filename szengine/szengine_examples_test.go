@@ -3055,7 +3055,7 @@ func ExampleSzEngine_ProcessRedoRecord_withInfo() {
 	// Output:
 	// {
 	//     "DATA_SOURCE": "CUSTOMERS",
-	//     "RECORD_ID": "1002",
+	//     "RECORD_ID": "1001",
 	//     "AFFECTED_ENTITIES": [
 	//         {
 	//             "ENTITY_ID": 100001
