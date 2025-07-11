@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strconv"
 	"testing"
 	"time"
 
@@ -33,6 +34,7 @@ type GetRepositoryInfoResponse struct {
 
 const (
 	baseCallerSkip    = 4
+	baseTen           = 10
 	defaultTruncation = 76
 	instanceName      = "SzAbstractFactory Test"
 	location1         = "nowhere1"
@@ -576,6 +578,79 @@ func TestSzAbstractFactory_Multi_OrphanedObject_Destroyed(test *testing.T) {
 
 	_, err = szDiagnostic1.GetRepositoryInfo(ctx)
 	require.Error(test, err)
+}
+
+func TestSzAbstractFactory_Multi_Reinitialize_implicitly(test *testing.T) {
+	ctx := test.Context()
+	now := time.Now()
+	timeSuffix := strconv.FormatInt(now.Unix(), baseTen)
+
+	szAbstractFactory1 := getSzAbstractFactoryByLocation(ctx, location1)
+	defer func() { require.NoError(test, szAbstractFactory1.Destroy(ctx)) }()
+
+	szAbstractFactory2 := getSzAbstractFactoryByLocation(ctx, location2)
+	defer func() { require.NoError(test, szAbstractFactory2.Destroy(ctx)) }()
+
+	// Get Senzing objects from AbstractFactory1.
+
+	szConfigManager, err := szAbstractFactory1.CreateConfigManager(ctx)
+	require.NoError(test, err)
+
+	szEngine1, err := szAbstractFactory1.CreateEngine(ctx)
+	require.NoError(test, err)
+
+	// Add data source to Senzing configuration.
+
+	configID, err := szConfigManager.GetDefaultConfigID(ctx)
+	require.NoError(test, err)
+
+	szConfig, err := szConfigManager.CreateConfigFromConfigID(ctx, configID)
+	require.NoError(test, err)
+
+	dataSourceCode := "GO_TEST_" + timeSuffix
+	_, err = szConfig.RegisterDataSource(ctx, dataSourceCode)
+	require.NoError(test, err)
+
+	configDefinition, err := szConfig.Export(ctx)
+	require.NoError(test, err)
+
+	newConfigID, err := szConfigManager.RegisterConfig(ctx, configDefinition, "Add "+dataSourceCode)
+	require.NoError(test, err)
+
+	err = szConfigManager.ReplaceDefaultConfigID(ctx, configID, newConfigID)
+	require.NoError(test, err)
+
+	// Inserting record before reinitializing should fail.
+
+	recordID := "RECORD_ID_" + timeSuffix
+	recordDefinition := `{"DATA_SOURCE": "` + dataSourceCode + `", "RECORD_ID": "` + recordID + `", "RECORD_TYPE": "PERSON", "PRIMARY_NAME_LAST": "Smith", "PRIMARY_NAME_FIRST": "Bob", "DATE_OF_BIRTH": "11/12/1978", "ADDR_TYPE": "HOME", "ADDR_LINE1": "1515 Adela Lane", "ADDR_CITY": "Las Vegas", "ADDR_STATE": "NV", "ADDR_POSTAL_CODE": "89111", "PHONE_TYPE": "MOBILE", "PHONE_NUMBER": "702-919-1300", "DATE": "3/10/17", "STATUS": "Inactive", "AMOUNT": "200"}`
+	_, err = szEngine1.AddRecord(ctx, dataSourceCode, recordID, recordDefinition, senzing.SzNoFlags)
+	require.Error(test, err)
+
+	// Get SzEngine2 fails because first AbstractFactory hasn't been destroyed.
+
+	_, err = szAbstractFactory2.CreateEngine(ctx)
+	require.Error(test, err)
+
+	// Reinitialize implicitly by creating second AbstractFactory.
+
+	err = szAbstractFactory1.Destroy(ctx)
+	require.NoError(test, err)
+
+	// Orphaned szEngine fails because first AbstractFactory is destroyed.
+
+	_, err = szEngine1.AddRecord(ctx, dataSourceCode, recordID, recordDefinition, senzing.SzNoFlags)
+	require.Error(test, err)
+
+	// Create an SzEngine from AbstractFactory2.
+
+	_, err = szAbstractFactory2.CreateEngine(ctx)
+	require.NoError(test, err)
+
+	// Orphaned szEngine now works with the settings of AbstractFactory2.
+
+	_, err = szEngine1.AddRecord(ctx, dataSourceCode, recordID, recordDefinition, senzing.SzNoFlags)
+	require.NoError(test, err)
 }
 
 // ----------------------------------------------------------------------------
