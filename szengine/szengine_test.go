@@ -1586,6 +1586,24 @@ func addRecords(ctx context.Context, records []record.Record) {
 	}
 }
 
+func createSzAbstractFactory(ctx context.Context) senzing.SzAbstractFactory {
+	var result senzing.SzAbstractFactory
+
+	_ = ctx
+
+	settings := getSettings()
+
+	result = &szabstractfactory.Szabstractfactory{
+		ConfigID:       senzing.SzInitializeWithDefaultConfiguration,
+		InstanceName:   instanceName,
+		Settings:       settings,
+		VerboseLogging: verboseLogging,
+	}
+	_ = result.DestroyWithoutClosing(ctx)
+
+	return result
+}
+
 func deleteRecords(ctx context.Context, records []record.Record) {
 	szEngine := getSzEngine(ctx)
 	flags := senzing.SzWithoutInfo
@@ -1719,23 +1737,6 @@ func getSettings() string {
 	configAttrMap := map[string]string{"databaseUrl": databaseURL}
 	result, err = settings.BuildSimpleSettingsUsingMap(configAttrMap)
 	panicOnError(err)
-
-	return result
-}
-
-func getSzAbstractFactory(ctx context.Context) senzing.SzAbstractFactory {
-	var result senzing.SzAbstractFactory
-
-	_ = ctx
-
-	settings := getSettings()
-
-	result = &szabstractfactory.Szabstractfactory{
-		ConfigID:       senzing.SzInitializeWithDefaultConfiguration,
-		InstanceName:   instanceName,
-		Settings:       settings,
-		VerboseLogging: verboseLogging,
-	}
 
 	return result
 }
@@ -1899,8 +1900,8 @@ func teardown() {
 func teardownSzEngine(ctx context.Context) {
 	err := szEngineSingleton.UnregisterObserver(ctx, observerSingleton)
 	panicOnError(err)
-	err = szEngineSingleton.Destroy(ctx)
-	panicOnError(err)
+
+	_ = szEngineSingleton.Destroy(ctx)
 
 	szEngineSingleton = nil
 }

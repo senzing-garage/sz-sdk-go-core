@@ -18,7 +18,7 @@ func ExampleSzconfig_RegisterDataSource() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig_examples_test.go
 	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
+	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	szConfigManager, err := szAbstractFactory.CreateConfigManager(ctx)
 	if err != nil {
@@ -48,7 +48,7 @@ func ExampleSzconfig_UnregisterDataSource() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig_examples_test.go
 	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
+	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	szConfigManager, err := szAbstractFactory.CreateConfigManager(ctx)
 	if err != nil {
@@ -75,7 +75,7 @@ func ExampleSzconfig_Export() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig_examples_test.go
 	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
+	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	szConfigManager, err := szAbstractFactory.CreateConfigManager(ctx)
 	if err != nil {
@@ -100,7 +100,7 @@ func ExampleSzconfig_GetDataSourceRegistry() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig_examples_test.go
 	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
+	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	szConfigManager, err := szAbstractFactory.CreateConfigManager(ctx)
 	if err != nil {

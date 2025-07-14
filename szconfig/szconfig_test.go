@@ -314,6 +314,22 @@ func TestSzconfig_Destroy_withObserver(test *testing.T) {
 // Internal functions
 // ----------------------------------------------------------------------------
 
+func createSzAbstractFactory(ctx context.Context) senzing.SzAbstractFactory {
+	var result senzing.SzAbstractFactory
+
+	_ = ctx
+	settings := getSettings()
+	result = &szabstractfactory.Szabstractfactory{
+		ConfigID:       senzing.SzInitializeWithDefaultConfiguration,
+		InstanceName:   instanceName,
+		Settings:       settings,
+		VerboseLogging: verboseLogging,
+	}
+	_ = result.DestroyWithoutClosing(ctx)
+
+	return result
+}
+
 func getDatabaseTemplatePath() string {
 	return filepath.FromSlash("../testdata/sqlite/G2C.db")
 }
@@ -334,21 +350,6 @@ func getSettings() string {
 	configAttrMap := map[string]string{"databaseUrl": databaseURL}
 	result, err = settings.BuildSimpleSettingsUsingMap(configAttrMap)
 	panicOnError(err)
-
-	return result
-}
-
-func getSzAbstractFactory(ctx context.Context) senzing.SzAbstractFactory {
-	var result senzing.SzAbstractFactory
-
-	_ = ctx
-	settings := getSettings()
-	result = &szabstractfactory.Szabstractfactory{
-		ConfigID:       senzing.SzInitializeWithDefaultConfiguration,
-		InstanceName:   instanceName,
-		Settings:       settings,
-		VerboseLogging: verboseLogging,
-	}
 
 	return result
 }

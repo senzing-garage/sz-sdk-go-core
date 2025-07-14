@@ -137,6 +137,7 @@ linters:
     exhaustruct:
       exclude:
         - '.+/subject\.SimpleSubject$'
+        - '.+/szabstractfactory_test\.GetRepositoryInfoResponse$'
         - '.+/szengine_test\.GetEntityByRecordIDResponse$'
         - '.+/szengine_test\.TestMetadataForAddRecord$'
         - '.+/szengine_test\.TestMetadataForDeleteRecord$'
@@ -149,9 +150,9 @@ linters:
         - '.+/szengine_test\.TestMetadataForGetEntityByEntityID$'
         - '.+/szengine_test\.TestMetadataForGetEntityByRecordID$'
         - '.+/szengine_test\.TestMetadataForGetRecord$'
+        - '.+/szengine_test\.TestMetadataForGetRecordPreview$'
         - '.+/szengine_test\.TestMetadataForGetVirtualEntityByRecordID$'
         - '.+/szengine_test\.TestMetadataForHowEntityByEntityID$'
-        - '.+/szengine_test\.TestMetadataForGetRecordPreview$'
         - '.+/szengine_test\.TestMetadataForProcessRedoRecord$'
         - '.+/szengine_test\.TestMetadataForReevaluateEntity$'
         - '.+/szengine_test\.TestMetadataForReevaluateRecord$'

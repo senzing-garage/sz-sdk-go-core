@@ -20,7 +20,7 @@ func ExampleSzengine_AddRecord() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
+	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
@@ -45,7 +45,7 @@ func ExampleSzengine_AddRecord_secondRecord() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
+	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
@@ -70,7 +70,7 @@ func ExampleSzengine_AddRecord_withInfo() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
+	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
@@ -104,7 +104,7 @@ func ExampleSzengine_CloseExportReport() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
+	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
@@ -129,7 +129,7 @@ func ExampleSzengine_CountRedoRecords() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
+	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
@@ -149,7 +149,7 @@ func ExampleSzengine_ExportCsvEntityReport() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
+	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
@@ -198,7 +198,7 @@ func ExampleSzengine_ExportJSONEntityReport() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
+	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
@@ -245,7 +245,7 @@ func ExampleSzengine_FetchNext() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
+	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
@@ -284,7 +284,7 @@ func ExampleSzengine_FindInterestingEntitiesByEntityID() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
+	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
@@ -313,7 +313,7 @@ func ExampleSzengine_FindInterestingEntitiesByRecordID() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
+	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
@@ -342,7 +342,7 @@ func ExampleSzengine_FindNetworkByEntityID() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
+	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
@@ -455,7 +455,7 @@ func ExampleSzengine_FindNetworkByRecordID() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
+	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
@@ -631,7 +631,7 @@ func ExampleSzengine_FindPathByEntityID() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
+	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
@@ -685,7 +685,7 @@ func ExampleSzengine_FindPathByEntityID_avoiding() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
+	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
@@ -739,7 +739,7 @@ func ExampleSzEngine_FindPathByEntityID_avoidingAndIncluding() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
+	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
@@ -791,7 +791,7 @@ func ExampleSzengine_FindPathByEntityID_including() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
+	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
@@ -936,7 +936,7 @@ func ExampleSzengine_FindPathByRecordID() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
+	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
@@ -993,7 +993,7 @@ func ExampleSzengine_FindPathByRecordID_avoiding() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
+	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
@@ -1050,7 +1050,7 @@ func ExampleSzEngine_FindPathByRecordID_avoidingAndIncluding() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
+	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
@@ -1105,7 +1105,7 @@ func ExampleSzengine_FindPathByRecordID_including() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
+	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
@@ -1253,7 +1253,7 @@ func ExampleSzengine_GetActiveConfigID() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
+	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
@@ -1273,7 +1273,7 @@ func ExampleSzengine_GetEntityByEntityID() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
+	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
@@ -1493,7 +1493,7 @@ func ExampleSzengine_GetEntityByRecordID() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
+	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
@@ -1713,7 +1713,7 @@ func ExampleSzengine_GetRecord() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
+	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
@@ -1741,7 +1741,7 @@ func ExampleSzengine_GetRedoRecord() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
+	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
@@ -1769,7 +1769,7 @@ func ExampleSzengine_GetStats() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
+	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
@@ -2055,7 +2055,7 @@ func ExampleSzengine_GetVirtualEntityByRecordID() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
+	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
@@ -2940,7 +2940,7 @@ func ExampleSzengine_HowEntityByEntityID() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
+	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
@@ -2964,7 +2964,7 @@ func ExampleSzengine_GetRecordPreview() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
+	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
@@ -2987,7 +2987,7 @@ func ExampleSzengine_PrimeEngine() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
+	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
@@ -3005,7 +3005,7 @@ func ExampleSzEngine_ProcessRedoRecord() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
+	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
@@ -3032,7 +3032,7 @@ func ExampleSzEngine_ProcessRedoRecord_withInfo() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
+	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
@@ -3068,7 +3068,7 @@ func ExampleSzengine_SearchByAttributes() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
+	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
@@ -3116,7 +3116,7 @@ func ExampleSzEngine_SearchByAttributes_searchProfile() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
+	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
@@ -3329,7 +3329,7 @@ func ExampleSzengine_WhyEntities() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
+	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
@@ -5086,7 +5086,7 @@ func ExampleSzengine_WhyRecordInEntity() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
+	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
@@ -5136,7 +5136,7 @@ func ExampleSzengine_WhyRecords() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
+	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
@@ -6878,7 +6878,7 @@ func ExampleSzengine_WhySearch() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
+	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
@@ -6928,7 +6928,7 @@ func ExampleSzengine_ReevaluateEntity() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
+	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
@@ -6952,7 +6952,7 @@ func ExampleSzengine_ReevaluateEntity_withInfo() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
+	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
@@ -6982,7 +6982,7 @@ func ExampleSzengine_ReevaluateRecord() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
+	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
@@ -7006,7 +7006,7 @@ func ExampleSzengine_ReevaluateRecord_withInfo() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
+	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
@@ -7039,7 +7039,7 @@ func ExampleSzengine_DeleteRecord() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
+	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
@@ -7063,7 +7063,7 @@ func ExampleSzengine_DeleteRecord_withInfo() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
-	szAbstractFactory := getSzAbstractFactory(ctx)
+	szAbstractFactory := createSzAbstractFactory(ctx)
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
