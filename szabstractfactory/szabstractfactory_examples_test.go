@@ -70,18 +70,18 @@ func ExampleSzabstractfactory_CreateProduct() {
 	// Output:
 }
 
-func ExampleSzabstractfactory_Destroy() {
-	// For more information, visit
-	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szabstractfactory/szabstractfactory_examples_test.go
-	ctx := context.TODO()
-	szAbstractFactory := createSzAbstractFactory(ctx)
+// func ExampleSzabstractfactory_Destroy() {
+// For more information, visit
+// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szabstractfactory/szabstractfactory_examples_test.go
+// ctx := context.TODO()
+// szAbstractFactory := createSzAbstractFactory(ctx)
 
-	err := szAbstractFactory.Destroy(ctx)
-	if err != nil {
-		handleError(err)
-	}
-	// Output:
-}
+// err := szAbstractFactory.Destroy(ctx)
+// if err != nil {
+// 	handleError(err)
+// }
+// Output:
+// }
 
 func ExampleSzabstractfactory_Reinitialize() {
 	// For more information, visit

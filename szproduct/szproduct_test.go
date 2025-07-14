@@ -162,7 +162,6 @@ func createSzAbstractFactory(ctx context.Context) senzing.SzAbstractFactory {
 		Settings:       settings,
 		VerboseLogging: verboseLogging,
 	}
-	_ = result.DestroyWithoutClosing(ctx)
 
 	return result
 }

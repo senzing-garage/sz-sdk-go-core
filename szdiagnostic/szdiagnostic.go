@@ -41,6 +41,7 @@ for communicating with the Senzing C binaries.
 */
 type Szdiagnostic struct {
 	instanceName   string
+	isDestroyed    bool
 	isTrace        bool
 	logger         logging.Logging
 	messenger      messenger.Messenger
@@ -79,6 +80,10 @@ func (client *Szdiagnostic) CheckRepositoryPerformance(ctx context.Context, seco
 		result string
 	)
 
+	if client.isDestroyed {
+		return result, wraperror.Errorf(err, "This SzDiagnostic has been destroyed.")
+	}
+
 	if client.isTrace {
 		client.traceEntry(1, secondsToRun)
 
@@ -99,6 +104,41 @@ func (client *Szdiagnostic) CheckRepositoryPerformance(ctx context.Context, seco
 }
 
 /*
+Method Destroy will destroy and perform cleanup for the Senzing SzDiagnostic object.
+It should be called after all other calls are complete.
+
+Input
+  - ctx: A context to control lifecycle.
+*/
+func (client *Szdiagnostic) Destroy(ctx context.Context) error {
+	var err error
+
+	if client.isDestroyed {
+		return wraperror.Errorf(err, "This SzDiagnostic has been destroyed.")
+	}
+
+	if client.isTrace {
+		client.traceEntry(5)
+
+		entryTime := time.Now()
+		defer func() { client.traceExit(6, err, time.Since(entryTime)) }()
+	}
+
+	err = client.destroy(ctx)
+
+	if client.observers != nil {
+		go func() {
+			details := map[string]string{}
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8002, err, details)
+		}()
+	}
+
+	client.isDestroyed = true
+
+	return wraperror.Errorf(err, wraperror.NoMessage)
+}
+
+/*
 Method GetFeature is an experimental method that returns diagnostic information of a feature.
 Not recommended for use.
 
@@ -115,6 +155,10 @@ func (client *Szdiagnostic) GetFeature(ctx context.Context, featureID int64) (st
 		err    error
 		result string
 	)
+
+	if client.isDestroyed {
+		return result, wraperror.Errorf(err, "This SzDiagnostic has been destroyed.")
+	}
 
 	if client.isTrace {
 		client.traceEntry(9, featureID)
@@ -153,6 +197,10 @@ func (client *Szdiagnostic) GetRepositoryInfo(ctx context.Context) (string, erro
 		result string
 	)
 
+	if client.isDestroyed {
+		return result, wraperror.Errorf(err, "This SzDiagnostic has been destroyed.")
+	}
+
 	if client.isTrace {
 		client.traceEntry(7)
 
@@ -183,6 +231,10 @@ Input
 func (client *Szdiagnostic) PurgeRepository(ctx context.Context) error {
 	var err error
 
+	if client.isDestroyed {
+		return wraperror.Errorf(err, "This SzDiagnostic has been destroyed.")
+	}
+
 	if client.isTrace {
 		client.traceEntry(17)
 
@@ -205,35 +257,6 @@ func (client *Szdiagnostic) PurgeRepository(ctx context.Context) error {
 // ----------------------------------------------------------------------------
 // Public non-interface methods
 // ----------------------------------------------------------------------------
-
-/*
-Method Destroy will destroy and perform cleanup for the Senzing SzDiagnostic object.
-It should be called after all other calls are complete.
-
-Input
-  - ctx: A context to control lifecycle.
-*/
-func (client *Szdiagnostic) Destroy(ctx context.Context) error {
-	var err error
-
-	if client.isTrace {
-		client.traceEntry(5)
-
-		entryTime := time.Now()
-		defer func() { client.traceExit(6, err, time.Since(entryTime)) }()
-	}
-
-	err = client.destroy(ctx)
-
-	if client.observers != nil {
-		go func() {
-			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8002, err, details)
-		}()
-	}
-
-	return wraperror.Errorf(err, wraperror.NoMessage)
-}
 
 /*
 Method GetObserverOrigin returns the "origin" value of past Observer messages.
