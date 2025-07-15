@@ -59,6 +59,7 @@ const (
 func TestSzAbstractFactory_CreateConfigManager(test *testing.T) {
 	ctx := test.Context()
 	szAbstractFactory := getTestObject(test)
+	defer func() { szAbstractFactory.Close(ctx) }()
 
 	szConfigManager, err := szAbstractFactory.CreateConfigManager(ctx)
 	printDebug(test, err, szConfigManager)

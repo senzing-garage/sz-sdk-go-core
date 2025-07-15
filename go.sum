@@ -32,6 +32,8 @@ github.com/senzing-garage/go-observing v0.3.6 h1:vIQTaWbCxYRSJFw4pDKKfTqOYqugB2r
 github.com/senzing-garage/go-observing v0.3.6/go.mod h1:ghkX9HSaKGjwYzsPLZVt+FO9AU/w4jzqvI2MAXmfGXs=
 github.com/senzing-garage/sz-sdk-go v0.15.9-0.20250714202738-f10546378fb9 h1:GyGtGDi7T+K0VZamRqz1+nbN/FG9oFas6ZB6xBRM27g=
 github.com/senzing-garage/sz-sdk-go v0.15.9-0.20250714202738-f10546378fb9/go.mod h1:nfr5X+d17jd+PwHhpbT0JmB+yStJZERJADJweHAyZ0U=
+github.com/senzing-garage/sz-sdk-go v0.15.9-0.20250715134007-6df04cb17d61 h1:+ZiN28Fev5UTVMvGyxNBUr11+wzm0P5CsLuaFah5V24=
+github.com/senzing-garage/sz-sdk-go v0.15.9-0.20250715134007-6df04cb17d61/go.mod h1:nfr5X+d17jd+PwHhpbT0JmB+yStJZERJADJweHAyZ0U=
 github.com/stretchr/testify v1.10.0 h1:Xv5erBjTwe/5IxqUQTdXv5kgmIvbHo3QQyRwhJsOfJA=
 github.com/stretchr/testify v1.10.0/go.mod h1:r2ic/lqez/lEtzL7wO/rwa5dbSLXVDPFyf8C91i36aY=
 go.opentelemetry.io/auto/sdk v1.1.0 h1:cH53jehLUN6UFLY71z+NDOiNJqDdPRaXzTel0sJySYA=
