@@ -23,7 +23,7 @@ type Szabstractfactory struct {
 	isClosed       bool
 	mutex          sync.Mutex
 	once           sync.Once
-	semaphore      *szengine.Szengine
+	semaphores     []*szengine.Szengine
 	Settings       string
 	VerboseLogging int64
 }
@@ -46,11 +46,12 @@ func (factory *Szabstractfactory) Close(ctx context.Context) error {
 
 	factory.isClosed = true
 
-	if factory.semaphore != nil {
-		err = factory.semaphore.Destroy(ctx)
+	for _, semaphore := range factory.semaphores {
+		err = semaphore.Destroy(ctx)
 	}
+	factory.semaphores = nil
 
-	return err
+	return wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 /*
@@ -279,16 +280,26 @@ func (factory *Szabstractfactory) initializeAbstractFactory(ctx context.Context)
 		return wraperror.Errorf(err, "verifyNoSenzingObjects")
 	}
 
+	// IMPROVE:  At this point in the code, there is a slight concurrency hole.
+	// If multiple AbstractFactories pass the verifyNoSenzingObjects test,
+	// it's a race condition to see which configuration wins.
+	// This may mitigated by use of runtime.LockOSThread()
+
 	// Create semaphore.
 
-	factory.semaphore = &szengine.Szengine{}
-	err = factory.semaphore.Initialize(
+	semaphoreSzEngine := &szengine.Szengine{}
+	err = semaphoreSzEngine.Initialize(
 		ctx,
 		factory.InstanceName,
 		factory.Settings,
 		factory.ConfigID,
 		factory.VerboseLogging,
 	)
+
+	if factory.semaphores == nil {
+		factory.semaphores = []*szengine.Szengine{}
+	}
+	factory.semaphores = append(factory.semaphores, semaphoreSzEngine)
 
 	return wraperror.Errorf(err, wraperror.NoMessage)
 }
@@ -362,5 +373,5 @@ func (factory *Szabstractfactory) verifyNoSenzingObjects(ctx context.Context) er
 		)
 	}
 
-	return err
+	return wraperror.Errorf(err, wraperror.NoMessage)
 }

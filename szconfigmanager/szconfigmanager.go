@@ -66,7 +66,7 @@ const (
 Method CreateConfigFromConfigID retrieves a specific Senzing configuration JSON document from the Senzing repository.
 
 Input
-  - ctx: A context to control lifecycle.
+  - ctx: A context to control lifecycle.client.isDestroyedclient.isDestroyed
   - configID: The identifier of the desired Senzing configuration JSON document to retrieve.
 
 Output
@@ -79,7 +79,7 @@ func (client *Szconfigmanager) CreateConfigFromConfigID(ctx context.Context, con
 	)
 
 	if client.isDestroyed {
-		return result, wraperror.Errorf(err, "This SzConfigManger has been destroyed.")
+		return result, wraperror.Errorf(errForPackage, "This SzConfigManger has been destroyed.")
 	}
 
 	if client.isTrace {
@@ -121,7 +121,7 @@ func (client *Szconfigmanager) CreateConfigFromString(
 	)
 
 	if client.isDestroyed {
-		return result, wraperror.Errorf(err, "This SzConfigManger has been destroyed.")
+		return result, wraperror.Errorf(errForPackage, "This SzConfigManger has been destroyed.")
 	}
 
 	if client.isTrace {
@@ -160,7 +160,7 @@ func (client *Szconfigmanager) CreateConfigFromTemplate(ctx context.Context) (se
 	)
 
 	if client.isDestroyed {
-		return result, wraperror.Errorf(err, "This SzConfigManger has been destroyed.")
+		return result, wraperror.Errorf(errForPackage, "This SzConfigManger has been destroyed.")
 	}
 
 	if client.isTrace {
@@ -193,7 +193,7 @@ func (client *Szconfigmanager) Destroy(ctx context.Context) error {
 	var err error
 
 	if client.isDestroyed {
-		return wraperror.Errorf(err, "This SzConfigManger has been destroyed.")
+		return wraperror.Errorf(errForPackage, "This SzConfigManger has been destroyed.")
 	}
 
 	if client.isTrace {
@@ -236,7 +236,7 @@ func (client *Szconfigmanager) GetConfigRegistry(ctx context.Context) (string, e
 	)
 
 	if client.isDestroyed {
-		return result, wraperror.Errorf(err, "This SzConfigManger has been destroyed.")
+		return result, wraperror.Errorf(errForPackage, "This SzConfigManger has been destroyed.")
 	}
 
 	if client.isTrace {
@@ -277,7 +277,7 @@ func (client *Szconfigmanager) GetDefaultConfigID(ctx context.Context) (int64, e
 	)
 
 	if client.isDestroyed {
-		return result, wraperror.Errorf(err, "This SzConfigManger has been destroyed.")
+		return result, wraperror.Errorf(errForPackage, "This SzConfigManger has been destroyed.")
 	}
 
 	if client.isTrace {
@@ -321,7 +321,7 @@ func (client *Szconfigmanager) RegisterConfig(
 	)
 
 	if client.isDestroyed {
-		return result, wraperror.Errorf(err, "This SzConfigManger has been destroyed.")
+		return result, wraperror.Errorf(errForPackage, "This SzConfigManger has been destroyed.")
 	}
 
 	if client.isTrace {
@@ -371,7 +371,7 @@ func (client *Szconfigmanager) ReplaceDefaultConfigID(
 	var err error
 
 	if client.isDestroyed {
-		return wraperror.Errorf(err, "This SzConfigManger has been destroyed.")
+		return wraperror.Errorf(errForPackage, "This SzConfigManger has been destroyed.")
 	}
 
 	if client.isTrace {
@@ -419,7 +419,7 @@ func (client *Szconfigmanager) SetDefaultConfig(
 	)
 
 	if client.isDestroyed {
-		return result, wraperror.Errorf(err, "This SzConfigManger has been destroyed.")
+		return result, wraperror.Errorf(errForPackage, "This SzConfigManger has been destroyed.")
 	}
 
 	if client.isTrace {
@@ -461,7 +461,7 @@ func (client *Szconfigmanager) SetDefaultConfigID(ctx context.Context, configID 
 	var err error
 
 	if client.isDestroyed {
-		return wraperror.Errorf(err, "This SzConfigManger has been destroyed.")
+		return wraperror.Errorf(errForPackage, "This SzConfigManger has been destroyed.")
 	}
 
 	if client.isTrace {

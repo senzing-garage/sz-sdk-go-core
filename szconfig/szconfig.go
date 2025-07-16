@@ -563,7 +563,7 @@ func (client *Szconfig) registerDataSourceChoreography(
 		return newConfigDefinition, result, wraperror.Errorf(err, "save")
 	}
 
-	return newConfigDefinition, result, err
+	return newConfigDefinition, result, wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 func (client *Szconfig) importTemplateChoregraphy(ctx context.Context) (string, error) {
@@ -589,7 +589,7 @@ func (client *Szconfig) importTemplateChoregraphy(ctx context.Context) (string, 
 		return resultResponse, wraperror.Errorf(err, "save")
 	}
 
-	return resultResponse, err
+	return resultResponse, wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 func (client *Szconfig) unregisterDataSourceChoreography(
@@ -625,7 +625,7 @@ func (client *Szconfig) unregisterDataSourceChoreography(
 		return newConfigDefinition, result, wraperror.Errorf(err, "save")
 	}
 
-	return newConfigDefinition, result, err
+	return newConfigDefinition, result, wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 func (client *Szconfig) getDataSourceRegistryChoreography(
@@ -654,7 +654,7 @@ func (client *Szconfig) getDataSourceRegistryChoreography(
 		return result, wraperror.Errorf(err, "listDataSources")
 	}
 
-	return result, err
+	return result, wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 func (client *Szconfig) importConfigDefinition(ctx context.Context, configDefinition string) error {
@@ -685,7 +685,7 @@ func (client *Szconfig) verifyConfigDefinitionChoreography(
 		return wraperror.Errorf(err, "save")
 	}
 
-	return err
+	return wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 // ----------------------------------------------------------------------------

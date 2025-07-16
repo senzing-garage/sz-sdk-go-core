@@ -71,7 +71,7 @@ func (client *Szproduct) Destroy(ctx context.Context) error {
 	var err error
 
 	if client.isDestroyed {
-		return wraperror.Errorf(err, "This SzProduct has been destroyed.")
+		return wraperror.Errorf(errForPackage, "This SzProduct has been destroyed.")
 	}
 
 	if client.isTrace {
@@ -111,7 +111,7 @@ func (client *Szproduct) GetLicense(ctx context.Context) (string, error) {
 	)
 
 	if client.isDestroyed {
-		return result, wraperror.Errorf(err, "This SzProduct has been destroyed.")
+		return result, wraperror.Errorf(errForPackage, "This SzProduct has been destroyed.")
 	}
 
 	if client.isTrace {
@@ -149,7 +149,7 @@ func (client *Szproduct) GetVersion(ctx context.Context) (string, error) {
 	)
 
 	if client.isDestroyed {
-		return result, wraperror.Errorf(err, "This SzProduct has been destroyed.")
+		return result, wraperror.Errorf(errForPackage, "This SzProduct has been destroyed.")
 	}
 
 	if client.isTrace {

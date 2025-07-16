@@ -1,5 +1,7 @@
 package szconfigmanager
 
+import "errors"
+
 // ----------------------------------------------------------------------------
 // Constants
 // ----------------------------------------------------------------------------
@@ -14,3 +16,5 @@ const (
 	ComponentID           = 6002
 	ExceptionCodeTemplate = "SENZ%04d"
 )
+
+var errForPackage = errors.New("szconfigmanager")

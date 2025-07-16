@@ -81,7 +81,7 @@ func (client *Szdiagnostic) CheckRepositoryPerformance(ctx context.Context, seco
 	)
 
 	if client.isDestroyed {
-		return result, wraperror.Errorf(err, "This SzDiagnostic has been destroyed.")
+		return result, wraperror.Errorf(errForPackage, "This SzDiagnostic has been destroyed.")
 	}
 
 	if client.isTrace {
@@ -114,7 +114,7 @@ func (client *Szdiagnostic) Destroy(ctx context.Context) error {
 	var err error
 
 	if client.isDestroyed {
-		return wraperror.Errorf(err, "This SzDiagnostic has been destroyed.")
+		return wraperror.Errorf(errForPackage, "This SzDiagnostic has been destroyed.")
 	}
 
 	if client.isTrace {
@@ -157,7 +157,7 @@ func (client *Szdiagnostic) GetFeature(ctx context.Context, featureID int64) (st
 	)
 
 	if client.isDestroyed {
-		return result, wraperror.Errorf(err, "This SzDiagnostic has been destroyed.")
+		return result, wraperror.Errorf(errForPackage, "This SzDiagnostic has been destroyed.")
 	}
 
 	if client.isTrace {
@@ -198,7 +198,7 @@ func (client *Szdiagnostic) GetRepositoryInfo(ctx context.Context) (string, erro
 	)
 
 	if client.isDestroyed {
-		return result, wraperror.Errorf(err, "This SzDiagnostic has been destroyed.")
+		return result, wraperror.Errorf(errForPackage, "This SzDiagnostic has been destroyed.")
 	}
 
 	if client.isTrace {
@@ -232,7 +232,7 @@ func (client *Szdiagnostic) PurgeRepository(ctx context.Context) error {
 	var err error
 
 	if client.isDestroyed {
-		return wraperror.Errorf(err, "This SzDiagnostic has been destroyed.")
+		return wraperror.Errorf(errForPackage, "This SzDiagnostic has been destroyed.")
 	}
 
 	if client.isTrace {

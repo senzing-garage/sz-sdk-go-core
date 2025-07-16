@@ -94,7 +94,7 @@ func (client *Szengine) AddRecord(
 	)
 
 	if client.isDestroyed {
-		return result, wraperror.Errorf(err, "This SzEngine has been destroyed.")
+		return result, wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
 	}
 
 	if client.isTrace {
@@ -143,7 +143,7 @@ func (client *Szengine) CloseExportReport(ctx context.Context, exportHandle uint
 	var err error
 
 	if client.isDestroyed {
-		return wraperror.Errorf(err, "This SzEngine has been destroyed.")
+		return wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
 	}
 
 	if client.isTrace {
@@ -182,7 +182,7 @@ func (client *Szengine) CountRedoRecords(ctx context.Context) (int64, error) {
 	)
 
 	if client.isDestroyed {
-		return result, wraperror.Errorf(err, "This SzEngine has been destroyed.")
+		return result, wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
 	}
 
 	if client.isTrace {
@@ -232,7 +232,7 @@ func (client *Szengine) DeleteRecord(
 	)
 
 	if client.isDestroyed {
-		return result, wraperror.Errorf(err, "This SzEngine has been destroyed.")
+		return result, wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
 	}
 
 	if client.isTrace {
@@ -274,7 +274,7 @@ func (client *Szengine) Destroy(ctx context.Context) error {
 	var err error
 
 	if client.isDestroyed {
-		return wraperror.Errorf(err, "This SzEngine has been destroyed.")
+		return wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
 	}
 
 	if client.isTrace {
@@ -321,7 +321,7 @@ func (client *Szengine) ExportCsvEntityReport(ctx context.Context, csvColumnList
 	)
 
 	if client.isDestroyed {
-		return result, wraperror.Errorf(err, "This SzEngine has been destroyed.")
+		return result, wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
 	}
 
 	if client.isTrace {
@@ -436,7 +436,7 @@ func (client *Szengine) ExportJSONEntityReport(ctx context.Context, flags int64)
 	)
 
 	if client.isDestroyed {
-		return result, wraperror.Errorf(err, "This SzEngine has been destroyed.")
+		return result, wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
 	}
 
 	if client.isTrace {
@@ -542,7 +542,7 @@ func (client *Szengine) FetchNext(ctx context.Context, exportHandle uintptr) (st
 	)
 
 	if client.isDestroyed {
-		return result, wraperror.Errorf(err, "This SzEngine has been destroyed.")
+		return result, wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
 	}
 
 	if client.isTrace {
@@ -587,7 +587,7 @@ func (client *Szengine) FindInterestingEntitiesByEntityID(
 	)
 
 	if client.isDestroyed {
-		return result, wraperror.Errorf(err, "This SzEngine has been destroyed.")
+		return result, wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
 	}
 
 	if client.isTrace {
@@ -637,7 +637,7 @@ func (client *Szengine) FindInterestingEntitiesByRecordID(
 	)
 
 	if client.isDestroyed {
-		return result, wraperror.Errorf(err, "This SzEngine has been destroyed.")
+		return result, wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
 	}
 
 	if client.isTrace {
@@ -697,7 +697,7 @@ func (client *Szengine) FindNetworkByEntityID(
 	)
 
 	if client.isDestroyed {
-		return result, wraperror.Errorf(err, "This SzEngine has been destroyed.")
+		return result, wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
 	}
 
 	if client.isTrace {
@@ -774,7 +774,7 @@ func (client *Szengine) FindNetworkByRecordID(
 	)
 
 	if client.isDestroyed {
-		return result, wraperror.Errorf(err, "This SzEngine has been destroyed.")
+		return result, wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
 	}
 
 	if client.isTrace {
@@ -854,7 +854,7 @@ func (client *Szengine) FindPathByEntityID(
 	)
 
 	if client.isDestroyed {
-		return result, wraperror.Errorf(err, "This SzEngine has been destroyed.")
+		return result, wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
 	}
 
 	if client.isTrace {
@@ -944,7 +944,7 @@ func (client *Szengine) FindPathByRecordID(
 	)
 
 	if client.isDestroyed {
-		return result, wraperror.Errorf(err, "This SzEngine has been destroyed.")
+		return result, wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
 	}
 
 	if client.isTrace {
@@ -1007,7 +1007,7 @@ func (client *Szengine) GetActiveConfigID(ctx context.Context) (int64, error) {
 	)
 
 	if client.isDestroyed {
-		return result, wraperror.Errorf(err, "This SzEngine has been destroyed.")
+		return result, wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
 	}
 
 	if client.isTrace {
@@ -1048,7 +1048,7 @@ func (client *Szengine) GetEntityByEntityID(ctx context.Context, entityID int64,
 	)
 
 	if client.isDestroyed {
-		return result, wraperror.Errorf(err, "This SzEngine has been destroyed.")
+		return result, wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
 	}
 
 	if client.isTrace {
@@ -1098,7 +1098,7 @@ func (client *Szengine) GetEntityByRecordID(
 	)
 
 	if client.isDestroyed {
-		return result, wraperror.Errorf(err, "This SzEngine has been destroyed.")
+		return result, wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
 	}
 
 	if client.isTrace {
@@ -1150,7 +1150,7 @@ func (client *Szengine) GetRecord(
 	)
 
 	if client.isDestroyed {
-		return result, wraperror.Errorf(err, "This SzEngine has been destroyed.")
+		return result, wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
 	}
 
 	if client.isTrace {
@@ -1195,7 +1195,7 @@ func (client *Szengine) GetRedoRecord(ctx context.Context) (string, error) {
 	)
 
 	if client.isDestroyed {
-		return result, wraperror.Errorf(err, "This SzEngine has been destroyed.")
+		return result, wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
 	}
 
 	if client.isTrace {
@@ -1234,7 +1234,7 @@ func (client *Szengine) GetStats(ctx context.Context) (string, error) {
 	)
 
 	if client.isDestroyed {
-		return result, wraperror.Errorf(err, "This SzEngine has been destroyed.")
+		return result, wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
 	}
 
 	if client.isTrace {
@@ -1279,7 +1279,7 @@ func (client *Szengine) GetVirtualEntityByRecordID(
 	)
 
 	if client.isDestroyed {
-		return result, wraperror.Errorf(err, "This SzEngine has been destroyed.")
+		return result, wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
 	}
 
 	if client.isTrace {
@@ -1322,7 +1322,7 @@ func (client *Szengine) HowEntityByEntityID(ctx context.Context, entityID int64,
 	)
 
 	if client.isDestroyed {
-		return result, wraperror.Errorf(err, "This SzEngine has been destroyed.")
+		return result, wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
 	}
 
 	if client.isTrace {
@@ -1365,7 +1365,7 @@ func (client *Szengine) GetRecordPreview(ctx context.Context, recordDefinition s
 	)
 
 	if client.isDestroyed {
-		return result, wraperror.Errorf(err, "This SzEngine has been destroyed.")
+		return result, wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
 	}
 
 	if client.isTrace {
@@ -1401,7 +1401,7 @@ func (client *Szengine) PrimeEngine(ctx context.Context) error {
 	var err error
 
 	if client.isDestroyed {
-		return wraperror.Errorf(err, "This SzEngine has been destroyed.")
+		return wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
 	}
 
 	if client.isTrace {
@@ -1440,7 +1440,7 @@ func (client *Szengine) ProcessRedoRecord(ctx context.Context, redoRecord string
 	)
 
 	if client.isDestroyed {
-		return result, wraperror.Errorf(err, "This SzEngine has been destroyed.")
+		return result, wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
 	}
 
 	if client.isTrace {
@@ -1486,7 +1486,7 @@ func (client *Szengine) ReevaluateEntity(ctx context.Context, entityID int64, fl
 	)
 
 	if client.isDestroyed {
-		return result, wraperror.Errorf(err, "This SzEngine has been destroyed.")
+		return result, wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
 	}
 
 	if client.isTrace {
@@ -1540,7 +1540,7 @@ func (client *Szengine) ReevaluateRecord(
 	)
 
 	if client.isDestroyed {
-		return result, wraperror.Errorf(err, "This SzEngine has been destroyed.")
+		return result, wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
 	}
 
 	if client.isTrace {
@@ -1599,7 +1599,7 @@ func (client *Szengine) SearchByAttributes(
 	)
 
 	if client.isDestroyed {
-		return result, wraperror.Errorf(err, "This SzEngine has been destroyed.")
+		return result, wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
 	}
 
 	if client.isTrace {
@@ -1649,7 +1649,7 @@ func (client *Szengine) WhyEntities(
 	)
 
 	if client.isDestroyed {
-		return result, wraperror.Errorf(err, "This SzEngine has been destroyed.")
+		return result, wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
 	}
 
 	if client.isTrace {
@@ -1699,7 +1699,7 @@ func (client *Szengine) WhyRecordInEntity(
 	)
 
 	if client.isDestroyed {
-		return result, wraperror.Errorf(err, "This SzEngine has been destroyed.")
+		return result, wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
 	}
 
 	if client.isTrace {
@@ -1753,7 +1753,7 @@ func (client *Szengine) WhyRecords(
 	)
 
 	if client.isDestroyed {
-		return result, wraperror.Errorf(err, "This SzEngine has been destroyed.")
+		return result, wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
 	}
 
 	if client.isTrace {
@@ -1822,7 +1822,7 @@ func (client *Szengine) WhySearch(
 	)
 
 	if client.isDestroyed {
-		return result, wraperror.Errorf(err, "This SzEngine has been destroyed.")
+		return result, wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
 	}
 
 	if client.isTrace {
