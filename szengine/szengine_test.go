@@ -1553,7 +1553,7 @@ func TestSzEngine_Destroy_withObserver(test *testing.T) {
 	require.NoError(test, err)
 }
 
-func TestSzdiagnostic_cleanup(test *testing.T) {
+func TestSzEngine_cleanup(test *testing.T) {
 	ctx := test.Context()
 	destroySzDiagnostics(ctx)
 }
