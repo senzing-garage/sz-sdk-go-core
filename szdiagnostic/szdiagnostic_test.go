@@ -267,7 +267,6 @@ func TestSzdiagnostic_Destroy_withObserver(test *testing.T) {
 
 func TestSzdiagnostic_cleanup(test *testing.T) {
 	ctx := test.Context()
-	destroySzConfigManagers(ctx)
 	destroySzDiagnostics(ctx)
 	destroySzEngines(ctx)
 }
@@ -308,16 +307,6 @@ func deleteRecords(ctx context.Context, records []record.Record) {
 	for _, record := range records {
 		_, err := szEngine.DeleteRecord(ctx, record.DataSource, record.ID, flags)
 		panicOnError(err)
-	}
-}
-
-func destroySzConfigManagers(ctx context.Context) {
-	szConfigManager := &szconfigmanager.Szconfigmanager{}
-	for {
-		err := szConfigManager.Destroy(ctx)
-		if err != nil {
-			break
-		}
 	}
 }
 

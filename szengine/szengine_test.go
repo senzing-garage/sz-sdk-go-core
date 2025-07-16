@@ -1555,9 +1555,7 @@ func TestSzEngine_Destroy_withObserver(test *testing.T) {
 
 func TestSzdiagnostic_cleanup(test *testing.T) {
 	ctx := test.Context()
-	destroySzConfigManagers(ctx)
 	destroySzDiagnostics(ctx)
-	destroySzEngines(ctx)
 }
 
 // ----------------------------------------------------------------------------
@@ -1599,30 +1597,10 @@ func deleteRecords(ctx context.Context, szEngine senzing.SzEngine, records []rec
 	}
 }
 
-func destroySzConfigManagers(ctx context.Context) {
-	for {
-		szConfigManager := &szconfigmanager.Szconfigmanager{}
-		err := szConfigManager.Destroy(ctx)
-		if err != nil {
-			break
-		}
-	}
-}
-
 func destroySzDiagnostics(ctx context.Context) {
 	for {
 		szDiagnostic := &szdiagnostic.Szdiagnostic{}
 		err := szDiagnostic.Destroy(ctx)
-		if err != nil {
-			break
-		}
-	}
-}
-
-func destroySzEngines(ctx context.Context) {
-	for {
-		szEngine := &szengine.Szengine{}
-		err := szEngine.Destroy(ctx)
 		if err != nil {
 			break
 		}
