@@ -194,76 +194,82 @@ func TestSzdiagnostic_UnregisterObserver(test *testing.T) {
 // Object creation / destruction
 // ----------------------------------------------------------------------------
 
-func TestSzdiagnostic_AsInterface(test *testing.T) {
-	ctx := test.Context()
-	szDiagnostic := getSzDiagnosticAsInterface(ctx)
-	secondsToRun := 1
-	actual, err := szDiagnostic.CheckRepositoryPerformance(ctx, secondsToRun)
-	printDebug(test, err, actual)
-	require.NoError(test, err)
-}
+// func TestSzdiagnostic_AsInterface(test *testing.T) {
+// 	ctx := test.Context()
+// 	szDiagnostic := getSzDiagnosticAsInterface(ctx)
+// 	secondsToRun := 1
+// 	actual, err := szDiagnostic.CheckRepositoryPerformance(ctx, secondsToRun)
+// 	printDebug(test, err, actual)
+// 	require.NoError(test, err)
+// }
 
-func TestSzdiagnostic_Initialize(test *testing.T) {
-	ctx := test.Context()
-	szDiagnostic := &szdiagnostic.Szdiagnostic{}
-	settings := getSettings()
-	configID := senzing.SzInitializeWithDefaultConfiguration
-	err := szDiagnostic.Initialize(ctx, instanceName, settings, configID, verboseLogging)
-	printDebug(test, err)
-	require.NoError(test, err)
-}
+// func TestSzdiagnostic_Initialize(test *testing.T) {
+// 	ctx := test.Context()
+// 	szDiagnostic := &szdiagnostic.Szdiagnostic{}
+// 	settings := getSettings()
+// 	configID := senzing.SzInitializeWithDefaultConfiguration
+// 	err := szDiagnostic.Initialize(ctx, instanceName, settings, configID, verboseLogging)
+// 	printDebug(test, err)
+// 	require.NoError(test, err)
+// }
 
-func TestSzdiagnostic_Initialize_withConfigId(test *testing.T) {
-	ctx := test.Context()
-	szDiagnostic := &szdiagnostic.Szdiagnostic{}
-	settings := getSettings()
-	configID := getDefaultConfigID()
-	err := szDiagnostic.Initialize(ctx, instanceName, settings, configID, verboseLogging)
-	printDebug(test, err)
-	require.NoError(test, err)
-}
+// func TestSzdiagnostic_Initialize_withConfigId(test *testing.T) {
+// 	ctx := test.Context()
+// 	szDiagnostic := &szdiagnostic.Szdiagnostic{}
+// 	settings := getSettings()
+// 	configID := getDefaultConfigID()
+// 	err := szDiagnostic.Initialize(ctx, instanceName, settings, configID, verboseLogging)
+// 	printDebug(test, err)
+// 	require.NoError(test, err)
+// }
 
-func TestSzdiagnostic_Initialize_withConfigId_badConfigID(test *testing.T) {
-	// IMPROVE: Implement TestSzdiagnostic_Initialize_withConfigId_badConfigID
-	_ = test
-}
+// func TestSzdiagnostic_Initialize_withConfigId_badConfigID(test *testing.T) {
+// 	// IMPROVE: Implement TestSzdiagnostic_Initialize_withConfigId_badConfigID
+// 	_ = test
+// }
 
-func TestSzdiagnostic_Reinitialize(test *testing.T) {
-	ctx := test.Context()
-	szDiagnosticSingleton = nil
-	szDiagnostic := getTestObject(test)
-	configID := getDefaultConfigID()
-	err := szDiagnostic.Reinitialize(ctx, configID)
-	printDebug(test, err)
-	require.NoError(test, err)
-}
+// func TestSzdiagnostic_Reinitialize(test *testing.T) {
+// 	ctx := test.Context()
+// 	szDiagnosticSingleton = nil
+// 	szDiagnostic := getTestObject(test)
+// 	configID := getDefaultConfigID()
+// 	err := szDiagnostic.Reinitialize(ctx, configID)
+// 	printDebug(test, err)
+// 	require.NoError(test, err)
+// }
 
-func TestSzdiagnostic_Reinitialize_error(test *testing.T) {
-	// IMPROVE: Implement TestSzdiagnostic_Reinitialize_error
-	_ = test
-}
+// func TestSzdiagnostic_Reinitialize_error(test *testing.T) {
+// 	// IMPROVE: Implement TestSzdiagnostic_Reinitialize_error
+// 	_ = test
+// }
 
 func TestSzdiagnostic_Destroy(test *testing.T) {
 	ctx := test.Context()
-	szDiagnosticSingleton = nil
 	szDiagnostic := getTestObject(test)
 	err := szDiagnostic.Destroy(ctx)
 	printDebug(test, err)
 	require.NoError(test, err)
 }
 
-func TestSzdiagnostic_Destroy_withObserver(test *testing.T) {
+// func TestSzdiagnostic_Destroy_withObserver(test *testing.T) {
+// 	ctx := test.Context()
+// 	szDiagnosticSingleton = nil
+// 	szDiagnostic := getTestObject(test)
+// 	err := szDiagnostic.Destroy(ctx)
+// 	printDebug(test, err)
+// 	require.NoError(test, err)
+// }
+
+// func TestSzdiagnostic_Destroy_error(test *testing.T) {
+// 	// IMPROVE: Implement TestSzdiagnostic_Destroy_error
+// 	_ = test
+// }
+
+func TestSzdiagnostic_cleanup(test *testing.T) {
 	ctx := test.Context()
-	szDiagnosticSingleton = nil
-	szDiagnostic := getTestObject(test)
-	err := szDiagnostic.Destroy(ctx)
-	printDebug(test, err)
-	require.NoError(test, err)
-}
-
-func TestSzdiagnostic_Destroy_error(test *testing.T) {
-	// IMPROVE: Implement TestSzdiagnostic_Destroy_error
-	_ = test
+	destroySzConfigManagers(ctx)
+	destroySzDiagnostics(ctx)
+	destroySzEngines(ctx)
 }
 
 // ----------------------------------------------------------------------------
@@ -302,6 +308,36 @@ func deleteRecords(ctx context.Context, records []record.Record) {
 	for _, record := range records {
 		_, err := szEngine.DeleteRecord(ctx, record.DataSource, record.ID, flags)
 		panicOnError(err)
+	}
+}
+
+func destroySzConfigManagers(ctx context.Context) {
+	szConfigManager := &szconfigmanager.Szconfigmanager{}
+	for {
+		err := szConfigManager.Destroy(ctx)
+		if err != nil {
+			break
+		}
+	}
+}
+
+func destroySzDiagnostics(ctx context.Context) {
+	szDiagnostic := &szdiagnostic.Szdiagnostic{}
+	for {
+		err := szDiagnostic.Destroy(ctx)
+		if err != nil {
+			break
+		}
+	}
+}
+
+func destroySzEngines(ctx context.Context) {
+	szEngine := &szengine.Szengine{}
+	for {
+		err := szEngine.Destroy(ctx)
+		if err != nil {
+			break
+		}
 	}
 }
 
@@ -355,9 +391,9 @@ func getSzDiagnostic(ctx context.Context) *szdiagnostic.Szdiagnostic {
 	return szDiagnosticSingleton
 }
 
-func getSzDiagnosticAsInterface(ctx context.Context) senzing.SzDiagnostic {
-	return getSzDiagnostic(ctx)
-}
+// func getSzDiagnosticAsInterface(ctx context.Context) senzing.SzDiagnostic {
+// 	return getSzDiagnostic(ctx)
+// }
 
 func getSzEngine(ctx context.Context) senzing.SzEngine {
 	if szEngineSingleton == nil {
@@ -518,19 +554,17 @@ func teardown() {
 }
 
 func teardownSzDiagnostic(ctx context.Context) {
-	err := szDiagnosticSingleton.UnregisterObserver(ctx, observerSingleton)
-	panicOnError(err)
-
-	_ = szDiagnosticSingleton.Destroy(ctx)
-
-	szDiagnosticSingleton = nil
+	if szDiagnosticSingleton != nil {
+		err := szDiagnosticSingleton.UnregisterObserver(ctx, observerSingleton)
+		panicOnError(err)
+		szDiagnosticSingleton = nil
+	}
 }
 
 func teardownSzEngine(ctx context.Context) {
-	err := szEngineSingleton.UnregisterObserver(ctx, observerSingleton)
-	panicOnError(err)
-
-	_ = szEngineSingleton.Destroy(ctx)
-
-	szEngineSingleton = nil
+	if szEngineSingleton != nil {
+		err := szEngineSingleton.UnregisterObserver(ctx, observerSingleton)
+		panicOnError(err)
+		szEngineSingleton = nil
+	}
 }

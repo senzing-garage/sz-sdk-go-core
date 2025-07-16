@@ -396,15 +396,6 @@ func TestSzconfigmanager_AsInterface(test *testing.T) {
 	require.NoError(test, err)
 }
 
-// func TestSzconfigmanager_Initialize(test *testing.T) {
-// 	ctx := test.Context()
-// 	szConfigManager := getTestObject(test)
-// 	settings := getSettings()
-// 	err := szConfigManager.Initialize(ctx, instanceName, settings, verboseLogging)
-// 	printDebug(test, err)
-// 	require.NoError(test, err)
-// }
-
 func TestSzconfigmanager_Destroy(test *testing.T) {
 	ctx := test.Context()
 	szConfigManager := getTestObject(test)
@@ -421,6 +412,20 @@ func TestSzconfigmanager_Destroy_withObserver(test *testing.T) {
 	printDebug(test, err)
 	require.NoError(test, err)
 }
+
+// func TestSzconfigmanager_Initialize(test *testing.T) {
+// 	ctx := test.Context()
+// 	szConfigManagerSingleton = nil
+// 	szConfigManager := getTestObject(test)
+// 	settings := getSettings()
+// 	err := szConfigManager.Initialize(ctx, instanceName, settings, verboseLogging)
+// 	printDebug(test, err)
+// 	require.NoError(test, err)
+// 	err = szConfigManager.Destroy(ctx)
+// 	require.NoError(test, err)
+// 	err = szConfigManager.Destroy(ctx)
+// 	require.NoError(test, err)
+// }
 
 // ----------------------------------------------------------------------------
 // Internal functions
