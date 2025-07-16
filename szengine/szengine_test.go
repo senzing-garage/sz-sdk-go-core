@@ -22,6 +22,7 @@ import (
 	"github.com/senzing-garage/sz-sdk-go-core/szabstractfactory"
 	"github.com/senzing-garage/sz-sdk-go-core/szconfig"
 	"github.com/senzing-garage/sz-sdk-go-core/szconfigmanager"
+	"github.com/senzing-garage/sz-sdk-go-core/szdiagnostic"
 	"github.com/senzing-garage/sz-sdk-go-core/szengine"
 	"github.com/senzing-garage/sz-sdk-go/senzing"
 	"github.com/senzing-garage/sz-sdk-go/szerror"
@@ -1572,6 +1573,13 @@ func TestSzEngine_Destroy_withObserver(test *testing.T) {
 	require.NoError(test, err)
 }
 
+func TestSzdiagnostic_cleanup(test *testing.T) {
+	ctx := test.Context()
+	destroySzConfigManagers(ctx)
+	destroySzDiagnostics(ctx)
+	destroySzEngines(ctx)
+}
+
 // ----------------------------------------------------------------------------
 // Internal functions
 // ----------------------------------------------------------------------------
@@ -1605,11 +1613,42 @@ func createSzAbstractFactory(ctx context.Context) senzing.SzAbstractFactory {
 
 func deleteRecords(ctx context.Context, records []record.Record) {
 	szEngine := getSzEngine(ctx)
+	defer func() { _ = szEngine.Destroy(ctx) }()
 	flags := senzing.SzWithoutInfo
 
 	for _, record := range records {
 		_, err := szEngine.DeleteRecord(ctx, record.DataSource, record.ID, flags)
 		panicOnError(err)
+	}
+}
+
+func destroySzConfigManagers(ctx context.Context) {
+	szConfigManager := &szconfigmanager.Szconfigmanager{}
+	for {
+		err := szConfigManager.Destroy(ctx)
+		if err != nil {
+			break
+		}
+	}
+}
+
+func destroySzDiagnostics(ctx context.Context) {
+	szDiagnostic := &szdiagnostic.Szdiagnostic{}
+	for {
+		err := szDiagnostic.Destroy(ctx)
+		if err != nil {
+			break
+		}
+	}
+}
+
+func destroySzEngines(ctx context.Context) {
+	szEngine := &szengine.Szengine{}
+	for {
+		err := szEngine.Destroy(ctx)
+		if err != nil {
+			break
+		}
 	}
 }
 
@@ -1632,6 +1671,7 @@ func getEntityIDForRecord(ctx context.Context, datasource string, recordID strin
 	)
 
 	szEngine := getSzEngine(ctx)
+	defer func() { _ = szEngine.Destroy(ctx) }()
 	response, err := szEngine.GetEntityByRecordID(ctx, datasource, recordID, senzing.SzWithoutInfo)
 	panicOnError(err)
 

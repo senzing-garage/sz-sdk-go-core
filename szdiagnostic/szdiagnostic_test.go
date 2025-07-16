@@ -194,14 +194,14 @@ func TestSzdiagnostic_UnregisterObserver(test *testing.T) {
 // Object creation / destruction
 // ----------------------------------------------------------------------------
 
-// func TestSzdiagnostic_AsInterface(test *testing.T) {
-// 	ctx := test.Context()
-// 	szDiagnostic := getSzDiagnosticAsInterface(ctx)
-// 	secondsToRun := 1
-// 	actual, err := szDiagnostic.CheckRepositoryPerformance(ctx, secondsToRun)
-// 	printDebug(test, err, actual)
-// 	require.NoError(test, err)
-// }
+func TestSzdiagnostic_AsInterface(test *testing.T) {
+	ctx := test.Context()
+	szDiagnostic := getSzDiagnosticAsInterface(ctx)
+	secondsToRun := 1
+	actual, err := szDiagnostic.CheckRepositoryPerformance(ctx, secondsToRun)
+	printDebug(test, err, actual)
+	require.NoError(test, err)
+}
 
 // func TestSzdiagnostic_Initialize(test *testing.T) {
 // 	ctx := test.Context()
@@ -228,15 +228,15 @@ func TestSzdiagnostic_UnregisterObserver(test *testing.T) {
 // 	_ = test
 // }
 
-// func TestSzdiagnostic_Reinitialize(test *testing.T) {
-// 	ctx := test.Context()
-// 	szDiagnosticSingleton = nil
-// 	szDiagnostic := getTestObject(test)
-// 	configID := getDefaultConfigID()
-// 	err := szDiagnostic.Reinitialize(ctx, configID)
-// 	printDebug(test, err)
-// 	require.NoError(test, err)
-// }
+func TestSzdiagnostic_Reinitialize(test *testing.T) {
+	ctx := test.Context()
+	szDiagnosticSingleton = nil
+	szDiagnostic := getTestObject(test)
+	configID := getDefaultConfigID()
+	err := szDiagnostic.Reinitialize(ctx, configID)
+	printDebug(test, err)
+	require.NoError(test, err)
+}
 
 // func TestSzdiagnostic_Reinitialize_error(test *testing.T) {
 // 	// IMPROVE: Implement TestSzdiagnostic_Reinitialize_error
@@ -251,14 +251,14 @@ func TestSzdiagnostic_Destroy(test *testing.T) {
 	require.NoError(test, err)
 }
 
-// func TestSzdiagnostic_Destroy_withObserver(test *testing.T) {
-// 	ctx := test.Context()
-// 	szDiagnosticSingleton = nil
-// 	szDiagnostic := getTestObject(test)
-// 	err := szDiagnostic.Destroy(ctx)
-// 	printDebug(test, err)
-// 	require.NoError(test, err)
-// }
+func TestSzdiagnostic_Destroy_withObserver(test *testing.T) {
+	ctx := test.Context()
+	szDiagnosticSingleton = nil
+	szDiagnostic := getTestObject(test)
+	err := szDiagnostic.Destroy(ctx)
+	printDebug(test, err)
+	require.NoError(test, err)
+}
 
 // func TestSzdiagnostic_Destroy_error(test *testing.T) {
 // 	// IMPROVE: Implement TestSzdiagnostic_Destroy_error
@@ -391,9 +391,9 @@ func getSzDiagnostic(ctx context.Context) *szdiagnostic.Szdiagnostic {
 	return szDiagnosticSingleton
 }
 
-// func getSzDiagnosticAsInterface(ctx context.Context) senzing.SzDiagnostic {
-// 	return getSzDiagnostic(ctx)
-// }
+func getSzDiagnosticAsInterface(ctx context.Context) senzing.SzDiagnostic {
+	return getSzDiagnostic(ctx)
+}
 
 func getSzEngine(ctx context.Context) senzing.SzEngine {
 	if szEngineSingleton == nil {

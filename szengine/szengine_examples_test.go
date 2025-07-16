@@ -21,11 +21,13 @@ func ExampleSzengine_AddRecord() {
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
 	}
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	dataSourceCode := "CUSTOMERS"
 	recordID := "1001"
@@ -46,11 +48,13 @@ func ExampleSzengine_AddRecord_secondRecord() {
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
 	}
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	dataSourceCode := "CUSTOMERS"
 	recordID := "1002"
@@ -71,11 +75,13 @@ func ExampleSzengine_AddRecord_withInfo() {
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
 	}
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	dataSourceCode := "CUSTOMERS"
 	recordID := "1003"
@@ -105,11 +111,13 @@ func ExampleSzengine_CloseExportReport() {
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
 	}
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	flags := senzing.SzNoFlags
 
@@ -130,11 +138,13 @@ func ExampleSzengine_CountRedoRecords() {
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
 	}
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	result, err := szEngine.CountRedoRecords(ctx)
 	if err != nil {
@@ -150,11 +160,13 @@ func ExampleSzengine_ExportCsvEntityReport() {
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
 	}
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	csvColumnList := ""
 	flags := senzing.SzNoFlags
@@ -199,11 +211,13 @@ func ExampleSzengine_ExportJSONEntityReport() {
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
 	}
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	flags := senzing.SzNoFlags
 
@@ -246,11 +260,13 @@ func ExampleSzengine_FetchNext() {
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
 	}
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	flags := senzing.SzNoFlags
 
@@ -260,7 +276,7 @@ func ExampleSzengine_FetchNext() {
 	}
 
 	defer func() {
-		err = szEngine.CloseExportReport(ctx, exportHandle)
+		handleError(szEngine.CloseExportReport(ctx, exportHandle))
 	}()
 
 	jsonEntityReport := ""
@@ -285,11 +301,13 @@ func ExampleSzengine_FindInterestingEntitiesByEntityID() {
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
 	}
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	entityID := getEntityIDForRecord(ctx, "CUSTOMERS", "1001")
 
@@ -314,11 +332,13 @@ func ExampleSzengine_FindInterestingEntitiesByRecordID() {
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
 	}
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	dataSourceCode := "CUSTOMERS"
 	recordID := "1001"
@@ -343,11 +363,13 @@ func ExampleSzengine_FindNetworkByEntityID() {
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
 	}
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	entityID1 := getEntityIDStringForRecord(ctx, "CUSTOMERS", "1001")
 	entityID2 := getEntityIDStringForRecord(ctx, "CUSTOMERS", "1002")
@@ -456,11 +478,13 @@ func ExampleSzengine_FindNetworkByRecordID() {
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
 	}
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	recordList := `
 	{
@@ -632,11 +656,13 @@ func ExampleSzengine_FindPathByEntityID() {
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
 	}
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	startEntityID := getEntityIDForRecord(ctx, "CUSTOMERS", "1001")
 	endEntityID := getEntityIDForRecord(ctx, "CUSTOMERS", "1002")
@@ -686,11 +712,13 @@ func ExampleSzengine_FindPathByEntityID_avoiding() {
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
 	}
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	startEntityID := getEntityIDForRecord(ctx, "CUSTOMERS", "1001")
 	endEntityID := getEntityIDForRecord(ctx, "CUSTOMERS", "1002")
@@ -740,11 +768,13 @@ func ExampleSzEngine_FindPathByEntityID_avoidingAndIncluding() {
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
 	}
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	startEntityID := getEntityIDForRecord(ctx, "CUSTOMERS", "1001")
 	endEntityID := getEntityIDForRecord(ctx, "CUSTOMERS", "1002")
@@ -792,11 +822,13 @@ func ExampleSzengine_FindPathByEntityID_including() {
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
 	}
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	startEntityID := getEntityIDForRecord(ctx, "CUSTOMERS", "1001")
 	endEntityID := getEntityIDForRecord(ctx, "CUSTOMERS", "1002")
@@ -937,11 +969,13 @@ func ExampleSzengine_FindPathByRecordID() {
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
 	}
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	startDataSourceCode := "CUSTOMERS"
 	startRecordID := "1001"
@@ -994,11 +1028,13 @@ func ExampleSzengine_FindPathByRecordID_avoiding() {
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
 	}
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	startDataSourceCode := "CUSTOMERS"
 	startRecordID := "1001"
@@ -1051,11 +1087,13 @@ func ExampleSzEngine_FindPathByRecordID_avoidingAndIncluding() {
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
 	}
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	startDataSourceCode := "CUSTOMERS"
 	startRecordID := "1001"
@@ -1106,11 +1144,13 @@ func ExampleSzengine_FindPathByRecordID_including() {
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
 	}
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	startDataSourceCode := "CUSTOMERS"
 	startRecordID := "1001"
@@ -1254,11 +1294,13 @@ func ExampleSzengine_GetActiveConfigID() {
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
 	}
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	result, err := szEngine.GetActiveConfigID(ctx)
 	if err != nil {
@@ -1274,11 +1316,13 @@ func ExampleSzengine_GetEntityByEntityID() {
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
 	}
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	entityID := getEntityIDForRecord(ctx, "CUSTOMERS", "1001")
 
@@ -1494,11 +1538,13 @@ func ExampleSzengine_GetEntityByRecordID() {
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
 	}
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	dataSourceCode := "CUSTOMERS"
 	recordID := "1001"
@@ -1714,11 +1760,13 @@ func ExampleSzengine_GetRecord() {
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
 	}
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	dataSourceCode := "CUSTOMERS"
 	recordID := "1001"
@@ -1742,11 +1790,13 @@ func ExampleSzengine_GetRedoRecord() {
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
 	}
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	result, err := szEngine.GetRedoRecord(ctx)
 	if err != nil {
@@ -1770,11 +1820,13 @@ func ExampleSzengine_GetStats() {
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
 	}
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	result, err := szEngine.GetStats(ctx)
 	if err != nil {
@@ -2056,11 +2108,13 @@ func ExampleSzengine_GetVirtualEntityByRecordID() {
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
 	}
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	recordList := `{"RECORDS": [{"DATA_SOURCE": "CUSTOMERS","RECORD_ID": "1001"},{"DATA_SOURCE": "CUSTOMERS","RECORD_ID": "1002"}]}`
 	flags := senzing.SzNoFlags
@@ -2941,11 +2995,13 @@ func ExampleSzengine_HowEntityByEntityID() {
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
 	}
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	entityID := getEntityIDForRecord(ctx, "CUSTOMERS", "1001")
 
@@ -2965,11 +3021,13 @@ func ExampleSzengine_GetRecordPreview() {
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
 	}
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	recordDefinition := `{"DATA_SOURCE": "CUSTOMERS", "RECORD_ID": "1001", "RECORD_TYPE": "PERSON", "PRIMARY_NAME_LAST": "Smith", "PRIMARY_NAME_FIRST": "Robert", "DATE_OF_BIRTH": "12/11/1978", "ADDR_TYPE": "MAILING", "ADDR_LINE1": "123 Main Street, Las Vegas NV 89132", "PHONE_TYPE": "HOME", "PHONE_NUMBER": "702-919-1300", "EMAIL_ADDRESS": "bsmith@work.com", "DATE": "1/2/18", "STATUS": "Active", "AMOUNT": "100"}`
 	flags := senzing.SzNoFlags
@@ -2988,11 +3046,13 @@ func ExampleSzengine_PrimeEngine() {
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
 	}
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	err = szEngine.PrimeEngine(ctx)
 	if err != nil {
@@ -3006,11 +3066,13 @@ func ExampleSzEngine_ProcessRedoRecord() {
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
 	}
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	redoRecord, err := szEngine.GetRedoRecord(ctx)
 	if err != nil {
@@ -3033,11 +3095,13 @@ func ExampleSzEngine_ProcessRedoRecord_withInfo() {
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
 	}
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	redoRecord, err := szEngine.GetRedoRecord(ctx)
 	if err != nil {
@@ -3069,11 +3133,13 @@ func ExampleSzengine_SearchByAttributes() {
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
 	}
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	attributes := `{"NAMES": [{"NAME_TYPE": "PRIMARY", "NAME_LAST": "Smith"}], "EMAIL_ADDRESS": "bsmith@work.com"}`
 	searchProfile := ""
@@ -3117,11 +3183,13 @@ func ExampleSzEngine_SearchByAttributes_searchProfile() {
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
 	}
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	attributes := `{"NAMES": [{"NAME_TYPE": "PRIMARY", "NAME_LAST": "Smith"}], "EMAIL_ADDRESS": "bsmith@work.com"}`
 	searchProfile := "SEARCH"
@@ -3330,11 +3398,13 @@ func ExampleSzengine_WhyEntities() {
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
 	}
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	entityID1 := getEntityID(ctx, truthset.CustomerRecords["1001"])
 	entityID2 := getEntityID(ctx, truthset.CustomerRecords["1002"])
@@ -5087,11 +5157,13 @@ func ExampleSzengine_WhyRecordInEntity() {
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
 	}
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	dataSourceCode := "CUSTOMERS"
 	recordID := "1001"
@@ -5137,11 +5209,13 @@ func ExampleSzengine_WhyRecords() {
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
 	}
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	dataSourceCode1 := "CUSTOMERS"
 	recordID1 := "1001"
@@ -6879,11 +6953,13 @@ func ExampleSzengine_WhySearch() {
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
 	}
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	attributes := `{"NAMES": [{"NAME_TYPE": "PRIMARY", "NAME_LAST": "Smith"}], "EMAIL_ADDRESS": "bsmith@work.com"}`
 	searchProfile := "SEARCH"
@@ -6929,11 +7005,13 @@ func ExampleSzengine_ReevaluateEntity() {
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
 	}
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	entityID := getEntityIDForRecord(ctx, "CUSTOMERS", "1001")
 
@@ -6953,11 +7031,13 @@ func ExampleSzengine_ReevaluateEntity_withInfo() {
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
 	}
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	entityID := getEntityIDForRecord(ctx, "CUSTOMERS", "1001")
 	flags := senzing.SzWithInfo
@@ -6983,11 +7063,13 @@ func ExampleSzengine_ReevaluateRecord() {
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
 	}
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	dataSourceCode := "CUSTOMERS"
 	recordID := "1001"
@@ -7007,11 +7089,13 @@ func ExampleSzengine_ReevaluateRecord_withInfo() {
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
 	}
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	dataSourceCode := "CUSTOMERS"
 	recordID := "1001"
@@ -7040,11 +7124,13 @@ func ExampleSzengine_DeleteRecord() {
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
 	}
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	dataSourceCode := "CUSTOMERS"
 	recordID := "1003"
@@ -7064,11 +7150,13 @@ func ExampleSzengine_DeleteRecord_withInfo() {
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
 	}
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	dataSourceCode := "CUSTOMERS"
 	recordID := "1003"
