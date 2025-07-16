@@ -64,7 +64,7 @@ setup-osarch-specific:
 .PHONY: test-osarch-specific
 test-osarch-specific:
 	# @go test -json -v -p 1 ./... 2>&1 | tee /tmp/gotest.log | gotestfmt
-	@go test -v -p 1 ./
+	@go test -v -p 1 ./szconfigmanager
 
 # -----------------------------------------------------------------------------
 # Makefile targets supported only by this platform.

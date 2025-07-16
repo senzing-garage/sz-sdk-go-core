@@ -83,7 +83,6 @@ func (factory *Szabstractfactory) CreateConfigManager(ctx context.Context) (senz
 
 	if err != nil {
 		factory.once = sync.Once{}
-
 		return result, wraperror.Errorf(
 			err,
 			"Cannot create AbstractFactory until prior AbstractFactory has been closed and objects created by that factory destroyed [SzConfigManager]",

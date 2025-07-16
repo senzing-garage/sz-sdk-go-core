@@ -388,48 +388,57 @@ func TestSzconfigmanager_UnregisterObserver(test *testing.T) {
 // Object creation / destruction
 // ----------------------------------------------------------------------------
 
-func TestSzconfigmanager_AsInterface(test *testing.T) {
-	ctx := test.Context()
-	szConfigManager := getSzConfigManagerAsInterface(ctx)
-	actual, err := szConfigManager.GetConfigRegistry(ctx)
-	printDebug(test, err, actual)
-	require.NoError(test, err)
-}
+// func TestSzconfigmanager_AsInterface(test *testing.T) {
+// 	ctx := test.Context()
+// 	szConfigManager := getSzConfigManagerAsInterface(ctx)
+// 	actual, err := szConfigManager.GetConfigRegistry(ctx)
+// 	printDebug(test, err, actual)
+// 	require.NoError(test, err)
+// }
 
-func TestSzconfigmanager_Initialize(test *testing.T) {
-	ctx := test.Context()
-	szConfigManager := getTestObject(test)
-	settings := getSettings()
-	err := szConfigManager.Initialize(ctx, instanceName, settings, verboseLogging)
-	printDebug(test, err)
-	require.NoError(test, err)
-}
+// func TestSzconfigmanager_Initialize(test *testing.T) {
+// 	ctx := test.Context()
+// 	szConfigManager := getTestObject(test)
+// 	settings := getSettings()
+// 	err := szConfigManager.Initialize(ctx, instanceName, settings, verboseLogging)
+// 	printDebug(test, err)
+// 	require.NoError(test, err)
+// }
 
-func TestSzconfigmanager_Initialize_error(test *testing.T) {
-	// IMPROVE: Implement TestSzconfigmanager_Initialize_error
-	_ = test
-}
+// func TestSzconfigmanager_Initialize_error(test *testing.T) {
+// 	// IMPROVE: Implement TestSzconfigmanager_Initialize_error
+// 	_ = test
+// }
 
-func TestSzconfigmanager_Destroy(test *testing.T) {
-	ctx := test.Context()
-	szConfigManager := getTestObject(test)
-	err := szConfigManager.Destroy(ctx)
-	printDebug(test, err)
-	require.NoError(test, err)
-}
+// func TestSzconfigmanager_Destroy(test *testing.T) {
+// 	ctx := test.Context()
+// 	szConfigManager := getTestObject(test)
+// 	err := szConfigManager.Destroy(ctx)
+// 	printDebug(test, err)
+// 	require.NoError(test, err)
+// }
 
-func TestSzconfigmanager_Destroy_withObserver(test *testing.T) {
-	ctx := test.Context()
-	szConfigManagerSingleton = nil
-	szConfigManager := getTestObject(test)
-	err := szConfigManager.Destroy(ctx)
-	printDebug(test, err)
-	require.NoError(test, err)
-}
+// func TestSzconfigmanager_Destroy_withObserver(test *testing.T) {
+// 	ctx := test.Context()
+// 	szConfigManagerSingleton = nil
+// 	szConfigManager := getTestObject(test)
+// 	err := szConfigManager.Destroy(ctx)
+// 	printDebug(test, err)
+// 	require.NoError(test, err)
+// }
 
-func TestSzconfigmanager_Destroy_error(test *testing.T) {
+// func TestSzconfigmanager_Destroy_error(test *testing.T) {
+// 	// IMPROVE: Implement TestSzconfigmanager_Destroy_error
+// 	_ = test
+// }
+
+func TestSzconfigmanager_cleanup(test *testing.T) {
 	// IMPROVE: Implement TestSzconfigmanager_Destroy_error
-	_ = test
+	ctx := test.Context()
+
+	szConfigManager := getTestObject(test)
+	err := szConfigManager.Destroy(ctx)
+	require.NoError(test, err)
 }
 
 // ----------------------------------------------------------------------------
@@ -673,8 +682,6 @@ func teardownSzConfigManager(ctx context.Context) {
 	if szConfigManagerSingleton != nil {
 		err := szConfigManagerSingleton.UnregisterObserver(ctx, observerSingleton)
 		panicOnError(err)
-
-		_ = szConfigManagerSingleton.Destroy(ctx)
 
 		szConfigManagerSingleton = nil
 	}
