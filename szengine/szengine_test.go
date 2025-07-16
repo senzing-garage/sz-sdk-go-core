@@ -176,6 +176,7 @@ func TestSzEngine_CountRedoRecords(test *testing.T) {
 func TestSzEngine_DeleteRecord(test *testing.T) {
 	ctx := test.Context()
 	testCases := getTestCasesForDeleteRecord()
+	szEngine := getTestObject(ctx, test)
 
 	for _, testCase := range testCases {
 		test.Run(testCase.name, func(test *testing.T) {
@@ -186,9 +187,9 @@ func TestSzEngine_DeleteRecord(test *testing.T) {
 				record1005,
 			}
 
-			defer func() { deleteRecords(ctx, records) }()
+			defer func() { deleteRecords(ctx, szEngine, records) }()
 
-			addRecords(ctx, records)
+			addRecords(ctx, szEngine, records)
 
 			// Defaults.
 
@@ -222,13 +223,13 @@ func TestSzEngine_ExportCsvEntityReport(test *testing.T) {
 		truthset.CustomerRecords["1002"],
 		truthset.CustomerRecords["1003"],
 	}
+	szEngine := getTestObject(ctx, test)
 
-	defer func() { deleteRecords(ctx, records) }()
+	defer func() { deleteRecords(ctx, szEngine, records) }()
 
-	addRecords(ctx, records)
+	addRecords(ctx, szEngine, records)
 
 	expected := expectedExportCsvEntityReport
-	szEngine := getTestObject(ctx, test)
 	csvColumnList := ""
 	flags := senzing.SzExportIncludeAllEntities
 	exportHandle, err := szEngine.ExportCsvEntityReport(ctx, csvColumnList, flags)
@@ -257,12 +258,12 @@ func TestSzEngine_ExportCsvEntityReport_badCsvColumnList(test *testing.T) {
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
-
-	defer func() { deleteRecords(ctx, records) }()
-
-	addRecords(ctx, records)
-
 	szEngine := getTestObject(ctx, test)
+
+	defer func() { deleteRecords(ctx, szEngine, records) }()
+
+	addRecords(ctx, szEngine, records)
+
 	flags := senzing.SzExportIncludeAllEntities
 	exportHandle, err := szEngine.ExportCsvEntityReport(ctx, badCsvColumnList, flags)
 
@@ -280,15 +281,16 @@ func TestSzEngine_ExportCsvEntityReport_badCsvColumnList(test *testing.T) {
 
 func TestSzEngine_ExportCsvEntityReport_nilCsvColumnList(test *testing.T) {
 	ctx := test.Context()
+
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
-
-	defer func() { deleteRecords(ctx, records) }()
-
-	addRecords(ctx, records)
-
 	szEngine := getTestObject(ctx, test)
+
+	defer func() { deleteRecords(ctx, szEngine, records) }()
+
+	addRecords(ctx, szEngine, records)
+
 	flags := senzing.SzExportIncludeAllEntities
 	exportHandle, err := szEngine.ExportCsvEntityReport(ctx, nilCsvColumnList, flags)
 
@@ -308,13 +310,13 @@ func TestSzEngine_ExportCsvEntityReportIterator(test *testing.T) {
 		truthset.CustomerRecords["1002"],
 		truthset.CustomerRecords["1003"],
 	}
+	szEngine := getTestObject(ctx, test)
 
-	defer func() { deleteRecords(ctx, records) }()
+	defer func() { deleteRecords(ctx, szEngine, records) }()
 
-	addRecords(ctx, records)
+	addRecords(ctx, szEngine, records)
 
 	expected := expectedExportCsvEntityReportIterator
-	szEngine := getTestObject(ctx, test)
 	csvColumnList := ""
 	flags := senzing.SzExportIncludeAllEntities
 	actualCount := 0
@@ -337,15 +339,15 @@ func TestSzEngine_ExportCsvEntityReportIterator_badCsvColumnList(test *testing.T
 		truthset.CustomerRecords["1002"],
 		truthset.CustomerRecords["1003"],
 	}
+	szEngine := getTestObject(ctx, test)
 
-	defer func() { deleteRecords(ctx, records) }()
+	defer func() { deleteRecords(ctx, szEngine, records) }()
 
-	addRecords(ctx, records)
+	addRecords(ctx, szEngine, records)
 
 	expected := []string{
 		``,
 	}
-	szEngine := getTestObject(ctx, test)
 	flags := senzing.SzExportIncludeAllEntities
 	actualCount := 0
 
@@ -370,13 +372,13 @@ func TestSzEngine_ExportCsvEntityReportIterator_nilCsvColumnList(test *testing.T
 		truthset.CustomerRecords["1002"],
 		truthset.CustomerRecords["1003"],
 	}
+	szEngine := getTestObject(ctx, test)
 
-	defer func() { deleteRecords(ctx, records) }()
+	defer func() { deleteRecords(ctx, szEngine, records) }()
 
-	addRecords(ctx, records)
+	addRecords(ctx, szEngine, records)
 
 	expected := expectedExportCsvEntityReportIteratorNilCsvColumnList
-	szEngine := getTestObject(ctx, test)
 	flags := senzing.SzExportIncludeAllEntities
 	actualCount := 0
 
@@ -396,12 +398,12 @@ func TestSzEngine_ExportJSONEntityReport(test *testing.T) {
 		truthset.CustomerRecords["1002"],
 		truthset.CustomerRecords["1003"],
 	}
-
-	defer func() { deleteRecords(ctx, records) }()
-
-	addRecords(ctx, records)
-
 	szEngine := getTestObject(ctx, test)
+
+	defer func() { deleteRecords(ctx, szEngine, records) }()
+
+	addRecords(ctx, szEngine, records)
+
 	aRecord := testfixtures.FixtureRecords["65536-periods"]
 	flags := senzing.SzWithInfo
 	actual, err := szEngine.AddRecord(ctx, aRecord.DataSource, aRecord.ID, aRecord.JSON, flags)
@@ -497,13 +499,13 @@ func TestSzEngine_ExportJSONEntityReportIterator(test *testing.T) {
 		truthset.CustomerRecords["1002"],
 		truthset.CustomerRecords["1003"],
 	}
+	szEngine := getTestObject(ctx, test)
 
-	defer func() { deleteRecords(ctx, records) }()
+	defer func() { deleteRecords(ctx, szEngine, records) }()
 
-	addRecords(ctx, records)
+	addRecords(ctx, szEngine, records)
 
 	expected := 1
-	szEngine := getTestObject(ctx, test)
 	flags := senzing.SzExportIncludeAllEntities
 	actualCount := 0
 
@@ -528,12 +530,12 @@ func TestSzEngine_FetchNext_badExportHandle(test *testing.T) {
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
-
-	defer func() { deleteRecords(ctx, records) }()
-
-	addRecords(ctx, records)
-
 	szEngine := getTestObject(ctx, test)
+
+	defer func() { deleteRecords(ctx, szEngine, records) }()
+
+	addRecords(ctx, szEngine, records)
+
 	actual, err := szEngine.FetchNext(ctx, badExportHandle)
 	printDebug(test, err, actual)
 	require.ErrorIs(test, err, szerror.ErrSz)
@@ -547,12 +549,12 @@ func TestSzEngine_FetchNext_nilExportHandle(test *testing.T) {
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
-
-	defer func() { deleteRecords(ctx, records) }()
-
-	addRecords(ctx, records)
-
 	szEngine := getTestObject(ctx, test)
+
+	defer func() { deleteRecords(ctx, szEngine, records) }()
+
+	addRecords(ctx, szEngine, records)
+
 	actual, err := szEngine.FetchNext(ctx, nilExportHandle)
 	printDebug(test, err, actual)
 	require.ErrorIs(test, err, szerror.ErrSz)
@@ -575,15 +577,15 @@ func TestSzEngine_FindInterestingEntitiesByEntityID(test *testing.T) {
 				truthset.CustomerRecords["1002"],
 				truthset.CustomerRecords["1003"],
 			}
+			szEngine := getTestObject(ctx, test)
 
-			defer func() { deleteRecords(ctx, records) }()
+			defer func() { deleteRecords(ctx, szEngine, records) }()
 
-			addRecords(ctx, records)
+			addRecords(ctx, szEngine, records)
 
 			// Defaults.
 
-			szEngine := getTestObject(ctx, test)
-			entityID := getEntityID(ctx, record1001)
+			entityID := getEntityID(ctx, szEngine, record1001)
 
 			// Test.
 
@@ -616,14 +618,11 @@ func TestSzEngine_FindInterestingEntitiesByRecordID(test *testing.T) {
 				truthset.CustomerRecords["1002"],
 				truthset.CustomerRecords["1003"],
 			}
-
-			defer func() { deleteRecords(ctx, records) }()
-
-			addRecords(ctx, records)
-
-			// Defaults.
-
 			szEngine := getTestObject(ctx, test)
+
+			defer func() { deleteRecords(ctx, szEngine, records) }()
+
+			addRecords(ctx, szEngine, records)
 
 			// Test.
 
@@ -658,18 +657,17 @@ func TestSzEngine_FindNetworkByEntityID(test *testing.T) {
 				record1002,
 				truthset.CustomerRecords["1003"],
 			}
+			szEngine := getTestObject(ctx, test)
 
-			defer func() { deleteRecords(ctx, records) }()
+			defer func() { deleteRecords(ctx, szEngine, records) }()
 
-			addRecords(ctx, records)
+			addRecords(ctx, szEngine, records)
 
 			// Defaults.
 
-			szEngine := getTestObject(ctx, test)
-
 			entityIDs := entityIDsJSON(
-				getEntityID(ctx, record1001),
-				getEntityID(ctx, record1002))
+				getEntityID(ctx, szEngine, record1001),
+				getEntityID(ctx, szEngine, record1002))
 
 			// Test.
 
@@ -705,14 +703,13 @@ func TestSzEngine_FindNetworkByRecordID(test *testing.T) {
 				truthset.CustomerRecords["1002"],
 				truthset.CustomerRecords["1003"],
 			}
+			szEngine := getTestObject(ctx, test)
 
-			defer func() { deleteRecords(ctx, records) }()
+			defer func() { deleteRecords(ctx, szEngine, records) }()
 
-			addRecords(ctx, records)
+			addRecords(ctx, szEngine, records)
 
 			// Defaults.
-
-			szEngine := getTestObject(ctx, test)
 
 			recordKeys := recordKeysFunc()
 			if testCase.recordKeys != nil {
@@ -751,16 +748,16 @@ func TestSzEngine_FindPathByEntityID(test *testing.T) {
 				truthset.CustomerRecords["1001"],
 				truthset.CustomerRecords["1002"],
 			}
+			szEngine := getTestObject(ctx, test)
 
-			defer func() { deleteRecords(ctx, records) }()
+			defer func() { deleteRecords(ctx, szEngine, records) }()
 
-			addRecords(ctx, records)
+			addRecords(ctx, szEngine, records)
 
 			// Defaults.
 
-			szEngine := getTestObject(ctx, test)
-			startEntityID := getEntityID(ctx, truthset.CustomerRecords["1001"])
-			endEntityID := getEntityID(ctx, truthset.CustomerRecords["1002"])
+			startEntityID := getEntityID(ctx, szEngine, truthset.CustomerRecords["1001"])
+			endEntityID := getEntityID(ctx, szEngine, truthset.CustomerRecords["1002"])
 
 			avoidEntityIDs := senzing.SzNoAvoidance
 			if testCase.avoidEntityIDs != nil {
@@ -806,14 +803,13 @@ func TestSzEngine_FindPathByRecordID(test *testing.T) {
 				truthset.CustomerRecords["1001"],
 				truthset.CustomerRecords["1002"],
 			}
+			szEngine := getTestObject(ctx, test)
 
-			defer func() { deleteRecords(ctx, records) }()
+			defer func() { deleteRecords(ctx, szEngine, records) }()
 
-			addRecords(ctx, records)
+			addRecords(ctx, szEngine, records)
 
 			// Defaults.
-
-			szEngine := getTestObject(ctx, test)
 
 			record1 := truthset.CustomerRecords["1001"]
 			startDataSourceCode := record1.DataSource
@@ -877,15 +873,15 @@ func TestSzEngine_GetEntityByEntityID(test *testing.T) {
 				truthset.CustomerRecords["1001"],
 				truthset.CustomerRecords["1002"],
 			}
+			szEngine := getTestObject(ctx, test)
 
-			defer func() { deleteRecords(ctx, records) }()
+			defer func() { deleteRecords(ctx, szEngine, records) }()
 
-			addRecords(ctx, records)
+			addRecords(ctx, szEngine, records)
 
 			// Defaults.
 
-			szEngine := getTestObject(ctx, test)
-			entityID := getEntityID(ctx, truthset.CustomerRecords["1001"])
+			entityID := getEntityID(ctx, szEngine, truthset.CustomerRecords["1001"])
 
 			// Test.
 
@@ -915,14 +911,14 @@ func TestSzEngine_GetEntityByRecordID(test *testing.T) {
 				truthset.CustomerRecords["1001"],
 				truthset.CustomerRecords["1002"],
 			}
+			szEngine := getTestObject(ctx, test)
 
-			defer func() { deleteRecords(ctx, records) }()
+			defer func() { deleteRecords(ctx, szEngine, records) }()
 
-			addRecords(ctx, records)
+			addRecords(ctx, szEngine, records)
 
 			// Defaults.
 
-			szEngine := getTestObject(ctx, test)
 			record := truthset.CustomerRecords["1001"]
 
 			// Test.
@@ -954,14 +950,14 @@ func TestSzEngine_GetRecord(test *testing.T) {
 				truthset.CustomerRecords["1001"],
 				truthset.CustomerRecords["1002"],
 			}
+			szEngine := getTestObject(ctx, test)
 
-			defer func() { deleteRecords(ctx, records) }()
+			defer func() { deleteRecords(ctx, szEngine, records) }()
 
-			addRecords(ctx, records)
+			addRecords(ctx, szEngine, records)
 
 			// Defaults.
 
-			szEngine := getTestObject(ctx, test)
 			record := truthset.CustomerRecords["1001"]
 
 			// Test.
@@ -1010,14 +1006,13 @@ func TestSzEngine_GetVirtualEntityByRecordID(test *testing.T) {
 				truthset.CustomerRecords["1002"],
 				truthset.CustomerRecords["1003"],
 			}
+			szEngine := getTestObject(ctx, test)
 
-			defer func() { deleteRecords(ctx, records) }()
+			defer func() { deleteRecords(ctx, szEngine, records) }()
 
-			addRecords(ctx, records)
+			addRecords(ctx, szEngine, records)
 
 			// Defaults.
-
-			szEngine := getTestObject(ctx, test)
 
 			recordKeys := recordKeysFunc()
 			if testCase.recordKeys != nil {
@@ -1054,15 +1049,15 @@ func TestSzEngine_HowEntityByEntityID(test *testing.T) {
 				record1001,
 				truthset.CustomerRecords["1002"],
 			}
+			szEngine := getTestObject(ctx, test)
 
-			defer func() { deleteRecords(ctx, records) }()
+			defer func() { deleteRecords(ctx, szEngine, records) }()
 
-			addRecords(ctx, records)
+			addRecords(ctx, szEngine, records)
 
 			// Defaults.
 
-			szEngine := getTestObject(ctx, test)
-			entityID := getEntityID(ctx, record1001)
+			entityID := getEntityID(ctx, szEngine, record1001)
 
 			// Test.
 
@@ -1093,14 +1088,11 @@ func TestSzEngine_GetRecordPreview(test *testing.T) {
 			records := []record.Record{
 				record1001,
 			}
-
-			defer func() { deleteRecords(ctx, records) }()
-
-			addRecords(ctx, records)
-
-			// Defaults.
-
 			szEngine := getTestObject(ctx, test)
+
+			defer func() { deleteRecords(ctx, szEngine, records) }()
+
+			addRecords(ctx, szEngine, records)
 
 			// Test.
 
@@ -1142,14 +1134,14 @@ func TestSzEngine_ProcessRedoRecord(test *testing.T) {
 				truthset.CustomerRecords["1005"],
 				truthset.CustomerRecords["1009"],
 			}
+			szEngine := getTestObject(ctx, test)
 
-			defer func() { deleteRecords(ctx, records) }()
+			defer func() { deleteRecords(ctx, szEngine, records) }()
 
-			addRecords(ctx, records)
+			addRecords(ctx, szEngine, records)
 
 			// Defaults.
 
-			szEngine := getTestObject(ctx, test)
 			redoRecord, err := szEngine.GetRedoRecord(ctx)
 			printDebug(test, err, redoRecord)
 			require.NoError(test, err)
@@ -1183,15 +1175,15 @@ func TestSzEngine_ReevaluateEntity(test *testing.T) {
 			records := []record.Record{
 				record1001,
 			}
+			szEngine := getTestObject(ctx, test)
 
-			defer func() { deleteRecords(ctx, records) }()
+			defer func() { deleteRecords(ctx, szEngine, records) }()
 
-			addRecords(ctx, records)
+			addRecords(ctx, szEngine, records)
 
 			// Defaults.
 
-			szEngine := getTestObject(ctx, test)
-			entityID := getEntityID(ctx, record1001)
+			entityID := getEntityID(ctx, szEngine, record1001)
 
 			// Test.
 
@@ -1222,14 +1214,11 @@ func TestSzEngine_ReevaluateRecord(test *testing.T) {
 			records := []record.Record{
 				record1001,
 			}
-
-			defer func() { deleteRecords(ctx, records) }()
-
-			addRecords(ctx, records)
-
-			// Defaults.
-
 			szEngine := getTestObject(ctx, test)
+
+			defer func() { deleteRecords(ctx, szEngine, records) }()
+
+			addRecords(ctx, szEngine, records)
 
 			// Test.
 
@@ -1261,14 +1250,11 @@ func TestSzEngine_SearchByAttributes(test *testing.T) {
 				truthset.CustomerRecords["1002"],
 				truthset.CustomerRecords["1003"],
 			}
-
-			defer func() { deleteRecords(ctx, records) }()
-
-			addRecords(ctx, records)
-
-			// Defaults.
-
 			szEngine := getTestObject(ctx, test)
+
+			defer func() { deleteRecords(ctx, szEngine, records) }()
+
+			addRecords(ctx, szEngine, records)
 
 			// Test.
 
@@ -1302,16 +1288,16 @@ func TestSzEngine_WhyEntities(test *testing.T) {
 				record1001,
 				record1002,
 			}
+			szEngine := getTestObject(ctx, test)
 
-			defer func() { deleteRecords(ctx, records) }()
+			defer func() { deleteRecords(ctx, szEngine, records) }()
 
-			addRecords(ctx, records)
+			addRecords(ctx, szEngine, records)
 
 			// Defaults.
 
-			szEngine := getTestObject(ctx, test)
-			entityID1 := getEntityID(ctx, record1001)
-			entityID2 := getEntityID(ctx, record1002)
+			entityID1 := getEntityID(ctx, szEngine, record1001)
+			entityID2 := getEntityID(ctx, szEngine, record1002)
 
 			// Test.
 
@@ -1343,14 +1329,11 @@ func TestSzEngine_WhyRecordInEntity(test *testing.T) {
 			records := []record.Record{
 				record1001,
 			}
-
-			defer func() { deleteRecords(ctx, records) }()
-
-			addRecords(ctx, records)
-
-			// Defaults.
-
 			szEngine := getTestObject(ctx, test)
+
+			defer func() { deleteRecords(ctx, szEngine, records) }()
+
+			addRecords(ctx, szEngine, records)
 
 			// Test.
 
@@ -1384,14 +1367,11 @@ func TestSzEngine_WhyRecords(test *testing.T) {
 				record1001,
 				record1002,
 			}
-
-			defer func() { deleteRecords(ctx, records) }()
-
-			addRecords(ctx, records)
-
-			// Defaults.
-
 			szEngine := getTestObject(ctx, test)
+
+			defer func() { deleteRecords(ctx, szEngine, records) }()
+
+			addRecords(ctx, szEngine, records)
 
 			// Test.
 
@@ -1427,15 +1407,15 @@ func TestSzEngine_WhySearch(test *testing.T) {
 				truthset.CustomerRecords["1002"],
 				truthset.CustomerRecords["1003"],
 			}
+			szEngine := getTestObject(ctx, test)
 
-			defer func() { deleteRecords(ctx, records) }()
+			defer func() { deleteRecords(ctx, szEngine, records) }()
 
-			addRecords(ctx, records)
+			addRecords(ctx, szEngine, records)
 
 			// Defaults.
 
-			szEngine := getTestObject(ctx, test)
-			entityID := getEntityID(ctx, truthset.CustomerRecords["1001"])
+			entityID := getEntityID(ctx, szEngine, truthset.CustomerRecords["1001"])
 
 			// Test.
 
@@ -1584,8 +1564,7 @@ func TestSzdiagnostic_cleanup(test *testing.T) {
 // Internal functions
 // ----------------------------------------------------------------------------
 
-func addRecords(ctx context.Context, records []record.Record) {
-	szEngine := getSzEngine(ctx)
+func addRecords(ctx context.Context, szEngine senzing.SzEngine, records []record.Record) {
 	flags := senzing.SzWithoutInfo
 
 	for _, record := range records {
@@ -1611,9 +1590,7 @@ func createSzAbstractFactory(ctx context.Context) senzing.SzAbstractFactory {
 	return result
 }
 
-func deleteRecords(ctx context.Context, records []record.Record) {
-	szEngine := getSzEngine(ctx)
-	defer func() { _ = szEngine.Destroy(ctx) }()
+func deleteRecords(ctx context.Context, szEngine senzing.SzEngine, records []record.Record) {
 	flags := senzing.SzWithoutInfo
 
 	for _, record := range records {
@@ -1623,8 +1600,8 @@ func deleteRecords(ctx context.Context, records []record.Record) {
 }
 
 func destroySzConfigManagers(ctx context.Context) {
-	szConfigManager := &szconfigmanager.Szconfigmanager{}
 	for {
+		szConfigManager := &szconfigmanager.Szconfigmanager{}
 		err := szConfigManager.Destroy(ctx)
 		if err != nil {
 			break
@@ -1633,8 +1610,8 @@ func destroySzConfigManagers(ctx context.Context) {
 }
 
 func destroySzDiagnostics(ctx context.Context) {
-	szDiagnostic := &szdiagnostic.Szdiagnostic{}
 	for {
+		szDiagnostic := &szdiagnostic.Szdiagnostic{}
 		err := szDiagnostic.Destroy(ctx)
 		if err != nil {
 			break
@@ -1643,8 +1620,8 @@ func destroySzDiagnostics(ctx context.Context) {
 }
 
 func destroySzEngines(ctx context.Context) {
-	szEngine := &szengine.Szengine{}
 	for {
+		szEngine := &szengine.Szengine{}
 		err := szEngine.Destroy(ctx)
 		if err != nil {
 			break
@@ -1660,18 +1637,21 @@ func getDefaultConfigID() int64 {
 	return defaultConfigID
 }
 
-func getEntityID(ctx context.Context, record record.Record) int64 {
-	return getEntityIDForRecord(ctx, record.DataSource, record.ID)
+func getEntityID(ctx context.Context, szEngine senzing.SzEngine, record record.Record) int64 {
+	return getEntityIDForRecord(ctx, szEngine, record.DataSource, record.ID)
 }
 
-func getEntityIDForRecord(ctx context.Context, datasource string, recordID string) int64 {
+func getEntityIDForRecord(
+	ctx context.Context,
+	szEngine senzing.SzEngine,
+	datasource string,
+	recordID string,
+) int64 {
 	var (
 		err    error
 		result int64
 	)
 
-	szEngine := getSzEngine(ctx)
-	defer func() { _ = szEngine.Destroy(ctx) }()
 	response, err := szEngine.GetEntityByRecordID(ctx, datasource, recordID, senzing.SzWithoutInfo)
 	panicOnError(err)
 
@@ -1684,10 +1664,15 @@ func getEntityIDForRecord(ctx context.Context, datasource string, recordID strin
 	return result
 }
 
-func getEntityIDStringForRecord(ctx context.Context, datasource string, recordID string) string { //nolint
+func getEntityIDStringForRecord(
+	ctx context.Context,
+	szEnzine senzing.SzEngine,
+	datasource string,
+	recordID string,
+) string { //nolint
 	var result string
 
-	entityID := getEntityIDForRecord(ctx, datasource, recordID)
+	entityID := getEntityIDForRecord(ctx, szEnzine, datasource, recordID)
 
 	result = strconv.FormatInt(entityID, baseTen)
 
@@ -1932,7 +1917,6 @@ func setupSenzingConfiguration() error {
 
 func teardown() {
 	ctx := context.TODO()
-	_ = getSzEngine(ctx)
 	teardownSzEngine(ctx)
 }
 
@@ -3115,14 +3099,16 @@ func getTestCasesForWhySearch() []TestMetadataForWhySearch {
 
 func avoidEntityIDsFunc() string {
 	ctx := context.TODO()
-	result := `{"ENTITIES": [{"ENTITY_ID": ` + getEntityIDStringForRecord(ctx, "CUSTOMERS", "1001") + `}]}`
+	szEngine := getSzEngine(ctx)
+	result := `{"ENTITIES": [{"ENTITY_ID": ` + getEntityIDStringForRecord(ctx, szEngine, "CUSTOMERS", "1001") + `}]}`
 
 	return result
 }
 
 func avoidRecordIDsFunc() string {
 	ctx := context.TODO()
-	result := `{"ENTITIES": [{"ENTITY_ID": ` + getEntityIDStringForRecord(ctx, "CUSTOMERS", "1001") + `}]}`
+	szEngine := getSzEngine(ctx)
+	result := `{"ENTITIES": [{"ENTITY_ID": ` + getEntityIDStringForRecord(ctx, szEngine, "CUSTOMERS", "1001") + `}]}`
 
 	return result
 }
