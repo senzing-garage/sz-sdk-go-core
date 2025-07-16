@@ -388,13 +388,13 @@ func TestSzconfigmanager_UnregisterObserver(test *testing.T) {
 // Object creation / destruction
 // ----------------------------------------------------------------------------
 
-// func TestSzconfigmanager_AsInterface(test *testing.T) {
-// 	ctx := test.Context()
-// 	szConfigManager := getSzConfigManagerAsInterface(ctx)
-// 	actual, err := szConfigManager.GetConfigRegistry(ctx)
-// 	printDebug(test, err, actual)
-// 	require.NoError(test, err)
-// }
+func TestSzconfigmanager_AsInterface(test *testing.T) {
+	ctx := test.Context()
+	szConfigManager := getSzConfigManagerAsInterface(ctx)
+	actual, err := szConfigManager.GetConfigRegistry(ctx)
+	printDebug(test, err, actual)
+	require.NoError(test, err)
+}
 
 // func TestSzconfigmanager_Initialize(test *testing.T) {
 // 	ctx := test.Context()
@@ -410,13 +410,13 @@ func TestSzconfigmanager_UnregisterObserver(test *testing.T) {
 // 	_ = test
 // }
 
-// func TestSzconfigmanager_Destroy(test *testing.T) {
-// 	ctx := test.Context()
-// 	szConfigManager := getTestObject(test)
-// 	err := szConfigManager.Destroy(ctx)
-// 	printDebug(test, err)
-// 	require.NoError(test, err)
-// }
+func TestSzconfigmanager_Destroy(test *testing.T) {
+	ctx := test.Context()
+	szConfigManager := getTestObject(test)
+	err := szConfigManager.Destroy(ctx)
+	printDebug(test, err)
+	require.NoError(test, err)
+}
 
 // func TestSzconfigmanager_Destroy_withObserver(test *testing.T) {
 // 	ctx := test.Context()
@@ -432,14 +432,14 @@ func TestSzconfigmanager_UnregisterObserver(test *testing.T) {
 // 	_ = test
 // }
 
-func TestSzconfigmanager_cleanup(test *testing.T) {
-	// IMPROVE: Implement TestSzconfigmanager_Destroy_error
-	ctx := test.Context()
+// func TestSzconfigmanager_cleanup(test *testing.T) {
+// 	// IMPROVE: Implement TestSzconfigmanager_Destroy_error
+// 	ctx := test.Context()
 
-	szConfigManager := getTestObject(test)
-	err := szConfigManager.Destroy(ctx)
-	require.NoError(test, err)
-}
+// 	szConfigManager := getTestObject(test)
+// 	err := szConfigManager.Destroy(ctx)
+// 	require.NoError(test, err)
+// }
 
 // ----------------------------------------------------------------------------
 // Internal functions
