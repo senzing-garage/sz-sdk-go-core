@@ -405,11 +405,6 @@ func TestSzconfigmanager_AsInterface(test *testing.T) {
 // 	require.NoError(test, err)
 // }
 
-// func TestSzconfigmanager_Initialize_error(test *testing.T) {
-// 	// IMPROVE: Implement TestSzconfigmanager_Initialize_error
-// 	_ = test
-// }
-
 func TestSzconfigmanager_Destroy(test *testing.T) {
 	ctx := test.Context()
 	szConfigManager := getTestObject(test)
@@ -418,28 +413,14 @@ func TestSzconfigmanager_Destroy(test *testing.T) {
 	require.NoError(test, err)
 }
 
-// func TestSzconfigmanager_Destroy_withObserver(test *testing.T) {
-// 	ctx := test.Context()
-// 	szConfigManagerSingleton = nil
-// 	szConfigManager := getTestObject(test)
-// 	err := szConfigManager.Destroy(ctx)
-// 	printDebug(test, err)
-// 	require.NoError(test, err)
-// }
-
-// func TestSzconfigmanager_Destroy_error(test *testing.T) {
-// 	// IMPROVE: Implement TestSzconfigmanager_Destroy_error
-// 	_ = test
-// }
-
-// func TestSzconfigmanager_cleanup(test *testing.T) {
-// 	// IMPROVE: Implement TestSzconfigmanager_Destroy_error
-// 	ctx := test.Context()
-
-// 	szConfigManager := getTestObject(test)
-// 	err := szConfigManager.Destroy(ctx)
-// 	require.NoError(test, err)
-// }
+func TestSzconfigmanager_Destroy_withObserver(test *testing.T) {
+	ctx := test.Context()
+	szConfigManagerSingleton = nil
+	szConfigManager := getTestObject(test)
+	err := szConfigManager.Destroy(ctx)
+	printDebug(test, err)
+	require.NoError(test, err)
+}
 
 // ----------------------------------------------------------------------------
 // Internal functions
@@ -483,26 +464,6 @@ func getSettings() string {
 
 	return result
 }
-
-// func getSzConfig(ctx context.Context) *szconfig.Szconfig {
-// 	if szConfigSingleton == nil {
-// 		settings, err := getSettings()
-// 		panicOnError(err)
-// 		szConfigSingleton = &szconfig.Szconfig{}
-// 		err = szConfigSingleton.SetLogLevel(ctx, logLevel)
-// 		panicOnError(err)
-// 		if logLevel == "TRACE" {
-// 			szConfigSingleton.SetObserverOrigin(ctx, observerOrigin)
-// 			err = szConfigSingleton.RegisterObserver(ctx, observerSingleton)
-// 			panicOnError(err)
-// 			err = szConfigSingleton.SetLogLevel(ctx, logLevel) // Duplicated for coverage testing
-// 			panicOnError(err)
-// 		}
-// 		err = szConfigSingleton.Initialize(ctx, instanceName, settings, verboseLogging)
-// 		panicOnError(err)
-// 	}
-// 	return szConfigSingleton
-// }
 
 func getSzConfigManager(ctx context.Context) *szconfigmanager.Szconfigmanager {
 	if szConfigManagerSingleton == nil {
@@ -579,9 +540,7 @@ func printDebug(t *testing.T, err error, items ...any) {
 
 func TestMain(m *testing.M) {
 	setup()
-
 	code := m.Run()
-
 	teardown()
 	os.Exit(code)
 }
@@ -589,7 +548,6 @@ func TestMain(m *testing.M) {
 func setup() {
 	setupDirectories()
 	setupDatabase()
-
 	err := setupSenzingConfiguration()
 	panicOnError(err)
 }
@@ -673,7 +631,6 @@ func teardownSzConfig(ctx context.Context) {
 		panicOnError(err)
 		err = szConfigSingleton.Destroy(ctx)
 		panicOnError(err)
-
 		szConfigSingleton = nil
 	}
 }
@@ -682,7 +639,6 @@ func teardownSzConfigManager(ctx context.Context) {
 	if szConfigManagerSingleton != nil {
 		err := szConfigManagerSingleton.UnregisterObserver(ctx, observerSingleton)
 		panicOnError(err)
-
 		szConfigManagerSingleton = nil
 	}
 }
