@@ -77,6 +77,8 @@ func main() {
 		VerboseLogging: senzing.SzNoLogging,
 	}
 
+	defer func() { szAbstractFactory.Close(ctx) }()
+
 	// Demonstrate persisting a Senzing configuration to the Senzing repository.
 
 	demonstrateConfigFunctions(ctx, szAbstractFactory)
