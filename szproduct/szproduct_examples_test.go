@@ -21,18 +21,23 @@ func ExampleSzproduct_GetLicense() {
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szproduct/szproduct_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
+
 	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
+
 	szProduct, err := szAbstractFactory.CreateProduct(ctx)
 	if err != nil {
 		handleError(err)
 		return
 	}
+
 	defer func() { handleError(szProduct.Destroy(ctx)) }()
+
 	result, err := szProduct.GetLicense(ctx)
 	if err != nil {
 		handleError(err)
 		return
 	}
+
 	redactKeys := []string{"issueDate", "expireDate", "BUILD_VERSION"}
 	fmt.Println(jsonutil.PrettyPrint(jsonutil.Truncate(result, AllLines, redactKeys...), jsonIndentation))
 	// Output:
@@ -51,18 +56,23 @@ func ExampleSzproduct_GetVersion() {
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szproduct/szproduct_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
+
 	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
+
 	szProduct, err := szAbstractFactory.CreateProduct(ctx)
 	if err != nil {
 		handleError(err)
 		return
 	}
+
 	defer func() { handleError(szProduct.Destroy(ctx)) }()
+
 	result, err := szProduct.GetVersion(ctx)
 	if err != nil {
 		handleError(err)
 		return
 	}
+
 	redactKeys := []string{"BUILD_DATE", "BUILD_NUMBER", "BUILD_VERSION"}
 	fmt.Println(jsonutil.PrettyPrint(jsonutil.Truncate(result, AllLines, redactKeys...), jsonIndentation))
 	// Output:
@@ -89,6 +99,7 @@ func ExampleSzproduct_SetLogLevel() {
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szproduct/szproduct_examples_test.go
 	ctx := context.TODO()
 	szProduct := getSzProduct(ctx)
+
 	err := szProduct.SetLogLevel(ctx, logging.LevelInfoName)
 	if err != nil {
 		handleError(err)

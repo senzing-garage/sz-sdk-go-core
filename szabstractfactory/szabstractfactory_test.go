@@ -59,12 +59,14 @@ const (
 func TestSzAbstractFactory_CreateConfigManager(test *testing.T) {
 	ctx := test.Context()
 	szAbstractFactory := getTestObject(test)
-	defer func() { szAbstractFactory.Close(ctx) }()
+
+	defer func() { require.NoError(test, szAbstractFactory.Close(ctx)) }()
 
 	szConfigManager, err := szAbstractFactory.CreateConfigManager(ctx)
 	printDebug(test, err, szConfigManager)
 	require.NoError(test, err)
-	defer func() { szConfigManager.Destroy(ctx) }()
+
+	defer func() { require.NoError(test, szConfigManager.Destroy(ctx)) }()
 
 	configList, err := szConfigManager.GetConfigRegistry(ctx)
 	printDebug(test, err, configList)
@@ -87,12 +89,14 @@ func TestSzAbstractFactory_CreateConfigManager_BadConfig(test *testing.T) {
 func TestSzAbstractFactory_CreateDiagnostic(test *testing.T) {
 	ctx := test.Context()
 	szAbstractFactory := getTestObject(test)
-	defer func() { szAbstractFactory.Close(ctx) }()
+
+	defer func() { require.NoError(test, szAbstractFactory.Close(ctx)) }()
 
 	szDiagnostic, err := szAbstractFactory.CreateDiagnostic(ctx)
 	printDebug(test, err, szDiagnostic)
 	require.NoError(test, err)
-	defer func() { szDiagnostic.Destroy(ctx) }()
+
+	defer func() { require.NoError(test, szDiagnostic.Destroy(ctx)) }()
 
 	result, err := szDiagnostic.CheckRepositoryPerformance(ctx, 1)
 	printDebug(test, err, result)
@@ -102,7 +106,8 @@ func TestSzAbstractFactory_CreateDiagnostic(test *testing.T) {
 func TestSzAbstractFactory_CreateDiagnostic_BadConfig(test *testing.T) {
 	ctx := test.Context()
 	szAbstractFactory := getTestObjectBadConfig(test)
-	defer func() { szAbstractFactory.Close(ctx) }()
+
+	defer func() { require.NoError(test, szAbstractFactory.Close(ctx)) }()
 
 	actual, err := szAbstractFactory.CreateDiagnostic(ctx)
 	printDebug(test, err, actual)
@@ -116,12 +121,14 @@ func TestSzAbstractFactory_CreateDiagnostic_BadConfig(test *testing.T) {
 func TestSzAbstractFactory_CreateEngine(test *testing.T) {
 	ctx := test.Context()
 	szAbstractFactory := getTestObject(test)
-	defer func() { szAbstractFactory.Close(ctx) }()
+
+	defer func() { require.NoError(test, szAbstractFactory.Close(ctx)) }()
 
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	printDebug(test, err, szEngine)
 	require.NoError(test, err)
-	defer func() { szEngine.Destroy(ctx) }()
+
+	defer func() { require.NoError(test, szEngine.Destroy(ctx)) }()
 
 	stats, err := szEngine.GetStats(ctx)
 	printDebug(test, err, stats)
@@ -131,7 +138,8 @@ func TestSzAbstractFactory_CreateEngine(test *testing.T) {
 func TestSzAbstractFactory_CreateEngine_BadConfig(test *testing.T) {
 	ctx := test.Context()
 	szAbstractFactory := getTestObjectBadConfig(test)
-	defer func() { szAbstractFactory.Close(ctx) }()
+
+	defer func() { require.NoError(test, szAbstractFactory.Close(ctx)) }()
 
 	actual, err := szAbstractFactory.CreateEngine(ctx)
 	printDebug(test, err, actual)
@@ -145,12 +153,14 @@ func TestSzAbstractFactory_CreateEngine_BadConfig(test *testing.T) {
 func TestSzAbstractFactory_CreateProduct(test *testing.T) {
 	ctx := test.Context()
 	szAbstractFactory := getTestObject(test)
-	defer func() { szAbstractFactory.Close(ctx) }()
+
+	defer func() { require.NoError(test, szAbstractFactory.Close(ctx)) }()
 
 	szProduct, err := szAbstractFactory.CreateProduct(ctx)
 	printDebug(test, err, szProduct)
 	require.NoError(test, err)
-	defer func() { szProduct.Destroy(ctx) }()
+
+	defer func() { require.NoError(test, szProduct.Destroy(ctx)) }()
 
 	version, err := szProduct.GetVersion(ctx)
 	printDebug(test, err, version)
@@ -173,78 +183,82 @@ func TestSzAbstractFactory_CreateProduct_BadConfig(test *testing.T) {
 func TestSzAbstractFactory_Destroy_SzConfigManager(test *testing.T) {
 	ctx := test.Context()
 	szAbstractFactory := getTestObject(test)
-	defer func() { szAbstractFactory.Close(ctx) }()
+
+	defer func() { require.NoError(test, szAbstractFactory.Close(ctx)) }()
 
 	for range 3 {
 		szConfigManager, err := szAbstractFactory.CreateConfigManager(ctx)
 		require.NoError(test, err)
 		err = szConfigManager.Destroy(ctx)
 		require.NoError(test, err)
-		defer func() { szConfigManager.Destroy(ctx) }()
 	}
 }
 
 func TestSzAbstractFactory_Destroy_SzDiagnostic(test *testing.T) {
 	ctx := test.Context()
 	szAbstractFactory := getTestObject(test)
-	defer func() { szAbstractFactory.Close(ctx) }()
+
+	defer func() { require.NoError(test, szAbstractFactory.Close(ctx)) }()
 
 	for range 3 {
 		szDiagnostic, err := szAbstractFactory.CreateDiagnostic(ctx)
 		require.NoError(test, err)
 		err = szDiagnostic.Destroy(ctx)
 		require.NoError(test, err)
-		defer func() { szDiagnostic.Destroy(ctx) }()
 	}
 }
 
 func TestSzAbstractFactory_Destroy_SzEngine(test *testing.T) {
 	ctx := test.Context()
 	szAbstractFactory := getTestObject(test)
-	defer func() { szAbstractFactory.Close(ctx) }()
+
+	defer func() { require.NoError(test, szAbstractFactory.Close(ctx)) }()
 
 	for range 3 {
 		szEngine, err := szAbstractFactory.CreateEngine(ctx)
 		require.NoError(test, err)
 		err = szEngine.Destroy(ctx)
 		require.NoError(test, err)
-		defer func() { szEngine.Destroy(ctx) }()
 	}
 }
 
 func TestSzAbstractFactory_Destroy_SzProduct(test *testing.T) {
 	ctx := test.Context()
 	szAbstractFactory := getTestObject(test)
-	defer func() { szAbstractFactory.Close(ctx) }()
+
+	defer func() { require.NoError(test, szAbstractFactory.Close(ctx)) }()
 
 	for range 3 {
 		szProduct, err := szAbstractFactory.CreateProduct(ctx)
 		require.NoError(test, err)
 		err = szProduct.Destroy(ctx)
 		require.NoError(test, err)
-		defer func() { szProduct.Destroy(ctx) }()
 	}
 }
 
 func TestSzAbstractFactory_Reinitialize(test *testing.T) {
 	ctx := test.Context()
 	szAbstractFactory := getTestObject(test)
-	defer func() { szAbstractFactory.Close(ctx) }()
+
+	defer func() { require.NoError(test, szAbstractFactory.Close(ctx)) }()
 
 	actual, err := szAbstractFactory.CreateDiagnostic(ctx)
 	printDebug(test, err, actual)
 	require.NoError(test, err)
-	defer func() { actual.Destroy(ctx) }()
+
+	defer func() { panicOnError(actual.Destroy(ctx)) }()
 
 	actual2, err := szAbstractFactory.CreateEngine(ctx)
 	printDebug(test, err, actual2)
 	require.NoError(test, err)
-	defer func() { actual2.Destroy(ctx) }()
+
+	defer func() { panicOnError(actual2.Destroy(ctx)) }()
 
 	szConfigManager, err := szAbstractFactory.CreateConfigManager(ctx)
 	printDebug(test, err, szConfigManager)
 	require.NoError(test, err)
-	defer func() { szConfigManager.Destroy(ctx) }()
+
+	defer func() { panicOnError(szConfigManager.Destroy(ctx)) }()
 
 	configID, err := szConfigManager.GetDefaultConfigID(ctx)
 	printDebug(test, err, configID)
@@ -280,14 +294,13 @@ func TestSzAbstractFactory_Multi_CreateAll(test *testing.T) {
 	require.NoError(test, err, "szAbstractFactory1 should create a SzProduct")
 
 	// Second AbstractFactory doesn't created objects when objects are active.
-
-	szConfigManager2, err := szAbstractFactory2.CreateConfigManager(ctx)
+	_, err = szAbstractFactory2.CreateConfigManager(ctx)
 	require.Error(test, err, "szAbstractFactory2 should not create a SzConfigManager")
-	szDiagnostic2, err := szAbstractFactory2.CreateDiagnostic(ctx)
+	_, err = szAbstractFactory2.CreateDiagnostic(ctx)
 	require.Error(test, err, "szAbstractFactory2 should not create a SzDiagnostic")
-	szEngine2, err := szAbstractFactory2.CreateEngine(ctx)
+	_, err = szAbstractFactory2.CreateEngine(ctx)
 	require.Error(test, err, "szAbstractFactory2 should not create a SzEngine")
-	szProduct2, err := szAbstractFactory2.CreateProduct(ctx)
+	_, err = szAbstractFactory2.CreateProduct(ctx)
 	require.Error(test, err, "szAbstractFactory2 should not create a SzProduct")
 
 	// Artifacts from first AbstractFactory are destroyed.
@@ -300,13 +313,13 @@ func TestSzAbstractFactory_Multi_CreateAll(test *testing.T) {
 
 	// Now artifacts can be created by second AbstractFactory.
 
-	szConfigManager2, err = szAbstractFactory2.CreateConfigManager(ctx)
+	szConfigManager2, err := szAbstractFactory2.CreateConfigManager(ctx)
 	require.NoError(test, err, "szAbstractFactory2 should create a SzConfigManager")
-	szDiagnostic2, err = szAbstractFactory2.CreateDiagnostic(ctx)
+	szDiagnostic2, err := szAbstractFactory2.CreateDiagnostic(ctx)
 	require.NoError(test, err, "szAbstractFactory2 should create a SzDiagnostic")
-	szEngine2, err = szAbstractFactory2.CreateEngine(ctx)
+	szEngine2, err := szAbstractFactory2.CreateEngine(ctx)
 	require.NoError(test, err, "szAbstractFactory2 should create a SzEngine")
-	szProduct2, err = szAbstractFactory2.CreateProduct(ctx)
+	szProduct2, err := szAbstractFactory2.CreateProduct(ctx)
 	require.NoError(test, err, "szAbstractFactory2 should create a SzProduct")
 
 	// Artifacts from second AbstractFactory are destroyed.
@@ -327,10 +340,12 @@ func TestSzAbstractFactory_Multi_PreventAdditionalAbstractFactories(test *testin
 	// First AbstractFactory without Destroy (it's deferred).
 
 	szAbstractFactory1 := createSzAbstractFactoryByLocation(ctx, location1)
+
 	defer func() { require.NoError(test, szAbstractFactory1.Close(ctx)) }()
 
 	szConfigManager1, err := szAbstractFactory1.CreateConfigManager(ctx)
 	require.NoError(test, err)
+
 	defer func() { require.NoError(test, szConfigManager1.Destroy(ctx)) }()
 
 	_, err = szConfigManager1.CreateConfigFromTemplate(ctx)
@@ -339,6 +354,7 @@ func TestSzAbstractFactory_Multi_PreventAdditionalAbstractFactories(test *testin
 	// Second AbstractFactory should fail.
 
 	szAbstractFactory2 := createSzAbstractFactoryByLocation(ctx, location2)
+
 	defer func() { require.NoError(test, szAbstractFactory2.Close(ctx)) }()
 
 	_, err = szAbstractFactory2.CreateConfigManager(ctx)
@@ -353,6 +369,7 @@ func TestSzAbstractFactory_Multi_PreventAdditionalAbstractFactories(test *testin
 	// Third AbstractFactory should fail.
 
 	szAbstractFactory3 := createSzAbstractFactoryByLocation(ctx, location3)
+
 	defer func() { require.NoError(test, szAbstractFactory3.Close(ctx)) }()
 
 	_, err = szAbstractFactory3.CreateConfigManager(ctx)
@@ -385,6 +402,7 @@ func TestSzAbstractFactory_Multi_PreventSecondAbstractFactory_withRetry(test *te
 	// Second AbstractFactory should fail.
 
 	szAbstractFactory2 := createSzAbstractFactoryByLocation(ctx, location2)
+
 	defer func() { require.NoError(test, szAbstractFactory2.Close(ctx)) }()
 
 	_, err = szAbstractFactory2.CreateConfigManager(ctx)
@@ -405,23 +423,28 @@ func TestSzAbstractFactory_Multi_PreventSecondAbstractFactory_withRetry(test *te
 
 	szConfigManager2, err := szAbstractFactory2.CreateConfigManager(ctx)
 	require.NoError(test, err, "AbstractFactory2 should create a SzConfigManager")
+
 	defer func() { require.NoError(test, szConfigManager2.Destroy(ctx)) }()
 
 	szDiagnostic2, err := szAbstractFactory2.CreateDiagnostic(ctx)
 	require.NoError(test, err, "AbstractFactory2 should create a SzDiagnostic")
+
 	defer func() { require.NoError(test, szDiagnostic2.Destroy(ctx)) }()
 
 	szEngine2, err := szAbstractFactory2.CreateEngine(ctx)
 	require.NoError(test, err, "AbstractFactory2 should create a SzEngine")
+
 	defer func() { require.NoError(test, szEngine2.Destroy(ctx)) }()
 
 	szProduct2, err := szAbstractFactory2.CreateProduct(ctx)
 	require.NoError(test, err, "AbstractFactory2 should create a SzProduct")
+
 	defer func() { require.NoError(test, szProduct2.Destroy(ctx)) }()
 
 	// Try a third AbstractFactory.
 
 	szAbstractFactory3 := createSzAbstractFactoryByLocation(ctx, location3)
+
 	defer func() { require.NoError(test, szAbstractFactory3.Close(ctx)) }()
 
 	_, err = szAbstractFactory3.CreateDiagnostic(ctx)
@@ -438,6 +461,7 @@ func TestSzAbstractFactory_Multi_DestroyViaSecondAbstractFactory(test *testing.T
 
 	szAbstractFactory1 := createSzAbstractFactoryByLocation(ctx, location1)
 	szAbstractFactory2 := createSzAbstractFactoryByLocation(ctx, location2)
+
 	defer func() { require.NoError(test, szAbstractFactory2.Close(ctx)) }()
 
 	// Get object from szAbstractFactory1.
@@ -462,6 +486,7 @@ func TestSzAbstractFactory_Multi_DestroyViaSecondAbstractFactory(test *testing.T
 
 	szDiagnostic2, err := szAbstractFactory2.CreateDiagnostic(ctx)
 	require.NoError(test, err)
+
 	defer func() { require.NoError(test, szDiagnostic2.Destroy(ctx)) }()
 
 	info2, err := szDiagnostic2.GetRepositoryInfo(ctx)
@@ -524,6 +549,7 @@ func TestSzAbstractFactory_Multi_Reinitialize_implicitly(test *testing.T) {
 
 	szAbstractFactory1 := createSzAbstractFactoryByLocation(ctx, location1)
 	szAbstractFactory2 := createSzAbstractFactoryByLocation(ctx, location2)
+
 	defer func() { require.NoError(test, szAbstractFactory2.Close(ctx)) }()
 
 	// Get Senzing objects from AbstractFactory1.
@@ -591,6 +617,7 @@ func TestSzAbstractFactory_Multi_Reinitialize_implicitly(test *testing.T) {
 
 	szEngine2, err := szAbstractFactory2.CreateEngine(ctx)
 	require.NoError(test, err)
+
 	defer func() { require.NoError(test, szEngine2.Destroy(ctx)) }()
 
 	_, err = szEngine2.AddRecord(ctx, dataSourceCode, recordID, recordDefinition, senzing.SzNoFlags)
@@ -609,6 +636,7 @@ func createSzAbstractFactory(ctx context.Context) senzing.SzAbstractFactory {
 
 func createSzAbstractFactoryByLocation(ctx context.Context, location string) senzing.SzAbstractFactory {
 	var result senzing.SzAbstractFactory
+
 	_ = ctx
 	settings := getSettings(location)
 	result = &szabstractfactory.Szabstractfactory{
@@ -623,6 +651,7 @@ func createSzAbstractFactoryByLocation(ctx context.Context, location string) sen
 
 func createSzAbstractFactoryBadConfig(ctx context.Context) senzing.SzAbstractFactory {
 	var result senzing.SzAbstractFactory
+
 	_ = ctx
 	settings := getSettingsBadConfig()
 	result = &szabstractfactory.Szabstractfactory{
@@ -707,6 +736,7 @@ func panicOnError(err error) {
 
 func printDebug(t *testing.T, err error, items ...any) {
 	t.Helper()
+
 	if printErrors {
 		if err != nil {
 			t.Logf("Error: %s\n", err.Error())

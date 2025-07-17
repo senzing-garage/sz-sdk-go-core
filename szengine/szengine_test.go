@@ -229,10 +229,7 @@ func TestSzEngine_ExportCsvEntityReport(test *testing.T) {
 	flags := senzing.SzExportIncludeAllEntities
 	exportHandle, err := szEngine.ExportCsvEntityReport(ctx, csvColumnList, flags)
 
-	defer func() {
-		err := szEngine.CloseExportReport(ctx, exportHandle)
-		require.NoError(test, err)
-	}()
+	defer func() { require.NoError(test, szEngine.CloseExportReport(ctx, exportHandle)) }()
 
 	printDebug(test, err)
 	require.NoError(test, err)
@@ -261,10 +258,7 @@ func TestSzEngine_ExportCsvEntityReport_badCsvColumnList(test *testing.T) {
 	flags := senzing.SzExportIncludeAllEntities
 	exportHandle, err := szEngine.ExportCsvEntityReport(ctx, badCsvColumnList, flags)
 
-	defer func() {
-		err := szEngine.CloseExportReport(ctx, exportHandle)
-		require.ErrorIs(test, err, szerror.ErrSz)
-	}()
+	defer func() { require.ErrorIs(test, szEngine.CloseExportReport(ctx, exportHandle), szerror.ErrSz) }()
 
 	printDebug(test, err)
 	require.ErrorIs(test, err, szerror.ErrSzBadInput)
@@ -288,10 +282,7 @@ func TestSzEngine_ExportCsvEntityReport_nilCsvColumnList(test *testing.T) {
 	flags := senzing.SzExportIncludeAllEntities
 	exportHandle, err := szEngine.ExportCsvEntityReport(ctx, nilCsvColumnList, flags)
 
-	defer func() {
-		err := szEngine.CloseExportReport(ctx, exportHandle)
-		require.NoError(test, err)
-	}()
+	defer func() { require.NoError(test, szEngine.CloseExportReport(ctx, exportHandle)) }()
 
 	printDebug(test, err)
 	require.NoError(test, err)
@@ -411,10 +402,7 @@ func TestSzEngine_ExportJSONEntityReport(test *testing.T) {
 	flags = senzing.SzExportDefaultFlags
 	exportHandle, err := szEngine.ExportJSONEntityReport(ctx, flags)
 
-	defer func() {
-		err := szEngine.CloseExportReport(ctx, exportHandle)
-		require.NoError(test, err)
-	}()
+	defer func() { require.NoError(test, szEngine.CloseExportReport(ctx, exportHandle)) }()
 
 	printDebug(test, err, actual)
 	require.NoError(test, err)
@@ -454,10 +442,7 @@ func TestSzEngine_ExportJSONEntityReport_65536(test *testing.T) {
 	// flags = int64(-1)
 	aHandle, err := szEngine.ExportJSONEntityReport(ctx, flags)
 
-	defer func() {
-		err := szEngine.CloseExportReport(ctx, aHandle)
-		require.NoError(test, err)
-	}()
+	defer func() { require.NoError(test, szEngine.CloseExportReport(ctx, aHandle)) }()
 
 	printDebug(test, err, actual)
 	require.NoError(test, err)
@@ -1516,6 +1501,7 @@ func TestSzEngine_Destroy(test *testing.T) {
 	err := szEngine.Destroy(ctx)
 	printDebug(test, err)
 	require.NoError(test, err)
+
 	szEngineSingleton = nil // Reset szEngineSingleton
 }
 
@@ -1525,6 +1511,7 @@ func TestSzEngine_Destroy_withObserver(test *testing.T) {
 	err := szEngine.Destroy(ctx)
 	printDebug(test, err)
 	require.NoError(test, err)
+
 	szEngineSingleton = nil // Reset szEngineSingleton
 }
 
@@ -1607,7 +1594,7 @@ func getEntityIDStringForRecord(
 	szEnzine senzing.SzEngine,
 	datasource string,
 	recordID string,
-) string { //nolint
+) string {
 	var result string
 
 	entityID := getEntityIDForRecord(ctx, szEnzine, datasource, recordID)

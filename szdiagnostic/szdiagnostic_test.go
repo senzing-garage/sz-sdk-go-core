@@ -105,8 +105,11 @@ func TestSzdiagnostic_GetFeature(test *testing.T) {
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
+
 	defer func() { deleteRecords(ctx, records) }()
+
 	addRecords(ctx, records)
+
 	szDiagnostic := getTestObject(test)
 	featureID := int64(1)
 	actual, err := szDiagnostic.GetFeature(ctx, featureID)
@@ -119,12 +122,16 @@ func TestSzdiagnostic_GetFeature_badFeatureID(test *testing.T) {
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
+
 	defer func() { deleteRecords(ctx, records) }()
+
 	addRecords(ctx, records)
+
 	szDiagnostic := getTestObject(test)
 	actual, err := szDiagnostic.GetFeature(ctx, badFeatureID)
 	printDebug(test, err, actual)
 	require.ErrorIs(test, err, szerror.ErrSz)
+
 	expectedErr := `{"function":"szdiagnostic.(*Szdiagnostic).GetFeature","error":{"id":"SZSDK60034004","reason":"SENZ0057|Unknown feature ID value '-1'"}}`
 	require.JSONEq(test, expectedErr, err.Error())
 }
@@ -134,12 +141,16 @@ func TestSzdiagnostic_GetFeature_nilFeatureID(test *testing.T) {
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
+
 	defer func() { deleteRecords(ctx, records) }()
+
 	addRecords(ctx, records)
+
 	szDiagnostic := getTestObject(test)
 	actual, err := szDiagnostic.GetFeature(ctx, nilFeatureID)
 	printDebug(test, err, actual)
 	require.ErrorIs(test, err, szerror.ErrSz)
+
 	expectedErr := `{"function":"szdiagnostic.(*Szdiagnostic).GetFeature","error":{"id":"SZSDK60034004","reason":"SENZ0057|Unknown feature ID value '0'"}}`
 	require.JSONEq(test, expectedErr, err.Error())
 }
@@ -198,6 +209,7 @@ func TestSzdiagnostic_Reinitialize(test *testing.T) {
 		_ = szDiagnosticSingleton.Destroy(ctx)
 		szDiagnosticSingleton = nil
 	}
+
 	szDiagnostic := getTestObject(test)
 	configID := getDefaultConfigID()
 	err := szDiagnostic.Reinitialize(ctx, configID)
@@ -211,6 +223,7 @@ func TestSzdiagnostic_Destroy(test *testing.T) {
 	err := szDiagnostic.Destroy(ctx)
 	printDebug(test, err)
 	require.NoError(test, err)
+
 	szDiagnosticSingleton = nil
 }
 
@@ -220,6 +233,7 @@ func TestSzdiagnostic_Destroy_withObserver(test *testing.T) {
 	err := szDiagnostic.Destroy(ctx)
 	printDebug(test, err)
 	require.NoError(test, err)
+
 	szDiagnosticSingleton = nil
 }
 
@@ -238,6 +252,7 @@ func addRecords(ctx context.Context, records []record.Record) {
 
 	err := szEngine.Destroy(ctx)
 	panicOnError(err)
+
 	szEngineSingleton = nil
 }
 
@@ -267,6 +282,7 @@ func deleteRecords(ctx context.Context, records []record.Record) {
 
 	err := szEngine.Destroy(ctx)
 	panicOnError(err)
+
 	szEngineSingleton = nil
 }
 
@@ -486,6 +502,7 @@ func teardownSzDiagnostic(ctx context.Context) {
 	if szDiagnosticSingleton != nil {
 		err := szDiagnosticSingleton.UnregisterObserver(ctx, observerSingleton)
 		panicOnError(err)
+
 		_ = szDiagnosticSingleton.Destroy(ctx)
 		szDiagnosticSingleton = nil
 	}
@@ -495,6 +512,7 @@ func teardownSzEngine(ctx context.Context) {
 	if szEngineSingleton != nil {
 		err := szEngineSingleton.UnregisterObserver(ctx, observerSingleton)
 		panicOnError(err)
+
 		szEngineSingleton = nil
 	}
 }

@@ -207,6 +207,7 @@ func TestSzconfig_VerifyConfigDefinition_badConfigDefinition(test *testing.T) {
 	err := szConfig.VerifyConfigDefinition(ctx, badConfigDefinition)
 	printDebug(test, err)
 	require.ErrorIs(test, err, szerror.ErrSzBadInput)
+
 	expectedErr := `{"function":"szconfig.(*Szconfig).VerifyConfigDefinition","error":{"function":"szconfig.(*Szconfig).verifyConfigDefinitionChoreography","text":"load","error":{"id":"SZSDK60014009","reason":"SENZ3121|JSON Parsing Failure [code=3,offset=0]"}}}`
 	require.JSONEq(test, expectedErr, err.Error())
 }
@@ -263,6 +264,7 @@ func TestSzconfig_Destroy(test *testing.T) {
 	err := szConfig.Destroy(ctx)
 	printDebug(test, err)
 	require.NoError(test, err)
+
 	szConfigSingleton = nil
 }
 
@@ -272,6 +274,7 @@ func TestSzconfig_Destroy_withObserver(test *testing.T) {
 	err := szConfig.Destroy(ctx)
 	printDebug(test, err)
 	require.NoError(test, err)
+
 	szConfigSingleton = nil
 }
 
@@ -438,5 +441,6 @@ func teardownSzConfig(ctx context.Context) {
 	panicOnError(err)
 	err = szConfigSingleton.Destroy(ctx)
 	panicOnError(err)
+
 	szConfigSingleton = nil
 }

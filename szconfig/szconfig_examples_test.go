@@ -19,6 +19,7 @@ func ExampleSzconfig_RegisterDataSource() {
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
+
 	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
 
 	szConfigManager, err := szAbstractFactory.CreateConfigManager(ctx)
@@ -26,6 +27,7 @@ func ExampleSzconfig_RegisterDataSource() {
 		handleError(err)
 		return
 	}
+
 	defer func() { handleError(szConfigManager.Destroy(ctx)) }()
 
 	szConfig, err := szConfigManager.CreateConfigFromTemplate(ctx)
@@ -54,6 +56,7 @@ func ExampleSzconfig_UnregisterDataSource() {
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
+
 	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
 
 	szConfigManager, err := szAbstractFactory.CreateConfigManager(ctx)
@@ -61,6 +64,7 @@ func ExampleSzconfig_UnregisterDataSource() {
 		handleError(err)
 		return
 	}
+
 	defer func() { handleError(szConfigManager.Destroy(ctx)) }()
 
 	szConfig, err := szConfigManager.CreateConfigFromTemplate(ctx)
@@ -86,6 +90,7 @@ func ExampleSzconfig_Export() {
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
+
 	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
 
 	szConfigManager, err := szAbstractFactory.CreateConfigManager(ctx)
@@ -93,6 +98,7 @@ func ExampleSzconfig_Export() {
 		handleError(err)
 		return
 	}
+
 	defer func() { handleError(szConfigManager.Destroy(ctx)) }()
 
 	szConfig, err := szConfigManager.CreateConfigFromTemplate(ctx)
@@ -116,6 +122,7 @@ func ExampleSzconfig_GetDataSourceRegistry() {
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szconfig/szconfig_examples_test.go
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
+
 	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
 
 	szConfigManager, err := szAbstractFactory.CreateConfigManager(ctx)
@@ -123,6 +130,7 @@ func ExampleSzconfig_GetDataSourceRegistry() {
 		handleError(err)
 		return
 	}
+
 	defer func() { handleError(szConfigManager.Destroy(ctx)) }()
 
 	szConfig, err := szConfigManager.CreateConfigFromTemplate(ctx)

@@ -177,6 +177,7 @@ func getSzProduct(ctx context.Context) *szproduct.Szproduct {
 		szProductSingleton = &szproduct.Szproduct{}
 		err := szProductSingleton.SetLogLevel(ctx, logLevel)
 		panicOnError(err)
+
 		if logLevel == "TRACE" {
 			szProductSingleton.SetObserverOrigin(ctx, observerOrigin)
 
@@ -186,6 +187,7 @@ func getSzProduct(ctx context.Context) *szproduct.Szproduct {
 			err = szProductSingleton.SetLogLevel(ctx, logLevel) // Duplicated for coverage testing
 			panicOnError(err)
 		}
+
 		err = szProductSingleton.Initialize(ctx, instanceName, settings, verboseLogging)
 		panicOnError(err)
 	}
@@ -225,11 +227,13 @@ func panicOnError(err error) {
 
 func printDebug(t *testing.T, err error, items ...any) {
 	t.Helper()
+
 	if printErrors {
 		if err != nil {
 			t.Logf("Error: %s\n", err.Error())
 		}
 	}
+
 	if printResults {
 		for _, item := range items {
 			outLine := truncator.Truncate(fmt.Sprintf("%v", item), defaultTruncation, "...", truncator.PositionEnd)

@@ -87,9 +87,6 @@ func main() {
 
 	demonstrateSenzingFunctions(ctx, szAbstractFactory)
 
-	// err = szAbstractFactory.Destroy(ctx)
-	// failOnError(5008, err)
-
 	fmt.Printf("\n-------------------------------------------------------------------------------\n\n") //nolint
 }
 

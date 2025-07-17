@@ -47,8 +47,9 @@ func (factory *Szabstractfactory) Close(ctx context.Context) error {
 	factory.isClosed = true
 
 	for _, semaphore := range factory.semaphores {
-		err = semaphore.Destroy(ctx)
+		_ = semaphore.Destroy(ctx)
 	}
+
 	factory.semaphores = nil
 
 	return wraperror.Errorf(err, wraperror.NoMessage)
@@ -83,6 +84,7 @@ func (factory *Szabstractfactory) CreateConfigManager(ctx context.Context) (senz
 
 	if err != nil {
 		factory.once = sync.Once{}
+
 		return result, wraperror.Errorf(
 			err,
 			"Cannot create AbstractFactory until prior AbstractFactory has been closed and objects created by that factory destroyed [SzConfigManager]",
@@ -298,6 +300,7 @@ func (factory *Szabstractfactory) initializeAbstractFactory(ctx context.Context)
 	if factory.semaphores == nil {
 		factory.semaphores = []*szengine.Szengine{}
 	}
+
 	factory.semaphores = append(factory.semaphores, semaphoreSzEngine)
 
 	return wraperror.Errorf(err, wraperror.NoMessage)
