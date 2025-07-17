@@ -1846,12 +1846,14 @@ func teardown() {
 }
 
 func teardownSzEngine(ctx context.Context) {
-	err := szEngineSingleton.UnregisterObserver(ctx, observerSingleton)
-	panicOnError(err)
+	if szEngineSingleton != nil {
+		err := szEngineSingleton.UnregisterObserver(ctx, observerSingleton)
+		panicOnError(err)
 
-	_ = szEngineSingleton.Destroy(ctx)
+		_ = szEngineSingleton.Destroy(ctx)
 
-	szEngineSingleton = nil
+		szEngineSingleton = nil
+	}
 }
 
 // ----------------------------------------------------------------------------

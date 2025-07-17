@@ -437,10 +437,12 @@ func teardown() {
 }
 
 func teardownSzConfig(ctx context.Context) {
-	err := szConfigSingleton.UnregisterObserver(ctx, observerSingleton)
-	panicOnError(err)
-	err = szConfigSingleton.Destroy(ctx)
-	panicOnError(err)
+	if szConfigSingleton != nil {
+		err := szConfigSingleton.UnregisterObserver(ctx, observerSingleton)
+		panicOnError(err)
+		err = szConfigSingleton.Destroy(ctx)
+		panicOnError(err)
 
-	szConfigSingleton = nil
+		szConfigSingleton = nil
+	}
 }

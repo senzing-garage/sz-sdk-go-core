@@ -287,10 +287,12 @@ func teardown() {
 }
 
 func teardownSzProduct(ctx context.Context) {
-	err := szProductSingleton.UnregisterObserver(ctx, observerSingleton)
-	panicOnError(err)
+	if szProductSingleton != nil {
+		err := szProductSingleton.UnregisterObserver(ctx, observerSingleton)
+		panicOnError(err)
 
-	_ = szProductSingleton.Destroy(ctx)
+		_ = szProductSingleton.Destroy(ctx)
 
-	szProductSingleton = nil
+		szProductSingleton = nil
+	}
 }
