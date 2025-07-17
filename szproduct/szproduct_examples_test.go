@@ -26,12 +26,14 @@ func ExampleSzproduct_GetLicense() {
 	szProduct, err := szAbstractFactory.CreateProduct(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	defer func() { handleError(szProduct.Destroy(ctx)) }()
 
 	result, err := szProduct.GetLicense(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	redactKeys := []string{"issueDate", "expireDate", "BUILD_VERSION"}
@@ -57,12 +59,14 @@ func ExampleSzproduct_GetVersion() {
 	szProduct, err := szAbstractFactory.CreateProduct(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	defer func() { handleError(szProduct.Destroy(ctx)) }()
 
 	result, err := szProduct.GetVersion(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	redactKeys := []string{"BUILD_DATE", "BUILD_NUMBER", "BUILD_VERSION"}
@@ -95,6 +99,7 @@ func ExampleSzproduct_SetLogLevel() {
 	err := szProduct.SetLogLevel(ctx, logging.LevelInfoName)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	// Output:
 }

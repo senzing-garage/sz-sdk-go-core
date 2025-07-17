@@ -19,6 +19,7 @@ func ExampleSzabstractfactory_Close() {
 	err := szAbstractFactory.Close(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	// Output:
 }
@@ -33,6 +34,7 @@ func ExampleSzabstractfactory_CreateConfigManager() {
 	szConfigManager, err := szAbstractFactory.CreateConfigManager(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	defer func() { handleError(szConfigManager.Destroy(ctx)) }()
 
@@ -50,6 +52,7 @@ func ExampleSzabstractfactory_CreateDiagnostic() {
 	szDiagnostic, err := szAbstractFactory.CreateDiagnostic(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	defer func() { handleError(szDiagnostic.Destroy(ctx)) }()
 
@@ -67,6 +70,7 @@ func ExampleSzabstractfactory_CreateEngine() {
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
@@ -84,6 +88,7 @@ func ExampleSzabstractfactory_CreateProduct() {
 	szProduct, err := szAbstractFactory.CreateProduct(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	defer func() { handleError(szProduct.Destroy(ctx)) }()
 
@@ -101,17 +106,20 @@ func ExampleSzabstractfactory_Reinitialize() {
 	szConfigManager, err := szAbstractFactory.CreateConfigManager(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	defer func() { handleError(szConfigManager.Destroy(ctx)) }()
 
 	configID, err := szConfigManager.GetDefaultConfigID(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	err = szAbstractFactory.Reinitialize(ctx, configID)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	// Output:
 }

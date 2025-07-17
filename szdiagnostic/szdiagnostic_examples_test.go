@@ -26,6 +26,7 @@ func ExampleSzdiagnostic_CheckRepositoryPerformance() {
 	szDiagnostic, err := szAbstractFactory.CreateDiagnostic(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	defer func() { handleError(szDiagnostic.Destroy(ctx)) }()
 
@@ -34,6 +35,7 @@ func ExampleSzdiagnostic_CheckRepositoryPerformance() {
 	result, err := szDiagnostic.CheckRepositoryPerformance(ctx, secondsToRun)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	redactKeys := []string{"numRecordsInserted"}
@@ -54,6 +56,7 @@ func ExampleSzdiagnostic_GetFeature() {
 	szDiagnostic, err := szAbstractFactory.CreateDiagnostic(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	defer func() { handleError(szDiagnostic.Destroy(ctx)) }()
 
@@ -62,6 +65,7 @@ func ExampleSzdiagnostic_GetFeature() {
 	result, err := szDiagnostic.GetFeature(ctx, featureID)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
@@ -108,12 +112,14 @@ func ExampleSzdiagnostic_GetRepositoryInfo() {
 	szDiagnostic, err := szAbstractFactory.CreateDiagnostic(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	defer func() { handleError(szDiagnostic.Destroy(ctx)) }()
 
 	result, err := szDiagnostic.GetRepositoryInfo(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
@@ -139,12 +145,14 @@ func ExampleSzdiagnostic_PurgeRepository() {
 	szDiagnostic, err := szAbstractFactory.CreateDiagnostic(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	defer func() { handleError(szDiagnostic.Destroy(ctx)) }()
 
 	err = szDiagnostic.PurgeRepository(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	// Output:
 }
@@ -162,6 +170,7 @@ func ExampleSzdiagnostic_SetLogLevel() {
 	err := szDiagnostic.SetLogLevel(ctx, logging.LevelInfoName)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	// Output:
 }

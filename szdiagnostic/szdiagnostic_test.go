@@ -230,7 +230,10 @@ func TestSzdiagnostic_AsInterface(test *testing.T) {
 
 func TestSzdiagnostic_Reinitialize(test *testing.T) {
 	ctx := test.Context()
-	szDiagnosticSingleton = nil
+	if szDiagnosticSingleton != nil {
+		_ = szDiagnosticSingleton.Destroy(ctx)
+		szDiagnosticSingleton = nil
+	}
 	szDiagnostic := getTestObject(test)
 	configID := getDefaultConfigID()
 	err := szDiagnostic.Reinitialize(ctx, configID)
@@ -253,7 +256,10 @@ func TestSzdiagnostic_Destroy(test *testing.T) {
 
 func TestSzdiagnostic_Destroy_withObserver(test *testing.T) {
 	ctx := test.Context()
-	szDiagnosticSingleton = nil
+	if szDiagnosticSingleton != nil {
+		_ = szDiagnosticSingleton.Destroy(ctx)
+		szDiagnosticSingleton = nil
+	}
 	szDiagnostic := getTestObject(test)
 	err := szDiagnostic.Destroy(ctx)
 	printDebug(test, err)
@@ -267,7 +273,7 @@ func TestSzdiagnostic_Destroy_withObserver(test *testing.T) {
 
 func TestSzdiagnostic_cleanup(test *testing.T) {
 	ctx := test.Context()
-	destroySzDiagnostics(ctx)
+	// destroySzDiagnostics(ctx)
 	destroySzEngines(ctx)
 }
 
@@ -310,15 +316,15 @@ func deleteRecords(ctx context.Context, records []record.Record) {
 	}
 }
 
-func destroySzDiagnostics(ctx context.Context) {
-	szDiagnostic := &szdiagnostic.Szdiagnostic{}
-	for {
-		err := szDiagnostic.Destroy(ctx)
-		if err != nil {
-			break
-		}
-	}
-}
+// func destroySzDiagnostics(ctx context.Context) {
+// 	szDiagnostic := &szdiagnostic.Szdiagnostic{}
+// 	for {
+// 		err := szDiagnostic.Destroy(ctx)
+// 		if err != nil {
+// 			break
+// 		}
+// 	}
+// }
 
 func destroySzEngines(ctx context.Context) {
 	szEngine := &szengine.Szengine{}
@@ -546,6 +552,7 @@ func teardownSzDiagnostic(ctx context.Context) {
 	if szDiagnosticSingleton != nil {
 		err := szDiagnosticSingleton.UnregisterObserver(ctx, observerSingleton)
 		panicOnError(err)
+		_ = szDiagnosticSingleton.Destroy(ctx)
 		szDiagnosticSingleton = nil
 	}
 }

@@ -26,6 +26,7 @@ func ExampleSzengine_AddRecord() {
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
@@ -37,9 +38,11 @@ func ExampleSzengine_AddRecord() {
 	result, err := szEngine.AddRecord(ctx, dataSourceCode, recordID, recordDefinition, flags)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(result)
+
 	// Output:
 }
 
@@ -53,6 +56,7 @@ func ExampleSzengine_AddRecord_secondRecord() {
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
@@ -64,6 +68,7 @@ func ExampleSzengine_AddRecord_secondRecord() {
 	result, err := szEngine.AddRecord(ctx, dataSourceCode, recordID, recordDefinition, flags)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(result)
@@ -80,6 +85,7 @@ func ExampleSzengine_AddRecord_withInfo() {
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
@@ -91,6 +97,7 @@ func ExampleSzengine_AddRecord_withInfo() {
 	result, err := szEngine.AddRecord(ctx, dataSourceCode, recordID, recordDefinition, flags)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
@@ -116,6 +123,7 @@ func ExampleSzengine_CloseExportReport() {
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
@@ -124,11 +132,13 @@ func ExampleSzengine_CloseExportReport() {
 	exportHandle, err := szEngine.ExportJSONEntityReport(ctx, flags)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	err = szEngine.CloseExportReport(ctx, exportHandle)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	// Output:
 }
@@ -143,12 +153,14 @@ func ExampleSzengine_CountRedoRecords() {
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	result, err := szEngine.CountRedoRecords(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(result)
@@ -165,6 +177,7 @@ func ExampleSzengine_ExportCsvEntityReport() {
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
@@ -174,6 +187,7 @@ func ExampleSzengine_ExportCsvEntityReport() {
 	exportHandle, err := szEngine.ExportCsvEntityReport(ctx, csvColumnList, flags)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(exportHandle > 0) // Dummy output.
@@ -216,6 +230,7 @@ func ExampleSzengine_ExportJSONEntityReport() {
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
@@ -224,6 +239,7 @@ func ExampleSzengine_ExportJSONEntityReport() {
 	exportHandle, err := szEngine.ExportJSONEntityReport(ctx, flags)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(exportHandle > 0) // Dummy output.
@@ -265,6 +281,7 @@ func ExampleSzengine_FetchNext() {
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
@@ -273,6 +290,7 @@ func ExampleSzengine_FetchNext() {
 	exportHandle, err := szEngine.ExportJSONEntityReport(ctx, flags)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	defer func() {
@@ -285,6 +303,7 @@ func ExampleSzengine_FetchNext() {
 		jsonEntityReportFragment, err := szEngine.FetchNext(ctx, exportHandle)
 		if err != nil {
 			handleError(err)
+			return
 		}
 
 		if len(jsonEntityReportFragment) == 0 {
@@ -306,6 +325,7 @@ func ExampleSzengine_FindInterestingEntitiesByEntityID() {
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
@@ -316,6 +336,7 @@ func ExampleSzengine_FindInterestingEntitiesByEntityID() {
 	result, err := szEngine.FindInterestingEntitiesByEntityID(ctx, entityID, flags)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
@@ -337,6 +358,7 @@ func ExampleSzengine_FindInterestingEntitiesByRecordID() {
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
@@ -347,6 +369,7 @@ func ExampleSzengine_FindInterestingEntitiesByRecordID() {
 	result, err := szEngine.FindInterestingEntitiesByRecordID(ctx, dataSourceCode, recordID, flags)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
@@ -483,6 +506,7 @@ func ExampleSzengine_FindNetworkByRecordID() {
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
@@ -507,6 +531,7 @@ func ExampleSzengine_FindNetworkByRecordID() {
 	result, err := szEngine.FindNetworkByRecordID(ctx, recordList, maxDegrees, buildOutDegrees, maxEntities, flags)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
@@ -661,6 +686,7 @@ func ExampleSzengine_FindPathByEntityID() {
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
@@ -683,6 +709,7 @@ func ExampleSzengine_FindPathByEntityID() {
 	)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
@@ -717,6 +744,7 @@ func ExampleSzengine_FindPathByEntityID_avoiding() {
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
@@ -739,6 +767,7 @@ func ExampleSzengine_FindPathByEntityID_avoiding() {
 	)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
@@ -773,6 +802,7 @@ func ExampleSzEngine_FindPathByEntityID_avoidingAndIncluding() {
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
@@ -795,6 +825,7 @@ func ExampleSzEngine_FindPathByEntityID_avoidingAndIncluding() {
 	)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
@@ -827,6 +858,7 @@ func ExampleSzengine_FindPathByEntityID_including() {
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
@@ -849,6 +881,7 @@ func ExampleSzengine_FindPathByEntityID_including() {
 	)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
@@ -974,6 +1007,7 @@ func ExampleSzengine_FindPathByRecordID() {
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
@@ -999,6 +1033,7 @@ func ExampleSzengine_FindPathByRecordID() {
 	)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
@@ -1033,6 +1068,7 @@ func ExampleSzengine_FindPathByRecordID_avoiding() {
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
@@ -1058,6 +1094,7 @@ func ExampleSzengine_FindPathByRecordID_avoiding() {
 	)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
@@ -1092,6 +1129,7 @@ func ExampleSzEngine_FindPathByRecordID_avoidingAndIncluding() {
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
@@ -1117,6 +1155,7 @@ func ExampleSzEngine_FindPathByRecordID_avoidingAndIncluding() {
 	)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
@@ -1149,6 +1188,7 @@ func ExampleSzengine_FindPathByRecordID_including() {
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
@@ -1174,6 +1214,7 @@ func ExampleSzengine_FindPathByRecordID_including() {
 	)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
@@ -1299,12 +1340,14 @@ func ExampleSzengine_GetActiveConfigID() {
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	result, err := szEngine.GetActiveConfigID(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(result > 0) // Dummy output.
@@ -1321,6 +1364,7 @@ func ExampleSzengine_GetEntityByEntityID() {
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
@@ -1331,6 +1375,7 @@ func ExampleSzengine_GetEntityByEntityID() {
 	result, err := szEngine.GetEntityByEntityID(ctx, entityID, flags)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
@@ -1543,6 +1588,7 @@ func ExampleSzengine_GetEntityByRecordID() {
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
@@ -1553,6 +1599,7 @@ func ExampleSzengine_GetEntityByRecordID() {
 	result, err := szEngine.GetEntityByRecordID(ctx, dataSourceCode, recordID, flags)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
@@ -1765,6 +1812,7 @@ func ExampleSzengine_GetRecord() {
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
@@ -1775,6 +1823,7 @@ func ExampleSzengine_GetRecord() {
 	result, err := szEngine.GetRecord(ctx, dataSourceCode, recordID, flags)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(jsonutil.PrettyPrint(jsonutil.Flatten(jsonutil.Normalize(result)), jsonIndentation))
@@ -1795,12 +1844,14 @@ func ExampleSzengine_GetRedoRecord() {
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	result, err := szEngine.GetRedoRecord(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
@@ -1825,12 +1876,14 @@ func ExampleSzengine_GetStats() {
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	result, err := szEngine.GetStats(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(jsonutil.Truncate(result, 5))
@@ -2113,6 +2166,7 @@ func ExampleSzengine_GetVirtualEntityByRecordID() {
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
@@ -2122,6 +2176,7 @@ func ExampleSzengine_GetVirtualEntityByRecordID() {
 	result, err := szEngine.GetVirtualEntityByRecordID(ctx, recordList, flags)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
@@ -3000,6 +3055,7 @@ func ExampleSzengine_HowEntityByEntityID() {
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
@@ -3010,6 +3066,7 @@ func ExampleSzengine_HowEntityByEntityID() {
 	result, err := szEngine.HowEntityByEntityID(ctx, entityID, flags)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(jsonutil.Truncate(result, 5))
@@ -3026,6 +3083,7 @@ func ExampleSzengine_GetRecordPreview() {
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
@@ -3035,6 +3093,7 @@ func ExampleSzengine_GetRecordPreview() {
 	result, err := szEngine.GetRecordPreview(ctx, recordDefinition, flags)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(result)
@@ -3051,12 +3110,14 @@ func ExampleSzengine_PrimeEngine() {
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	err = szEngine.PrimeEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	// Output:
 }
@@ -3071,12 +3132,14 @@ func ExampleSzEngine_ProcessRedoRecord() {
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	redoRecord, err := szEngine.GetRedoRecord(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	flags := senzing.SzWithoutInfo
@@ -3084,6 +3147,7 @@ func ExampleSzEngine_ProcessRedoRecord() {
 	result, err := szEngine.ProcessRedoRecord(ctx, redoRecord, flags)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(result)
@@ -3100,12 +3164,14 @@ func ExampleSzEngine_ProcessRedoRecord_withInfo() {
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	redoRecord, err := szEngine.GetRedoRecord(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	flags := senzing.SzWithInfo
@@ -3113,6 +3179,7 @@ func ExampleSzEngine_ProcessRedoRecord_withInfo() {
 	result, err := szEngine.ProcessRedoRecord(ctx, redoRecord, flags)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
@@ -3138,6 +3205,7 @@ func ExampleSzengine_SearchByAttributes() {
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
@@ -3148,6 +3216,7 @@ func ExampleSzengine_SearchByAttributes() {
 	result, err := szEngine.SearchByAttributes(ctx, attributes, searchProfile, flags)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	redactKeys := []string{"FIRST_SEEN_DT", "LAST_SEEN_DT"}
@@ -3188,6 +3257,7 @@ func ExampleSzEngine_SearchByAttributes_searchProfile() {
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
@@ -3198,6 +3268,7 @@ func ExampleSzEngine_SearchByAttributes_searchProfile() {
 	result, err := szEngine.SearchByAttributes(ctx, attributes, searchProfile, flags)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	redactKeys := []string{"FIRST_SEEN_DT", "LAST_SEEN_DT"}
@@ -3403,6 +3474,7 @@ func ExampleSzengine_WhyEntities() {
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
@@ -3413,6 +3485,7 @@ func ExampleSzengine_WhyEntities() {
 	result, err := szEngine.WhyEntities(ctx, entityID1, entityID2, flags)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
@@ -5162,6 +5235,7 @@ func ExampleSzengine_WhyRecordInEntity() {
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
@@ -5172,6 +5246,7 @@ func ExampleSzengine_WhyRecordInEntity() {
 	result, err := szEngine.WhyRecordInEntity(ctx, dataSourceCode, recordID, flags)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
@@ -5214,6 +5289,7 @@ func ExampleSzengine_WhyRecords() {
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
@@ -5226,6 +5302,7 @@ func ExampleSzengine_WhyRecords() {
 	result, err := szEngine.WhyRecords(ctx, dataSourceCode1, recordID1, dataSourceCode2, recordID2, flags)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(jsonutil.Truncate(result, 7))
@@ -6958,6 +7035,7 @@ func ExampleSzengine_WhySearch() {
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
@@ -6970,6 +7048,7 @@ func ExampleSzengine_WhySearch() {
 	result, err := szEngine.WhySearch(ctx, attributes, entityID, searchProfile, flags)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(
@@ -7010,6 +7089,7 @@ func ExampleSzengine_ReevaluateEntity() {
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
@@ -7020,6 +7100,7 @@ func ExampleSzengine_ReevaluateEntity() {
 	result, err := szEngine.ReevaluateEntity(ctx, entityID, flags)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(result)
@@ -7036,6 +7117,7 @@ func ExampleSzengine_ReevaluateEntity_withInfo() {
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
@@ -7045,6 +7127,7 @@ func ExampleSzengine_ReevaluateEntity_withInfo() {
 	result, err := szEngine.ReevaluateEntity(ctx, entityID, flags)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
@@ -7068,6 +7151,7 @@ func ExampleSzengine_ReevaluateRecord() {
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
@@ -7078,6 +7162,7 @@ func ExampleSzengine_ReevaluateRecord() {
 	result, err := szEngine.ReevaluateRecord(ctx, dataSourceCode, recordID, flags)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(result)
@@ -7094,6 +7179,7 @@ func ExampleSzengine_ReevaluateRecord_withInfo() {
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
@@ -7104,6 +7190,7 @@ func ExampleSzengine_ReevaluateRecord_withInfo() {
 	result, err := szEngine.ReevaluateRecord(ctx, dataSourceCode, recordID, flags)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
@@ -7129,6 +7216,7 @@ func ExampleSzengine_DeleteRecord() {
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
@@ -7139,6 +7227,7 @@ func ExampleSzengine_DeleteRecord() {
 	result, err := szEngine.DeleteRecord(ctx, dataSourceCode, recordID, flags)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(result)
@@ -7155,6 +7244,7 @@ func ExampleSzengine_DeleteRecord_withInfo() {
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
@@ -7165,6 +7255,7 @@ func ExampleSzengine_DeleteRecord_withInfo() {
 	result, err := szEngine.DeleteRecord(ctx, dataSourceCode, recordID, flags)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
@@ -7189,6 +7280,7 @@ func ExampleSzengine_SetLogLevel() {
 	err := szEngine.SetLogLevel(ctx, logging.LevelInfoName)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	// Output:
 }

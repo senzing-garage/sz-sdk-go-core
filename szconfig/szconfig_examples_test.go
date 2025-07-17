@@ -24,12 +24,14 @@ func ExampleSzconfig_RegisterDataSource() {
 	szConfigManager, err := szAbstractFactory.CreateConfigManager(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	defer func() { handleError(szConfigManager.Destroy(ctx)) }()
 
 	szConfig, err := szConfigManager.CreateConfigFromTemplate(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	dataSourceCode := "GO_TEST"
@@ -37,6 +39,7 @@ func ExampleSzconfig_RegisterDataSource() {
 	result, err := szConfig.RegisterDataSource(ctx, dataSourceCode)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
@@ -56,12 +59,14 @@ func ExampleSzconfig_UnregisterDataSource() {
 	szConfigManager, err := szAbstractFactory.CreateConfigManager(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	defer func() { handleError(szConfigManager.Destroy(ctx)) }()
 
 	szConfig, err := szConfigManager.CreateConfigFromTemplate(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	dataSourceCode := "GO_TEST"
@@ -69,6 +74,7 @@ func ExampleSzconfig_UnregisterDataSource() {
 	result, err := szConfig.UnregisterDataSource(ctx, dataSourceCode)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(result)
@@ -85,17 +91,20 @@ func ExampleSzconfig_Export() {
 	szConfigManager, err := szAbstractFactory.CreateConfigManager(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	defer func() { handleError(szConfigManager.Destroy(ctx)) }()
 
 	szConfig, err := szConfigManager.CreateConfigFromTemplate(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	configDefinition, err := szConfig.Export(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(jsonutil.Truncate(configDefinition, 7))
@@ -112,17 +121,20 @@ func ExampleSzconfig_GetDataSourceRegistry() {
 	szConfigManager, err := szAbstractFactory.CreateConfigManager(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	defer func() { handleError(szConfigManager.Destroy(ctx)) }()
 
 	szConfig, err := szConfigManager.CreateConfigFromTemplate(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	result, err := szConfig.GetDataSourceRegistry(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
@@ -154,6 +166,7 @@ func ExampleSzconfig_SetLogLevel() {
 	err := szConfig.SetLogLevel(ctx, logging.LevelInfoName)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	// Output:
 }
@@ -165,6 +178,7 @@ func ExampleSzconfig_SetObserverOrigin() {
 	szConfig := getSzConfig(ctx)
 	origin := "Machine: nn; Task: UnitTest"
 	szConfig.SetObserverOrigin(ctx, origin)
+
 	// Output:
 }
 

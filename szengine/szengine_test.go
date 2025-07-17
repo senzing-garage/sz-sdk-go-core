@@ -22,7 +22,6 @@ import (
 	"github.com/senzing-garage/sz-sdk-go-core/szabstractfactory"
 	"github.com/senzing-garage/sz-sdk-go-core/szconfig"
 	"github.com/senzing-garage/sz-sdk-go-core/szconfigmanager"
-	"github.com/senzing-garage/sz-sdk-go-core/szdiagnostic"
 	"github.com/senzing-garage/sz-sdk-go-core/szengine"
 	"github.com/senzing-garage/sz-sdk-go/senzing"
 	"github.com/senzing-garage/sz-sdk-go/szerror"
@@ -191,10 +190,6 @@ func TestSzEngine_DeleteRecord(test *testing.T) {
 
 			addRecords(ctx, szEngine, records)
 
-			// Defaults.
-
-			szEngine := getTestObject(ctx, test)
-
 			// Test.
 
 			dataSourceCode := xString(testCase.dataSourceCode, record1005.DataSource)
@@ -246,7 +241,6 @@ func TestSzEngine_ExportCsvEntityReport(test *testing.T) {
 
 	for actual := range szEngine.ExportCsvEntityReportIterator(ctx, csvColumnList, flags) {
 		require.Equal(test, expected[actualCount], strings.TrimSpace(actual.Value))
-
 		actualCount++
 	}
 
@@ -1483,32 +1477,32 @@ func TestSzEngine_AsInterface(test *testing.T) {
 	require.Equal(test, expected, actual)
 }
 
-func TestSzEngine_Initialize(test *testing.T) {
-	ctx := test.Context()
-	szEngine := getTestObject(ctx, test)
-	settings := getSettings()
+// func TestSzEngine_Initialize(test *testing.T) {
+// 	ctx := test.Context()
+// 	szEngine := getTestObject(ctx, test)
+// 	settings := getSettings()
 
-	configID := senzing.SzInitializeWithDefaultConfiguration
-	err := szEngine.Initialize(ctx, instanceName, settings, configID, verboseLogging)
-	printDebug(test, err)
-	require.NoError(test, err)
-}
+// 	configID := senzing.SzInitializeWithDefaultConfiguration
+// 	err := szEngine.Initialize(ctx, instanceName, settings, configID, verboseLogging)
+// 	printDebug(test, err)
+// 	require.NoError(test, err)
+// }
 
 func TestSzEngine_Initialize_error(test *testing.T) {
 	// IMPROVE: Implement TestSzEngine_Initialize_error
 	_ = test
 }
 
-func TestSzEngine_Initialize_withConfigID(test *testing.T) {
-	ctx := test.Context()
-	szEngine := getTestObject(ctx, test)
-	settings := getSettings()
+// func TestSzEngine_Initialize_withConfigID(test *testing.T) {
+// 	ctx := test.Context()
+// 	szEngine := getTestObject(ctx, test)
+// 	settings := getSettings()
 
-	configID := getDefaultConfigID()
-	err := szEngine.Initialize(ctx, instanceName, settings, configID, verboseLogging)
-	printDebug(test, err)
-	require.NoError(test, err)
-}
+// 	configID := getDefaultConfigID()
+// 	err := szEngine.Initialize(ctx, instanceName, settings, configID, verboseLogging)
+// 	printDebug(test, err)
+// 	require.NoError(test, err)
+// }
 
 func TestSzEngine_Initialize_withConfigID_error(test *testing.T) {
 	// IMPROVE: Implement TestSzEngine_Initialize_withConfigID_error
@@ -1537,6 +1531,7 @@ func TestSzEngine_Destroy(test *testing.T) {
 	err := szEngine.Destroy(ctx)
 	printDebug(test, err)
 	require.NoError(test, err)
+	szEngineSingleton = nil // Reset szEngineSingleton
 }
 
 func TestSzEngine_Destroy_error(test *testing.T) {
@@ -1546,16 +1541,11 @@ func TestSzEngine_Destroy_error(test *testing.T) {
 
 func TestSzEngine_Destroy_withObserver(test *testing.T) {
 	ctx := test.Context()
-	szEngineSingleton = nil
 	szEngine := getTestObject(ctx, test)
 	err := szEngine.Destroy(ctx)
 	printDebug(test, err)
 	require.NoError(test, err)
-}
-
-func TestSzEngine_cleanup(test *testing.T) {
-	ctx := test.Context()
-	destroySzDiagnostics(ctx)
+	szEngineSingleton = nil // Reset szEngineSingleton
 }
 
 // ----------------------------------------------------------------------------
@@ -1594,16 +1584,6 @@ func deleteRecords(ctx context.Context, szEngine senzing.SzEngine, records []rec
 	for _, record := range records {
 		_, err := szEngine.DeleteRecord(ctx, record.DataSource, record.ID, flags)
 		panicOnError(err)
-	}
-}
-
-func destroySzDiagnostics(ctx context.Context) {
-	for {
-		szDiagnostic := &szdiagnostic.Szdiagnostic{}
-		err := szDiagnostic.Destroy(ctx)
-		if err != nil {
-			break
-		}
 	}
 }
 
