@@ -66,7 +66,7 @@ const (
 Method CreateConfigFromConfigID retrieves a specific Senzing configuration JSON document from the Senzing repository.
 
 Input
-  - ctx: A context to control lifecycle.client.isDestroyedclient.isDestroyed
+  - ctx: A context to control lifecycle.
   - configID: The identifier of the desired Senzing configuration JSON document to retrieve.
 
 Output

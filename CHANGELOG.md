@@ -11,9 +11,9 @@ and this project adheres to [Semantic Versioning].
 
 ## [0.9.10] - 2025-07-16
 
-### Changed in 0.9.19
+### Added in 0.9.10
 
-- Migrate to changes in C binary function names
+- `SzAbstractFactory.Close()`
 
 ## [0.9.9] - 2025-07-08
 
