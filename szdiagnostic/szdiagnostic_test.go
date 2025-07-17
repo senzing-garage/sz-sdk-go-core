@@ -105,11 +105,8 @@ func TestSzdiagnostic_GetFeature(test *testing.T) {
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
-
 	defer func() { deleteRecords(ctx, records) }()
-
 	addRecords(ctx, records)
-
 	szDiagnostic := getTestObject(test)
 	featureID := int64(1)
 	actual, err := szDiagnostic.GetFeature(ctx, featureID)
@@ -122,16 +119,12 @@ func TestSzdiagnostic_GetFeature_badFeatureID(test *testing.T) {
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
-
 	defer func() { deleteRecords(ctx, records) }()
-
 	addRecords(ctx, records)
-
 	szDiagnostic := getTestObject(test)
 	actual, err := szDiagnostic.GetFeature(ctx, badFeatureID)
 	printDebug(test, err, actual)
 	require.ErrorIs(test, err, szerror.ErrSz)
-
 	expectedErr := `{"function":"szdiagnostic.(*Szdiagnostic).GetFeature","error":{"id":"SZSDK60034004","reason":"SENZ0057|Unknown feature ID value '-1'"}}`
 	require.JSONEq(test, expectedErr, err.Error())
 }
@@ -141,16 +134,12 @@ func TestSzdiagnostic_GetFeature_nilFeatureID(test *testing.T) {
 	records := []record.Record{
 		truthset.CustomerRecords["1001"],
 	}
-
 	defer func() { deleteRecords(ctx, records) }()
-
 	addRecords(ctx, records)
-
 	szDiagnostic := getTestObject(test)
 	actual, err := szDiagnostic.GetFeature(ctx, nilFeatureID)
 	printDebug(test, err, actual)
 	require.ErrorIs(test, err, szerror.ErrSz)
-
 	expectedErr := `{"function":"szdiagnostic.(*Szdiagnostic).GetFeature","error":{"id":"SZSDK60034004","reason":"SENZ0057|Unknown feature ID value '0'"}}`
 	require.JSONEq(test, expectedErr, err.Error())
 }
@@ -202,31 +191,6 @@ func TestSzdiagnostic_AsInterface(test *testing.T) {
 	printDebug(test, err, actual)
 	require.NoError(test, err)
 }
-
-// func TestSzdiagnostic_Initialize(test *testing.T) {
-// 	ctx := test.Context()
-// 	szDiagnostic := &szdiagnostic.Szdiagnostic{}
-// 	settings := getSettings()
-// 	configID := senzing.SzInitializeWithDefaultConfiguration
-// 	err := szDiagnostic.Initialize(ctx, instanceName, settings, configID, verboseLogging)
-// 	printDebug(test, err)
-// 	require.NoError(test, err)
-// }
-
-// func TestSzdiagnostic_Initialize_withConfigId(test *testing.T) {
-// 	ctx := test.Context()
-// 	szDiagnostic := &szdiagnostic.Szdiagnostic{}
-// 	settings := getSettings()
-// 	configID := getDefaultConfigID()
-// 	err := szDiagnostic.Initialize(ctx, instanceName, settings, configID, verboseLogging)
-// 	printDebug(test, err)
-// 	require.NoError(test, err)
-// }
-
-// func TestSzdiagnostic_Initialize_withConfigId_badConfigID(test *testing.T) {
-// 	// IMPROVE: Implement TestSzdiagnostic_Initialize_withConfigId_badConfigID
-// 	_ = test
-// }
 
 func TestSzdiagnostic_Reinitialize(test *testing.T) {
 	ctx := test.Context()

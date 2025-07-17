@@ -22,22 +22,18 @@ func ExampleSzdiagnostic_CheckRepositoryPerformance() {
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
 	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
-
 	szDiagnostic, err := szAbstractFactory.CreateDiagnostic(ctx)
 	if err != nil {
 		handleError(err)
 		return
 	}
 	defer func() { handleError(szDiagnostic.Destroy(ctx)) }()
-
 	secondsToRun := 1
-
 	result, err := szDiagnostic.CheckRepositoryPerformance(ctx, secondsToRun)
 	if err != nil {
 		handleError(err)
 		return
 	}
-
 	redactKeys := []string{"numRecordsInserted"}
 	fmt.Println(jsonutil.PrettyPrint(jsonutil.Truncate(result, AllLines, redactKeys...), jsonIndentation))
 	// Output:
@@ -52,22 +48,18 @@ func ExampleSzdiagnostic_GetFeature() {
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
 	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
-
 	szDiagnostic, err := szAbstractFactory.CreateDiagnostic(ctx)
 	if err != nil {
 		handleError(err)
 		return
 	}
 	defer func() { handleError(szDiagnostic.Destroy(ctx)) }()
-
 	featureID := int64(1)
-
 	result, err := szDiagnostic.GetFeature(ctx, featureID)
 	if err != nil {
 		handleError(err)
 		return
 	}
-
 	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
 	// Output:
 	// {
@@ -108,14 +100,12 @@ func ExampleSzdiagnostic_GetRepositoryInfo() {
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
 	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
-
 	szDiagnostic, err := szAbstractFactory.CreateDiagnostic(ctx)
 	if err != nil {
 		handleError(err)
 		return
 	}
 	defer func() { handleError(szDiagnostic.Destroy(ctx)) }()
-
 	result, err := szDiagnostic.GetRepositoryInfo(ctx)
 	if err != nil {
 		handleError(err)
@@ -141,14 +131,12 @@ func ExampleSzdiagnostic_PurgeRepository() {
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
 	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
-
 	szDiagnostic, err := szAbstractFactory.CreateDiagnostic(ctx)
 	if err != nil {
 		handleError(err)
 		return
 	}
 	defer func() { handleError(szDiagnostic.Destroy(ctx)) }()
-
 	err = szDiagnostic.PurgeRepository(ctx)
 	if err != nil {
 		handleError(err)
@@ -166,7 +154,6 @@ func ExampleSzdiagnostic_SetLogLevel() {
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szdiagnostic/szdiagnostic_examples_test.go
 	ctx := context.TODO()
 	szDiagnostic := getSzDiagnostic(ctx)
-
 	err := szDiagnostic.SetLogLevel(ctx, logging.LevelInfoName)
 	if err != nil {
 		handleError(err)
