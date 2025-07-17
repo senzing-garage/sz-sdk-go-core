@@ -603,14 +603,12 @@ func TestSzAbstractFactory_Multi_Reinitialize_implicitly(test *testing.T) {
 
 func createSzAbstractFactory(ctx context.Context) senzing.SzAbstractFactory {
 	result := createSzAbstractFactoryByLocation(ctx, location1)
-	// _ = result.DestroyWithoutClosing(ctx)
 
 	return result
 }
 
 func createSzAbstractFactoryByLocation(ctx context.Context, location string) senzing.SzAbstractFactory {
 	var result senzing.SzAbstractFactory
-
 	_ = ctx
 	settings := getSettings(location)
 	result = &szabstractfactory.Szabstractfactory{
@@ -625,7 +623,6 @@ func createSzAbstractFactoryByLocation(ctx context.Context, location string) sen
 
 func createSzAbstractFactoryBadConfig(ctx context.Context) senzing.SzAbstractFactory {
 	var result senzing.SzAbstractFactory
-
 	_ = ctx
 	settings := getSettingsBadConfig()
 	result = &szabstractfactory.Szabstractfactory{

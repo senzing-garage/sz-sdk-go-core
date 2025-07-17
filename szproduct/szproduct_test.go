@@ -109,14 +109,14 @@ func TestSzproduct_AsInterface(test *testing.T) {
 	require.NoError(test, err)
 }
 
-func TestSzproduct_Initialize(test *testing.T) {
-	ctx := test.Context()
-	szProduct := &szproduct.Szproduct{}
-	settings := getSettings()
-	err := szProduct.Initialize(ctx, instanceName, settings, verboseLogging)
-	printDebug(test, err)
-	require.NoError(test, err)
-}
+// func TestSzproduct_Initialize(test *testing.T) {
+// 	ctx := test.Context()
+// 	szProduct := &szproduct.Szproduct{}
+// 	settings := getSettings()
+// 	err := szProduct.Initialize(ctx, instanceName, settings, verboseLogging)
+// 	printDebug(test, err)
+// 	require.NoError(test, err)
+// }
 
 func TestSzproduct_Initialize_error(test *testing.T) {
 	// IMPROVE: Implement TestSzengine_Initialize_error

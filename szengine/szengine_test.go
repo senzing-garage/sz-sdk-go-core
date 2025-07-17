@@ -481,11 +481,6 @@ func TestSzEngine_ExportJSONEntityReport_65536(test *testing.T) {
 	require.Greater(test, len(jsonEntityReport), 65536)
 }
 
-func TestSzEngine_ExportJSONEntityReport_error(test *testing.T) {
-	// IMPROVE: Implement TestSzEngine_ExportJSONEntityReport_error
-	_ = test
-}
-
 func TestSzEngine_ExportJSONEntityReportIterator(test *testing.T) {
 	ctx := test.Context()
 	records := []record.Record{
@@ -1488,11 +1483,6 @@ func TestSzEngine_AsInterface(test *testing.T) {
 // 	require.NoError(test, err)
 // }
 
-func TestSzEngine_Initialize_error(test *testing.T) {
-	// IMPROVE: Implement TestSzEngine_Initialize_error
-	_ = test
-}
-
 // func TestSzEngine_Initialize_withConfigID(test *testing.T) {
 // 	ctx := test.Context()
 // 	szEngine := getTestObject(ctx, test)
@@ -1520,11 +1510,6 @@ func TestSzEngine_Reinitialize(test *testing.T) {
 	require.NoError(test, err)
 }
 
-func TestSzEngine_Reinitialize_badConfigID(test *testing.T) {
-	// IMPROVE: Implement TestSzEngine_Reinitialize_badConfigID
-	_ = test
-}
-
 func TestSzEngine_Destroy(test *testing.T) {
 	ctx := test.Context()
 	szEngine := getTestObject(ctx, test)
@@ -1532,11 +1517,6 @@ func TestSzEngine_Destroy(test *testing.T) {
 	printDebug(test, err)
 	require.NoError(test, err)
 	szEngineSingleton = nil // Reset szEngineSingleton
-}
-
-func TestSzEngine_Destroy_error(test *testing.T) {
-	// IMPROVE: Implement TestSzEngine_Destroy_error
-	_ = test
 }
 
 func TestSzEngine_Destroy_withObserver(test *testing.T) {

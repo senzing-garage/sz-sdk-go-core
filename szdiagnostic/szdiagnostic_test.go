@@ -241,40 +241,22 @@ func TestSzdiagnostic_Reinitialize(test *testing.T) {
 	require.NoError(test, err)
 }
 
-// func TestSzdiagnostic_Reinitialize_error(test *testing.T) {
-// 	// IMPROVE: Implement TestSzdiagnostic_Reinitialize_error
-// 	_ = test
-// }
-
 func TestSzdiagnostic_Destroy(test *testing.T) {
 	ctx := test.Context()
 	szDiagnostic := getTestObject(test)
 	err := szDiagnostic.Destroy(ctx)
 	printDebug(test, err)
 	require.NoError(test, err)
+	szDiagnosticSingleton = nil
 }
 
 func TestSzdiagnostic_Destroy_withObserver(test *testing.T) {
 	ctx := test.Context()
-	if szDiagnosticSingleton != nil {
-		_ = szDiagnosticSingleton.Destroy(ctx)
-		szDiagnosticSingleton = nil
-	}
 	szDiagnostic := getTestObject(test)
 	err := szDiagnostic.Destroy(ctx)
 	printDebug(test, err)
 	require.NoError(test, err)
-}
-
-// func TestSzdiagnostic_Destroy_error(test *testing.T) {
-// 	// IMPROVE: Implement TestSzdiagnostic_Destroy_error
-// 	_ = test
-// }
-
-func TestSzdiagnostic_cleanup(test *testing.T) {
-	ctx := test.Context()
-	// destroySzDiagnostics(ctx)
-	destroySzEngines(ctx)
+	szDiagnosticSingleton = nil
 }
 
 // ----------------------------------------------------------------------------
@@ -289,6 +271,10 @@ func addRecords(ctx context.Context, records []record.Record) {
 		_, err := szEngine.AddRecord(ctx, record.DataSource, record.ID, record.JSON, flags)
 		panicOnError(err)
 	}
+
+	err := szEngine.Destroy(ctx)
+	panicOnError(err)
+	szEngineSingleton = nil
 }
 
 func createSzAbstractFactory(ctx context.Context) senzing.SzAbstractFactory {
@@ -314,26 +300,10 @@ func deleteRecords(ctx context.Context, records []record.Record) {
 		_, err := szEngine.DeleteRecord(ctx, record.DataSource, record.ID, flags)
 		panicOnError(err)
 	}
-}
 
-// func destroySzDiagnostics(ctx context.Context) {
-// 	szDiagnostic := &szdiagnostic.Szdiagnostic{}
-// 	for {
-// 		err := szDiagnostic.Destroy(ctx)
-// 		if err != nil {
-// 			break
-// 		}
-// 	}
-// }
-
-func destroySzEngines(ctx context.Context) {
-	szEngine := &szengine.Szengine{}
-	for {
-		err := szEngine.Destroy(ctx)
-		if err != nil {
-			break
-		}
-	}
+	err := szEngine.Destroy(ctx)
+	panicOnError(err)
+	szEngineSingleton = nil
 }
 
 func getDatabaseTemplatePath() string {
