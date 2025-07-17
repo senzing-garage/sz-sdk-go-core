@@ -22,10 +22,15 @@ func ExampleSzengine_AddRecord() {
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
 
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
+
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
+
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	dataSourceCode := "CUSTOMERS"
 	recordID := "1001"
@@ -35,9 +40,11 @@ func ExampleSzengine_AddRecord() {
 	result, err := szEngine.AddRecord(ctx, dataSourceCode, recordID, recordDefinition, flags)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(result)
+
 	// Output:
 }
 
@@ -47,10 +54,15 @@ func ExampleSzengine_AddRecord_secondRecord() {
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
 
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
+
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
+
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	dataSourceCode := "CUSTOMERS"
 	recordID := "1002"
@@ -60,6 +72,7 @@ func ExampleSzengine_AddRecord_secondRecord() {
 	result, err := szEngine.AddRecord(ctx, dataSourceCode, recordID, recordDefinition, flags)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(result)
@@ -72,10 +85,15 @@ func ExampleSzengine_AddRecord_withInfo() {
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
 
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
+
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
+
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	dataSourceCode := "CUSTOMERS"
 	recordID := "1003"
@@ -85,6 +103,7 @@ func ExampleSzengine_AddRecord_withInfo() {
 	result, err := szEngine.AddRecord(ctx, dataSourceCode, recordID, recordDefinition, flags)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
@@ -106,21 +125,28 @@ func ExampleSzengine_CloseExportReport() {
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
 
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
+
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
+
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	flags := senzing.SzNoFlags
 
 	exportHandle, err := szEngine.ExportJSONEntityReport(ctx, flags)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	err = szEngine.CloseExportReport(ctx, exportHandle)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	// Output:
 }
@@ -131,14 +157,20 @@ func ExampleSzengine_CountRedoRecords() {
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
 
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
+
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
+
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	result, err := szEngine.CountRedoRecords(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(result)
@@ -151,10 +183,15 @@ func ExampleSzengine_ExportCsvEntityReport() {
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
 
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
+
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
+
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	csvColumnList := ""
 	flags := senzing.SzNoFlags
@@ -162,6 +199,7 @@ func ExampleSzengine_ExportCsvEntityReport() {
 	exportHandle, err := szEngine.ExportCsvEntityReport(ctx, csvColumnList, flags)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(exportHandle > 0) // Dummy output.
@@ -200,16 +238,22 @@ func ExampleSzengine_ExportJSONEntityReport() {
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
 
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
+
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
+
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	flags := senzing.SzNoFlags
 
 	exportHandle, err := szEngine.ExportJSONEntityReport(ctx, flags)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(exportHandle > 0) // Dummy output.
@@ -247,20 +291,26 @@ func ExampleSzengine_FetchNext() {
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
 
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
+
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
+
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	flags := senzing.SzNoFlags
 
 	exportHandle, err := szEngine.ExportJSONEntityReport(ctx, flags)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	defer func() {
-		err = szEngine.CloseExportReport(ctx, exportHandle)
+		handleError(szEngine.CloseExportReport(ctx, exportHandle))
 	}()
 
 	jsonEntityReport := ""
@@ -269,6 +319,7 @@ func ExampleSzengine_FetchNext() {
 		jsonEntityReportFragment, err := szEngine.FetchNext(ctx, exportHandle)
 		if err != nil {
 			handleError(err)
+			return
 		}
 
 		if len(jsonEntityReportFragment) == 0 {
@@ -286,18 +337,24 @@ func ExampleSzengine_FindInterestingEntitiesByEntityID() {
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
 
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
+
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
-	entityID := getEntityIDForRecord(ctx, "CUSTOMERS", "1001")
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
+
+	entityID := getEntityIDForRecord(ctx, szEngine, "CUSTOMERS", "1001")
 
 	flags := senzing.SzNoFlags
 
 	result, err := szEngine.FindInterestingEntitiesByEntityID(ctx, entityID, flags)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
@@ -315,10 +372,15 @@ func ExampleSzengine_FindInterestingEntitiesByRecordID() {
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
 
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
+
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
+
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	dataSourceCode := "CUSTOMERS"
 	recordID := "1001"
@@ -327,6 +389,7 @@ func ExampleSzengine_FindInterestingEntitiesByRecordID() {
 	result, err := szEngine.FindInterestingEntitiesByRecordID(ctx, dataSourceCode, recordID, flags)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
@@ -338,43 +401,45 @@ func ExampleSzengine_FindInterestingEntitiesByRecordID() {
 	// }
 }
 
-func ExampleSzengine_FindNetworkByEntityID() {
-	// For more information, visit
-	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
-	ctx := context.TODO()
-	szAbstractFactory := createSzAbstractFactory(ctx)
+// func ExampleSzengine_FindNetworkByEntityID() {
+// 	// For more information, visit
+// 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
+// 	ctx := context.TODO()
+// 	szAbstractFactory := createSzAbstractFactory(ctx)
+// 	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
 
-	szEngine, err := szAbstractFactory.CreateEngine(ctx)
-	if err != nil {
-		handleError(err)
-	}
+// 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
+// 	if err != nil {
+// 		handleError(err)
+// 	}
+// 	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
-	entityID1 := getEntityIDStringForRecord(ctx, "CUSTOMERS", "1001")
-	entityID2 := getEntityIDStringForRecord(ctx, "CUSTOMERS", "1002")
-	entityList := `{"ENTITIES": [{"ENTITY_ID": ` + entityID1 + `}, {"ENTITY_ID": ` + entityID2 + `}]}`
-	maxDegrees := int64(2)
-	buildOutDegrees := int64(1)
-	maxEntities := int64(10)
-	flags := senzing.SzNoFlags
+// 	entityID1 := getEntityIDStringForRecord(ctx, "CUSTOMERS", "1001")
+// 	entityID2 := getEntityIDStringForRecord(ctx, "CUSTOMERS", "1002")
+// 	entityList := `{"ENTITIES": [{"ENTITY_ID": ` + entityID1 + `}, {"ENTITY_ID": ` + entityID2 + `}]}`
+// 	maxDegrees := int64(2)
+// 	buildOutDegrees := int64(1)
+// 	maxEntities := int64(10)
+// 	flags := senzing.SzNoFlags
 
-	result, err := szEngine.FindNetworkByEntityID(ctx, entityList, maxDegrees, buildOutDegrees, maxEntities, flags)
-	if err != nil {
-		handleError(err)
-	}
+// 	result, err := szEngine.FindNetworkByEntityID(ctx, entityList, maxDegrees, buildOutDegrees, maxEntities, flags)
+// 	if err != nil {
+// 		handleError(err)
+// 	}
 
-	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
-	// Output:
-	// {
-	//     "ENTITY_PATHS": [],
-	//     "ENTITIES": [
-	//         {
-	//             "RESOLVED_ENTITY": {
-	//                 "ENTITY_ID": 100001
-	//             }
-	//         }
-	//     ]
-	// }
-}
+// 	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
+// 	// Output:
+// 	// {
+// 	//     "ENTITY_PATHS": [],
+// 	//     "ENTITIES": [
+// 	//         {
+// 	//             "RESOLVED_ENTITY": {
+// 	//                 "ENTITY_ID": 100001
+// 	//             }
+// 	//         }
+// 	//     ]
+// 	// }
+// }
 
 func ExampleSzengine_FindNetworkByEntityID_output() {
 	// For more information, visit
@@ -457,10 +522,15 @@ func ExampleSzengine_FindNetworkByRecordID() {
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
 
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
+
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
+
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	recordList := `
 	{
@@ -483,6 +553,7 @@ func ExampleSzengine_FindNetworkByRecordID() {
 	result, err := szEngine.FindNetworkByRecordID(ctx, recordList, maxDegrees, buildOutDegrees, maxEntities, flags)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
@@ -633,13 +704,18 @@ func ExampleSzengine_FindPathByEntityID() {
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
 
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
+
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
-	startEntityID := getEntityIDForRecord(ctx, "CUSTOMERS", "1001")
-	endEntityID := getEntityIDForRecord(ctx, "CUSTOMERS", "1002")
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
+
+	startEntityID := getEntityIDForRecord(ctx, szEngine, "CUSTOMERS", "1001")
+	endEntityID := getEntityIDForRecord(ctx, szEngine, "CUSTOMERS", "1002")
 
 	maxDegrees := int64(1)
 	avoidEntityIDs := ""
@@ -657,6 +733,7 @@ func ExampleSzengine_FindPathByEntityID() {
 	)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
@@ -687,13 +764,18 @@ func ExampleSzengine_FindPathByEntityID_avoiding() {
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
 
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
+
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
-	startEntityID := getEntityIDForRecord(ctx, "CUSTOMERS", "1001")
-	endEntityID := getEntityIDForRecord(ctx, "CUSTOMERS", "1002")
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
+
+	startEntityID := getEntityIDForRecord(ctx, szEngine, "CUSTOMERS", "1001")
+	endEntityID := getEntityIDForRecord(ctx, szEngine, "CUSTOMERS", "1002")
 
 	maxDegrees := int64(1)
 	avoidEntityIDs := `{"ENTITIES": [{"ENTITY_ID": 9999}]}`
@@ -711,6 +793,7 @@ func ExampleSzengine_FindPathByEntityID_avoiding() {
 	)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
@@ -741,13 +824,18 @@ func ExampleSzEngine_FindPathByEntityID_avoidingAndIncluding() {
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
 
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
+
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
-	startEntityID := getEntityIDForRecord(ctx, "CUSTOMERS", "1001")
-	endEntityID := getEntityIDForRecord(ctx, "CUSTOMERS", "1002")
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
+
+	startEntityID := getEntityIDForRecord(ctx, szEngine, "CUSTOMERS", "1001")
+	endEntityID := getEntityIDForRecord(ctx, szEngine, "CUSTOMERS", "1002")
 
 	maxDegree := int64(1)
 	avoidEntityIDs := `{"ENTITIES": [{"ENTITY_ID": 9999}]}`
@@ -765,6 +853,7 @@ func ExampleSzEngine_FindPathByEntityID_avoidingAndIncluding() {
 	)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
@@ -793,13 +882,18 @@ func ExampleSzengine_FindPathByEntityID_including() {
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
 
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
+
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
-	startEntityID := getEntityIDForRecord(ctx, "CUSTOMERS", "1001")
-	endEntityID := getEntityIDForRecord(ctx, "CUSTOMERS", "1002")
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
+
+	startEntityID := getEntityIDForRecord(ctx, szEngine, "CUSTOMERS", "1001")
+	endEntityID := getEntityIDForRecord(ctx, szEngine, "CUSTOMERS", "1002")
 
 	maxDegree := int64(1)
 	avoidEntityIDs := ""
@@ -817,6 +911,7 @@ func ExampleSzengine_FindPathByEntityID_including() {
 	)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
@@ -938,10 +1033,15 @@ func ExampleSzengine_FindPathByRecordID() {
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
 
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
+
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
+
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	startDataSourceCode := "CUSTOMERS"
 	startRecordID := "1001"
@@ -965,6 +1065,7 @@ func ExampleSzengine_FindPathByRecordID() {
 	)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
@@ -995,10 +1096,15 @@ func ExampleSzengine_FindPathByRecordID_avoiding() {
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
 
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
+
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
+
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	startDataSourceCode := "CUSTOMERS"
 	startRecordID := "1001"
@@ -1022,6 +1128,7 @@ func ExampleSzengine_FindPathByRecordID_avoiding() {
 	)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
@@ -1052,10 +1159,15 @@ func ExampleSzEngine_FindPathByRecordID_avoidingAndIncluding() {
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
 
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
+
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
+
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	startDataSourceCode := "CUSTOMERS"
 	startRecordID := "1001"
@@ -1079,6 +1191,7 @@ func ExampleSzEngine_FindPathByRecordID_avoidingAndIncluding() {
 	)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
@@ -1107,10 +1220,15 @@ func ExampleSzengine_FindPathByRecordID_including() {
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
 
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
+
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
+
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	startDataSourceCode := "CUSTOMERS"
 	startRecordID := "1001"
@@ -1134,6 +1252,7 @@ func ExampleSzengine_FindPathByRecordID_including() {
 	)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
@@ -1255,14 +1374,20 @@ func ExampleSzengine_GetActiveConfigID() {
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
 
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
+
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
+
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	result, err := szEngine.GetActiveConfigID(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(result > 0) // Dummy output.
@@ -1275,18 +1400,24 @@ func ExampleSzengine_GetEntityByEntityID() {
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
 
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
+
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
-	entityID := getEntityIDForRecord(ctx, "CUSTOMERS", "1001")
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
+
+	entityID := getEntityIDForRecord(ctx, szEngine, "CUSTOMERS", "1001")
 
 	flags := senzing.SzNoFlags
 
 	result, err := szEngine.GetEntityByEntityID(ctx, entityID, flags)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
@@ -1495,10 +1626,15 @@ func ExampleSzengine_GetEntityByRecordID() {
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
 
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
+
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
+
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	dataSourceCode := "CUSTOMERS"
 	recordID := "1001"
@@ -1507,6 +1643,7 @@ func ExampleSzengine_GetEntityByRecordID() {
 	result, err := szEngine.GetEntityByRecordID(ctx, dataSourceCode, recordID, flags)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
@@ -1715,10 +1852,15 @@ func ExampleSzengine_GetRecord() {
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
 
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
+
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
+
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	dataSourceCode := "CUSTOMERS"
 	recordID := "1001"
@@ -1727,6 +1869,7 @@ func ExampleSzengine_GetRecord() {
 	result, err := szEngine.GetRecord(ctx, dataSourceCode, recordID, flags)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(jsonutil.PrettyPrint(jsonutil.Flatten(jsonutil.Normalize(result)), jsonIndentation))
@@ -1743,14 +1886,20 @@ func ExampleSzengine_GetRedoRecord() {
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
 
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
+
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
+
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	result, err := szEngine.GetRedoRecord(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
@@ -1771,14 +1920,20 @@ func ExampleSzengine_GetStats() {
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
 
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
+
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
+
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	result, err := szEngine.GetStats(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(jsonutil.Truncate(result, 5))
@@ -2057,10 +2212,15 @@ func ExampleSzengine_GetVirtualEntityByRecordID() {
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
 
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
+
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
+
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	recordList := `{"RECORDS": [{"DATA_SOURCE": "CUSTOMERS","RECORD_ID": "1001"},{"DATA_SOURCE": "CUSTOMERS","RECORD_ID": "1002"}]}`
 	flags := senzing.SzNoFlags
@@ -2068,6 +2228,7 @@ func ExampleSzengine_GetVirtualEntityByRecordID() {
 	result, err := szEngine.GetVirtualEntityByRecordID(ctx, recordList, flags)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
@@ -2942,18 +3103,24 @@ func ExampleSzengine_HowEntityByEntityID() {
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
 
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
+
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
-	entityID := getEntityIDForRecord(ctx, "CUSTOMERS", "1001")
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
+
+	entityID := getEntityIDForRecord(ctx, szEngine, "CUSTOMERS", "1001")
 
 	flags := senzing.SzNoFlags
 
 	result, err := szEngine.HowEntityByEntityID(ctx, entityID, flags)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(jsonutil.Truncate(result, 5))
@@ -2966,10 +3133,15 @@ func ExampleSzengine_GetRecordPreview() {
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
 
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
+
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
+
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	recordDefinition := `{"DATA_SOURCE": "CUSTOMERS", "RECORD_ID": "1001", "RECORD_TYPE": "PERSON", "PRIMARY_NAME_LAST": "Smith", "PRIMARY_NAME_FIRST": "Robert", "DATE_OF_BIRTH": "12/11/1978", "ADDR_TYPE": "MAILING", "ADDR_LINE1": "123 Main Street, Las Vegas NV 89132", "PHONE_TYPE": "HOME", "PHONE_NUMBER": "702-919-1300", "EMAIL_ADDRESS": "bsmith@work.com", "DATE": "1/2/18", "STATUS": "Active", "AMOUNT": "100"}`
 	flags := senzing.SzNoFlags
@@ -2977,6 +3149,7 @@ func ExampleSzengine_GetRecordPreview() {
 	result, err := szEngine.GetRecordPreview(ctx, recordDefinition, flags)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(result)
@@ -2989,14 +3162,20 @@ func ExampleSzengine_PrimeEngine() {
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
 
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
+
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
+
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	err = szEngine.PrimeEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	// Output:
 }
@@ -3007,14 +3186,20 @@ func ExampleSzEngine_ProcessRedoRecord() {
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
 
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
+
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
+
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	redoRecord, err := szEngine.GetRedoRecord(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	flags := senzing.SzWithoutInfo
@@ -3022,6 +3207,7 @@ func ExampleSzEngine_ProcessRedoRecord() {
 	result, err := szEngine.ProcessRedoRecord(ctx, redoRecord, flags)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(result)
@@ -3034,14 +3220,20 @@ func ExampleSzEngine_ProcessRedoRecord_withInfo() {
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
 
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
+
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
+
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	redoRecord, err := szEngine.GetRedoRecord(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	flags := senzing.SzWithInfo
@@ -3049,6 +3241,7 @@ func ExampleSzEngine_ProcessRedoRecord_withInfo() {
 	result, err := szEngine.ProcessRedoRecord(ctx, redoRecord, flags)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
@@ -3070,10 +3263,15 @@ func ExampleSzengine_SearchByAttributes() {
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
 
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
+
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
+
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	attributes := `{"NAMES": [{"NAME_TYPE": "PRIMARY", "NAME_LAST": "Smith"}], "EMAIL_ADDRESS": "bsmith@work.com"}`
 	searchProfile := ""
@@ -3082,6 +3280,7 @@ func ExampleSzengine_SearchByAttributes() {
 	result, err := szEngine.SearchByAttributes(ctx, attributes, searchProfile, flags)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	redactKeys := []string{"FIRST_SEEN_DT", "LAST_SEEN_DT"}
@@ -3118,10 +3317,15 @@ func ExampleSzEngine_SearchByAttributes_searchProfile() {
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
 
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
+
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
+
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	attributes := `{"NAMES": [{"NAME_TYPE": "PRIMARY", "NAME_LAST": "Smith"}], "EMAIL_ADDRESS": "bsmith@work.com"}`
 	searchProfile := "SEARCH"
@@ -3130,6 +3334,7 @@ func ExampleSzEngine_SearchByAttributes_searchProfile() {
 	result, err := szEngine.SearchByAttributes(ctx, attributes, searchProfile, flags)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	redactKeys := []string{"FIRST_SEEN_DT", "LAST_SEEN_DT"}
@@ -3331,18 +3536,24 @@ func ExampleSzengine_WhyEntities() {
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
 
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
+
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
-	entityID1 := getEntityID(ctx, truthset.CustomerRecords["1001"])
-	entityID2 := getEntityID(ctx, truthset.CustomerRecords["1002"])
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
+
+	entityID1 := getEntityID(ctx, szEngine, truthset.CustomerRecords["1001"])
+	entityID2 := getEntityID(ctx, szEngine, truthset.CustomerRecords["1002"])
 	flags := senzing.SzNoFlags
 
 	result, err := szEngine.WhyEntities(ctx, entityID1, entityID2, flags)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
@@ -5088,10 +5299,15 @@ func ExampleSzengine_WhyRecordInEntity() {
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
 
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
+
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
+
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	dataSourceCode := "CUSTOMERS"
 	recordID := "1001"
@@ -5100,6 +5316,7 @@ func ExampleSzengine_WhyRecordInEntity() {
 	result, err := szEngine.WhyRecordInEntity(ctx, dataSourceCode, recordID, flags)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
@@ -5138,10 +5355,15 @@ func ExampleSzengine_WhyRecords() {
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
 
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
+
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
+
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	dataSourceCode1 := "CUSTOMERS"
 	recordID1 := "1001"
@@ -5152,6 +5374,7 @@ func ExampleSzengine_WhyRecords() {
 	result, err := szEngine.WhyRecords(ctx, dataSourceCode1, recordID1, dataSourceCode2, recordID2, flags)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(jsonutil.Truncate(result, 7))
@@ -6880,20 +7103,26 @@ func ExampleSzengine_WhySearch() {
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
 
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
+
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
+
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	attributes := `{"NAMES": [{"NAME_TYPE": "PRIMARY", "NAME_LAST": "Smith"}], "EMAIL_ADDRESS": "bsmith@work.com"}`
 	searchProfile := "SEARCH"
 	flags := senzing.SzNoFlags
 
-	entityID := getEntityID(ctx, truthset.CustomerRecords["1001"])
+	entityID := getEntityID(ctx, szEngine, truthset.CustomerRecords["1001"])
 
 	result, err := szEngine.WhySearch(ctx, attributes, entityID, searchProfile, flags)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(
@@ -6930,18 +7159,24 @@ func ExampleSzengine_ReevaluateEntity() {
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
 
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
+
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
-	entityID := getEntityIDForRecord(ctx, "CUSTOMERS", "1001")
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
+
+	entityID := getEntityIDForRecord(ctx, szEngine, "CUSTOMERS", "1001")
 
 	flags := senzing.SzWithoutInfo
 
 	result, err := szEngine.ReevaluateEntity(ctx, entityID, flags)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(result)
@@ -6954,17 +7189,23 @@ func ExampleSzengine_ReevaluateEntity_withInfo() {
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
 
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
+
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
-	entityID := getEntityIDForRecord(ctx, "CUSTOMERS", "1001")
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
+
+	entityID := getEntityIDForRecord(ctx, szEngine, "CUSTOMERS", "1001")
 	flags := senzing.SzWithInfo
 
 	result, err := szEngine.ReevaluateEntity(ctx, entityID, flags)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
@@ -6984,10 +7225,15 @@ func ExampleSzengine_ReevaluateRecord() {
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
 
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
+
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
+
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	dataSourceCode := "CUSTOMERS"
 	recordID := "1001"
@@ -6996,6 +7242,7 @@ func ExampleSzengine_ReevaluateRecord() {
 	result, err := szEngine.ReevaluateRecord(ctx, dataSourceCode, recordID, flags)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(result)
@@ -7008,10 +7255,15 @@ func ExampleSzengine_ReevaluateRecord_withInfo() {
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
 
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
+
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
+
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	dataSourceCode := "CUSTOMERS"
 	recordID := "1001"
@@ -7020,6 +7272,7 @@ func ExampleSzengine_ReevaluateRecord_withInfo() {
 	result, err := szEngine.ReevaluateRecord(ctx, dataSourceCode, recordID, flags)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
@@ -7041,10 +7294,15 @@ func ExampleSzengine_DeleteRecord() {
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
 
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
+
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
+
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	dataSourceCode := "CUSTOMERS"
 	recordID := "1003"
@@ -7053,6 +7311,7 @@ func ExampleSzengine_DeleteRecord() {
 	result, err := szEngine.DeleteRecord(ctx, dataSourceCode, recordID, flags)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(result)
@@ -7065,10 +7324,15 @@ func ExampleSzengine_DeleteRecord_withInfo() {
 	ctx := context.TODO()
 	szAbstractFactory := createSzAbstractFactory(ctx)
 
+	defer func() { handleError(szAbstractFactory.Close(ctx)) }()
+
 	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		handleError(err)
+		return
 	}
+
+	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
 	dataSourceCode := "CUSTOMERS"
 	recordID := "1003"
@@ -7077,6 +7341,7 @@ func ExampleSzengine_DeleteRecord_withInfo() {
 	result, err := szEngine.DeleteRecord(ctx, dataSourceCode, recordID, flags)
 	if err != nil {
 		handleError(err)
+		return
 	}
 
 	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
@@ -7101,6 +7366,7 @@ func ExampleSzengine_SetLogLevel() {
 	err := szEngine.SetLogLevel(ctx, logging.LevelInfoName)
 	if err != nil {
 		handleError(err)
+		return
 	}
 	// Output:
 }

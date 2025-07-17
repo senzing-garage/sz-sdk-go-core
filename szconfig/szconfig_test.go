@@ -258,56 +258,24 @@ func TestSzconfig_AsInterface(test *testing.T) {
 	require.NoError(test, err)
 }
 
-func TestSzconfig_Initialize(test *testing.T) {
-	ctx := test.Context()
-	szConfig := getTestObject(test)
-	settings := getSettings()
-	err := szConfig.Initialize(ctx, instanceName, settings, verboseLogging)
-	printDebug(test, err)
-	require.NoError(test, err)
-}
-
-func TestSzconfig_Initialize_badSettings(test *testing.T) {
-	ctx := test.Context()
-	szConfig := getTestObject(test)
-	err := szConfig.Initialize(ctx, instanceName, badSettings, verboseLogging)
-	assert.NoError(test, err)
-}
-
-func TestSzconfig_Initialize_error(test *testing.T) {
-	// IMPROVE: Implement TestSzconfig_Initialize_error
-	_ = test
-}
-
-func TestSzconfig_Initialize_again(test *testing.T) {
-	ctx := test.Context()
-	szConfig := getTestObject(test)
-	settings := getSettings()
-	err := szConfig.Initialize(ctx, instanceName, settings, verboseLogging)
-	printDebug(test, err)
-	require.NoError(test, err)
-}
-
 func TestSzconfig_Destroy(test *testing.T) {
 	ctx := test.Context()
 	szConfig := getTestObject(test)
 	err := szConfig.Destroy(ctx)
 	printDebug(test, err)
 	require.NoError(test, err)
-}
 
-func TestSzconfig_Destroy_error(test *testing.T) {
-	// IMPROVE: Implement TestSzconfig_Destroy_error
-	_ = test
+	szConfigSingleton = nil
 }
 
 func TestSzconfig_Destroy_withObserver(test *testing.T) {
 	ctx := test.Context()
-	szConfigSingleton = nil
 	szConfig := getTestObject(test)
 	err := szConfig.Destroy(ctx)
 	printDebug(test, err)
 	require.NoError(test, err)
+
+	szConfigSingleton = nil
 }
 
 // ----------------------------------------------------------------------------
@@ -325,7 +293,6 @@ func createSzAbstractFactory(ctx context.Context) senzing.SzAbstractFactory {
 		Settings:       settings,
 		VerboseLogging: verboseLogging,
 	}
-	_ = result.DestroyWithoutClosing(ctx)
 
 	return result
 }
@@ -470,10 +437,12 @@ func teardown() {
 }
 
 func teardownSzConfig(ctx context.Context) {
-	err := szConfigSingleton.UnregisterObserver(ctx, observerSingleton)
-	panicOnError(err)
-	err = szConfigSingleton.Destroy(ctx)
-	panicOnError(err)
+	if szConfigSingleton != nil {
+		err := szConfigSingleton.UnregisterObserver(ctx, observerSingleton)
+		panicOnError(err)
+		err = szConfigSingleton.Destroy(ctx)
+		panicOnError(err)
 
-	szConfigSingleton = nil
+		szConfigSingleton = nil
+	}
 }

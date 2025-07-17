@@ -77,6 +77,8 @@ func main() {
 		VerboseLogging: senzing.SzNoLogging,
 	}
 
+	defer func() { szAbstractFactory.Close(ctx) }()
+
 	// Demonstrate persisting a Senzing configuration to the Senzing repository.
 
 	demonstrateConfigFunctions(ctx, szAbstractFactory)
@@ -84,9 +86,6 @@ func main() {
 	// Demonstrate tests.
 
 	demonstrateSenzingFunctions(ctx, szAbstractFactory)
-
-	err = szAbstractFactory.Destroy(ctx)
-	failOnError(5008, err)
 
 	fmt.Printf("\n-------------------------------------------------------------------------------\n\n") //nolint
 }

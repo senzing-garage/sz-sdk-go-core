@@ -163,6 +163,7 @@ linters:
         - '.+/szengine_test\.TestMetadataForWhySearch$'
     funlen:
       lines: 100
+      statements: 50
     goconst:
       min-occurrences: 5
       ignore-string-values:

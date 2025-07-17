@@ -39,6 +39,7 @@ for communicating with the Senzing C binaries.
 */
 type Szproduct struct {
 	instanceName   string
+	isDestroyed    bool
 	isTrace        bool
 	logger         logging.Logging
 	messenger      messenger.Messenger
@@ -60,6 +61,41 @@ const (
 // ----------------------------------------------------------------------------
 
 /*
+Method Destroy will destroy and perform cleanup for the Senzing SzProduct object.
+It should be called after all other calls are complete.
+
+Input
+  - ctx: A context to control lifecycle.
+*/
+func (client *Szproduct) Destroy(ctx context.Context) error {
+	var err error
+
+	if client.isDestroyed {
+		return wraperror.Errorf(errForPackage, "This SzProduct has been destroyed.")
+	}
+
+	if client.isTrace {
+		client.traceEntry(3)
+
+		entryTime := time.Now()
+		defer func() { client.traceExit(4, err, time.Since(entryTime)) }()
+	}
+
+	err = client.destroy(ctx)
+
+	if client.observers != nil {
+		go func() {
+			details := map[string]string{}
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8001, err, details)
+		}()
+	}
+
+	client.isDestroyed = true
+
+	return wraperror.Errorf(err, wraperror.NoMessage)
+}
+
+/*
 Method GetLicense retrieves information about the license used by the Senzing API.
 
 Input
@@ -73,6 +109,10 @@ func (client *Szproduct) GetLicense(ctx context.Context) (string, error) {
 		err    error
 		result string
 	)
+
+	if client.isDestroyed {
+		return result, wraperror.Errorf(errForPackage, "This SzProduct has been destroyed.")
+	}
 
 	if client.isTrace {
 		client.traceEntry(9)
@@ -108,6 +148,10 @@ func (client *Szproduct) GetVersion(ctx context.Context) (string, error) {
 		result string
 	)
 
+	if client.isDestroyed {
+		return result, wraperror.Errorf(errForPackage, "This SzProduct has been destroyed.")
+	}
+
 	if client.isTrace {
 		client.traceEntry(11)
 
@@ -125,39 +169,6 @@ func (client *Szproduct) GetVersion(ctx context.Context) (string, error) {
 	}
 
 	return result, wraperror.Errorf(err, wraperror.NoMessage)
-}
-
-// ----------------------------------------------------------------------------
-// Public non-interface methods
-// ----------------------------------------------------------------------------
-
-/*
-Method Destroy will destroy and perform cleanup for the Senzing SzProduct object.
-It should be called after all other calls are complete.
-
-Input
-  - ctx: A context to control lifecycle.
-*/
-func (client *Szproduct) Destroy(ctx context.Context) error {
-	var err error
-
-	if client.isTrace {
-		client.traceEntry(3)
-
-		entryTime := time.Now()
-		defer func() { client.traceExit(4, err, time.Since(entryTime)) }()
-	}
-
-	err = client.destroy(ctx)
-
-	if client.observers != nil {
-		go func() {
-			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8001, err, details)
-		}()
-	}
-
-	return wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 // ----------------------------------------------------------------------------

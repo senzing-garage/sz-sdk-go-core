@@ -40,6 +40,7 @@ for communicating with the Senzing C binaries.
 */
 type Szengine struct {
 	instanceName   string
+	isDestroyed    bool
 	isTrace        bool
 	logger         logging.Logging
 	messenger      messenger.Messenger
@@ -92,6 +93,10 @@ func (client *Szengine) AddRecord(
 		result string
 	)
 
+	if client.isDestroyed {
+		return result, wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
+	}
+
 	if client.isTrace {
 		client.traceEntry(1, dataSourceCode, recordID, recordDefinition, flags)
 
@@ -137,6 +142,10 @@ Input
 func (client *Szengine) CloseExportReport(ctx context.Context, exportHandle uintptr) error {
 	var err error
 
+	if client.isDestroyed {
+		return wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
+	}
+
 	if client.isTrace {
 		client.traceEntry(5, exportHandle)
 
@@ -171,6 +180,10 @@ func (client *Szengine) CountRedoRecords(ctx context.Context) (int64, error) {
 		err    error
 		result int64
 	)
+
+	if client.isDestroyed {
+		return result, wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
+	}
 
 	if client.isTrace {
 		client.traceEntry(7)
@@ -218,6 +231,10 @@ func (client *Szengine) DeleteRecord(
 		result string
 	)
 
+	if client.isDestroyed {
+		return result, wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
+	}
+
 	if client.isTrace {
 		client.traceEntry(9, dataSourceCode, recordID, flags)
 
@@ -247,6 +264,41 @@ func (client *Szengine) DeleteRecord(
 }
 
 /*
+Method Destroy will destroy and perform cleanup for the Senzing Sz object.
+It should be called after all other calls are complete.
+
+Input
+  - ctx: A context to control lifecycle.
+*/
+func (client *Szengine) Destroy(ctx context.Context) error {
+	var err error
+
+	if client.isDestroyed {
+		return wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
+	}
+
+	if client.isTrace {
+		client.traceEntry(11)
+
+		entryTime := time.Now()
+		defer func() { client.traceExit(12, err, time.Since(entryTime)) }()
+	}
+
+	err = client.destroy(ctx)
+
+	if client.observers != nil {
+		go func() {
+			details := map[string]string{}
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8005, err, details)
+		}()
+	}
+
+	client.isDestroyed = true
+
+	return wraperror.Errorf(err, wraperror.NoMessage)
+}
+
+/*
 Method ExportCsvEntityReport initializes a cursor over a CSV document of exported entities.
 It is part of the ExportCsvEntityReport, [Szengine.FetchNext], [Szengine.CloseExportReport] lifecycle
 of a list of entities to export.
@@ -267,6 +319,10 @@ func (client *Szengine) ExportCsvEntityReport(ctx context.Context, csvColumnList
 		err    error
 		result uintptr
 	)
+
+	if client.isDestroyed {
+		return result, wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
+	}
 
 	if client.isTrace {
 		client.traceEntry(13, csvColumnList, flags)
@@ -310,6 +366,11 @@ func (client *Szengine) ExportCsvEntityReportIterator(
 	flags int64,
 ) chan senzing.StringFragment {
 	stringFragmentChannel := make(chan senzing.StringFragment)
+
+	if client.isDestroyed {
+		return stringFragmentChannel
+	}
+
 	go func() {
 		runtime.LockOSThread()
 		defer runtime.UnlockOSThread()
@@ -374,6 +435,10 @@ func (client *Szengine) ExportJSONEntityReport(ctx context.Context, flags int64)
 		result uintptr
 	)
 
+	if client.isDestroyed {
+		return result, wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
+	}
+
 	if client.isTrace {
 		client.traceEntry(17, flags)
 
@@ -410,6 +475,10 @@ Output
 */
 func (client *Szengine) ExportJSONEntityReportIterator(ctx context.Context, flags int64) chan senzing.StringFragment {
 	stringFragmentChannel := make(chan senzing.StringFragment)
+	if client.isDestroyed {
+		return stringFragmentChannel
+	}
+
 	go func() {
 		runtime.LockOSThread()
 		defer runtime.UnlockOSThread()
@@ -472,6 +541,10 @@ func (client *Szengine) FetchNext(ctx context.Context, exportHandle uintptr) (st
 		result string
 	)
 
+	if client.isDestroyed {
+		return result, wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
+	}
+
 	if client.isTrace {
 		client.traceEntry(21, exportHandle)
 
@@ -512,6 +585,10 @@ func (client *Szengine) FindInterestingEntitiesByEntityID(
 		err    error
 		result string
 	)
+
+	if client.isDestroyed {
+		return result, wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
+	}
 
 	if client.isTrace {
 		client.traceEntry(23, entityID, flags)
@@ -558,6 +635,10 @@ func (client *Szengine) FindInterestingEntitiesByRecordID(
 		err    error
 		result string
 	)
+
+	if client.isDestroyed {
+		return result, wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
+	}
 
 	if client.isTrace {
 		client.traceEntry(25, dataSourceCode, recordID, flags)
@@ -614,6 +695,10 @@ func (client *Szengine) FindNetworkByEntityID(
 		err    error
 		result string
 	)
+
+	if client.isDestroyed {
+		return result, wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
+	}
 
 	if client.isTrace {
 		client.traceEntry(27, entityIDs, maxDegrees, buildOutDegrees, buildOutMaxEntities, flags)
@@ -687,6 +772,10 @@ func (client *Szengine) FindNetworkByRecordID(
 		err    error
 		result string
 	)
+
+	if client.isDestroyed {
+		return result, wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
+	}
 
 	if client.isTrace {
 		client.traceEntry(29, recordKeys, maxDegrees, buildOutDegrees, buildOutMaxEntities, flags)
@@ -763,6 +852,10 @@ func (client *Szengine) FindPathByEntityID(
 		err    error
 		result string
 	)
+
+	if client.isDestroyed {
+		return result, wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
+	}
 
 	if client.isTrace {
 		client.traceEntry(31, startEntityID, endEntityID, maxDegrees, avoidEntityIDs, requiredDataSources, flags)
@@ -850,6 +943,10 @@ func (client *Szengine) FindPathByRecordID(
 		result string
 	)
 
+	if client.isDestroyed {
+		return result, wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
+	}
+
 	if client.isTrace {
 		client.traceEntry(33, startDataSourceCode, startRecordID, endDataSourceCode, endRecordID, maxDegrees,
 			avoidRecordKeys, requiredDataSources, flags)
@@ -909,6 +1006,10 @@ func (client *Szengine) GetActiveConfigID(ctx context.Context) (int64, error) {
 		result int64
 	)
 
+	if client.isDestroyed {
+		return result, wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
+	}
+
 	if client.isTrace {
 		client.traceEntry(35)
 
@@ -945,6 +1046,10 @@ func (client *Szengine) GetEntityByEntityID(ctx context.Context, entityID int64,
 		err    error
 		result string
 	)
+
+	if client.isDestroyed {
+		return result, wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
+	}
 
 	if client.isTrace {
 		client.traceEntry(37, entityID, flags)
@@ -991,6 +1096,10 @@ func (client *Szengine) GetEntityByRecordID(
 		err    error
 		result string
 	)
+
+	if client.isDestroyed {
+		return result, wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
+	}
 
 	if client.isTrace {
 		client.traceEntry(39, dataSourceCode, recordID, flags)
@@ -1040,6 +1149,10 @@ func (client *Szengine) GetRecord(
 		result string
 	)
 
+	if client.isDestroyed {
+		return result, wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
+	}
+
 	if client.isTrace {
 		client.traceEntry(45, dataSourceCode, recordID, flags)
 
@@ -1081,6 +1194,10 @@ func (client *Szengine) GetRedoRecord(ctx context.Context) (string, error) {
 		result string
 	)
 
+	if client.isDestroyed {
+		return result, wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
+	}
+
 	if client.isTrace {
 		client.traceEntry(47)
 
@@ -1115,6 +1232,10 @@ func (client *Szengine) GetStats(ctx context.Context) (string, error) {
 		err    error
 		result string
 	)
+
+	if client.isDestroyed {
+		return result, wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
+	}
 
 	if client.isTrace {
 		client.traceEntry(49)
@@ -1157,6 +1278,10 @@ func (client *Szengine) GetVirtualEntityByRecordID(
 		result string
 	)
 
+	if client.isDestroyed {
+		return result, wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
+	}
+
 	if client.isTrace {
 		client.traceEntry(51, recordKeys, flags)
 
@@ -1195,6 +1320,10 @@ func (client *Szengine) HowEntityByEntityID(ctx context.Context, entityID int64,
 		err    error
 		result string
 	)
+
+	if client.isDestroyed {
+		return result, wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
+	}
 
 	if client.isTrace {
 		client.traceEntry(53, entityID, flags)
@@ -1235,6 +1364,10 @@ func (client *Szengine) GetRecordPreview(ctx context.Context, recordDefinition s
 		result string
 	)
 
+	if client.isDestroyed {
+		return result, wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
+	}
+
 	if client.isTrace {
 		client.traceEntry(77, recordDefinition, flags)
 
@@ -1266,6 +1399,10 @@ Input
 */
 func (client *Szengine) PrimeEngine(ctx context.Context) error {
 	var err error
+
+	if client.isDestroyed {
+		return wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
+	}
 
 	if client.isTrace {
 		client.traceEntry(57)
@@ -1301,6 +1438,10 @@ func (client *Szengine) ProcessRedoRecord(ctx context.Context, redoRecord string
 		err    error
 		result string
 	)
+
+	if client.isDestroyed {
+		return result, wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
+	}
 
 	if client.isTrace {
 		client.traceEntry(59, redoRecord, flags)
@@ -1343,6 +1484,10 @@ func (client *Szengine) ReevaluateEntity(ctx context.Context, entityID int64, fl
 		err    error
 		result string
 	)
+
+	if client.isDestroyed {
+		return result, wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
+	}
 
 	if client.isTrace {
 		client.traceEntry(61, entityID, flags)
@@ -1393,6 +1538,10 @@ func (client *Szengine) ReevaluateRecord(
 		err    error
 		result string
 	)
+
+	if client.isDestroyed {
+		return result, wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
+	}
 
 	if client.isTrace {
 		client.traceEntry(63, dataSourceCode, recordID, flags)
@@ -1449,6 +1598,10 @@ func (client *Szengine) SearchByAttributes(
 		result string
 	)
 
+	if client.isDestroyed {
+		return result, wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
+	}
+
 	if client.isTrace {
 		client.traceEntry(69, attributes, searchProfile, flags)
 
@@ -1495,6 +1648,10 @@ func (client *Szengine) WhyEntities(
 		result string
 	)
 
+	if client.isDestroyed {
+		return result, wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
+	}
+
 	if client.isTrace {
 		client.traceEntry(71, entityID1, entityID2, flags)
 
@@ -1540,6 +1697,10 @@ func (client *Szengine) WhyRecordInEntity(
 		err    error
 		result string
 	)
+
+	if client.isDestroyed {
+		return result, wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
+	}
 
 	if client.isTrace {
 		client.traceEntry(73, dataSourceCode, recordID, flags)
@@ -1590,6 +1751,10 @@ func (client *Szengine) WhyRecords(
 		err    error
 		result string
 	)
+
+	if client.isDestroyed {
+		return result, wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
+	}
 
 	if client.isTrace {
 		client.traceEntry(75, dataSourceCode1, recordID1, dataSourceCode2, recordID2, flags)
@@ -1656,6 +1821,10 @@ func (client *Szengine) WhySearch(
 		result string
 	)
 
+	if client.isDestroyed {
+		return result, wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
+	}
+
 	if client.isTrace {
 		client.traceEntry(69, attributes, entityID, searchProfile, flags)
 
@@ -1685,35 +1854,6 @@ func (client *Szengine) WhySearch(
 // ----------------------------------------------------------------------------
 // Public non-interface methods
 // ----------------------------------------------------------------------------
-
-/*
-Method Destroy will destroy and perform cleanup for the Senzing Sz object.
-It should be called after all other calls are complete.
-
-Input
-  - ctx: A context to control lifecycle.
-*/
-func (client *Szengine) Destroy(ctx context.Context) error {
-	var err error
-
-	if client.isTrace {
-		client.traceEntry(11)
-
-		entryTime := time.Now()
-		defer func() { client.traceExit(12, err, time.Since(entryTime)) }()
-	}
-
-	err = client.destroy(ctx)
-
-	if client.observers != nil {
-		go func() {
-			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8005, err, details)
-		}()
-	}
-
-	return wraperror.Errorf(err, wraperror.NoMessage)
-}
 
 /*
 Method GetObserverOrigin returns the "origin" value of past Observer messages.

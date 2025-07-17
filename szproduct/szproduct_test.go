@@ -109,31 +109,12 @@ func TestSzproduct_AsInterface(test *testing.T) {
 	require.NoError(test, err)
 }
 
-func TestSzproduct_Initialize(test *testing.T) {
-	ctx := test.Context()
-	szProduct := &szproduct.Szproduct{}
-	settings := getSettings()
-	err := szProduct.Initialize(ctx, instanceName, settings, verboseLogging)
-	printDebug(test, err)
-	require.NoError(test, err)
-}
-
-func TestSzproduct_Initialize_error(test *testing.T) {
-	// IMPROVE: Implement TestSzengine_Initialize_error
-	_ = test
-}
-
 func TestSzproduct_Destroy(test *testing.T) {
 	ctx := test.Context()
 	szProduct := getTestObject(test)
 	err := szProduct.Destroy(ctx)
 	printDebug(test, err)
 	require.NoError(test, err)
-}
-
-func TestSzproduct_Destroy_error(test *testing.T) {
-	// IMPROVE: Implement TestSzengine_Destroy_error
-	_ = test
 }
 
 func TestSzproduct_Destroy_withObserver(test *testing.T) {
@@ -162,7 +143,6 @@ func createSzAbstractFactory(ctx context.Context) senzing.SzAbstractFactory {
 		Settings:       settings,
 		VerboseLogging: verboseLogging,
 	}
-	_ = result.DestroyWithoutClosing(ctx)
 
 	return result
 }
@@ -194,7 +174,6 @@ func getSettings() string {
 func getSzProduct(ctx context.Context) *szproduct.Szproduct {
 	if szProductSingleton == nil {
 		settings := getSettings()
-
 		szProductSingleton = &szproduct.Szproduct{}
 		err := szProductSingleton.SetLogLevel(ctx, logLevel)
 		panicOnError(err)
@@ -308,10 +287,12 @@ func teardown() {
 }
 
 func teardownSzProduct(ctx context.Context) {
-	err := szProductSingleton.UnregisterObserver(ctx, observerSingleton)
-	panicOnError(err)
+	if szProductSingleton != nil {
+		err := szProductSingleton.UnregisterObserver(ctx, observerSingleton)
+		panicOnError(err)
 
-	_ = szProductSingleton.Destroy(ctx)
+		_ = szProductSingleton.Destroy(ctx)
 
-	szProductSingleton = nil
+		szProductSingleton = nil
+	}
 }

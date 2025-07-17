@@ -41,6 +41,7 @@ for communicating with the Senzing C binaries.
 */
 type Szconfigmanager struct {
 	instanceName   string
+	isDestroyed    bool
 	isTrace        bool
 	logger         logging.Logging
 	messenger      messenger.Messenger
@@ -76,6 +77,10 @@ func (client *Szconfigmanager) CreateConfigFromConfigID(ctx context.Context, con
 		err    error
 		result senzing.SzConfig
 	)
+
+	if client.isDestroyed {
+		return result, wraperror.Errorf(errForPackage, "This SzConfigManger has been destroyed.")
+	}
 
 	if client.isTrace {
 		client.traceEntry(7, configID)
@@ -115,6 +120,10 @@ func (client *Szconfigmanager) CreateConfigFromString(
 		result senzing.SzConfig
 	)
 
+	if client.isDestroyed {
+		return result, wraperror.Errorf(errForPackage, "This SzConfigManger has been destroyed.")
+	}
+
 	if client.isTrace {
 		client.traceEntry(23, configDefinition)
 
@@ -150,6 +159,10 @@ func (client *Szconfigmanager) CreateConfigFromTemplate(ctx context.Context) (se
 		result senzing.SzConfig
 	)
 
+	if client.isDestroyed {
+		return result, wraperror.Errorf(errForPackage, "This SzConfigManger has been destroyed.")
+	}
+
 	if client.isTrace {
 		client.traceEntry(25)
 
@@ -170,6 +183,44 @@ func (client *Szconfigmanager) CreateConfigFromTemplate(ctx context.Context) (se
 }
 
 /*
+Method Destroy will destroy and perform cleanup for the Senzing SzConfigMgr object.
+It should be called after all other calls are complete.
+
+Input
+  - ctx: A context to control lifecycle.
+*/
+func (client *Szconfigmanager) Destroy(ctx context.Context) error {
+	var err error
+
+	if client.isDestroyed {
+		return wraperror.Errorf(errForPackage, "This SzConfigManger has been destroyed.")
+	}
+
+	if client.isTrace {
+		client.traceEntry(5)
+
+		entryTime := time.Now()
+		defer func() { client.traceExit(6, err, time.Since(entryTime)) }()
+	}
+
+	err = client.destroy(ctx)
+	if err != nil {
+		return wraperror.Errorf(err, "destroy")
+	}
+
+	if client.observers != nil {
+		go func() {
+			details := map[string]string{}
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8002, err, details)
+		}()
+	}
+
+	client.isDestroyed = true
+
+	return wraperror.Errorf(err, wraperror.NoMessage)
+}
+
+/*
 Method GetConfigRegistry retrieves a list of Senzing configuration JSON documents from the Senzing repository.
 
 Input
@@ -183,6 +234,10 @@ func (client *Szconfigmanager) GetConfigRegistry(ctx context.Context) (string, e
 		err    error
 		result string
 	)
+
+	if client.isDestroyed {
+		return result, wraperror.Errorf(errForPackage, "This SzConfigManger has been destroyed.")
+	}
 
 	if client.isTrace {
 		client.traceEntry(9)
@@ -220,6 +275,10 @@ func (client *Szconfigmanager) GetDefaultConfigID(ctx context.Context) (int64, e
 		err    error
 		result int64
 	)
+
+	if client.isDestroyed {
+		return result, wraperror.Errorf(errForPackage, "This SzConfigManger has been destroyed.")
+	}
 
 	if client.isTrace {
 		client.traceEntry(11)
@@ -260,6 +319,10 @@ func (client *Szconfigmanager) RegisterConfig(
 		err    error
 		result int64
 	)
+
+	if client.isDestroyed {
+		return result, wraperror.Errorf(errForPackage, "This SzConfigManger has been destroyed.")
+	}
 
 	if client.isTrace {
 		client.traceEntry(1, configDefinition, configComment)
@@ -307,6 +370,10 @@ func (client *Szconfigmanager) ReplaceDefaultConfigID(
 ) error {
 	var err error
 
+	if client.isDestroyed {
+		return wraperror.Errorf(errForPackage, "This SzConfigManger has been destroyed.")
+	}
+
 	if client.isTrace {
 		client.traceEntry(19, currentDefaultConfigID, newDefaultConfigID)
 
@@ -351,6 +418,10 @@ func (client *Szconfigmanager) SetDefaultConfig(
 		result int64
 	)
 
+	if client.isDestroyed {
+		return result, wraperror.Errorf(errForPackage, "This SzConfigManger has been destroyed.")
+	}
+
 	if client.isTrace {
 		client.traceEntry(27, configDefinition, configComment)
 
@@ -388,6 +459,10 @@ Input
 */
 func (client *Szconfigmanager) SetDefaultConfigID(ctx context.Context, configID int64) error {
 	var err error
+
+	if client.isDestroyed {
+		return wraperror.Errorf(errForPackage, "This SzConfigManger has been destroyed.")
+	}
 
 	if client.isTrace {
 		client.traceEntry(21, configID)
@@ -438,38 +513,6 @@ func (client *Szconfigmanager) CreateConfigFromStringChoreography(
 	err = result.Import(ctx, configDefinition)
 
 	return result, wraperror.Errorf(err, wraperror.NoMessage)
-}
-
-/*
-Method Destroy will destroy and perform cleanup for the Senzing SzConfigMgr object.
-It should be called after all other calls are complete.
-
-Input
-  - ctx: A context to control lifecycle.
-*/
-func (client *Szconfigmanager) Destroy(ctx context.Context) error {
-	var err error
-
-	if client.isTrace {
-		client.traceEntry(5)
-
-		entryTime := time.Now()
-		defer func() { client.traceExit(6, err, time.Since(entryTime)) }()
-	}
-
-	err = client.destroy(ctx)
-	if err != nil {
-		return wraperror.Errorf(err, "destroy")
-	}
-
-	if client.observers != nil {
-		go func() {
-			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8002, err, details)
-		}()
-	}
-
-	return wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 /*
