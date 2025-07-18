@@ -130,8 +130,10 @@ func (client *Szengine) AddRecord(
 }
 
 /*
-Method CloseExportReport Closes an export report.
+Method CloseExportReport closes an export report.
 
+It closes the exported document created by [Szengine.ExportJSONEntityReport] or
+[Szengine.ExportCsvEntityReport].
 It is part of the ExportXxxEntityReport(), [Szengine.FetchNext], CloseExportReport lifecycle of a list of entities
 to export.
 CloseExportReport is idempotent; an exportHandle may be closed multiple times.
