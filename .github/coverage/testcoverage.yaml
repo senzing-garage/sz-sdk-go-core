@@ -36,7 +36,7 @@ override:
   # (default is 80, as configured above in this example)
   # - threshold: 70
   #   path: szproduct/szproduct.go
-  - threshold: 72
+  - threshold: 70
     package: szproduct
 # Holds regexp rules which will exclude matched files or packages
 # from coverage statistics
