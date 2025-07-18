@@ -55,6 +55,7 @@ const (
 	baseTen              = 10
 	initialByteArraySize = 65535
 	noError              = 0
+	uninitializedError   = -1
 	withoutInfo          = ""
 )
 
@@ -1922,6 +1923,21 @@ func (client *Szengine) Initialize(
 	}
 
 	return wraperror.Errorf(err, wraperror.NoMessage)
+}
+
+/*
+Method IsInitialized inspects C binary to see if it is initialized.
+
+Input
+  - ctx: A context to control lifecycle.
+*/
+func (client *Szengine) IsInitialized(ctx context.Context) bool {
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	_ = ctx
+	result := C.Sz_getActiveConfigID_helper()
+
+	return result.returnCode != uninitializedError
 }
 
 /*
