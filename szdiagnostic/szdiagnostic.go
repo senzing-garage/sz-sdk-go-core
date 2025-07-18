@@ -64,7 +64,7 @@ const (
 // ----------------------------------------------------------------------------
 
 /*
-Method CheckRepositoryPerformance runs performance tests on the Senzing repository.
+Method CheckRepositoryPerformance conducts a rudimentary repository test to gauge I/O performance.
 
 Input
   - ctx: A context to control lifecycle.
@@ -106,6 +106,7 @@ func (client *Szdiagnostic) CheckRepositoryPerformance(ctx context.Context, seco
 
 /*
 Method Destroy will destroy and perform cleanup for the Senzing SzDiagnostic object.
+
 It should be called after all other calls are complete.
 
 Input
@@ -140,7 +141,8 @@ func (client *Szdiagnostic) Destroy(ctx context.Context) error {
 }
 
 /*
-Method GetFeature is an experimental method that returns diagnostic information of a feature.
+Method GetFeature Experimental/internal for Senzing support use only.
+
 Not recommended for use.
 
 Input
@@ -183,7 +185,7 @@ func (client *Szdiagnostic) GetFeature(ctx context.Context, featureID int64) (st
 }
 
 /*
-Method GetRepositoryInfo returns information about the Senzing repository.
+Method GetRepositoryInfo returns overview information about the repository.
 
 Input
   - ctx: A context to control lifecycle.
@@ -222,7 +224,7 @@ func (client *Szdiagnostic) GetRepositoryInfo(ctx context.Context) (string, erro
 }
 
 /*
-WARNING: Method PurgeRepository removes every record in the Senzing repository.
+WARNING: Method PurgeRepository purges all data in the repository, except the configuration.
 This is a destructive method that cannot be undone.
 Before calling purgeRepository(), all programs using Senzing MUST be terminated.
 
@@ -276,6 +278,7 @@ func (client *Szdiagnostic) GetObserverOrigin(ctx context.Context) string {
 
 /*
 Method Initialize initializes the SzDiagnostic object.
+
 It must be called prior to any other calls.
 
 Input
