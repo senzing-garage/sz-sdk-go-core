@@ -23,7 +23,7 @@ type Szabstractfactory struct {
 	isClosed       bool
 	mutex          sync.Mutex
 	once           sync.Once
-	semaphores     []*szengine.Szengine
+	semaphores     []*szconfigmanager.Szconfigmanager
 	Settings       string
 	VerboseLogging int64
 }
@@ -43,6 +43,10 @@ func (factory *Szabstractfactory) Close(ctx context.Context) error {
 
 	factory.mutex.Lock()
 	defer factory.mutex.Unlock()
+
+	if factory.isClosed {
+		return wraperror.Errorf(errForPackage, "SzAbstractFactory is closed")
+	}
 
 	factory.isClosed = true
 
@@ -288,54 +292,41 @@ func (factory *Szabstractfactory) initializeAbstractFactory(ctx context.Context)
 
 	// Create semaphore.
 
-	semaphoreSzEngine := &szengine.Szengine{}
-	err = semaphoreSzEngine.Initialize(
+	semaphore := &szconfigmanager.Szconfigmanager{}
+	err = semaphore.Initialize(
 		ctx,
 		factory.InstanceName,
 		factory.Settings,
-		factory.ConfigID,
 		factory.VerboseLogging,
 	)
 
 	if factory.semaphores == nil {
-		factory.semaphores = []*szengine.Szengine{}
+		factory.semaphores = []*szconfigmanager.Szconfigmanager{}
 	}
 
-	factory.semaphores = append(factory.semaphores, semaphoreSzEngine)
+	factory.semaphores = append(factory.semaphores, semaphore)
 
 	return wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 func (factory *Szabstractfactory) szConfigManagerExists(ctx context.Context) bool {
-	_ = ctx
 	szConfigManager := &szconfigmanager.Szconfigmanager{}
-	_, err := szConfigManager.GetDefaultConfigID(ctx)
-
-	return err == nil
+	return szConfigManager.IsInitialized(ctx)
 }
 
 func (factory *Szabstractfactory) szDiagnosticExists(ctx context.Context) bool {
-	_ = ctx
 	szDiagnostic := &szdiagnostic.Szdiagnostic{}
-	_, err := szDiagnostic.GetRepositoryInfo(ctx)
-
-	return err == nil
+	return szDiagnostic.IsInitialized(ctx)
 }
 
 func (factory *Szabstractfactory) szEngineExists(ctx context.Context) bool {
-	_ = ctx
 	szEngine := &szengine.Szengine{}
-	_, err := szEngine.GetActiveConfigID(ctx)
-
-	return err == nil
+	return szEngine.IsInitialized(ctx)
 }
 
 func (factory *Szabstractfactory) szProductExists(ctx context.Context) bool {
-	_ = ctx
-
-	// IMPROVE: Is there a way to check for the existence.
-
-	return false
+	szProduct := &szproduct.Szproduct{}
+	return szProduct.IsInitialized(ctx)
 }
 
 /*

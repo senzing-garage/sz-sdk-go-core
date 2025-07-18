@@ -56,6 +56,7 @@ const (
 	baseTen              = 10
 	initialByteArraySize = 65535
 	noError              = 0
+	uninitializedError   = -1
 )
 
 // ----------------------------------------------------------------------------
@@ -325,6 +326,21 @@ func (client *Szdiagnostic) Initialize(
 	}
 
 	return wraperror.Errorf(err, wraperror.NoMessage)
+}
+
+/*
+Method IsInitialized inspects C binary to see if it is initialized.
+
+Input
+  - ctx: A context to control lifecycle.
+*/
+func (client *Szdiagnostic) IsInitialized(ctx context.Context) bool {
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	_ = ctx
+	result := C.SzDiagnostic_getRepositoryInfo_helper()
+
+	return result.returnCode != uninitializedError
 }
 
 /*

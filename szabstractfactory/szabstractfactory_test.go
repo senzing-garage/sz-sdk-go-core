@@ -82,7 +82,7 @@ func TestSzAbstractFactory_CreateConfigManager_BadConfig(test *testing.T) {
 	require.ErrorIs(test, err, szerror.ErrSz)
 	require.Nil(test, actual)
 
-	expectedErr := `{"function":"szabstractfactory.(*Szabstractfactory).CreateConfigManager","text":"Cannot create AbstractFactory until prior AbstractFactory has been closed and objects created by that factory destroyed [SzConfigManager]","error":{"function":"szabstractfactory.(*Szabstractfactory).initializeAbstractFactory","error":{"function":"szengine.(*Szengine).Initialize","error":{"id":"SZSDK60044041","reason":"SENZ0018|Could not process initialization settings"}}}}`
+	expectedErr := `{"function":"szabstractfactory.(*Szabstractfactory).CreateConfigManager","text":"Cannot create AbstractFactory until prior AbstractFactory has been closed and objects created by that factory destroyed [SzConfigManager]","error":{"function":"szabstractfactory.(*Szabstractfactory).initializeAbstractFactory","error":{"function":"szconfigmanager.(*Szconfigmanager).Initialize","error":{"id":"SZSDK60024006","reason":"SENZ0018|Could not process initialization settings"}}}}`
 	require.JSONEq(test, expectedErr, err.Error())
 }
 
@@ -114,7 +114,7 @@ func TestSzAbstractFactory_CreateDiagnostic_BadConfig(test *testing.T) {
 	require.ErrorIs(test, err, szerror.ErrSz)
 	require.Nil(test, actual)
 
-	expectedErr := `{"function":"szabstractfactory.(*Szabstractfactory).CreateDiagnostic","text":"Cannot create AbstractFactory until prior AbstractFactory has been closed and objects created by that factory destroyed [SzDiagnostic]","error":{"function":"szabstractfactory.(*Szabstractfactory).initializeAbstractFactory","error":{"function":"szengine.(*Szengine).Initialize","error":{"id":"SZSDK60044041","reason":"SENZ0018|Could not process initialization settings"}}}}`
+	expectedErr := `{"function":"szabstractfactory.(*Szabstractfactory).CreateDiagnostic","text":"Cannot create AbstractFactory until prior AbstractFactory has been closed and objects created by that factory destroyed [SzDiagnostic]","error":{"function":"szabstractfactory.(*Szabstractfactory).initializeAbstractFactory","error":{"function":"szconfigmanager.(*Szconfigmanager).Initialize","error":{"id":"SZSDK60024006","reason":"SENZ0018|Could not process initialization settings"}}}}`
 	require.JSONEq(test, expectedErr, err.Error())
 }
 
@@ -146,7 +146,7 @@ func TestSzAbstractFactory_CreateEngine_BadConfig(test *testing.T) {
 	require.ErrorIs(test, err, szerror.ErrSz)
 	require.Nil(test, actual)
 
-	expectedErr := `{"function":"szabstractfactory.(*Szabstractfactory).CreateEngine","text":"Cannot create AbstractFactory until prior AbstractFactory has been closed and objects created by that factory destroyed [SzEngine]","error":{"function":"szabstractfactory.(*Szabstractfactory).initializeAbstractFactory","error":{"function":"szengine.(*Szengine).Initialize","error":{"id":"SZSDK60044041","reason":"SENZ0018|Could not process initialization settings"}}}}`
+	expectedErr := `{"function":"szabstractfactory.(*Szabstractfactory).CreateEngine","text":"Cannot create AbstractFactory until prior AbstractFactory has been closed and objects created by that factory destroyed [SzEngine]","error":{"function":"szabstractfactory.(*Szabstractfactory).initializeAbstractFactory","error":{"function":"szconfigmanager.(*Szconfigmanager).Initialize","error":{"id":"SZSDK60024006","reason":"SENZ0018|Could not process initialization settings"}}}}`
 	require.JSONEq(test, expectedErr, err.Error())
 }
 
@@ -176,7 +176,7 @@ func TestSzAbstractFactory_CreateProduct_BadConfig(test *testing.T) {
 	require.ErrorIs(test, err, szerror.ErrSz)
 	require.Nil(test, actual)
 
-	expectedErr := `{"function":"szabstractfactory.(*Szabstractfactory).CreateProduct","text":"Cannot create AbstractFactory until prior AbstractFactory has been closed and objects created by that factory destroyed [SzProduct]","error":{"function":"szabstractfactory.(*Szabstractfactory).initializeAbstractFactory","error":{"function":"szengine.(*Szengine).Initialize","error":{"id":"SZSDK60044041","reason":"SENZ0018|Could not process initialization settings"}}}}`
+	expectedErr := `{"function":"szabstractfactory.(*Szabstractfactory).CreateProduct","text":"Cannot create AbstractFactory until prior AbstractFactory has been closed and objects created by that factory destroyed [SzProduct]","error":{"function":"szabstractfactory.(*Szabstractfactory).initializeAbstractFactory","error":{"function":"szconfigmanager.(*Szconfigmanager).Initialize","error":{"id":"SZSDK60024006","reason":"SENZ0018|Could not process initialization settings"}}}}`
 	require.JSONEq(test, expectedErr, err.Error())
 }
 
@@ -329,6 +329,33 @@ func TestSzAbstractFactory_Multi_CreateAll(test *testing.T) {
 	require.NoError(test, szEngine2.Destroy(ctx))
 	require.NoError(test, szProduct2.Destroy(ctx))
 	require.NoError(test, szAbstractFactory2.Close(ctx))
+}
+
+/*
+ */
+func TestSzAbstractFactory_Multi_PreventSecondConfigManager(test *testing.T) {
+	ctx := test.Context()
+
+	// Create AbstractFactories.
+
+	szAbstractFactory1 := createSzAbstractFactoryByLocation(ctx, location1)
+
+	defer func() { require.NoError(test, szAbstractFactory1.Close(ctx)) }()
+
+	szAbstractFactory2 := createSzAbstractFactoryByLocation(ctx, location2)
+
+	defer func() { require.NoError(test, szAbstractFactory2.Close(ctx)) }()
+
+	szConfigManager1, err := szAbstractFactory1.CreateConfigManager((ctx))
+	printDebug(test, err, szConfigManager1)
+	require.NoError(test, err)
+
+	defer func() { require.NoError(test, szConfigManager1.Destroy(ctx)) }()
+
+	szConfigManager2, err := szAbstractFactory2.CreateConfigManager((ctx))
+	printDebug(test, err, szConfigManager2)
+	require.Error(test, err)
+	require.Nil(test, szConfigManager2)
 }
 
 /*
@@ -578,6 +605,9 @@ func TestSzAbstractFactory_Multi_Reinitialize_implicitly(test *testing.T) {
 	require.NoError(test, err)
 
 	err = szConfigManager1.ReplaceDefaultConfigID(ctx, configID, newConfigID)
+	require.NoError(test, err)
+
+	err = szConfigManager1.Destroy(ctx)
 	require.NoError(test, err)
 
 	// Inserting record before reinitializing should fail because it hasn't been reinitialized.
