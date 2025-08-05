@@ -637,7 +637,7 @@ func (client *Szengine) FindInterestingEntitiesByEntityID(
 /*
 Method FindInterestingEntitiesByRecordID is an experimental method.
 
-Not recommended for use.
+Contact Senzing support.
 
 Input
   - ctx: A context to control lifecycle.
@@ -691,8 +691,8 @@ func (client *Szengine) FindInterestingEntitiesByRecordID(
 /*
 Method FindNetworkByEntityID retrieves a network of relationships among entities based on entity IDs.
 
-This includes the requested entities, paths between them, and relations to other nearby entities.
-The size and character of the returned network can be modified by input parameters.
+Warning: Entity networks may be very large due to the volume of inter-related data in the repository.
+The parameters of this method can be used to limit the information returned.
 
 Input
   - ctx: A context to control lifecycle.
@@ -768,8 +768,8 @@ func (client *Szengine) FindNetworkByEntityID(
 /*
 Method FindNetworkByRecordID retrieves a network of relationships among entities based on record IDs.
 
-This includes the requested entities, paths between them, and relations to other nearby entities.
-The size and character of the returned network can be modified by input parameters.
+Warning: Entity networks may be very large due to the volume of inter-related data in the repository.
+The parameters of this method can be used to limit the information returned.
 
 Input
   - ctx: A context to control lifecycle.
@@ -845,8 +845,7 @@ func (client *Szengine) FindNetworkByRecordID(
 /*
 Method FindPathByEntityID searches for the shortest relationship path between two entities based on entity IDs.
 
-Paths are found using known relationships with other entities.
-The path can be modified by input parameters.
+The returned path is the shortest path among the paths that satisfy the parameters.
 
 Input
   - ctx: A context to control lifecycle.
@@ -924,8 +923,7 @@ func (client *Szengine) FindPathByEntityID(
 /*
 Method FindPathByRecordID searches for the shortest relationship path between two entities based on record IDs.
 
-Paths are found using known relationships with other entities.
-The path can be modified by input parameters.
+The returned path is the shortest path among the paths that satisfy the parameters.
 
 Input
   - ctx: A context to control lifecycle.
@@ -1019,6 +1017,8 @@ func (client *Szengine) FindPathByRecordID(
 
 /*
 Method GetActiveConfigID gets the currently active configuration ID.
+
+May not be the default configuration ID.
 
 Input
   - ctx: A context to control lifecycle.
@@ -1154,6 +1154,9 @@ func (client *Szengine) GetEntityByRecordID(
 /*
 Method GetRecord retrieves information about a record.
 
+The information contains the original record data that was loaded and may contain other information
+based on the flags parameter.
+
 Input
   - ctx: A context to control lifecycle.
   - dataSourceCode: Identifies the provenance of the data.
@@ -1204,9 +1207,63 @@ func (client *Szengine) GetRecord(
 }
 
 /*
+Method GetRecordPreview describes the features resulting from the hypothetical load of a record.
+
+Used to obtain the features for a record that has not been loaded.
+
+Input
+  - ctx: A context to control lifecycle.
+  - recordDefinition: A JSON document containing the record to be tested against the Senzing repository.
+  - flags: Flags used to control information returned.
+
+Output
+  - A JSON document containing metadata as specified by the flags.
+*/
+func (client *Szengine) GetRecordPreview(ctx context.Context, recordDefinition string, flags int64) (string, error) {
+	var (
+		err    error
+		result string
+	)
+
+	if client.isDestroyed {
+		return result, wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
+	}
+
+	if client.isTrace {
+		client.traceEntry(77, recordDefinition, flags)
+
+		entryTime := time.Now()
+		defer func() {
+			client.traceExit(78, recordDefinition, flags, result, err, time.Since(entryTime))
+		}()
+	}
+
+	result, err = client.getRecordPreview(ctx, recordDefinition, flags)
+
+	if client.observers != nil {
+		go func() {
+			details := map[string]string{
+				"flags": strconv.FormatInt(flags, baseTen),
+			}
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8035, err, details)
+		}()
+	}
+
+	return result, wraperror.Errorf(err, wraperror.NoMessage)
+}
+
+/*
 Method GetRedoRecord retrieves and removes a pending redo record.
 
-Usually, [Szengine.ProcessRedoRecord] is called to process the maintenance record retrieved by GetRedoRecord.
+An "empty" may be returned.
+
+Use processRedoRecord() to process the result of this function.
+
+Once a redo record is retrieved, it is no longer tracked by Senzing.
+
+The redo record may be stored externally for later processing.
+
+See also countRedoRecords(), processRedoRecord().
 
 Input
   - ctx: A context to control lifecycle.
@@ -1246,7 +1303,11 @@ func (client *Szengine) GetRedoRecord(ctx context.Context) (string, error) {
 /*
 Method GetStats gets and resets the internal engine workload statistics for the current operating system process.
 
-These statistics are automatically reset after each call.
+The output is helpful when interacting with Senzing support.
+
+Best practice to periodically log the results.
+
+???? Do the statistics get reset?
 
 Input
   - ctx: A context to control lifecycle.
@@ -1285,6 +1346,8 @@ func (client *Szengine) GetStats(ctx context.Context) (string, error) {
 
 /*
 Method GetVirtualEntityByRecordID describes how an entity would look if composed of a given set of records.
+
+The resultant virtual entity has no relationships to actual entities.
 
 Input
   - ctx: A context to control lifecycle.
@@ -1375,51 +1438,10 @@ func (client *Szengine) HowEntityByEntityID(ctx context.Context, entityID int64,
 }
 
 /*
-Method GetRecordPreview describes the features resulting from the hypothetical load of a record.
-
-Input
-  - ctx: A context to control lifecycle.
-  - recordDefinition: A JSON document containing the record to be tested against the Senzing repository.
-  - flags: Flags used to control information returned.
-
-Output
-  - A JSON document containing metadata as specified by the flags.
-*/
-func (client *Szengine) GetRecordPreview(ctx context.Context, recordDefinition string, flags int64) (string, error) {
-	var (
-		err    error
-		result string
-	)
-
-	if client.isDestroyed {
-		return result, wraperror.Errorf(errForPackage, "This SzEngine has been destroyed.")
-	}
-
-	if client.isTrace {
-		client.traceEntry(77, recordDefinition, flags)
-
-		entryTime := time.Now()
-		defer func() {
-			client.traceExit(78, recordDefinition, flags, result, err, time.Since(entryTime))
-		}()
-	}
-
-	result, err = client.getRecordPreview(ctx, recordDefinition, flags)
-
-	if client.observers != nil {
-		go func() {
-			details := map[string]string{
-				"flags": strconv.FormatInt(flags, baseTen),
-			}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8035, err, details)
-		}()
-	}
-
-	return result, wraperror.Errorf(err, wraperror.NoMessage)
-}
-
-/*
 Method PrimeEngine pre-loads engine resources.
+
+Explicitly calling this method ensures the performance cost is incurred at a predictable time rather than unexpectedly
+with the first call requiring the resource.
 
 Input
   - ctx: A context to control lifecycle.
@@ -1453,8 +1475,13 @@ func (client *Szengine) PrimeEngine(ctx context.Context) error {
 /*
 Method ProcessRedoRecord processes the provided redo record.
 
-The redo record is retrieved by [Szengine.GetRedoRecord].
-Calling ProcessRedoRecord has the potential to create more redo records in certain situations.
+Calling processRedoRecord() has the potential to create more redo records in certain situations.
+
+Specify the SzWithInfo flag to determine any outcomes from this operation.
+
+This operation performs entity resolution.
+
+See also getRedoRecord().
 
 Input
   - ctx: A context to control lifecycle.
@@ -1500,9 +1527,11 @@ func (client *Szengine) ProcessRedoRecord(ctx context.Context, redoRecord string
 /*
 Method ReevaluateEntity reevaluates an entity by entity ID.
 
-If inconsistent, ReevaluateEntity() adjusts the entity definition, splits entities, and/or merges entities.
-Usually, the ReevaluateEntity method is called after a Senzing configuration change to impact
-entities immediately.
+If the entity is not found, then no changes are made.
+
+Specify the SzWithInfo flag to determine any outcomes from this operation.
+
+This operation performs entity resolution.
 
 Input
   - ctx: A context to control lifecycle.
@@ -1549,9 +1578,11 @@ func (client *Szengine) ReevaluateEntity(ctx context.Context, entityID int64, fl
 /*
 Method ReevaluateRecord reevaluates an entity by record ID.
 
-If inconsistent, ReevaluateRecord() adjusts the entity definition, splits entities, and/or merges entities.
-Usually, the ReevaluateRecord method is called after a Senzing configuration change to impact
-the record immediately.
+If the record is not found, then no changes are made.
+
+Specify the SzWithInfo flag to determine any outcomes from this operation.
+
+This operation performs entity resolution.
 
 Input
   - ctx: A context to control lifecycle.
