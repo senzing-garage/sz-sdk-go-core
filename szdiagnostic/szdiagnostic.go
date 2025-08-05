@@ -66,6 +66,10 @@ const (
 /*
 Method CheckRepositoryPerformance conducts a rudimentary repository test to gauge I/O performance.
 
+Typically, this is only run when requested by Senzing support.
+
+This is a non-destructive test.
+
 Input
   - ctx: A context to control lifecycle.
   - secondsToRun: Duration of the test in seconds.
@@ -225,8 +229,12 @@ func (client *Szdiagnostic) GetRepositoryInfo(ctx context.Context) (string, erro
 
 /*
 WARNING: Method PurgeRepository purges all data in the repository, except the configuration.
-This is a destructive method that cannot be undone.
-Before calling purgeRepository(), all programs using Senzing MUST be terminated.
+
+WARNING: This method is destructive, it will delete all loaded records and entity resolution decisions.
+
+Senzing does not provide a means to restore the data.
+
+The only means of recovery would be restoring from a database backup.
 
 Input
   - ctx: A context to control lifecycle.

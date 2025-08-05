@@ -147,8 +147,6 @@ func (client *Szconfigmanager) CreateConfigFromString(
 /*
 Method CreateConfigFromTemplate creates a new SzConfig instance from the template configuration definition.
 
-This document is found in a file on the gRPC server at PIPELINE.RESOURCEPATH/templates/g2config.json
-
 Input
   - ctx: A context to control lifecycle.
 
@@ -226,6 +224,10 @@ func (client *Szconfigmanager) Destroy(ctx context.Context) error {
 /*
 Method GetConfigRegistry gets the configuration registry.
 
+The registry contains the original timestamp, original comment, and configuration ID of all configurations ever registered with the repository.
+
+Registered configurations cannot be unregistered.
+
 Input
   - ctx: A context to control lifecycle.
 
@@ -264,8 +266,9 @@ func (client *Szconfigmanager) GetConfigRegistry(ctx context.Context) (string, e
 /*
 Method GetDefaultConfigID gets the default configuration ID for the repository.
 
-Note: this may not be the currently active in-memory configuration.
-See [Szconfigmanager.SetDefaultConfigID] and [Szconfigmanager.ReplaceDefaultConfigID] for more details.
+	Unless an explicit configuration ID is specified at initialization, the default configuration ID is used.
+
+		This may not be the same as the active configuration ID.
 
 Input
   - ctx: A context to control lifecycle.
@@ -304,6 +307,10 @@ func (client *Szconfigmanager) GetDefaultConfigID(ctx context.Context) (int64, e
 
 /*
 Method RegisterConfig registers a configuration definition in the repository.
+
+Registered configurations do not become immediately active nor do they become the default.
+
+Registered configurations cannot be unregistered.
 
 Input
   - ctx: A context to control lifecycle.
@@ -353,15 +360,9 @@ func (client *Szconfigmanager) RegisterConfig(
 /*
 Method ReplaceDefaultConfigID replaces the existing default configuration ID with a new configuration ID.
 
-Similar to the [Szconfigmanager.SetDefaultConfigID] method,
-method ReplaceDefaultConfigID sets which Senzing configuration JSON document
-is used when initializing or reinitializing the system.
-The difference is that ReplaceDefaultConfigID only succeeds when the old Senzing configuration JSON document identifier
-is the existing default when the new identifier is applied.
-In other words, if currentDefaultConfigID is no longer the "old" identifier, the operation will fail.
-It is similar to a "compare-and-swap" instruction to avoid a "race condition".
-Note that calling the ReplaceDefaultConfigID method does not affect the currently running in-memory configuration.
-To simply set the default Senzing configuration JSON document identifier, use [Szconfigmanager.SetDefaultConfigID].
+The change is prevented if the current default configuration ID value is not as expected.
+
+Use this in place of setDefaultConfigID to handle race conditions.
 
 Input
   - ctx: A context to control lifecycle.
@@ -403,10 +404,7 @@ func (client *Szconfigmanager) ReplaceDefaultConfigID(
 /*
 Method SetDefaultConfig registers a configuration in the repository and sets its ID as the default for the repository.
 
-Note that calling the SetDefaultConfig method does not affect the currently
-running in-memory configuration.
-SetDefaultConfig is susceptible to "race conditions".
-To avoid race conditions, see  [Szconfigmanager.ReplaceDefaultConfigID].
+Convenience method for registerConfig followed by setDefaultConfigId.
 
 Input
   - ctx: A context to control lifecycle.
@@ -453,10 +451,8 @@ func (client *Szconfigmanager) SetDefaultConfig(
 /*
 Method SetDefaultConfigID sets the default configuration ID.
 
-Note that calling the SetDefaultConfigID method does not affect the currently
-running in-memory configuration.
-SetDefaultConfigID is susceptible to "race conditions".
-To avoid race conditions, see  [Szconfigmanager.ReplaceDefaultConfigID].
+Usually this method is sufficient for setting the default configuration ID.
+However in concurrent environments that could encounter race conditions, consider using replaceDefaultConfigId instead.
 
 Input
   - ctx: A context to control lifecycle.
