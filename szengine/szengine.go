@@ -66,12 +66,14 @@ const (
 /*
 Method AddRecord loads a record into the repository and performs entity resolution.
 
-The unique identifier of a record is the [dataSourceCode, recordID] compound key.
-If the unique identifier does not exist in the Senzing repository, a new record definition is created in the
-Senzing repository.
-If the unique identifier already exists, the new record definition will replace the old record definition.
-If the record definition contains JSON keys of `DATA_SOURCE` and/or `RECORD_ID`, they must match the values of `
-dataSourceCode` and `recordID`.
+If a record already exists with the same data source code and record ID, it will be replaced.
+
+If the record definition contains DATA_SOURCE and RECORD_ID JSON keys,
+the values must match the dataSourceCode and recordID parameters.
+
+Specify the SzWithInfo flag to determine any outcomes from this operation.
+
+The data source code must be registered in the active configuration.
 
 Input
   - ctx: A context to control lifecycle.
@@ -132,11 +134,7 @@ func (client *Szengine) AddRecord(
 /*
 Method CloseExportReport closes an export report.
 
-It closes the exported document created by [Szengine.ExportJSONEntityReport] or
-[Szengine.ExportCsvEntityReport].
-It is part of the ExportXxxEntityReport(), [Szengine.FetchNext], CloseExportReport lifecycle of a list of entities
-to export.
-CloseExportReport is idempotent; an exportHandle may be closed multiple times.
+Used in conjunction with ExportJsonEntityReport, ExportCsvEntityReport, and FetchNext.
 
 Input
   - ctx: A context to control lifecycle.
@@ -171,8 +169,6 @@ func (client *Szengine) CloseExportReport(ctx context.Context, exportHandle uint
 
 /*
 Method CountRedoRecords gets the number of redo records pending processing.
-
-These are often called "redo records".
 
 Input
   - ctx: A context to control lifecycle.
@@ -212,10 +208,11 @@ func (client *Szengine) CountRedoRecords(ctx context.Context) (int64, error) {
 /*
 Method DeleteRecord deletes a record from the repository and performs entity resolution.
 
-The unique identifier of a record is the [dataSourceCode, recordID] compound key.
-DeleteRecord() is idempotent.
-Multiple calls to delete the same unique identifier will all succeed,
-even if the unique identifier is not present in the Senzing repository.
+Specify the SzWithInfo flag to determine any outcomes from this operation.
+
+The data source code must be registered in the active configuration.
+
+Is idempotent.
 
 Input
   - ctx: A context to control lifecycle.
@@ -308,10 +305,13 @@ func (client *Szengine) Destroy(ctx context.Context) error {
 /*
 Method ExportCsvEntityReport initiates an export report of entity data in CSV format.
 
-It is part of the ExportCsvEntityReport, [Szengine.FetchNext], [Szengine.CloseExportReport] lifecycle
-of a list of entities to export.
-The first exported line is the CSV header.
-Each subsequent line contains metadata for a single entity.
+Used in conjunction with fetchNext and closeEntityReport.
+
+The first fetchNext call, after calling this method, returns the CSV header.
+
+Subsequent fetchNext calls return exported entity data in CSV format.
+
+Use with large repositories is not advised. For more information visit [Add link to article]
 
 Input
   - ctx: A context to control lifecycle.
@@ -429,8 +429,11 @@ func (client *Szengine) ExportCsvEntityReportIterator(
 /*
 Method ExportJSONEntityReport initiates an export report of entity data in JSON Lines format.
 
-It is part of the ExportJSONEntityReport, [Szengine.FetchNext], [Szengine.CloseExportReport] lifecycle
-of a list of entities to export.
+Used in conjunction with fetchNext and closeEntityReport.
+
+Each fetchNext call returns exported entity data as a JSON object.
+
+Use with large repositories is not advised. For more information visit [Add link to article]
 
 Input
   - ctx: A context to control lifecycle.
@@ -537,8 +540,14 @@ func (client *Szengine) ExportJSONEntityReportIterator(ctx context.Context, flag
 /*
 Method FetchNext fetches the next line of entity data from an open export report.
 
-It is part of the [Szengine.ExportJSONEntityReport] or [Szengine.ExportCsvEntityReport], FetchNext,
-[Szengine.CloseExportReport] lifecycle of a list of exported entities.
+Used in conjunction with ExportJsonEntityReport, ExportCsvEntityReport, and closeEntityReport.
+
+If the export handle was obtained from ExportCsvEntityReport, this returns the CSV header on the first call and
+exported entity data in CSV format on subsequent calls.
+
+If the export handle was obtained from ExportJsonEntityReport, this returns exported entity data as a JSON object.
+
+When "null" is returned, the export report is complete and the caller should invoke closeExportReport to free resources.
 
 Input
   - ctx: A context to control lifecycle.
@@ -579,7 +588,7 @@ func (client *Szengine) FetchNext(ctx context.Context, exportHandle uintptr) (st
 /*
 Method FindInterestingEntitiesByEntityID is an experimental method.
 
-Not recommended for use.
+Contact Senzing support.
 
 Input
   - ctx: A context to control lifecycle.
