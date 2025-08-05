@@ -224,7 +224,8 @@ func (client *Szconfigmanager) Destroy(ctx context.Context) error {
 /*
 Method GetConfigRegistry gets the configuration registry.
 
-The registry contains the original timestamp, original comment, and configuration ID of all configurations ever registered with the repository.
+The registry contains the original timestamp, original comment, and configuration ID of all configurations ever
+registered with the repository.
 
 Registered configurations cannot be unregistered.
 
@@ -266,9 +267,9 @@ func (client *Szconfigmanager) GetConfigRegistry(ctx context.Context) (string, e
 /*
 Method GetDefaultConfigID gets the default configuration ID for the repository.
 
-	Unless an explicit configuration ID is specified at initialization, the default configuration ID is used.
+Unless an explicit configuration ID is specified at initialization, the default configuration ID is used.
 
-		This may not be the same as the active configuration ID.
+This may not be the same as the active configuration ID.
 
 Input
   - ctx: A context to control lifecycle.
@@ -362,7 +363,7 @@ Method ReplaceDefaultConfigID replaces the existing default configuration ID wit
 
 The change is prevented if the current default configuration ID value is not as expected.
 
-Use this in place of setDefaultConfigID to handle race conditions.
+Use this in place of setDefaultConfigID() to handle race conditions.
 
 Input
   - ctx: A context to control lifecycle.
@@ -404,7 +405,7 @@ func (client *Szconfigmanager) ReplaceDefaultConfigID(
 /*
 Method SetDefaultConfig registers a configuration in the repository and sets its ID as the default for the repository.
 
-Convenience method for registerConfig followed by setDefaultConfigId.
+Convenience method for registerConfig() followed by setDefaultConfigId().
 
 Input
   - ctx: A context to control lifecycle.
@@ -452,7 +453,8 @@ func (client *Szconfigmanager) SetDefaultConfig(
 Method SetDefaultConfigID sets the default configuration ID.
 
 Usually this method is sufficient for setting the default configuration ID.
-However in concurrent environments that could encounter race conditions, consider using replaceDefaultConfigId instead.
+However in concurrent environments that could encounter race conditions,
+consider using replaceDefaultConfigId() instead.
 
 Input
   - ctx: A context to control lifecycle.

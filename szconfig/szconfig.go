@@ -177,11 +177,13 @@ func (client *Szconfig) RegisterDataSource(ctx context.Context, dataSourceCode s
 /*
 Method UnregisterDataSource removes a data source from this configuration.
 
-Because SzConfig is an in-memory representation, the repository is not changed unless the configuration is exported and then registered via ConfigManager.
+Because SzConfig is an in-memory representation, the repository is not changed unless the configuration is exported
+and then registered via ConfigManager.
 
 Is idempotent.
 
-Warning: if records in the repository refer to the unregistered datasource the configuration cannot be used as the active configuration.
+Warning: if records in the repository refer to the unregistered datasource the configuration cannot be used
+as the active configuration.
 
 Input
   - ctx: A context to control lifecycle.

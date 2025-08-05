@@ -64,9 +64,9 @@ const (
 // ----------------------------------------------------------------------------
 
 /*
-Method CheckRepositoryPerformance conducts a rudimentary repository test to gauge I/O performance.
+Method CheckRepositoryPerformance conducts a rudimentary repository test to gauge I/O and network performance.
 
-Typically, this is only run when requested by Senzing support.
+Typically, this is only run when troubleshooting performance.
 
 This is a non-destructive test.
 
@@ -147,8 +147,6 @@ func (client *Szdiagnostic) Destroy(ctx context.Context) error {
 /*
 Method GetFeature Experimental/internal for Senzing support use only.
 
-Not recommended for use.
-
 Input
   - ctx: A context to control lifecycle.
   - featureID: The identifier of the feature to describe.
@@ -228,7 +226,7 @@ func (client *Szdiagnostic) GetRepositoryInfo(ctx context.Context) (string, erro
 }
 
 /*
-WARNING: Method PurgeRepository purges all data in the repository, except the configuration.
+WARNING: Method PurgeRepository permanently deletes all data in the repository, except the configuration.
 
 WARNING: This method is destructive, it will delete all loaded records and entity resolution decisions.
 
