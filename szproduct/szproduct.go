@@ -98,7 +98,9 @@ func (client *Szproduct) Destroy(ctx context.Context) error {
 }
 
 /*
-Method GetLicense gets the product license details.
+Method GetLicense gets the details and entitlements of the applied product license.
+
+The details do not include the license key.
 
 Input
   - ctx: A context to control lifecycle.

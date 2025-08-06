@@ -61,40 +61,6 @@ const (
 // ----------------------------------------------------------------------------
 
 /*
-Method GetDataSourceRegistry gets the data source registry for this configuration.
-
-Input
-  - ctx: A context to control lifecycle.
-
-Output
-  - A JSON document listing data sources in the in-memory configuration.
-*/
-func (client *Szconfig) GetDataSourceRegistry(ctx context.Context) (string, error) {
-	var (
-		err    error
-		result string
-	)
-
-	if client.isTrace {
-		client.traceEntry(15)
-
-		entryTime := time.Now()
-		defer func() { client.traceExit(16, result, err, time.Since(entryTime)) }()
-	}
-
-	result, err = client.getDataSourceRegistryChoreography(ctx, client.configDefinition)
-
-	if client.observers != nil {
-		go func() {
-			details := map[string]string{}
-			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8008, err, details)
-		}()
-	}
-
-	return result, wraperror.Errorf(err, wraperror.NoMessage)
-}
-
-/*
 Method Export retrieves the definition for this configuration.
 
 Input
@@ -129,7 +95,44 @@ func (client *Szconfig) Export(ctx context.Context) (string, error) {
 }
 
 /*
+Method GetDataSourceRegistry gets the data source registry for this configuration.
+
+Input
+  - ctx: A context to control lifecycle.
+
+Output
+  - A JSON document listing data sources in the in-memory configuration.
+*/
+func (client *Szconfig) GetDataSourceRegistry(ctx context.Context) (string, error) {
+	var (
+		err    error
+		result string
+	)
+
+	if client.isTrace {
+		client.traceEntry(15)
+
+		entryTime := time.Now()
+		defer func() { client.traceExit(16, result, err, time.Since(entryTime)) }()
+	}
+
+	result, err = client.getDataSourceRegistryChoreography(ctx, client.configDefinition)
+
+	if client.observers != nil {
+		go func() {
+			details := map[string]string{}
+			notifier.Notify(ctx, client.observers, client.observerOrigin, ComponentID, 8008, err, details)
+		}()
+	}
+
+	return result, wraperror.Errorf(err, wraperror.NoMessage)
+}
+
+/*
 Method RegisterDataSource adds a data source to this configuration.
+
+Because SzConfig is an in-memory representation, the repository is not changed unless the configuration
+is exported and then registered via ConfigManager.
 
 Input
   - ctx: A context to control lifecycle.
@@ -173,6 +176,14 @@ func (client *Szconfig) RegisterDataSource(ctx context.Context, dataSourceCode s
 
 /*
 Method UnregisterDataSource removes a data source from this configuration.
+
+Because SzConfig is an in-memory representation, the repository is not changed unless the configuration is exported
+and then registered via ConfigManager.
+
+Is idempotent.
+
+Warning: if records in the repository refer to the unregistered datasource the configuration cannot be used
+as the active configuration.
 
 Input
   - ctx: A context to control lifecycle.
