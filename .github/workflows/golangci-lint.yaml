@@ -17,8 +17,10 @@ jobs:
     name: lint
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         go: ["1.24"]
+        senzingsdk-version: [production-v4, staging-v4]
 
     steps:
       - name: Checkout repository
