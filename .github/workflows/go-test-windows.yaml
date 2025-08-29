@@ -70,7 +70,7 @@ jobs:
         if: always()
         with:
           name: "test-log-${{ matrix.senzingsdk-version }}"
-          path: "C:\\Temp\\gotest-${{ matrix.senzingsdk-version }}log"
+          path: "C:\\Temp\\gotest-${{ matrix.senzingsdk-version }}.log"
           if-no-files-found: error
 
   coverage:
