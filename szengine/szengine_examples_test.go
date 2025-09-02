@@ -1936,218 +1936,121 @@ func ExampleSzengine_GetStats() {
 		return
 	}
 
-	fmt.Println(jsonutil.Truncate(result, 5))
-	// Output: {"workload":{"abortedUnresolve":0,"actualAmbiguousTest":0,"addedRecords":3,...
+	fmt.Println(jsonutil.Truncate(result, 2))
+	// Output: {"workload":{...
 }
 
 func ExampleSzengine_GetStats_output() {
 	// For more information, visit
 	// https://github.com/senzing-garage/sz-sdk-go-core/blob/main/szengine/szengine_examples_test.go
 	// The following code pretty-prints example output JSON.
-	exampleOutput := `{"workload":{"loadedRecords":5,"addedRecords":2,"deletedRecords":0,"reevaluations":0,"repairedEntities":0,"duration":56,"retries":0,"candidates":19,"actualAmbiguousTest":0,"cachedAmbiguousTest":0,"libFeatCacheHit":219,"libFeatCacheMiss":73,"unresolveTest":1,"abortedUnresolve":0,"gnrScorersUsed":1,"unresolveTriggers":{"normalResolve":0,"update":0,"relLink":0,"extensiveResolve":0,"ambiguousNoResolve":1,"ambiguousMultiResolve":0},"reresolveTriggers":{"abortRetry":0,"unresolveMovement":0,"multipleResolvableCandidates":0,"resolveNewFeatures":1,"newFeatureFTypes":[{"DOB":1}]},"reresolveSkipped":0,"filteredObsFeat":0,"expressedFeatureCalls":[{"EFCALL_ID":1,"EFUNC_CODE":"PHONE_HASHER","numCalls":1},{"EFCALL_ID":2,"EFUNC_CODE":"EXPRESS_ID","numCalls":1},{"EFCALL_ID":3,"EFUNC_CODE":"EXPRESS_ID","numCalls":1},{"EFCALL_ID":5,"EFUNC_CODE":"EXPRESS_BOM","numCalls":1},{"EFCALL_ID":7,"EFUNC_CODE":"NAME_HASHER","numCalls":4},{"EFCALL_ID":9,"EFUNC_CODE":"ADDR_HASHER","numCalls":1},{"EFCALL_ID":10,"EFUNC_CODE":"EXPRESS_BOM","numCalls":1},{"EFCALL_ID":14,"EFUNC_CODE":"EXPRESS_ID","numCalls":1},{"EFCALL_ID":16,"EFUNC_CODE":"EXPRESS_ID","numCalls":4}],"expressedFeaturesCreated":[{"ADDR_KEY":2},{"ID_KEY":7},{"NAME_KEY":14},{"PHONE_KEY":1},{"SEARCH_KEY":2}],"scoredPairs":[{"ACCT_NUM":16},{"ADDRESS":16},{"DOB":25},{"GENDER":16},{"LOGIN_ID":16},{"NAME":19},{"PHONE":16},{"SSN":19}],"cacheHit":[{"ADDRESS":12},{"DOB":18},{"NAME":13},{"PHONE":15}],"cacheMiss":[{"ADDRESS":4},{"DOB":7},{"NAME":6},{"PHONE":1}],"redoTriggers":[],"latchContention":[],"highContentionFeat":[],"highContentionResEnt":[],"genericDetect":[],"candidateBuilders":[{"ACCT_NUM":7},{"ADDR_KEY":7},{"DOB":7},{"ID_KEY":9},{"LOGIN_ID":7},{"NAME_KEY":9},{"PHONE":7},{"PHONE_KEY":7},{"SEARCH_KEY":7},{"SSN":9}],"suppressedCandidateBuilders":[],"suppressedScoredFeatureType":[],"reducedScoredFeatureType":[],"suppressedDisclosedRelationshipDomainCount":0,"CorruptEntityTestDiagnosis":{},"threadState":{"active":0,"idle":4,"sqlExecuting":0,"loader":0,"resolver":0,"scoring":0,"dataLatchContention":0,"obsEntContention":0,"resEntContention":0},"systemResources":{"initResources":[{"physicalCores":16},{"logicalCores":16},{"totalMemory":"62.6GB"},{"availableMemory":"49.5GB"}],"currResources":[{"availableMemory":"47.4GB"},{"activeThreads":0},{"workerThreads":4},{"systemLoad":[{"cpuUser":13.442277},{"cpuSystem":2.635741},{"cpuIdle":82.024246},{"cpuWait":1.634159},{"cpuSoftIrq":0.263574}]}]}}}`
+	exampleOutput := `{"workload":{"apiVersion":"4.0.0.25245","datetimestamp":"2025-09-02T16:24:39Z","license":{"status":"ok","type":"non-production","dsrLimit":"ok"},"loadedRecords":3,"processing":{"addedRecords":0,"batchAddedRecords":0,"reevaluations":0,"repairedEntities":0,"deletedRecords":0,"details":{"optimizedOut":0,"optimizedOutSkipped":0,"newObsEnt":0,"obsEntHashSame":0,"obsEntHashDiff":0,"filteredObsFeat":0,"partiallyResolved":0,"changeDeletes":0,"retries":0,"candidates":0,"duration":0},"ambiguous":{"actualTest":0,"cachedTest":0}},"caches":{"libFeatCacheHit":0,"libFeatCacheMiss":0,"resFeatStatCacheHit":0,"resFeatStatCacheMiss":0,"libFeatInsert":0,"resFeatStatInsert":0,"resFeatStatUpdateAttempt":0,"resFeatStatUpdateFail":0},"lockWaits":{"refreshLocks":{"maxMS":0,"totalMS":0,"count":0}},"unresolve":{"triggers":{"normalResolve":0,"update":0,"relLink":0,"extensiveResolve":0,"ambiguousNoResolve":0,"ambiguousMultiResolve":0},"unresolveTest":0,"abortedUnresolve":0},"reresolve":{"triggers":{"skipped":0,"abortRetry":0,"unresolveMovement":0,"multipleResolvableCandidates":0,"resolveNewFeatures":0,"newFeatureFTypes":[]},"suppressedCandidateBuildersForReresolve":[],"suppressedScoredFeatureTypeForReresolve":[]},"expressedFeatures":{"calls":[],"created":[]},"scoring":{"scoredPairs":[],"cacheHit":[],"cacheMiss":[],"suppressedScoredFeatureType":[],"suppressedDisclosedRelationshipDomainCount":0},"redoTriggers":[],"contention":{"valuelatch":[],"feature":[],"resent":[]},"genericDetect":[],"candidates":{"candidateBuilders":[],"suppressedCandidateBuilders":[]},"repairDiagnosis":{"types":0},"threadState":{"active":0,"idle":5,"governorContention":0,"sqlExecuting":0,"loader":0,"resolver":0,"scoring":0,"dataLatchContention":0,"obsEntContention":0,"resEntContention":0},"systemResources":{"initResources":[{"physicalCores":16},{"logicalCores":16},{"totalMemory":"62.6GB"},{"availableMemory":"53.9GB"}],"currResources":[{"availableMemory":"49.4GB"},{"processMemory":"5.4GB"},{"activeThreads":0},{"workerThreads":5},{"systemLoad":[{"cpuUser":6.1},{"cpuSystem":0},{"cpuIdle":93.9},{"cpuWait":0}]}]}}}`
 	fmt.Println(jsonutil.PrettyPrint(exampleOutput, jsonIndentation))
 	// Output:
 	// {
 	//     "workload": {
-	//         "loadedRecords": 5,
-	//         "addedRecords": 2,
-	//         "deletedRecords": 0,
-	//         "reevaluations": 0,
-	//         "repairedEntities": 0,
-	//         "duration": 56,
-	//         "retries": 0,
-	//         "candidates": 19,
-	//         "actualAmbiguousTest": 0,
-	//         "cachedAmbiguousTest": 0,
-	//         "libFeatCacheHit": 219,
-	//         "libFeatCacheMiss": 73,
-	//         "unresolveTest": 1,
-	//         "abortedUnresolve": 0,
-	//         "gnrScorersUsed": 1,
-	//         "unresolveTriggers": {
-	//             "normalResolve": 0,
-	//             "update": 0,
-	//             "relLink": 0,
-	//             "extensiveResolve": 0,
-	//             "ambiguousNoResolve": 1,
-	//             "ambiguousMultiResolve": 0
+	//         "apiVersion": "4.0.0.25245",
+	//         "datetimestamp": "2025-09-02T16:24:39Z",
+	//         "license": {
+	//             "status": "ok",
+	//             "type": "non-production",
+	//             "dsrLimit": "ok"
 	//         },
-	//         "reresolveTriggers": {
-	//             "abortRetry": 0,
-	//             "unresolveMovement": 0,
-	//             "multipleResolvableCandidates": 0,
-	//             "resolveNewFeatures": 1,
-	//             "newFeatureFTypes": [
-	//                 {
-	//                     "DOB": 1
-	//                 }
-	//             ]
+	//         "loadedRecords": 3,
+	//         "processing": {
+	//             "addedRecords": 0,
+	//             "batchAddedRecords": 0,
+	//             "reevaluations": 0,
+	//             "repairedEntities": 0,
+	//             "deletedRecords": 0,
+	//             "details": {
+	//                 "optimizedOut": 0,
+	//                 "optimizedOutSkipped": 0,
+	//                 "newObsEnt": 0,
+	//                 "obsEntHashSame": 0,
+	//                 "obsEntHashDiff": 0,
+	//                 "filteredObsFeat": 0,
+	//                 "partiallyResolved": 0,
+	//                 "changeDeletes": 0,
+	//                 "retries": 0,
+	//                 "candidates": 0,
+	//                 "duration": 0
+	//             },
+	//             "ambiguous": {
+	//                 "actualTest": 0,
+	//                 "cachedTest": 0
+	//             }
 	//         },
-	//         "reresolveSkipped": 0,
-	//         "filteredObsFeat": 0,
-	//         "expressedFeatureCalls": [
-	//             {
-	//                 "EFCALL_ID": 1,
-	//                 "EFUNC_CODE": "PHONE_HASHER",
-	//                 "numCalls": 1
-	//             },
-	//             {
-	//                 "EFCALL_ID": 2,
-	//                 "EFUNC_CODE": "EXPRESS_ID",
-	//                 "numCalls": 1
-	//             },
-	//             {
-	//                 "EFCALL_ID": 3,
-	//                 "EFUNC_CODE": "EXPRESS_ID",
-	//                 "numCalls": 1
-	//             },
-	//             {
-	//                 "EFCALL_ID": 5,
-	//                 "EFUNC_CODE": "EXPRESS_BOM",
-	//                 "numCalls": 1
-	//             },
-	//             {
-	//                 "EFCALL_ID": 7,
-	//                 "EFUNC_CODE": "NAME_HASHER",
-	//                 "numCalls": 4
-	//             },
-	//             {
-	//                 "EFCALL_ID": 9,
-	//                 "EFUNC_CODE": "ADDR_HASHER",
-	//                 "numCalls": 1
-	//             },
-	//             {
-	//                 "EFCALL_ID": 10,
-	//                 "EFUNC_CODE": "EXPRESS_BOM",
-	//                 "numCalls": 1
-	//             },
-	//             {
-	//                 "EFCALL_ID": 14,
-	//                 "EFUNC_CODE": "EXPRESS_ID",
-	//                 "numCalls": 1
-	//             },
-	//             {
-	//                 "EFCALL_ID": 16,
-	//                 "EFUNC_CODE": "EXPRESS_ID",
-	//                 "numCalls": 4
+	//         "caches": {
+	//             "libFeatCacheHit": 0,
+	//             "libFeatCacheMiss": 0,
+	//             "resFeatStatCacheHit": 0,
+	//             "resFeatStatCacheMiss": 0,
+	//             "libFeatInsert": 0,
+	//             "resFeatStatInsert": 0,
+	//             "resFeatStatUpdateAttempt": 0,
+	//             "resFeatStatUpdateFail": 0
+	//         },
+	//         "lockWaits": {
+	//             "refreshLocks": {
+	//                 "maxMS": 0,
+	//                 "totalMS": 0,
+	//                 "count": 0
 	//             }
-	//         ],
-	//         "expressedFeaturesCreated": [
-	//             {
-	//                 "ADDR_KEY": 2
+	//         },
+	//         "unresolve": {
+	//             "triggers": {
+	//                 "normalResolve": 0,
+	//                 "update": 0,
+	//                 "relLink": 0,
+	//                 "extensiveResolve": 0,
+	//                 "ambiguousNoResolve": 0,
+	//                 "ambiguousMultiResolve": 0
 	//             },
-	//             {
-	//                 "ID_KEY": 7
+	//             "unresolveTest": 0,
+	//             "abortedUnresolve": 0
+	//         },
+	//         "reresolve": {
+	//             "triggers": {
+	//                 "skipped": 0,
+	//                 "abortRetry": 0,
+	//                 "unresolveMovement": 0,
+	//                 "multipleResolvableCandidates": 0,
+	//                 "resolveNewFeatures": 0,
+	//                 "newFeatureFTypes": []
 	//             },
-	//             {
-	//                 "NAME_KEY": 14
-	//             },
-	//             {
-	//                 "PHONE_KEY": 1
-	//             },
-	//             {
-	//                 "SEARCH_KEY": 2
-	//             }
-	//         ],
-	//         "scoredPairs": [
-	//             {
-	//                 "ACCT_NUM": 16
-	//             },
-	//             {
-	//                 "ADDRESS": 16
-	//             },
-	//             {
-	//                 "DOB": 25
-	//             },
-	//             {
-	//                 "GENDER": 16
-	//             },
-	//             {
-	//                 "LOGIN_ID": 16
-	//             },
-	//             {
-	//                 "NAME": 19
-	//             },
-	//             {
-	//                 "PHONE": 16
-	//             },
-	//             {
-	//                 "SSN": 19
-	//             }
-	//         ],
-	//         "cacheHit": [
-	//             {
-	//                 "ADDRESS": 12
-	//             },
-	//             {
-	//                 "DOB": 18
-	//             },
-	//             {
-	//                 "NAME": 13
-	//             },
-	//             {
-	//                 "PHONE": 15
-	//             }
-	//         ],
-	//         "cacheMiss": [
-	//             {
-	//                 "ADDRESS": 4
-	//             },
-	//             {
-	//                 "DOB": 7
-	//             },
-	//             {
-	//                 "NAME": 6
-	//             },
-	//             {
-	//                 "PHONE": 1
-	//             }
-	//         ],
+	//             "suppressedCandidateBuildersForReresolve": [],
+	//             "suppressedScoredFeatureTypeForReresolve": []
+	//         },
+	//         "expressedFeatures": {
+	//             "calls": [],
+	//             "created": []
+	//         },
+	//         "scoring": {
+	//             "scoredPairs": [],
+	//             "cacheHit": [],
+	//             "cacheMiss": [],
+	//             "suppressedScoredFeatureType": [],
+	//             "suppressedDisclosedRelationshipDomainCount": 0
+	//         },
 	//         "redoTriggers": [],
-	//         "latchContention": [],
-	//         "highContentionFeat": [],
-	//         "highContentionResEnt": [],
+	//         "contention": {
+	//             "valuelatch": [],
+	//             "feature": [],
+	//             "resent": []
+	//         },
 	//         "genericDetect": [],
-	//         "candidateBuilders": [
-	//             {
-	//                 "ACCT_NUM": 7
-	//             },
-	//             {
-	//                 "ADDR_KEY": 7
-	//             },
-	//             {
-	//                 "DOB": 7
-	//             },
-	//             {
-	//                 "ID_KEY": 9
-	//             },
-	//             {
-	//                 "LOGIN_ID": 7
-	//             },
-	//             {
-	//                 "NAME_KEY": 9
-	//             },
-	//             {
-	//                 "PHONE": 7
-	//             },
-	//             {
-	//                 "PHONE_KEY": 7
-	//             },
-	//             {
-	//                 "SEARCH_KEY": 7
-	//             },
-	//             {
-	//                 "SSN": 9
-	//             }
-	//         ],
-	//         "suppressedCandidateBuilders": [],
-	//         "suppressedScoredFeatureType": [],
-	//         "reducedScoredFeatureType": [],
-	//         "suppressedDisclosedRelationshipDomainCount": 0,
-	//         "CorruptEntityTestDiagnosis": {},
+	//         "candidates": {
+	//             "candidateBuilders": [],
+	//             "suppressedCandidateBuilders": []
+	//         },
+	//         "repairDiagnosis": {
+	//             "types": 0
+	//         },
 	//         "threadState": {
 	//             "active": 0,
-	//             "idle": 4,
+	//             "idle": 5,
+	//             "governorContention": 0,
 	//             "sqlExecuting": 0,
 	//             "loader": 0,
 	//             "resolver": 0,
@@ -2168,35 +2071,35 @@ func ExampleSzengine_GetStats_output() {
 	//                     "totalMemory": "62.6GB"
 	//                 },
 	//                 {
-	//                     "availableMemory": "49.5GB"
+	//                     "availableMemory": "53.9GB"
 	//                 }
 	//             ],
 	//             "currResources": [
 	//                 {
-	//                     "availableMemory": "47.4GB"
+	//                     "availableMemory": "49.4GB"
+	//                 },
+	//                 {
+	//                     "processMemory": "5.4GB"
 	//                 },
 	//                 {
 	//                     "activeThreads": 0
 	//                 },
 	//                 {
-	//                     "workerThreads": 4
+	//                     "workerThreads": 5
 	//                 },
 	//                 {
 	//                     "systemLoad": [
 	//                         {
-	//                             "cpuUser": 13.442277
+	//                             "cpuUser": 6.1
 	//                         },
 	//                         {
-	//                             "cpuSystem": 2.635741
+	//                             "cpuSystem": 0
 	//                         },
 	//                         {
-	//                             "cpuIdle": 82.024246
+	//                             "cpuIdle": 93.9
 	//                         },
 	//                         {
-	//                             "cpuWait": 1.634159
-	//                         },
-	//                         {
-	//                             "cpuSoftIrq": 0.263574
+	//                             "cpuWait": 0
 	//                         }
 	//                     ]
 	//                 }
