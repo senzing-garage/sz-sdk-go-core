@@ -74,7 +74,7 @@ func ExampleSzproduct_GetVersion() {
 		return
 	}
 
-	redactKeys := []string{"BUILD_DATE", "BUILD_NUMBER", "BUILD_VERSION"}
+	redactKeys := []string{"BUILD_DATE", "BUILD_NUMBER", "BUILD_VERSION", "ENGINE_SCHEMA_VERSION", "VERSION"}
 	fmt.Println(jsonutil.PrettyPrint(jsonutil.Truncate(result, AllLines, redactKeys...), jsonIndentation))
 	// Output:
 	// {
@@ -83,11 +83,9 @@ func ExampleSzproduct_GetVersion() {
 	//     },
 	//     "PRODUCT_NAME": "Senzing SDK",
 	//     "SCHEMA_VERSION": {
-	//         "ENGINE_SCHEMA_VERSION": "4.0",
 	//         "MAXIMUM_REQUIRED_SCHEMA_VERSION": "4.99",
 	//         "MINIMUM_REQUIRED_SCHEMA_VERSION": "4.0"
-	//     },
-	//     "VERSION": "4.0.0"
+	//     }
 	// }
 }
 
