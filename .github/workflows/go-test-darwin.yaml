@@ -17,6 +17,8 @@ permissions:
 jobs:
   go-test-darwin:
     name: "Go test with Senzing: ${{ matrix.senzingsdk-version }}; OS: ${{ matrix.os }}; Go: ${{ matrix.go }}"
+    outputs:
+      status: ${{ job.status }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
