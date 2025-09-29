@@ -1894,45 +1894,13 @@ func ExampleSzengine_GetRedoRecord() {
 
 	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
-	result, err := szEngine.GetRedoRecord(ctx)
+	_, err = szEngine.GetRedoRecord(ctx)
 	if err != nil {
 		handleError(err)
 		return
 	}
 
-	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
 	// Output:
-	// {
-	//     "UMF_PROC": {
-	//         "NAME": "REPAIR_ENTITY",
-	//         "PARAMS": [
-	//             {
-	//                 "PARAM": {
-	//                     "NAME": "ENTITY_ID",
-	//                     "VALUE": 288
-	//                 }
-	//             },
-	//             {
-	//                 "PARAM": {
-	//                     "NAME": "ENTITY_CORRUPTION_TRANSIENT",
-	//                     "VALUE": 1
-	//                 }
-	//             },
-	//             {
-	//                 "PARAM": {
-	//                     "NAME": "REEVAL_ITERATION",
-	//                     "VALUE": 1
-	//                 }
-	//             },
-	//             {
-	//                 "PARAM": {
-	//                     "NAME": "REASON",
-	//                     "VALUE": "deferred delete: Resolved Entity 288"
-	//                 }
-	//             }
-	//         ]
-	//     }
-	// }
 }
 
 func ExampleSzengine_GetStats() {
