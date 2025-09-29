@@ -172,7 +172,7 @@ func ExampleSzengine_CountRedoRecords() {
 		handleError(err)
 		return
 	}
-
+	// Output:
 }
 
 func ExampleSzengine_ExportCsvEntityReport() {
@@ -3167,6 +3167,7 @@ func ExampleSzEngine_ProcessRedoRecord_withInfo() {
 		handleError(err)
 		return
 	}
+	// Output:
 }
 
 func ExampleSzengine_SearchByAttributes() {
