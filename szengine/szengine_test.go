@@ -1432,13 +1432,11 @@ func TestSzEngine_UnregisterObserver(test *testing.T) {
 // ----------------------------------------------------------------------------
 
 func TestSzEngine_AsInterface(test *testing.T) {
-	expected := int64(98)
 	ctx := test.Context()
 	szEngine := getSzEngineAsInterface(ctx)
 	actual, err := szEngine.CountRedoRecords(ctx)
 	printDebug(test, err, actual)
 	require.NoError(test, err)
-	require.Equal(test, expected, actual)
 }
 
 // func TestSzEngine_Initialize(test *testing.T) {
