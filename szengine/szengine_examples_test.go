@@ -174,7 +174,7 @@ func ExampleSzengine_CountRedoRecords() {
 	}
 
 	fmt.Println(result)
-	// Output: 4
+	// Output: 98
 }
 
 func ExampleSzengine_ExportCsvEntityReport() {
@@ -1905,12 +1905,35 @@ func ExampleSzengine_GetRedoRecord() {
 	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
 	// Output:
 	// {
-	//     "REASON": "deferred delete",
-	//     "DATA_SOURCE": "CUSTOMERS",
-	//     "RECORD_ID": "1003",
-	//     "REEVAL_ITERATION": 1,
-	//     "ENTITY_CORRUPTION_TRANSIENT": true,
-	//     "DSRC_ACTION": "X"
+	//     "UMF_PROC": {
+	//         "NAME": "REPAIR_ENTITY",
+	//         "PARAMS": [
+	//             {
+	//                 "PARAM": {
+	//                     "NAME": "ENTITY_ID",
+	//                     "VALUE": 288
+	//                 }
+	//             },
+	//             {
+	//                 "PARAM": {
+	//                     "NAME": "ENTITY_CORRUPTION_TRANSIENT",
+	//                     "VALUE": 1
+	//                 }
+	//             },
+	//             {
+	//                 "PARAM": {
+	//                     "NAME": "REEVAL_ITERATION",
+	//                     "VALUE": 1
+	//                 }
+	//             },
+	//             {
+	//                 "PARAM": {
+	//                     "NAME": "REASON",
+	//                     "VALUE": "deferred delete: Resolved Entity 288"
+	//                 }
+	//             }
+	//         ]
+	//     }
 	// }
 }
 
@@ -3150,11 +3173,11 @@ func ExampleSzEngine_ProcessRedoRecord_withInfo() {
 	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
 	// Output:
 	// {
-	//     "DATA_SOURCE": "CUSTOMERS",
-	//     "RECORD_ID": "1002",
+	//     "DATA_SOURCE": "",
+	//     "RECORD_ID": "",
 	//     "AFFECTED_ENTITIES": [
 	//         {
-	//             "ENTITY_ID": 100001
+	//             "ENTITY_ID": 90
 	//         }
 	//     ]
 	// }
