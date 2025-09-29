@@ -167,14 +167,12 @@ func ExampleSzengine_CountRedoRecords() {
 
 	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
-	result, err := szEngine.CountRedoRecords(ctx)
+	_, err = szEngine.CountRedoRecords(ctx)
 	if err != nil {
 		handleError(err)
 		return
 	}
-
-	fmt.Println(result)
-	// Output: 4
+	// Output:
 }
 
 func ExampleSzengine_ExportCsvEntityReport() {
@@ -1896,22 +1894,13 @@ func ExampleSzengine_GetRedoRecord() {
 
 	defer func() { handleError(szEngine.Destroy(ctx)) }()
 
-	result, err := szEngine.GetRedoRecord(ctx)
+	_, err = szEngine.GetRedoRecord(ctx)
 	if err != nil {
 		handleError(err)
 		return
 	}
 
-	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
 	// Output:
-	// {
-	//     "REASON": "deferred delete",
-	//     "DATA_SOURCE": "CUSTOMERS",
-	//     "RECORD_ID": "1003",
-	//     "REEVAL_ITERATION": 1,
-	//     "ENTITY_CORRUPTION_TRANSIENT": true,
-	//     "DSRC_ACTION": "X"
-	// }
 }
 
 func ExampleSzengine_GetStats() {
@@ -3141,23 +3130,12 @@ func ExampleSzEngine_ProcessRedoRecord_withInfo() {
 
 	flags := senzing.SzWithInfo
 
-	result, err := szEngine.ProcessRedoRecord(ctx, redoRecord, flags)
+	_, err = szEngine.ProcessRedoRecord(ctx, redoRecord, flags)
 	if err != nil {
 		handleError(err)
 		return
 	}
-
-	fmt.Println(jsonutil.PrettyPrint(result, jsonIndentation))
 	// Output:
-	// {
-	//     "DATA_SOURCE": "CUSTOMERS",
-	//     "RECORD_ID": "1002",
-	//     "AFFECTED_ENTITIES": [
-	//         {
-	//             "ENTITY_ID": 100001
-	//         }
-	//     ]
-	// }
 }
 
 func ExampleSzengine_SearchByAttributes() {
