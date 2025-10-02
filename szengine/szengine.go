@@ -168,6 +168,9 @@ func (client *Szengine) CloseExportReport(ctx context.Context, exportHandle uint
 /*
 Method CountRedoRecords gets the number of redo records pending processing.
 
+WARNING: When there is a large number of redo records, this is an expensive call.
+Hint: If processing redo records, use result of [Szengine.GetRedoRecord] to manage looping.
+
 Input
   - ctx: A context to control lifecycle.
 
