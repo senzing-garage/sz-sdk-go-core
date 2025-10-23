@@ -1721,7 +1721,7 @@ func printDebug(t *testing.T, err error, items ...any) {
 
 	if printErrors {
 		if err != nil {
-			t.Logf("Error: (%T) %s\n", err, err.Error())
+			t.Logf("Error: %s\n", err.Error())
 		}
 	}
 
