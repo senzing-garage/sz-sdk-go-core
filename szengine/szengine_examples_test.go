@@ -5,6 +5,7 @@ package szengine_test
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/senzing-garage/go-helpers/jsonutil"
 	"github.com/senzing-garage/go-helpers/truthset"
@@ -311,7 +312,7 @@ func ExampleSzengine_FetchNext() {
 		handleError(szEngine.CloseExportReport(ctx, exportHandle))
 	}()
 
-	jsonEntityReport := ""
+	var jsonEntityReportBuilder strings.Builder
 
 	for {
 		jsonEntityReportFragment, err := szEngine.FetchNext(ctx, exportHandle)
@@ -324,8 +325,11 @@ func ExampleSzengine_FetchNext() {
 			break
 		}
 
-		jsonEntityReport += jsonEntityReportFragment
+		jsonEntityReportBuilder.WriteString(jsonEntityReportFragment)
 	}
+
+	_ = jsonEntityReportBuilder.String()
+
 	// Output:
 }
 
