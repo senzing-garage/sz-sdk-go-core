@@ -1,0 +1,10 @@
+title = "gitleaks config"
+
+[allowlist]
+description = "Ignore ENTITY_KEY with REDACTED value in test file"
+
+# Match the exact pattern: "ENTITY_KEY": "REDACTED" or "ENTITY_KEY":"REDACTED"
+regexes = ['''"ENTITY_KEY"\s*:\s*"REDACTED"''']
+
+# Only apply to the specific test file
+paths = ['''szengine/szengine_examples_test\.go''']
