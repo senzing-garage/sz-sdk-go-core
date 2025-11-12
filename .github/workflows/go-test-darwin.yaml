@@ -60,6 +60,11 @@ jobs:
             echo  CGO_LDFLAGS="-L${SENZING_PATH}/er/lib -lSz -Wl,-no_warn_duplicate_libraries"
           } >> "$GITHUB_ENV"
 
+      - name: Copy /etc files
+        run: |
+          sudo mkdir -p "${SENZING_PATH}/etc"
+          sudo cp testdata/senzing-license/g2.lic "${SENZING_PATH}/er/etc/g2.lic"
+
       - name: Copy test database files
         run: |
           mkdir -p /tmp/sqlite
@@ -80,7 +85,7 @@ jobs:
         uses: senzing-factory/github-action-core-dumps@v1
         with:
           analyze-core-dumps: "true"
-          core-file-suffix: go-${{ matrix.os }}
+          core-file-suffix: go-${{ matrix.os }}-${{ matrix.go }}-${{ matrix.senzingsdk-version }}
 
       - name: Store coverage file
         uses: actions/upload-artifact@v5
