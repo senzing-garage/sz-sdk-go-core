@@ -29,6 +29,7 @@
     "gotest",
     "gotestfmt",
     "gotesttools",
+    "GOTRACEBACK",
     "govulncheck",
     "ICLA",
     "LDFLAGS",
