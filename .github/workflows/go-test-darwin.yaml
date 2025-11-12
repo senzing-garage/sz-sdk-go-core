@@ -70,9 +70,22 @@ jobs:
           mkdir -p /tmp/sqlite
           cp testdata/sqlite/G2C.db /tmp/sqlite/
 
+      - name: Enable core dumps
+        uses: senzing-factory/github-action-core-dumps@v1
+        with:
+          enable-core-dumps: "true"
+
       - name: Run go test
         run: |
-          go test -exec "${GITHUB_WORKSPACE}/bin/macos_exec_dyld.sh" -json -v -p 1 -coverprofile="./cover-${{ matrix.senzingsdk-version }}.out" -covermode=atomic -coverpkg=./... ./...  2>&1 | tee "/tmp/gotest-${{ matrix.senzingsdk-version }}.log" | gotestfmt
+          ulimit -c unlimited
+          GOTRACEBACK=crash go test -exec "${GITHUB_WORKSPACE}/bin/macos_exec_dyld.sh" -json -v -p 1 -coverprofile="./cover-${{ matrix.senzingsdk-version }}.out" -covermode=atomic -coverpkg=./... ./...  2>&1 | tee "/tmp/gotest-${{ matrix.senzingsdk-version }}.log" | gotestfmt
+
+      - if: always()
+        name: Analyze core dumps
+        uses: senzing-factory/github-action-core-dumps@v1
+        with:
+          analyze-core-dumps: "true"
+          core-file-suffix: go-${{ matrix.os }}-${{ matrix.go }}-${{ matrix.senzingsdk-version }}
 
       - name: Store coverage file
         uses: actions/upload-artifact@v5
