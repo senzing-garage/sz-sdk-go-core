@@ -4,7 +4,7 @@ go 1.24.4
 
 require (
 	github.com/aquilax/truncate v1.0.1
-	github.com/senzing-garage/go-helpers v0.6.13
+	github.com/senzing-garage/go-helpers v0.6.14
 	github.com/senzing-garage/go-logging v1.5.3
 	github.com/senzing-garage/go-messaging v1.5.3
 	github.com/senzing-garage/go-observing v0.3.6
@@ -15,7 +15,7 @@ require (
 require (
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
-	golang.org/x/exp v0.0.0-20251023183803-a4bb9ffd2546 // indirect
+	golang.org/x/exp v0.0.0-20251219203646-944ab1f22d93 // indirect
 	golang.org/x/net v0.46.0 // indirect
 	golang.org/x/sys v0.38.0 // indirect
 	golang.org/x/text v0.30.0 // indirect
