@@ -409,7 +409,7 @@ This project adheres to [Semantic Versioning].
 
 ### Changed in 0.1.9
 
-- Added GetObserverOrigin() and SetObserverOrigin() to g2* packages
+- Added GetObserverOrigin() and SetObserverOrigin() to g2\* packages
 - Update dependencies
   - github.com/senzing/g2-sdk-go v0.6.2
   - github.com/senzing-garage/go-observing v0.2.2

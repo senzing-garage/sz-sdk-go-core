@@ -203,7 +203,7 @@ Create a code coverage map.
 
    ```
 
-  Visit [localhost:9174](http://localhost:9174).
+Visit [localhost:9174](http://localhost:9174).
 
 ## References
 
