@@ -111,6 +111,7 @@ linters:
     - gochecknoglobals
     - lll
     - paralleltest
+    - prealloc
   exclusions:
     generated: lax
     presets:
@@ -162,7 +163,7 @@ linters:
         - '.+/szengine_test\.TestMetadataForWhyRecords$'
         - '.+/szengine_test\.TestMetadataForWhySearch$'
     funlen:
-      lines: 100
+      lines: 120
       statements: 50
     goconst:
       min-occurrences: 5

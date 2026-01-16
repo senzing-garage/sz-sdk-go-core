@@ -19,6 +19,7 @@ import (
 	"github.com/senzing-garage/go-helpers/testfixtures"
 	"github.com/senzing-garage/go-helpers/truthset"
 	"github.com/senzing-garage/go-observing/observer"
+	"github.com/senzing-garage/sz-sdk-go-core/getversion"
 	"github.com/senzing-garage/sz-sdk-go-core/szabstractfactory"
 	"github.com/senzing-garage/sz-sdk-go-core/szconfig"
 	"github.com/senzing-garage/sz-sdk-go-core/szconfigmanager"
@@ -89,6 +90,7 @@ var (
 		ID:       "Observer 1",
 		IsSilent: true,
 	}
+	senzingVersion    = 0
 	szEngineSingleton *szengine.Szengine
 )
 
@@ -101,6 +103,10 @@ type GetEntityByRecordIDResponse struct {
 // ----------------------------------------------------------------------------
 // Interface methods
 // ----------------------------------------------------------------------------
+
+func TestSzEngine_PrintSenzingVersion(test *testing.T) {
+	test.Logf("Detected Senzing version: %d", senzingVersion)
+}
 
 func TestSzEngine_AddRecord(test *testing.T) {
 	ctx := test.Context()
@@ -1751,6 +1757,9 @@ func TestMain(m *testing.M) {
 }
 
 func setup() {
+	ctx := context.Background()
+	senzingVersion = getversion.GetSenzingVersion(ctx)
+
 	setupDirectories()
 	setupDatabase()
 
@@ -2156,6 +2165,8 @@ func getTestCasesForAddRecord() []TestMetadataForAddRecord {
 }
 
 func getTestCasesForDeleteRecord() []TestMetadataForDeleteRecord {
+	var addendum []TestMetadataForDeleteRecord
+
 	result := []TestMetadataForDeleteRecord{
 		{
 			name:               "badDataSourceCode",
@@ -2183,18 +2194,6 @@ func getTestCasesForDeleteRecord() []TestMetadataForDeleteRecord {
 			name: "default",
 		},
 		{
-			name:               "nilDataSourceCode",
-			dataSourceCode:     nilDataSourceCode,
-			expectedErr:        szerror.ErrSzConfiguration,
-			expectedErrMessage: `{"function":"szengine.(*Szengine).DeleteRecord","error":{"id":"SZSDK60044004","reason":"SENZ2136|Error in input mapping, missing required field[DATA_SOURCE]"}}`,
-		},
-		{
-			name:               "nilRecordID",
-			expectedErr:        szerror.ErrSzNotInitialized,
-			expectedErrMessage: `{"function": "szengine.(*Szengine).DeleteRecord", "error":{"id":"SZSDK60044004","reason":"SENZ0053|RECORD_ID must be provided"}}`,
-			recordID:           nilRecordID,
-		},
-		{
 			name:  "withInfo",
 			flags: senzing.SzWithInfo,
 		},
@@ -2210,21 +2209,71 @@ func getTestCasesForDeleteRecord() []TestMetadataForDeleteRecord {
 			flags:    senzing.SzWithInfo,
 			recordID: badRecordID,
 		},
-		{
-			name:               "withInfo_nilDataSourceCode",
-			flags:              senzing.SzWithInfo,
-			dataSourceCode:     nilDataSourceCode,
-			expectedErr:        szerror.ErrSzConfiguration,
-			expectedErrMessage: `{"function":"szengine.(*Szengine).DeleteRecord","error":{"id":"SZSDK60044005","reason":"SENZ2136|Error in input mapping, missing required field[DATA_SOURCE]"}}`,
-		},
-		{
-			name:               "withInfo_nilRecordID",
-			expectedErr:        szerror.ErrSzNotInitialized,
-			expectedErrMessage: `{"function": "szengine.(*Szengine).DeleteRecord", "error":{"id":"SZSDK60044005","reason":"SENZ0053|RECORD_ID must be provided"}}`,
-			flags:              senzing.SzWithInfo,
-			recordID:           nilRecordID,
-		},
 	}
+
+	switch {
+	case senzingVersion < 40200:
+		addendum = []TestMetadataForDeleteRecord{
+			{
+				name:               "nilDataSourceCode",
+				dataSourceCode:     nilDataSourceCode,
+				expectedErr:        szerror.ErrSzConfiguration,
+				expectedErrMessage: `{"function":"szengine.(*Szengine).DeleteRecord","error":{"id":"SZSDK60044004","reason":"SENZ2136|Error in input mapping, missing required field[DATA_SOURCE]"}}`,
+			},
+			{
+				name:               "nilRecordID",
+				expectedErr:        szerror.ErrSzNotInitialized,
+				expectedErrMessage: `{"function": "szengine.(*Szengine).DeleteRecord", "error":{"id":"SZSDK60044004","reason":"SENZ0053|RECORD_ID must be provided"}}`,
+				recordID:           nilRecordID,
+			},
+			{
+				name:               "withInfo_nilDataSourceCode",
+				flags:              senzing.SzWithInfo,
+				dataSourceCode:     nilDataSourceCode,
+				expectedErr:        szerror.ErrSzConfiguration,
+				expectedErrMessage: `{"function":"szengine.(*Szengine).DeleteRecord","error":{"id":"SZSDK60044005","reason":"SENZ2136|Error in input mapping, missing required field[DATA_SOURCE]"}}`,
+			},
+			{
+				name:               "withInfo_nilRecordID",
+				expectedErr:        szerror.ErrSzNotInitialized,
+				expectedErrMessage: `{"function": "szengine.(*Szengine).DeleteRecord", "error":{"id":"SZSDK60044005","reason":"SENZ0053|RECORD_ID must be provided"}}`,
+				flags:              senzing.SzWithInfo,
+				recordID:           nilRecordID,
+			},
+		}
+
+	default:
+		addendum = []TestMetadataForDeleteRecord{
+			{
+				name:               "nilDataSourceCode",
+				dataSourceCode:     nilDataSourceCode,
+				expectedErr:        szerror.ErrSzUnknownDataSource,
+				expectedErrMessage: `{"function":"szengine.(*Szengine).DeleteRecord","error":{"id":"SZSDK60044004","reason":"SENZ2207|Data source code [] does not exist."}}`,
+			},
+			{
+				name:               "nilRecordID",
+				expectedErr:        szerror.ErrSz,
+				expectedErrMessage: `{"function": "szengine.(*Szengine).DeleteRecord", "error":{"id":"SZSDK60044004","reason":"SENZ2288|No record ID found."}}`,
+				recordID:           nilRecordID,
+			},
+			{
+				name:               "withInfo_nilDataSourceCode",
+				flags:              senzing.SzWithInfo,
+				dataSourceCode:     nilDataSourceCode,
+				expectedErr:        szerror.ErrSzUnknownDataSource,
+				expectedErrMessage: `{"function":"szengine.(*Szengine).DeleteRecord","error":{"id":"SZSDK60044005","reason":"SENZ2207|Data source code [] does not exist."}}`,
+			},
+			{
+				name:               "withInfo_nilRecordID",
+				expectedErr:        szerror.ErrSz,
+				expectedErrMessage: `{"function": "szengine.(*Szengine).DeleteRecord", "error":{"id":"SZSDK60044005","reason":"SENZ2288|No record ID found."}}`,
+				flags:              senzing.SzWithInfo,
+				recordID:           nilRecordID,
+			},
+		}
+	}
+
+	result = append(result, addendum...)
 
 	return result
 }
@@ -2663,17 +2712,37 @@ func getTestCasesForHowEntityByEntityID() []TestMetadataForHowEntityByEntityID {
 }
 
 func getTestCasesForGetRecordPreview() []TestMetadataForGetRecordPreview {
+	var addendum []TestMetadataForGetRecordPreview
+
 	result := []TestMetadataForGetRecordPreview{
-		{
-			name:               "badRecordDefinition",
-			expectedErr:        szerror.ErrSzBadInput,
-			expectedErrMessage: `{"function":"szengine.(*Szengine).GetRecordPreview","error":{"id":"SZSDK60044061","reason":"SENZ0002|Invalid Message"}}`,
-			recordDefinition:   badRecordDefinition,
-		},
 		{
 			name: "default",
 		},
 	}
+
+	switch {
+	case senzingVersion < 40200:
+		addendum = []TestMetadataForGetRecordPreview{
+			{
+				name:               "badRecordDefinition",
+				expectedErr:        szerror.ErrSzBadInput,
+				expectedErrMessage: `{"function":"szengine.(*Szengine).GetRecordPreview","error":{"id":"SZSDK60044061","reason":"SENZ0002|Invalid Message"}}`,
+				recordDefinition:   badRecordDefinition,
+			},
+		}
+
+	default:
+		addendum = []TestMetadataForGetRecordPreview{
+			{
+				name:               "badRecordDefinition",
+				expectedErr:        szerror.ErrSzBadInput,
+				expectedErrMessage: `{"function":"szengine.(*Szengine).GetRecordPreview","error":{"id":"SZSDK60044061","reason":"SENZ3121|JSON Parsing Failure [code=3,offset=0]"}}`,
+				recordDefinition:   badRecordDefinition,
+			},
+		}
+	}
+
+	result = append(result, addendum...)
 
 	return result
 }
