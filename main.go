@@ -146,6 +146,17 @@ func demonstrateConfigFunctions(ctx context.Context, szAbstractFactory senzing.S
 	failOnError(5106, err)
 }
 
+// func demonstrateDeleteRecord(ctx context.Context, szEngine senzing.SzEngine) (string, error) {
+// 	var (
+// 		flags  = senzing.SzWithInfo
+// 		result string
+// 	)
+
+// 	result, err := szEngine.DeleteRecord(ctx, "xyssy", "1", flags)
+
+// 	return result, wraperror.Errorf(err, wraperror.NoMessage)
+// }
+
 func demonstrateSenzingFunctions(ctx context.Context, szAbstractFactory senzing.SzAbstractFactory) {
 	szDiagnostic, err := szAbstractFactory.CreateDiagnostic(ctx)
 	failOnError(5201, err)
@@ -167,11 +178,22 @@ func demonstrateSenzingFunctions(ctx context.Context, szAbstractFactory senzing.
 	failOnError(5205, err)
 	logger.Log(2003, withInfo)
 
+	// withInfo, err = demonstrateDeleteRecord(ctx, szEngine)
+	// failOnError(5205, err)
+	// logger.Log(2003, withInfo)
+
 	// Using SzProduct: Show license metadata.
 
 	license, err := szProduct.GetLicense(ctx)
 	failOnError(5206, err)
 	logger.Log(2004, license)
+
+	// Using SzProduct: Show license metadata.
+
+	version, err := szProduct.GetVersion(ctx)
+	fmt.Println(version)
+	failOnError(5208, err)
+	logger.Log(2005, version)
 
 	// Using SzEngine: Purge repository again.
 
