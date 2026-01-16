@@ -2209,35 +2209,7 @@ func getTestCasesForDeleteRecord() []TestMetadataForDeleteRecord {
 
 	switch {
 	case senzingVersion < 40200:
-		addendum = []TestMetadataForDeleteRecord{
-			{
-				name:               "nilDataSourceCode",
-				dataSourceCode:     nilDataSourceCode,
-				expectedErr:        szerror.ErrSzConfiguration,
-				expectedErrMessage: `{"function":"szengine.(*Szengine).DeleteRecord","error":{"id":"SZSDK60044004","reason":"SENZ2136|Error in input mapping, missing required field[DATA_SOURCE]"}}`,
-			},
-			{
-				name:               "nilRecordID",
-				expectedErr:        szerror.ErrSzNotInitialized,
-				expectedErrMessage: `{"function": "szengine.(*Szengine).DeleteRecord", "error":{"id":"SZSDK60044004","reason":"SENZ0053|RECORD_ID must be provided"}}`,
-				recordID:           nilRecordID,
-			},
-			{
-				name:               "withInfo_nilDataSourceCode",
-				flags:              senzing.SzWithInfo,
-				dataSourceCode:     nilDataSourceCode,
-				expectedErr:        szerror.ErrSzConfiguration,
-				expectedErrMessage: `{"function":"szengine.(*Szengine).DeleteRecord","error":{"id":"SZSDK60044005","reason":"SENZ2136|Error in input mapping, missing required field[DATA_SOURCE]"}}`,
-			},
-			{
-				name:               "withInfo_nilRecordID",
-				expectedErr:        szerror.ErrSzNotInitialized,
-				expectedErrMessage: `{"function": "szengine.(*Szengine).DeleteRecord", "error":{"id":"SZSDK60044005","reason":"SENZ0053|RECORD_ID must be provided"}}`,
-				flags:              senzing.SzWithInfo,
-				recordID:           nilRecordID,
-			},
-		}
-	default:
+
 		addendum = []TestMetadataForDeleteRecord{
 			{
 				name:               "nilDataSourceCode",
@@ -2262,6 +2234,36 @@ func getTestCasesForDeleteRecord() []TestMetadataForDeleteRecord {
 				name:               "withInfo_nilRecordID",
 				expectedErr:        szerror.ErrSz,
 				expectedErrMessage: `{"function": "szengine.(*Szengine).DeleteRecord", "error":{"id":"SZSDK60044005","reason":"SENZ2288|No record ID found."}}`,
+				flags:              senzing.SzWithInfo,
+				recordID:           nilRecordID,
+			},
+		}
+
+	default:
+		addendum = []TestMetadataForDeleteRecord{
+			{
+				name:               "nilDataSourceCode",
+				dataSourceCode:     nilDataSourceCode,
+				expectedErr:        szerror.ErrSzConfiguration,
+				expectedErrMessage: `{"function":"szengine.(*Szengine).DeleteRecord","error":{"id":"SZSDK60044004","reason":"SENZ2136|Error in input mapping, missing required field[DATA_SOURCE]"}}`,
+			},
+			{
+				name:               "nilRecordID",
+				expectedErr:        szerror.ErrSzNotInitialized,
+				expectedErrMessage: `{"function": "szengine.(*Szengine).DeleteRecord", "error":{"id":"SZSDK60044004","reason":"SENZ0053|RECORD_ID must be provided"}}`,
+				recordID:           nilRecordID,
+			},
+			{
+				name:               "withInfo_nilDataSourceCode",
+				flags:              senzing.SzWithInfo,
+				dataSourceCode:     nilDataSourceCode,
+				expectedErr:        szerror.ErrSzConfiguration,
+				expectedErrMessage: `{"function":"szengine.(*Szengine).DeleteRecord","error":{"id":"SZSDK60044005","reason":"SENZ2136|Error in input mapping, missing required field[DATA_SOURCE]"}}`,
+			},
+			{
+				name:               "withInfo_nilRecordID",
+				expectedErr:        szerror.ErrSzNotInitialized,
+				expectedErrMessage: `{"function": "szengine.(*Szengine).DeleteRecord", "error":{"id":"SZSDK60044005","reason":"SENZ0053|RECORD_ID must be provided"}}`,
 				flags:              senzing.SzWithInfo,
 				recordID:           nilRecordID,
 			},
@@ -2721,16 +2723,17 @@ func getTestCasesForGetRecordPreview() []TestMetadataForGetRecordPreview {
 			{
 				name:               "badRecordDefinition",
 				expectedErr:        szerror.ErrSzBadInput,
-				expectedErrMessage: `{"function":"szengine.(*Szengine).GetRecordPreview","error":{"id":"SZSDK60044061","reason":"SENZ0002|Invalid Message"}}`,
+				expectedErrMessage: `{"function":"szengine.(*Szengine).GetRecordPreview","error":{"id":"SZSDK60044061","reason":"SENZ3121|JSON Parsing Failure [code=3,offset=0]"}}`,
 				recordDefinition:   badRecordDefinition,
 			},
 		}
+
 	default:
 		addendum = []TestMetadataForGetRecordPreview{
 			{
 				name:               "badRecordDefinition",
 				expectedErr:        szerror.ErrSzBadInput,
-				expectedErrMessage: `{"function":"szengine.(*Szengine).GetRecordPreview","error":{"id":"SZSDK60044061","reason":"SENZ3121|JSON Parsing Failure [code=3,offset=0]"}}`,
+				expectedErrMessage: `{"function":"szengine.(*Szengine).GetRecordPreview","error":{"id":"SZSDK60044061","reason":"SENZ0002|Invalid Message"}}`,
 				recordDefinition:   badRecordDefinition,
 			},
 		}
