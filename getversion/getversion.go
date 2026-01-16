@@ -11,7 +11,7 @@ import (
 
 const (
 	majorMultiplier      = 10000
-	minorMultiplier      = 1000
+	minorMultiplier      = 100
 	semanticVersionParts = 3
 )
 
