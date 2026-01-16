@@ -2213,7 +2213,6 @@ func getTestCasesForDeleteRecord() []TestMetadataForDeleteRecord {
 
 	switch {
 	case senzingVersion < 40200:
-
 		addendum = []TestMetadataForDeleteRecord{
 			{
 				name:               "nilDataSourceCode",
@@ -2723,7 +2722,6 @@ func getTestCasesForGetRecordPreview() []TestMetadataForGetRecordPreview {
 
 	switch {
 	case senzingVersion < 40200:
-
 		addendum = []TestMetadataForGetRecordPreview{
 			{
 				name:               "badRecordDefinition",
