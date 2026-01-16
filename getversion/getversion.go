@@ -9,6 +9,12 @@ import (
 	"github.com/senzing-garage/sz-sdk-go-core/szproduct"
 )
 
+const (
+	majorMultiplier      = 10000
+	minorMultiplier      = 1000
+	semanticVersionParts = 3
+)
+
 type SenzingVersionResponse struct {
 	Version string `json:"VERSION"`
 }
@@ -29,13 +35,17 @@ Output
   - An integer in the base-ten form MMmmPP.
 */
 func GetSenzingVersion(ctx context.Context) int {
-
 	var result int
 
 	szProduct := &szproduct.Szproduct{}
-	versionJSON, err := szProduct.GetVersion(ctx)
 
-	senzingVersionResponse := SenzingVersionResponse{}
+	versionJSON, err := szProduct.GetVersion(ctx)
+	if err != nil {
+		panic(err)
+	}
+
+	senzingVersionResponse := SenzingVersionResponse{} //exhaustruct:ignore
+
 	err = json.Unmarshal([]byte(versionJSON), &senzingVersionResponse)
 	if err != nil {
 		panic(err)
@@ -43,20 +53,23 @@ func GetSenzingVersion(ctx context.Context) int {
 
 	// Parse semantic version string (Major.Minor.Patch)
 	parts := strings.Split(senzingVersionResponse.Version, ".")
-	if len(parts) >= 3 {
+	if len(parts) >= semanticVersionParts {
 		major, err := strconv.Atoi(parts[0])
 		if err != nil {
 			panic(err)
 		}
+
 		minor, err := strconv.Atoi(parts[1])
 		if err != nil {
 			panic(err)
 		}
+
 		patch, err := strconv.Atoi(parts[2])
 		if err != nil {
 			panic(err)
 		}
-		result = (major * 10000) + (minor * 100) + patch
+
+		result = (major * majorMultiplier) + (minor * minorMultiplier) + patch
 	}
 
 	return result

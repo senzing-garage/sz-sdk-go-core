@@ -1755,6 +1755,7 @@ func TestMain(m *testing.M) {
 func setup() {
 	ctx := context.Background()
 	senzingVersion = getversion.GetSenzingVersion(ctx)
+
 	setupDirectories()
 	setupDatabase()
 
@@ -2160,6 +2161,8 @@ func getTestCasesForAddRecord() []TestMetadataForAddRecord {
 }
 
 func getTestCasesForDeleteRecord() []TestMetadataForDeleteRecord {
+	var addendum []TestMetadataForDeleteRecord
+
 	result := []TestMetadataForDeleteRecord{
 		{
 			name:               "badDataSourceCode",
@@ -2204,7 +2207,6 @@ func getTestCasesForDeleteRecord() []TestMetadataForDeleteRecord {
 		},
 	}
 
-	addendum := []TestMetadataForDeleteRecord{}
 	switch {
 	case senzingVersion < 40200:
 		addendum = []TestMetadataForDeleteRecord{
@@ -2705,13 +2707,14 @@ func getTestCasesForHowEntityByEntityID() []TestMetadataForHowEntityByEntityID {
 }
 
 func getTestCasesForGetRecordPreview() []TestMetadataForGetRecordPreview {
+	var addendum []TestMetadataForGetRecordPreview
+
 	result := []TestMetadataForGetRecordPreview{
 		{
 			name: "default",
 		},
 	}
 
-	addendum := []TestMetadataForGetRecordPreview{}
 	switch {
 	case senzingVersion < 40200:
 		addendum = []TestMetadataForGetRecordPreview{
