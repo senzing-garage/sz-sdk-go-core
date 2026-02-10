@@ -2166,7 +2166,6 @@ func getTestCasesForAddRecord() []TestMetadataForAddRecord {
 
 func getTestCasesForDeleteRecord() []TestMetadataForDeleteRecord {
 	// var addendum []TestMetadataForDeleteRecord
-
 	result := []TestMetadataForDeleteRecord{
 		{
 			name:               "badDataSourceCode",
