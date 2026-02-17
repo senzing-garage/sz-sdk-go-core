@@ -35,6 +35,7 @@
     "GOTRACEBACK",
     "govulncheck",
     "ICLA",
+    "kernelsam",
     "LDFLAGS",
     "multiplatform",
     "OSARCH",
