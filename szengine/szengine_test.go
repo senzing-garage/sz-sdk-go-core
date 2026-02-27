@@ -2212,7 +2212,7 @@ func getTestCasesForDeleteRecord() []TestMetadataForDeleteRecord {
 	}
 
 	switch {
-	case senzingVersion < 403000:
+	case senzingVersion < 40300:
 		addendum = []TestMetadataForDeleteRecord{
 			{
 				name:               "nilDataSourceCode",
@@ -2245,8 +2245,9 @@ func getTestCasesForDeleteRecord() []TestMetadataForDeleteRecord {
 	default:
 		addendum = []TestMetadataForDeleteRecord{
 			{
-				name:               "nilDataSourceCode",
-				dataSourceCode:     nilDataSourceCode,
+				name:           "nilDataSourceCode",
+				dataSourceCode: nilDataSourceCode,
+
 				expectedErr:        szerror.ErrSzUnknownDataSource,
 				expectedErrMessage: `{"function":"szengine.(*Szengine).DeleteRecord","error":{"id":"SZSDK60044004","reason":"SENZ2207|Data source code [] does not exist."}}`,
 			},
