@@ -40,7 +40,7 @@ func captureStdout(functionName func() error) (string, error) { //nolint
 	panicOnError(err)
 
 	readFile, writeFile, _ := os.Pipe()
-	fileDescriptor := int(writeFile.Fd())
+	fileDescriptor := int(writeFile.Fd()) //nolint:gosec // file descriptors always fit in int
 	err = syscall.Dup2(fileDescriptor, syscall.Stdout)
 	panicOnError(err)
 
@@ -72,7 +72,7 @@ func captureStdoutReturningInt64(functionName func() (int64, error)) (string, in
 	panicOnError(err)
 
 	readFile, writeFile, _ := os.Pipe()
-	fileDescriptor := int(writeFile.Fd())
+	fileDescriptor := int(writeFile.Fd()) //nolint:gosec // file descriptors always fit in int
 	err = syscall.Dup2(fileDescriptor, syscall.Stdout)
 	panicOnError(err)
 
@@ -103,7 +103,7 @@ func captureStdoutReturningString(functionName func() (string, error)) (string, 
 	panicOnError(err)
 
 	readFile, writeFile, _ := os.Pipe()
-	fileDescriptor := int(writeFile.Fd())
+	fileDescriptor := int(writeFile.Fd()) //nolint:gosec // file descriptors always fit in int
 	err = syscall.Dup2(fileDescriptor, syscall.Stdout)
 	panicOnError(err)
 
