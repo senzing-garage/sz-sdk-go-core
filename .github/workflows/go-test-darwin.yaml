@@ -102,13 +102,13 @@ jobs:
           core-file-suffix: go-${{ matrix.os }}-${{ matrix.go }}-${{ matrix.senzingsdk-version }}
 
       - name: Store coverage file
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: "cover-${{ matrix.senzingsdk-version }}.out"
           path: "./cover-${{ matrix.senzingsdk-version }}.out"
 
       - name: Upload test log
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: "test-log-${{ matrix.senzingsdk-version }}"
