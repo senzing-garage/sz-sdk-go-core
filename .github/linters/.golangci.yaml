@@ -169,6 +169,18 @@ linters:
       min-occurrences: 5
       ignore-string-values:
         - "CUSTOMERS"
+        - "badDataSourceCode"
+        - "badEntityID"
+        - "badRecordID"
+        - "dataSourceCode"
+        - "default"
+        - "entityID"
+        - "flags"
+        - "nilDataSourceCode"
+        - "nilEntityID"
+        - "nilRecordID"
+        - "recordID"
+        - "withInfo"
     ireturn:
       allow:
         - error
