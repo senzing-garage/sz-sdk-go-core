@@ -48,7 +48,7 @@ func ExampleSzproduct_GetLicense() {
 	//     "customer": "Senzing Public Test License",
 	//     "licenseLevel": "STANDARD",
 	//     "licenseType": "EVAL (Solely for non-productive use)",
-	//     "recordLimit": 50000
+	//     "recordLimit": 501
 	// }
 }
 
