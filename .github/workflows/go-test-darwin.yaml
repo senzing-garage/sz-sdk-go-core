@@ -71,8 +71,9 @@ jobs:
         with:
           client-id: ${{ secrets.SENZINGSDK_STAGING_CLIENT_ID }}
           private-key: ${{ secrets.SENZINGSDK_STAGING_APP_KEY }}
-          owner: senzing-factory
+          owner: senzing-factory # zizmor: ignore[github-app]
           repositories: homebrew-senzingsdk-staging
+          permission-contents: read
 
       - name: Install Senzing SDK
         uses: senzing-factory/github-action-install-senzing-sdk@v5
@@ -143,4 +144,3 @@ jobs:
     with:
       coverage-config: ./.github/coverage/testcoverage.yaml
       profile: "cover-production-v4.out,cover-staging-v4.out"
-

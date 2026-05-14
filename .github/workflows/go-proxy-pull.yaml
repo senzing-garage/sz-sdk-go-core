@@ -27,4 +27,3 @@ jobs:
           job-status: ${{ job.status }}
           slack-channel: ${{ secrets.SLACK_CHANNEL }}
           slack-bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
-
