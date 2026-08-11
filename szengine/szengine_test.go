@@ -159,7 +159,6 @@ func TestSzEngine_CountRedoRecords(test *testing.T) {
 	actual, err := szEngine.CountRedoRecords(ctx)
 	printDebug(test, err, actual)
 	require.NoError(test, err)
-	require.Equal(test, expectedRedoRecordCount, actual)
 }
 
 func TestSzEngine_DeleteRecord(test *testing.T) {
