@@ -41,6 +41,7 @@ const (
 	jsonIndentation            = "    "
 	observerOrigin             = "SzEngine observer"
 	originMessage              = "Machine: nn; Task: UnitTest"
+	placeholderEntityID        = "<ENTITY_ID>"
 	printErrors                = false
 	printResults               = false
 	verboseLogging             = senzing.SzNoLogging
@@ -93,6 +94,18 @@ var (
 	senzingVersion    = 0
 	szEngineSingleton *szengine.Szengine
 )
+
+// expectedExportCsvEntityReport is the CSV entity report for CustomerRecords
+// 1001, 1002 and 1003, with the RESOLVED_ENTITY_ID column replaced by
+// placeholderEntityID. Entity IDs are assigned by the Senzing engine and vary
+// by platform and SDK version, so they are normalized before comparison rather
+// than asserted. See normalizeEntityID.
+var expectedExportCsvEntityReport = []string{
+	`RESOLVED_ENTITY_ID,RELATED_ENTITY_ID,MATCH_LEVEL_CODE,MATCH_KEY,DATA_SOURCE,RECORD_ID`,
+	placeholderEntityID + `,0,"","","CUSTOMERS","1001"`,
+	placeholderEntityID + `,0,"RESOLVED","+NAME+DOB+PHONE","CUSTOMERS","1002"`,
+	placeholderEntityID + `,0,"RESOLVED","+NAME+DOB+EMAIL","CUSTOMERS","1003"`,
+}
 
 type GetEntityByRecordIDResponse struct {
 	ResolvedEntity struct {
@@ -226,7 +239,7 @@ func TestSzEngine_ExportCsvEntityReport(test *testing.T) {
 	actualCount := 0
 
 	for actual := range szEngine.ExportCsvEntityReportIterator(ctx, csvColumnList, flags) {
-		require.Equal(test, expected[actualCount], strings.TrimSpace(actual.Value))
+		require.Equal(test, expected[actualCount], normalizeEntityID(strings.TrimSpace(actual.Value)))
 		actualCount++
 	}
 
@@ -290,7 +303,7 @@ func TestSzEngine_ExportCsvEntityReportIterator(test *testing.T) {
 
 	addRecords(ctx, szEngine, records)
 
-	expected := expectedExportCsvEntityReportIterator
+	expected := expectedExportCsvEntityReport
 	csvColumnList := ""
 	flags := senzing.SzExportIncludeAllEntities
 	actualCount := 0
@@ -298,7 +311,7 @@ func TestSzEngine_ExportCsvEntityReportIterator(test *testing.T) {
 	for actual := range szEngine.ExportCsvEntityReportIterator(ctx, csvColumnList, flags) {
 		printDebug(test, actual.Error, actual.Value)
 		require.NoError(test, actual.Error)
-		require.Equal(test, expected[actualCount], strings.TrimSpace(actual.Value))
+		require.Equal(test, expected[actualCount], normalizeEntityID(strings.TrimSpace(actual.Value)))
 
 		actualCount++
 	}
@@ -352,12 +365,12 @@ func TestSzEngine_ExportCsvEntityReportIterator_nilCsvColumnList(test *testing.T
 
 	addRecords(ctx, szEngine, records)
 
-	expected := expectedExportCsvEntityReportIteratorNilCsvColumnList
+	expected := expectedExportCsvEntityReport
 	flags := senzing.SzExportIncludeAllEntities
 	actualCount := 0
 
 	for actual := range szEngine.ExportCsvEntityReportIterator(ctx, nilCsvColumnList, flags) {
-		require.Equal(test, expected[actualCount], strings.TrimSpace(actual.Value))
+		require.Equal(test, expected[actualCount], normalizeEntityID(strings.TrimSpace(actual.Value)))
 
 		actualCount++
 	}
@@ -1707,6 +1720,23 @@ func handleError(err error) {
 	if err != nil {
 		outputln("Error:", err)
 	}
+}
+
+// normalizeEntityID replaces the leading RESOLVED_ENTITY_ID column of a CSV
+// entity report row with placeholderEntityID, so that rows can be compared
+// without asserting the engine-assigned entity ID. Rows that do not begin with
+// a number, such as the header row, are returned unchanged.
+func normalizeEntityID(row string) string {
+	entityID, remainder, found := strings.Cut(row, ",")
+	if !found {
+		return row
+	}
+
+	if _, err := strconv.ParseInt(entityID, baseTen, 64); err != nil {
+		return row
+	}
+
+	return placeholderEntityID + "," + remainder
 }
 
 func outputln(message ...any) {
