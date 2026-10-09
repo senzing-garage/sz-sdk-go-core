@@ -24,7 +24,7 @@ linters:
     - errname
     - errorlint
     - exhaustive
-    - exhaustruct
+    - exhaustruct_v5
     - exptostd
     - fatcontext
     - forbidigo
@@ -44,7 +44,7 @@ linters:
     - godox
     - goheader
     - gomoddirectives
-    - gomodguard
+    - gomodguard_v2
     - goprintffuncname
     - gosec
     - gosmopolitan
@@ -109,6 +109,7 @@ linters:
     - zerologlint
   disable:
     - gochecknoglobals
+    - gochecknoinits
     - lll
     - paralleltest
     - prealloc
@@ -127,7 +128,7 @@ linters:
     depguard:
       rules:
         prevent_unmaintained_packages:
-          list-mode: lax # allow unless explicitely denied
+          list-mode: lax # allow unless explicitly denied
           allow:
             - github.com/stretchr/testify/*
           deny:
@@ -135,8 +136,8 @@ linters:
               desc: "replaced by io and os packages since Go 1.16: https://tip.golang.org/doc/go1.16#ioutil"
     dupl:
       threshold: 200
-    exhaustruct:
-      exclude:
+    exhaustruct_v5:
+      ignore-patterns:
         - '.+/subject\.SimpleSubject$'
         - '.+/szabstractfactory_test\.GetRepositoryInfoResponse$'
         - '.+/szengine_test\.GetEntityByRecordIDResponse$'
@@ -183,7 +184,10 @@ linters:
         - "withInfo"
     ireturn:
       allow:
+        - anon
+        - empty
         - error
+        - stdlib
         - logging.Logging
         - messenger.Messenger
         - observer.Observer
