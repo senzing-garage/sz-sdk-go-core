@@ -346,13 +346,13 @@ func TestSzAbstractFactory_Multi_PreventSecondConfigManager(test *testing.T) {
 
 	defer func() { require.NoError(test, szAbstractFactory2.Close(ctx)) }()
 
-	szConfigManager1, err := szAbstractFactory1.CreateConfigManager((ctx))
+	szConfigManager1, err := szAbstractFactory1.CreateConfigManager(ctx)
 	printDebug(test, err, szConfigManager1)
 	require.NoError(test, err)
 
 	defer func() { require.NoError(test, szConfigManager1.Destroy(ctx)) }()
 
-	szConfigManager2, err := szAbstractFactory2.CreateConfigManager((ctx))
+	szConfigManager2, err := szAbstractFactory2.CreateConfigManager(ctx)
 	printDebug(test, err, szConfigManager2)
 	require.Error(test, err)
 	require.Nil(test, szConfigManager2)

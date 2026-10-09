@@ -395,9 +395,10 @@ func (client *Szengine) ExportCsvEntityReportIterator(
 
 		reportHandle, err := client.ExportCsvEntityReport(ctx, csvColumnList, flags)
 		if err != nil {
+			//exhaustruct:ignore
 			result := senzing.StringFragment{
 				Error: err,
-			} //exhaustruct:ignore
+			}
 			stringFragmentChannel <- result
 
 			return
@@ -508,9 +509,10 @@ func (client *Szengine) ExportJSONEntityReportIterator(ctx context.Context, flag
 
 		reportHandle, err := client.ExportJSONEntityReport(ctx, flags)
 		if err != nil {
+			//exhaustruct:ignore
 			result := senzing.StringFragment{
 				Error: err,
-			} //exhaustruct:ignore
+			}
 			stringFragmentChannel <- result
 
 			return
@@ -921,7 +923,7 @@ func (client *Szengine) FindPathByEntityID(
 }
 
 /*
-Method FindPathByRecordID searches for the shortest relationship path between two entities, specifiec by record IDs.
+Method FindPathByRecordID searches for the shortest relationship path between two entities, specified by record IDs.
 
 The returned path is the shortest path among the paths that satisfy the parameters.
 
@@ -2382,7 +2384,7 @@ func (client *Szengine) exportCsvEntityReport(ctx context.Context, csvColumnList
 		err = client.newError(ctx, 4007, csvColumnList, flags, result.returnCode, result)
 	}
 
-	resultExportHandle = (uintptr)(result.exportHandle)
+	resultExportHandle = uintptr(result.exportHandle)
 
 	return resultExportHandle, err
 }
@@ -2401,7 +2403,7 @@ func (client *Szengine) exportJSONEntityReport(ctx context.Context, flags int64)
 		err = client.newError(ctx, 4008, flags, result.returnCode, result)
 	}
 
-	resultExportHandle = (uintptr)(result.exportHandle)
+	resultExportHandle = uintptr(result.exportHandle)
 
 	return resultExportHandle, err
 }
@@ -3695,7 +3697,7 @@ func (client *Szengine) whyEntitiesV2(
 }
 
 /*
-Method whyRecordInEntityV2 explains why a record belongs to its resolved entitiy.
+Method whyRecordInEntityV2 explains why a record belongs to its resolved entity.
 
 Input
   - ctx: A context to control lifecycle.
@@ -3926,18 +3928,20 @@ func (client *Szengine) fetchNextIntoChannel(
 	for {
 		select {
 		case <-ctx.Done():
+			//exhaustruct:ignore
 			fragment := senzing.StringFragment{
 				Error: ctx.Err(),
-			} //exhaustruct:ignore
+			}
 			stringFragmentChannel <- fragment
 
 			return
 		default:
 			entityReportFragment, err := client.FetchNext(ctx, reportHandle)
 			if err != nil {
+				//exhaustruct:ignore
 				fragment := senzing.StringFragment{
 					Error: err,
-				} //exhaustruct:ignore
+				}
 				stringFragmentChannel <- fragment
 
 				return
@@ -3947,9 +3951,10 @@ func (client *Szengine) fetchNextIntoChannel(
 				return
 			}
 
+			//exhaustruct:ignore
 			fragment := senzing.StringFragment{
 				Value: entityReportFragment,
-			} //exhaustruct:ignore
+			}
 			stringFragmentChannel <- fragment
 		}
 	}

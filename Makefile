@@ -4,6 +4,10 @@
 
 include makefiles/osdetect.mk
 
+# Tool versions, shared across OS-specific makefiles.
+
+include makefiles/versions.mk
+
 # -----------------------------------------------------------------------------
 # Variables
 # -----------------------------------------------------------------------------
@@ -122,6 +126,10 @@ run: run-osarch-specific
 
 .PHONY: test
 test: test-osarch-specific
+
+
+.PHONY: test-verbose
+test-verbose: test-verbose-osarch-specific
 
 # -----------------------------------------------------------------------------
 # Coverage
